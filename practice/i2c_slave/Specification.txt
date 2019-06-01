@@ -1,0 +1,28 @@
+SPEC:
+
+The EPS module have the register layout(array) in main.h
+
+Your task is to read temperature and voltage data from the EPS module and give them commands to turn other sub systems on or off.
+
+There are 3 operating states: CRITICAL, IDLE and RUN
+
+CRITICAL: 
+	condition: when voltage is < 3V
+	action: turn OFF COM and GNC power supply and change EPS to SAVE mode.
+
+IDLE: 
+	condition: when voltage is < 5V
+	action: change COM and GNC power supply to SAVE mode and keep EPS ON.
+
+RUN:
+	condition: when voltage is >= 7V
+	action: everything should be ON
+
+Assign each operation state a LED color for it.
+We'll not worry about temperature for now, but make sure temperature data transmits correctly.
+Make sure to swap between tasks instead of using a simple if else statement
+Check the EPS voltage and temperature every 50 ms.
+You should have a similar array structure within the CDH module.
+
+Optional, write a i2c timeout handling where if the I2C communication fails within 2 seconds.
+
