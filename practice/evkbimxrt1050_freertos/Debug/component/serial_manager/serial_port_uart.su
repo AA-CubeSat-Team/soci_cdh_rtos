@@ -1,0 +1,4 @@
+serial_port_uart.c:129:25:Serial_UartInit	40	static
+serial_port_uart.c:198:25:Serial_UartDeinit	24	static
+serial_port_uart.c:265:25:Serial_UartWrite	32	static
+serial_port_uart.c:279:25:Serial_UartRead	32	static
