@@ -33,14 +33,17 @@ static void updateEPS_task(void *pvParameters);
  * Global Variables
  ******************************************************************************/
 double voltage = 0; // the voltage value that we get from the EPS
-char mode = 'I'; // I: Idle, S: Safe, N: Normal
-TaskHandle_t determineMode_TaskHandler;
-TaskHandle_t idleMode_TaskHandler;
-TaskHandle_t safeMode_TaskHandler;
-TaskHandle_t normalMode_TaskHandler;
+int mode = 0; // 0: Idle, 1: Safe, 2: Normal
+TaskHandle_t determineMode_TaskHandle;
+TaskHandle_t idleMode_TaskHandle;
+TaskHandle_t safeMode_TaskHandle;
+TaskHandle_t normalMode_TaskHandle;
 TaskHandle_t updateGNC_TaskHandle;
 TaskHandle_t updateCOM_TaskHandle;
 TaskHandle_t updateEPS_TaskHandle;
+TaskHandle_t checkGNC_TaskHandle;
+TaskHandle_t checkCOM_TaskHandle;
+TaskHandle_t checkEPS_TaskHandle;
 TaskHandle_t debugGNC_TaskHandle;
 TaskHandle_t debugCOM_TaskHandle;
 TaskHandle_t debugEPS_TaskHandle;
@@ -62,7 +65,7 @@ int main(void)
     BOARD_InitDebugConsole();
 
     // Creating a task to determine mode of the system
-    if (xTaskCreate(determineMode_task, "determineMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &determineMode_TaskHandler) != pdPASS) {
+    if (xTaskCreate(determineMode_task, "determineMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &determineMode_TaskHandle) != pdPASS) {
         PRINTF("determineMode_task creation failed!.\r\n");
         while (1);
     }
@@ -89,19 +92,19 @@ static void determineMode_task(void *pvParameters) {
 
         // Idle Mode:
         if (voltage <= 3) {
-            if (xTaskCreate(idleMode_task, "idleMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &idleMode_TaskHandler) != pdPASS) {
+            if (xTaskCreate(idleMode_task, "idleMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &idleMode_TaskHandle) != pdPASS) {
                 PRINTF("idleMode_task creation failed!.\r\n");
                 while (1);
             }
         // Safe Mode:
-        } else if (volatge <= 5) {
-            if (xTaskCreate(safeMode_task, "safeMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &safeMode_TaskHandler) != pdPASS) {
+        } else if (voltage <= 5) {
+            if (xTaskCreate(safeMode_task, "safeMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &safeMode_TaskHandle) != pdPASS) {
                 PRINTF("safeMode_task creation failed!.\r\n");
                 while (1);
             }
         // Normal Mode:
         } else {
-            if (xTaskCreate(normalMode_task, "normalMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &normalMode_TaskHandler) != pdPASS) {
+            if (xTaskCreate(normalMode_task, "normalMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &normalMode_TaskHandle) != pdPASS) {
                 PRINTF("normalMode_task creation failed!.\r\n");
                 while (1);
             }
@@ -230,8 +233,8 @@ static void checkGNC_task(void *pvParameters) {
                 PRINTF("debugGNC_task creation failed!.\r\n");
                 while (1);
             }
+            vTaskResume(debugGNC_TaskHandle);
         }
-        vTaskResume(debugGNC_TaskHandle);
         vTaskSuspend(checkGNC_TaskHandle);
     }
 }
@@ -252,8 +255,8 @@ static void checkCOM_task(void *pvParameters) {
                 PRINTF("debugCOM_task creation failed!.\r\n");
                 while (1);
             }
+            vTaskResume(debugCOM_TaskHandle);
         }
-        vTaskResume(debugCOM_TaskHandle);
         vTaskSuspend(checkCOM_TaskHandle);
     }
 }
@@ -274,8 +277,8 @@ static void checkEPS_task(void *pvParameters) {
                 PRINTF("debugEPS_task creation failed!.\r\n");
                 while (1);
             }
+            vTaskResume(debugEPS_TaskHandle);
         }
-        vTaskResume(debugEPS_TaskHandle);
         vTaskSuspend(checkEPS_TaskHandle);
     }
 }
@@ -325,13 +328,13 @@ static void debugEPS_task(void *pvParameters) {
 static void updateGNC_task(void *pvParameters) {
     for (;;) {
         PRINTF("entered updateGNC_task.\r\n");
-        if (mode == 'I') {
+        if (mode == 0) {
             // TODO: Tell GNC to go on Idle mode
 
-        } else if (mode == "S") {
+        } else if (mode == 1) {
             // TODO: Tell GNC to go on Safe mode
 
-        } else if (mode == "N") {
+        } else if (mode == 2) {
             // TODO: Tell GNC to go on Normal mode
 
         }
@@ -345,13 +348,13 @@ static void updateGNC_task(void *pvParameters) {
 static void updateCOM_task(void *pvParameters) {
     for (;;) {
         PRINTF("entered updateCOM_task.\r\n");
-        if (mode == 'I') {
+        if (mode == 0) {
             // TODO: Tell COM to go on Idle mode
 
-        } else if (mode == "S") {
+        } else if (mode == 1) {
             // TODO: Tell COM to go on Safe mode
 
-        } else if (mode == "N") {
+        } else if (mode == 2) {
             // TODO: Tell COM to go on Normal mode
 
         }
@@ -365,13 +368,13 @@ static void updateCOM_task(void *pvParameters) {
 static void updateEPS_task(void *pvParameters) {
     for (;;) {
         PRINTF("entered updateEPS_task.\r\n");
-        if (mode == 'I') {
+        if (mode == 0) {
             // TODO: Tell EPS to go on Idle mode
 
-        } else if (mode == "S") {
+        } else if (mode == 1) {
             // TODO: Tell EPS to go on Safe mode
 
-        } else if (mode == "N") {
+        } else if (mode == 2) {
             // TODO: Tell EPS to go on Normal mode
 
         }
