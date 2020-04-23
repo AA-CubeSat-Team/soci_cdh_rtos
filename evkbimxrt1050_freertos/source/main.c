@@ -16,38 +16,52 @@
  ******************************************************************************/
 
 static void determineMode_task(void *pvParameters);
+
 static void idleMode_task(void *pvParameters);
 static void safeMode_task(void *pvParameters);
 static void normalMode_task(void *pvParameters);
+
 static void checkGNC_task(void *pvParameters);
 static void checkCOM_task(void *pvParameters);
 static void checkEPS_task(void *pvParameters);
+static void checkOBC_task(void *pvParameters);
+static void checkSEN_task(void *pvParameters);
+static void checkIMG_task(void *pvParameters);
+
 static void debugGNC_task(void *pvParameters);
 static void debugCOM_task(void *pvParameters);
 static void debugEPS_task(void *pvParameters);
-static void updateGNC_task(void *pvParameters);
-static void updateCOM_task(void *pvParameters);
-static void updateEPS_task(void *pvParameters);
+static void debugOBC_task(void *pvParameters);
+static void debugSEN_task(void *pvParameters);
+static void debugIMG_task(void *pvParameters);
 
 /*******************************************************************************
  * Global Variables
  ******************************************************************************/
-double voltage = 0; // the voltage value that we get from the EPS
-int mode = 0; // 0: Idle, 1: Safe, 2: Normal
+
+// to be store in packets
+
+unsigned int mode = 0; // 0: Critically Low Power Mode, 1: Low Power Mode, 2: Normal
+
 TaskHandle_t determineMode_TaskHandle;
+
 TaskHandle_t idleMode_TaskHandle;
 TaskHandle_t safeMode_TaskHandle;
 TaskHandle_t normalMode_TaskHandle;
-TaskHandle_t updateGNC_TaskHandle;
-TaskHandle_t updateCOM_TaskHandle;
-TaskHandle_t updateEPS_TaskHandle;
+
 TaskHandle_t checkGNC_TaskHandle;
 TaskHandle_t checkCOM_TaskHandle;
 TaskHandle_t checkEPS_TaskHandle;
+TaskHandle_t checkOBC_TaskHandle;
+TaskHandle_t checkSEN_TaskHandle;
+TaskHandle_t checkIMG_TaskHandle;
+
 TaskHandle_t debugGNC_TaskHandle;
 TaskHandle_t debugCOM_TaskHandle;
 TaskHandle_t debugEPS_TaskHandle;
-
+TaskHandle_t debugOBC_TaskHandle;
+TaskHandle_t debugSEN_TaskHandle;
+TaskHandle_t debugIMG_TaskHandle;
 
 /*******************************************************************************
  * Code
@@ -64,13 +78,49 @@ int main(void)
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
 
-    // Creating a task to determine mode of the system
-    if (xTaskCreate(determineMode_task, "determineMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &determineMode_TaskHandle) != pdPASS) {
+    /* BaseType_t xTaskCreate(  TaskFunction_t pvTaskCode,
+                                const char * const pcName,
+                                configSTACK_DEPTH_TYPE usStackDepth,
+                                void *pvParameters,
+                                UBaseType_t uxPriority,
+                                TaskHandle_t *pxCreatedTask
+                              );
+       TaskHandle_t xTaskCreateStatic( TaskFunction_t pxTaskCode,
+                                 const char * const pcName,
+                                 const uint32_t ulStackDepth,
+                                 void * const pvParameters,
+                                 UBaseType_t uxPriority,
+                                 StackType_t * const puxStackBuffer,
+                                 StaticTask_t * const pxTaskBuffer );
+    */
+
+    // do OBC Health Check-up
+    if (xTaskCreate(checkOBC_task, "checkOBC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkOBC_TaskHandle) != pdPASS) {
+    	PRINTF("checkOBC_task creation failed!.\r\n");
+    	while (1);
+    }
+    vTaskResume(checkOBC_TaskHandle);
+
+    // do EPS Health Check-up
+    if (xTaskCreate(checkEPS_task, "checkEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkEPS_TaskHandle) != pdPASS) {
+    	PRINTF("checkEPS_task creation failed!.\r\n");
+    	while (1);
+    }
+    vTaskResume(checkEPS_TaskHandle);
+
+    // Creating a task to determine mode of the system which will run every 50 milliseconds
+    if (xTaskCreate(determineMode_task, "determineMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 4, &determineMode_TaskHandle) != pdPASS) {
         PRINTF("determineMode_task creation failed!.\r\n");
         while (1);
     }
+
     vTaskStartScheduler();
+
+
     // The system should never reach here.
+
+    // (thought:)send the EPS system signal to restart the OBC? since it encountered an error
+
     for (;;);
 }
 
@@ -79,37 +129,101 @@ int main(void)
  ******************************************************************************/
 /*!
  * @brief determineMode_task function
- *
- *  this task is periodic and happens every 50 ms.
+ *	this task determines the mode of the OBC according to the voltage from the EPS
+ *  this task is periodic and happens every 500 ms.
  */
 static void determineMode_task(void *pvParameters) {
-    const TickType_t xDelay50ms = pdMS_TO_TICKS( 50 );
-    TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;) {
+    	// variable to store ticks equivalent to 500 ms
+    	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
+
+    	// gets the last wake time
+    	TickType_t xLastWakeTime = xTaskGetTickCount();
+
         PRINTF("entered determineMode_task.\r\n");
+
         // TODO: Create a task to get the voltage from EPS system through I2C Communication
+        // voltage will be between 6.144 and 8.26
+        double voltage = 7.5; // the voltage value that we get from the EPS
 
+        // Idle Mode: 6.144 < voltage <= 7.9
+        if (voltage <= 7.4 ) { // what if we dont get a voltage value
 
-        // Idle Mode:
-        if (voltage <= 3) {
-            if (xTaskCreate(idleMode_task, "idleMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &idleMode_TaskHandle) != pdPASS) {
-                PRINTF("idleMode_task creation failed!.\r\n");
-                while (1);
-            }
-        // Safe Mode:
-        } else if (voltage <= 5) {
-            if (xTaskCreate(safeMode_task, "safeMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &safeMode_TaskHandle) != pdPASS) {
-                PRINTF("safeMode_task creation failed!.\r\n");
-                while (1);
-            }
-        // Normal Mode:
+        	mode = 0;
+
+        	// no more health check ups needed
+        	// start idle mode
+        	if (xTaskCreate(idleMode_task, "idleMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 4, &idleMode_TaskHandle) != pdPASS) {
+        		PRINTF("idleMode_task creation failed!.\r\n");
+        	    while (1);
+        	}
+
+        // Safe Mode: 7.4 < voltage <= 7.9
+        } else if (voltage <= 7.9 && voltage > 7.4) {
+
+        	mode = 1;
+
+        	// do COM health check up
+        	if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkCOM_TaskHandle) != pdPASS) {
+        		PRINTF("checkCOM_task creation failed!.\r\n");
+        	    while (1);
+        	}
+
+        	// do GNC health check up
+        	if (xTaskCreate(checkGNC_task, "checkGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkGNC_TaskHandle) != pdPASS) {
+        	    PRINTF("checkGNC_task creation failed!.\r\n");
+        		while (1);
+        	}
+
+        	// do SEN health check up
+        	if (xTaskCreate(checkSEN_task, "checkSEN_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkSEN_TaskHandle) != pdPASS) {
+        	    PRINTF("checkSEN_task creation failed!.\r\n");
+        	    while (1);
+        	}
+
+        	// start safe mode
+        	if (xTaskCreate(safeMode_task, "safeMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 3, &safeMode_TaskHandle) != pdPASS) {
+        	    PRINTF("safeMode_task creation failed!.\r\n");
+        	    while (1);
+        	}
+
+        // Normal Mode: 7.9 < voltage < 8.26
         } else {
-            if (xTaskCreate(normalMode_task, "normalMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &normalMode_TaskHandle) != pdPASS) {
-                PRINTF("normalMode_task creation failed!.\r\n");
-                while (1);
-            }
+
+        	mode = 2;
+
+        	// do COM health check up
+        	if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkCOM_TaskHandle) != pdPASS) {
+        		PRINTF("checkCOM_task creation failed!.\r\n");
+        		while (1);
+        	}
+
+        	// do GNC health check up
+        	if (xTaskCreate(checkGNC_task, "checkGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkGNC_TaskHandle) != pdPASS) {
+        	   	PRINTF("checkGNC_task creation failed!.\r\n");
+        	  	while (1);
+        	}
+
+        	// do SEN health check up
+        	if (xTaskCreate(checkSEN_task, "checkSEN_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkSEN_TaskHandle) != pdPASS) {
+        	   	PRINTF("checkSEN_task creation failed!.\r\n");
+        	   	while (1);
+        	}
+
+        	// do IMG health check up
+        	if (xTaskCreate(checkIMG_task, "checkIMG_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkIMG_TaskHandle) != pdPASS) {
+        		PRINTF("checkIMG_task creation failed!.\r\n");
+        	   	while (1);
+        	}
+
+        	// start nominal mode
+        	if (xTaskCreate(normalMode_task, "normalMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &normalMode_TaskHandle) != pdPASS) {
+        	    PRINTF("normalMode_task creation failed!.\r\n");
+        	    while (1);
+        	}
         }
-        vTaskDelayUntil(&xLastWakeTime, xDelay50ms);
+
+        vTaskDelayUntil(&xLastWakeTime, xDelayms);
     }
 }
 
@@ -120,24 +234,11 @@ static void idleMode_task(void *pvParameters) {
     for (;;)
     {
         PRINTF("entered idleMode_task.\r\n");
-        mode = 'I';
-        // updating each subsystem
-        if (xTaskCreate(updateGNC_task, "updateGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateGNC_TaskHandle) != pdPASS) {
-            PRINTF("idlemode_updateGNC_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(updateCOM_task, "updateCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateCOM_TaskHandle) != pdPASS) {
-            PRINTF("idlemode_updateCOM_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(updateEPS_task, "updateEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateEPS_TaskHandle) != pdPASS) {
-            PRINTF("idlemode_updateEPS_task creation failed!.\r\n");
-            while (1);
-        }
-        vTaskResume(updateGNC_TaskHandle);
-        vTaskResume(updateCOM_TaskHandle);
-        vTaskResume(updateEPS_TaskHandle);
-        vTaskSuspend(idleMode_TaskHandle);
+
+        // TODO: update each subsystem to idle mode
+        // turn off all the PDMs except OBC
+        // 
+        vTaskDelete(idleMode_TaskHandle);
     }
 }
 
@@ -148,24 +249,11 @@ static void safeMode_task(void *pvParameters) {
     for (;;)
     {
         PRINTF("entered safeMode_task.\r\n");
-        mode = 'S';
-        // updating each subsystem
-        if (xTaskCreate(updateGNC_task, "updateGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateGNC_TaskHandle) != pdPASS) {
-            PRINTF("safemode_updateGNC_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(updateCOM_task, "updateCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateCOM_TaskHandle) != pdPASS) {
-            PRINTF("safemode_updateCOM_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(updateEPS_task, "updateEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateEPS_TaskHandle) != pdPASS) {
-            PRINTF("safemode_updateEPS_task creation failed!.\r\n");
-            while (1);
-        }
-        vTaskResume(updateGNC_TaskHandle);
-        vTaskResume(updateCOM_TaskHandle);
-        vTaskResume(updateEPS_TaskHandle);
-        vTaskSuspend(safeMode_TaskHandle);
+
+        // TODO: update each subsystem to safe mode
+
+
+        vTaskDelete(safeMode_TaskHandle);
     }
 }
 
@@ -176,66 +264,72 @@ static void normalMode_task(void *pvParameters) {
     for (;;)
     {
         PRINTF("entered normalMode_task.\r\n");
-        mode = 'N';
-        // updating each subsystem
-        if (xTaskCreate(updateGNC_task, "updateGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateGNC_TaskHandle) != pdPASS) {
-            PRINTF("normalmode_updateGNC_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(updateCOM_task, "updateCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateCOM_TaskHandle) != pdPASS) {
-            PRINTF("normalmode_updateCOM_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(updateEPS_task, "updateEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &updateEPS_TaskHandle) != pdPASS) {
-            PRINTF("normalmode_updateEPS_task creation failed!.\r\n");
-            while (1);
-        }
-
-        // check if each subsystem is working fine
-        if (xTaskCreate(checkGNC_task, "checkGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &checkGNC_TaskHandle) != pdPASS) {
-            PRINTF("checkGNC_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &checkCOM_TaskHandle) != pdPASS) {
-            PRINTF("checkCOM_task creation failed!.\r\n");
-            while (1);
-        }
-        if (xTaskCreate(checkEPS_task, "checkEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 1, &checkEPS_TaskHandle) != pdPASS) {
-            PRINTF("checkEPS_task creation failed!.\r\n");
-            while (1);
-        }
 
         // TODO: after all the peripherals are checked, do the main stuff
 
-        vTaskResume(updateGNC_TaskHandle);
-        vTaskResume(updateCOM_TaskHandle);
-        vTaskResume(updateEPS_TaskHandle);
-        vTaskResume(checkGNC_TaskHandle);
-        vTaskResume(checkCOM_TaskHandle);
-        vTaskResume(checkEPS_TaskHandle);
-        vTaskSuspend(normalMode_TaskHandle);
+        vTaskDelete(normalMode_TaskHandle);
     }
 }
 
+/*!
+ * @brief checkSEN_task function
+ */
+static void checkSEN_task(void *pvParameters) {
+    for (;;) {
+        PRINTF("entered checkSEN_task.\r\n");
+        int statusSEN = 0; // 0 for OK, 1 for not OK
+        // TODO: ask the SEN subsystem for its status
+
+
+        // if SEN is not OK then start a debug of SEN
+        if (statusSEN == 1) {
+            if (xTaskCreate(debugSEN_task, "debugSEN_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugSEN_TaskHandle) != pdPASS) {
+                PRINTF("debugSEN_task creation failed!.\r\n");
+                while (1);
+            }
+        }
+        vTaskDelete(checkSEN_TaskHandle);
+    }
+}
+
+/*!
+ * @brief checkIMG_task function
+ */
+static void checkIMG_task(void *pvParameters) {
+    for (;;) {
+        PRINTF("entered checkIMG_task.\r\n");
+        int statusIMG = 0; // 0 for OK, 1 for not OK
+        // TODO: ask the IMG subsystem for its status
+
+
+        // if IMG is not OK then start a debug of IMG
+        if (statusIMG == 1) {
+            if (xTaskCreate(debugIMG_task, "debugIMG_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugIMG_TaskHandle) != pdPASS) {
+                PRINTF("debugIMG_task creation failed!.\r\n");
+                while (1);
+            }
+        }
+        vTaskDelete(checkIMG_TaskHandle);
+    }
+}
 /*!
  * @brief checkGNC_task function
  */
 static void checkGNC_task(void *pvParameters) {
     for (;;) {
         PRINTF("entered checkGNC_task.\r\n");
-        int statusGNC; // 0 for OK, 1 for not OK
+        int statusGNC = 0; // 0 for OK, 1 for not OK
         // TODO: ask the GNC subsystem for its status
 
 
-        // if GNC is not OK then start a debug of GNC with a greater priority
+        // if GNC is not OK then start a debug of GNC
         if (statusGNC == 1) {
-            if (xTaskCreate(debugGNC_task, "debugGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &debugGNC_TaskHandle) != pdPASS) {
+            if (xTaskCreate(debugGNC_task, "debugGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugGNC_TaskHandle) != pdPASS) {
                 PRINTF("debugGNC_task creation failed!.\r\n");
                 while (1);
             }
-            vTaskResume(debugGNC_TaskHandle);
         }
-        vTaskSuspend(checkGNC_TaskHandle);
+        vTaskDelete(checkGNC_TaskHandle);
     }
 }
 
@@ -245,19 +339,18 @@ static void checkGNC_task(void *pvParameters) {
 static void checkCOM_task(void *pvParameters) {
     for (;;) {
         PRINTF("entered checkCOM_task.\r\n");
-        int statusCOM; // 0 for OK, 1 for not OK
-        // TODO: ask the GNC subsystem for its status
+        int statusCOM = 0; // 0 for OK, 1 for not OK
+        // TODO: ask the COM subsystem for its status
 
 
-        // if GNC is not OK then start a debug of GNC with a greater priority
+        // if COM is not OK then start a debug of COM
         if (statusCOM == 1) {
-            if (xTaskCreate(debugCOM_task, "debugCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &debugCOM_TaskHandle) != pdPASS) {
+            if (xTaskCreate(debugCOM_task, "debugCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugCOM_TaskHandle) != pdPASS) {
                 PRINTF("debugCOM_task creation failed!.\r\n");
                 while (1);
             }
-            vTaskResume(debugCOM_TaskHandle);
         }
-        vTaskSuspend(checkCOM_TaskHandle);
+        vTaskDelete(checkCOM_TaskHandle);
     }
 }
 
@@ -267,21 +360,40 @@ static void checkCOM_task(void *pvParameters) {
 static void checkEPS_task(void *pvParameters) {
     for (;;) {
         PRINTF("entered checkEPS_task.\r\n");
-        int statusEPS; // 0 for OK, 1 for not OK
-        // TODO: ask the GNC subsystem for its status
+        int statusEPS = 0; // 0 for OK, 1 for not OK
+        // TODO: ask the EPS subsystem for its status
 
 
-        // if GNC is not OK then start a debug of GNC with a greater priority
+        // if EPS is not OK then start a debug of EPS
         if (statusEPS == 1) {
-            if (xTaskCreate(debugEPS_task, "debugEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &debugEPS_TaskHandle) != pdPASS) {
+            if (xTaskCreate(debugEPS_task, "debugEPS_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugEPS_TaskHandle) != pdPASS) {
                 PRINTF("debugEPS_task creation failed!.\r\n");
                 while (1);
             }
-            vTaskResume(debugEPS_TaskHandle);
+
         }
-        vTaskSuspend(checkEPS_TaskHandle);
+        vTaskDelete(checkEPS_TaskHandle);
     }
 }
+
+static void checkOBC_task(void *pvParameters) {
+    for (;;) {
+        PRINTF("entered checkOBC_task.\r\n");
+        int statusOBC = 0; // 0 for OK, 1 for not OK
+        // TODO: ask the OBC subsystem for its status
+
+
+        // if OBC is not OK then start a debug of OBC
+        if (statusOBC == 1) {
+            if (xTaskCreate(debugOBC_task, "debugOBC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugOBC_TaskHandle) != pdPASS) {
+                PRINTF("debugOBC_task creation failed!.\r\n");
+                while (1);
+            }
+        }
+        vTaskDelete(checkOBC_TaskHandle);
+    }
+}
+
 
 /*!
  * @brief debugGNC_task function
@@ -292,7 +404,16 @@ static void debugGNC_task(void *pvParameters) {
         // TODO: ask the GNC subsystem to debug itself
 
 
-        vTaskSuspend(debugGNC_TaskHandle);
+        /*
+        // do a health check up again
+        if (xTaskCreate(debugGNC_task, "debugGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &debugGNC_TaskHandle) != pdPASS) {
+            PRINTF("debugGNC_task creation failed!.\r\n");
+        	while (1);
+        }
+        vTaskResume(debugGNC_TaskHandle);
+        */
+
+        vTaskDelete(debugGNC_TaskHandle);
     }
 }
 
@@ -305,7 +426,7 @@ static void debugCOM_task(void *pvParameters) {
         // TODO: ask the COM subsystem to debug itself
 
 
-        vTaskSuspend(debugCOM_TaskHandle);
+        vTaskDelete(debugCOM_TaskHandle);
     }
 }
 
@@ -318,66 +439,45 @@ static void debugEPS_task(void *pvParameters) {
         // TODO: ask the EPS subsystem to debug itself
 
 
-        vTaskSuspend(debugEPS_TaskHandle);
+        vTaskDelete(debugEPS_TaskHandle);
     }
 }
 
 /*!
- * @brief updateGNC_task function
+ * @brief debugOBC_task function
  */
-static void updateGNC_task(void *pvParameters) {
+static void debugOBC_task(void *pvParameters) {
     for (;;) {
-        PRINTF("entered updateGNC_task.\r\n");
-        if (mode == 0) {
-            // TODO: Tell GNC to go on Idle mode
+        PRINTF("entered debugOBC_task.\r\n");
+        // TODO: ask the OBC subsystem to debug itself
 
-        } else if (mode == 1) {
-            // TODO: Tell GNC to go on Safe mode
 
-        } else if (mode == 2) {
-            // TODO: Tell GNC to go on Normal mode
-
-        }
-        vTaskSuspend(updateGNC_TaskHandle);
+        vTaskDelete(debugOBC_TaskHandle);
     }
 }
 
 /*!
- * @brief updateCOM_task function
+ * @brief debugSEN_task function
  */
-static void updateCOM_task(void *pvParameters) {
+static void debugSEN_task(void *pvParameters) {
     for (;;) {
-        PRINTF("entered updateCOM_task.\r\n");
-        if (mode == 0) {
-            // TODO: Tell COM to go on Idle mode
+        PRINTF("entered debugSEN_task.\r\n");
+        // TODO: ask the SEN subsystem to debug itself
 
-        } else if (mode == 1) {
-            // TODO: Tell COM to go on Safe mode
-
-        } else if (mode == 2) {
-            // TODO: Tell COM to go on Normal mode
-
-        }
-        vTaskSuspend(updateCOM_TaskHandle);
+        //call check sensor
+        vTaskDelete(debugSEN_TaskHandle);
     }
 }
 
 /*!
- * @brief updateEPS_task function
+ * @brief debugIMG_task function
  */
-static void updateEPS_task(void *pvParameters) {
+static void debugIMG_task(void *pvParameters) {
     for (;;) {
-        PRINTF("entered updateEPS_task.\r\n");
-        if (mode == 0) {
-            // TODO: Tell EPS to go on Idle mode
+        PRINTF("entered debugIMG_task.\r\n");
+        // TODO: ask the IMG subsystem to debug itself
 
-        } else if (mode == 1) {
-            // TODO: Tell EPS to go on Safe mode
 
-        } else if (mode == 2) {
-            // TODO: Tell EPS to go on Normal mode
-
-        }
-        vTaskSuspend(updateEPS_TaskHandle);
+        vTaskDelete(debugIMG_TaskHandle);
     }
 }
