@@ -53,6 +53,8 @@ BOARD_InitPins:
   - {pin_num: N3, peripheral: LPI2C1, signal: SDA, pin_signal: GPIO_SD_B1_05}
   - {pin_num: P4, peripheral: LPI2C2, signal: SDA, pin_signal: GPIO_SD_B1_10}
   - {pin_num: P5, peripheral: LPI2C2, signal: SCL, pin_signal: GPIO_SD_B1_11}
+  - {pin_num: D9, peripheral: GPIO2, signal: 'gpio_io, 10', pin_signal: GPIO_B0_10}
+  - {pin_num: A9, peripheral: GPIO2, signal: 'gpio_io, 07', pin_signal: GPIO_B0_07}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -66,10 +68,16 @@ void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* iomuxc clock (iomuxc_clk_enable): 0x03U */
 
   IOMUXC_SetPinMux(
+      IOMUXC_GPIO_B0_07_GPIO2_IO07,           /* GPIO_B0_07 is configured as GPIO2_IO07 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
       IOMUXC_GPIO_B0_08_LPUART3_TX,           /* GPIO_B0_08 is configured as LPUART3_TX */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_B0_09_LPUART3_RX,           /* GPIO_B0_09 is configured as LPUART3_RX */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_B0_10_GPIO2_IO10,           /* GPIO_B0_10 is configured as GPIO2_IO10 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_EMC_21_LPI2C3_SDA,          /* GPIO_EMC_21 is configured as LPI2C3_SDA */

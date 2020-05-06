@@ -113,6 +113,16 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_FlexSPI_D3_A_PERIPHERAL                            LPI2C2   /*!< Device name: LPI2C2 */
 #define BOARD_INITPINS_FlexSPI_D3_A_SIGNAL                                   SCL   /*!< LPI2C2 signal: SCL */
 
+/* GPIO_B0_10 (coord D9), LCDIF_D6/BT_CFG[6] */
+#define BOARD_INITPINS_LCDIF_D6_GPIO                                       GPIO2   /*!< GPIO device name: GPIO2 */
+#define BOARD_INITPINS_LCDIF_D6_PORT                                       GPIO2   /*!< PORT device name: GPIO2 */
+#define BOARD_INITPINS_LCDIF_D6_PIN                                          10U   /*!< GPIO2 pin index: 10 */
+
+/* GPIO_B0_07 (coord A9), LCDIF_D3/BT_CFG[3] */
+#define BOARD_INITPINS_LCDIF_D3_GPIO                                       GPIO2   /*!< GPIO device name: GPIO2 */
+#define BOARD_INITPINS_LCDIF_D3_PORT                                       GPIO2   /*!< PORT device name: GPIO2 */
+#define BOARD_INITPINS_LCDIF_D3_PIN                                           7U   /*!< GPIO2 pin index: 7 */
+
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
