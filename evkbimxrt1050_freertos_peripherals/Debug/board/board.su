@@ -1,0 +1,15 @@
+mpu_armv7.h:115:22:ARM_MPU_Enable	16	static
+mpu_armv7.h:127:22:ARM_MPU_Disable	4	static
+core_cm7.h:2218:22:SCB_EnableICache	4	static
+core_cm7.h:2237:22:SCB_DisableICache	4	static
+core_cm7.h:2270:22:SCB_EnableDCache	24	static
+core_cm7.h:2308:22:SCB_DisableDCache	16	static
+fsl_clock.h:908:24:CLOCK_GetMux	16	static
+fsl_clock.h:944:24:CLOCK_GetDiv	16	static
+fsl_clock.h:1007:24:CLOCK_GetOscFreq	4	static
+fsl_iomuxc.h:1122:20:IOMUXC_SetPinConfig	24	static
+board.c:33:10:BOARD_DebugConsoleSrcFreq	24	static
+board.c:52:6:BOARD_InitDebugConsole	16	static
+board.c:295:6:BOARD_SD_Pin_Config	24	static
+board.c:329:6:BOARD_MMC_Pin_Config	24	static
+board.c:384:6:BOARD_ConfigMPU	8	static
