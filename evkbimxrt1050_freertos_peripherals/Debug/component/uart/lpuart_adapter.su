@@ -1,5 +1,0 @@
-lpuart_adapter.c:120:26:HAL_UartGetStatus	16	static
-lpuart_adapter.c:220:19:HAL_UartInit	48	static
-lpuart_adapter.c:293:19:HAL_UartDeinit	24	static
-lpuart_adapter.c:314:19:HAL_UartReceiveBlocking	32	static
-lpuart_adapter.c:336:19:HAL_UartSendBlocking	32	static

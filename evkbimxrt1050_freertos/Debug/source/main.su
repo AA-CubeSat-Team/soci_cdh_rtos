@@ -1,5 +1,0 @@
-main.c:36:5:main	16	static
-main.c:86:13:updateTempVoltage_task	24	static
-main.c:103:13:updateGNC_task	16	static
-main.c:114:13:updateCOM_task	16	static
-main.c:125:13:updateEPS_task	16	static
