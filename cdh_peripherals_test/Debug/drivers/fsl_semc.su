@@ -1,6 +1,6 @@
-fsl_clock.h:955:20:CLOCK_ControlGate	32	static
-fsl_clock.h:972:20:CLOCK_EnableClock	16	static
-fsl_clock.h:982:20:CLOCK_DisableClock	16	static
+fsl_clock.h:1042:20:CLOCK_ControlGate	32	static
+fsl_clock.h:1059:20:CLOCK_EnableClock	16	static
+fsl_clock.h:1069:20:CLOCK_DisableClock	16	static
 fsl_semc.h:764:24:SEMC_BuildNandIPCommand	16	static
 fsl_semc.c:110:17:SEMC_GetInstance	24	static
 fsl_semc.c:128:17:SEMC_CovertMemorySize	32	static

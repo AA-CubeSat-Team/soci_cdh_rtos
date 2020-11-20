@@ -6,7 +6,7 @@
  * Generated linker script file for MIMXRT1052xxxxB
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.23
- * MCUXpresso IDE v11.1.0 [Build 3209] [2019-12-12] on Jun 4, 2020 12:47:03 PM
+ * MCUXpresso IDE v11.2.1 [Build 4149] [2020-10-07] on Nov 20, 2020 3:56:00 PM
  */
 
 INCLUDE "cdh_peripherals_test_Debug_library.ld"
@@ -80,20 +80,19 @@ SECTIONS
     } > BOARD_FLASH
     /*
      * for exception handling/unwind - some Newlib functions (in common
-     * with C++ and STDC++) use this. 
+     * with C++ and STDC++) use this.
      */
-    .ARM.extab : ALIGN(4) 
+    .ARM.extab : ALIGN(4)
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
     } > BOARD_FLASH
 
-    __exidx_start = .;
-
     .ARM.exidx : ALIGN(4)
     {
+        __exidx_start = .;
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
     } > BOARD_FLASH
-    __exidx_end = .;
  
     _etext = .;
         

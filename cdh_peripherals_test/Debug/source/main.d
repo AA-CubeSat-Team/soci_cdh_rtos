@@ -7,16 +7,31 @@ source/main.o source/main.d: ../source/main.c ../source/lpuart.h \
  ../amazon-freertos/include/mpu_wrappers.h \
  ../amazon-freertos/include/task.h ../amazon-freertos/include/list.h \
  ../amazon-freertos/include/queue.h ../amazon-freertos/include/task.h \
- ../amazon-freertos/include/timers.h ../device/fsl_device_registers.h \
- ../device/MIMXRT1052.h ../CMSIS/core_cm7.h ../CMSIS/cmsis_version.h \
- ../CMSIS/cmsis_compiler.h ../CMSIS/cmsis_gcc.h ../CMSIS/mpu_armv7.h \
- ../device/system_MIMXRT1052.h ../device/MIMXRT1052_features.h \
- ../utilities/fsl_debug_console.h ../drivers/fsl_common.h \
- ../drivers/fsl_clock.h ../drivers/fsl_common.h \
- ../component/serial_manager/serial_manager.h \
- ../component/serial_manager/serial_port_uart.h ../board/board.h \
- ../board/clock_config.h ../drivers/fsl_gpio.h ../drivers/fsl_clock.h \
- ../board/pin_mux.h ../board/clock_config.h
+ ../amazon-freertos/include/timers.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/fsl_device_registers.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/MIMXRT1052.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/core_cm7.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/cmsis_version.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/cmsis_compiler.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/cmsis_gcc.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/mpu_armv7.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/system_MIMXRT1052.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/MIMXRT1052_features.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/utilities/fsl_debug_console.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_common.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_clock.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_common.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/component/serial_manager/serial_manager.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/component/serial_manager/serial_port_uart.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/component/uart/uart.h \
+ ../board/board.h ../board/clock_config.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_gpio.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_clock.h \
+ ../board/pin_mux.h ../board/peripherals.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_lpuart.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_lpspi.h \
+ /Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_lpi2c.h \
+ ../board/clock_config.h
 
 ../source/lpuart.h:
 
@@ -44,44 +59,54 @@ source/main.o source/main.d: ../source/main.c ../source/lpuart.h \
 
 ../amazon-freertos/include/timers.h:
 
-../device/fsl_device_registers.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/fsl_device_registers.h:
 
-../device/MIMXRT1052.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/MIMXRT1052.h:
 
-../CMSIS/core_cm7.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/core_cm7.h:
 
-../CMSIS/cmsis_version.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/cmsis_version.h:
 
-../CMSIS/cmsis_compiler.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/cmsis_compiler.h:
 
-../CMSIS/cmsis_gcc.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/cmsis_gcc.h:
 
-../CMSIS/mpu_armv7.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/CMSIS/mpu_armv7.h:
 
-../device/system_MIMXRT1052.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/system_MIMXRT1052.h:
 
-../device/MIMXRT1052_features.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/device/MIMXRT1052_features.h:
 
-../utilities/fsl_debug_console.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/utilities/fsl_debug_console.h:
 
-../drivers/fsl_common.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_common.h:
 
-../drivers/fsl_clock.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_clock.h:
 
-../drivers/fsl_common.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_common.h:
 
-../component/serial_manager/serial_manager.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/component/serial_manager/serial_manager.h:
 
-../component/serial_manager/serial_port_uart.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/component/serial_manager/serial_port_uart.h:
+
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/component/uart/uart.h:
 
 ../board/board.h:
 
 ../board/clock_config.h:
 
-../drivers/fsl_gpio.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_gpio.h:
 
-../drivers/fsl_clock.h:
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_clock.h:
 
 ../board/pin_mux.h:
+
+../board/peripherals.h:
+
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_lpuart.h:
+
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_lpspi.h:
+
+/Users/stlp/Desktop/CubeSat/soci_cdh_rtos/cdh_peripherals_test/drivers/fsl_lpi2c.h:
 
 ../board/clock_config.h:

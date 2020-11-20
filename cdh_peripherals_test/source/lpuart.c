@@ -80,10 +80,10 @@ lpuart_rtos_config_t lpuart_config8 = {
 void init_uart_tasks(){
 
 
-	NVIC_SetPriority(LPUART3_IRQn, 5);
-	NVIC_SetPriority(LPUART6_IRQn, 5);
-	NVIC_SetPriority(LPUART8_IRQn, 5);
-    xMutex = xSemaphoreCreateMutex();
+//	NVIC_SetPriority(LPUART3_IRQn, 5);
+//	NVIC_SetPriority(LPUART6_IRQn, 5);
+//	NVIC_SetPriority(LPUART8_IRQn, 5);
+ //   xMutex = xSemaphoreCreateMutex();
 
 	if (xTaskCreate(uart3_task, "Uart3_task", configMINIMAL_STACK_SIZE + 100, NULL, 5 , NULL) != pdPASS) //uart_task_PRIORITY
 	{
@@ -91,18 +91,18 @@ void init_uart_tasks(){
 		while (1)
 			;
 	}
-	if (xTaskCreate(uart6_task, "Uart6_task", configMINIMAL_STACK_SIZE + 100, NULL, 5, NULL) != pdPASS)
-	{
-		PRINTF("uart6_task creation failed!.\r\n");
-		while (1)
-			;
-	}
-	if (xTaskCreate(uart8_task, "Uart8_task", configMINIMAL_STACK_SIZE + 100, NULL, 5, NULL) != pdPASS)
-	{
-		PRINTF("uart8_task creation failed!.\r\n");
-		while (1)
-			;
-	}
+//	if (xTaskCreate(uart6_task, "Uart6_task", configMINIMAL_STACK_SIZE + 100, NULL, 5, NULL) != pdPASS)
+//	{
+//		PRINTF("uart6_task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
+//	if (xTaskCreate(uart8_task, "Uart8_task", configMINIMAL_STACK_SIZE + 100, NULL, 5, NULL) != pdPASS)
+//	{
+//		PRINTF("uart8_task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
 
 }
 

@@ -11,6 +11,7 @@
 #include "board.h"
 
 #include "pin_mux.h"
+#include "peripherals.h"
 #include "clock_config.h"
 
 /*******************************************************************************
@@ -76,7 +77,9 @@ TaskHandle_t debugIMG_TaskHandle;
 int main(void)
 {
     BOARD_ConfigMPU();
-    BOARD_InitPins();
+    //BOARD_InitPins(); //ERROR!
+    BOARD_InitBootPeripherals();
+    BOARD_InitBootPins();
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole(); //this uses UART1 to print stuff back
 
