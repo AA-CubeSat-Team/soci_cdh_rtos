@@ -1,0 +1,5 @@
+core_cm7.h:2013:22:__NVIC_SetPriority	16	static
+uart.c:65:6:init_uart_tasks	16	static
+uart.c:92:6:uart3_task	32	static
+uart.c:130:6:uart6_task	32	static
+uart.c:167:6:uart8_task	32	static
