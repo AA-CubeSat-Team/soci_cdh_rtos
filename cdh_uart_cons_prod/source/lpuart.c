@@ -56,45 +56,27 @@ lpuart_rtos_config_t lpuart_config3 = {
 void init_tasks(){
 
 
-//	NVIC_SetPriority(LPUART3_IRQn, 5);
-//	NVIC_SetPriority(LPUART6_IRQn, 5);
-//	NVIC_SetPriority(LPUART8_IRQn, 5);
+	NVIC_SetPriority(LPUART3_IRQn, 5); //if this is not done, it is stuck after lpuart send
+
+
 	uartRxQueue = xQueueCreate(QUEUE_LEN, sizeof(char));
-	if(uartRxQueue == NULL)
-	{
-		PRINTF("Queue rx creation failed!.\r\n");
-		while (1)
-			;
-	}
+	configASSERT(uartRxQueue);
 
 	uartTxQueue = xQueueCreate(QUEUE_LEN, sizeof(char));
-	if(uartTxQueue == NULL)
-	{
-		PRINTF("Queue tx creation failed!.\r\n");
-		while (1)
-			;
-	}
+	configASSERT(uartTxQueue);
 
     xMutex = xSemaphoreCreateMutex();
-    if(xMutex == NULL){
-    	PRINTF("mutex creation failed!.\r\n");
-		while (1)
-			;
-    }
+    configASSERT(xMutex);
 
     count_semaphore_rx = xSemaphoreCreateCounting(20,0); //max, initial
-    if(count_semaphore_rx == NULL){
-		PRINTF("semaphore creation failed!.\r\n");
-		while (1)
-			;
-	}
+    configASSERT(count_semaphore_rx);
+
+    xSemaphoreTake(count_semaphore_rx, 0);//pdMS_TO_TICKS(200));
 
     count_semaphore_tx = xSemaphoreCreateCounting(20,0); //max, initial
-	if(count_semaphore_tx == NULL){
-		PRINTF("semaphore creation failed!.\r\n");
-		while (1)
-			;
-	}
+    configASSERT(count_semaphore_tx);
+
+    xSemaphoreTake(count_semaphore_tx, 0);//pdMS_TO_TICKS(200));
 
 	if (xTaskCreate(uart3_rx_task, "Uart3_Rx_task", configMINIMAL_STACK_SIZE + 100, NULL, 4 , NULL) != pdPASS)
 	{
@@ -131,7 +113,7 @@ void uart3_rx_task(void *pvParameters)
     xSemaphoreTake(xMutex, portMAX_DELAY);
 
 	/* Send introduction message. */
-	LPUART_RTOS_Send(&handle3, (uint8_t *)to_send3, strlen(to_send3));
+	error = LPUART_RTOS_Send(&handle3, (uint8_t *)to_send3, strlen(to_send3));
 
 	xSemaphoreGive(xMutex);
 
@@ -155,9 +137,13 @@ void uart3_rx_task(void *pvParameters)
 			for(size_t i=0; i<n; i++){
 				if((xQueueSendToBack(uartRxQueue, recv_buffer3, xBlockTime)) == pdPASS ){
 					xSemaphoreGive(count_semaphore_rx);
+					PRINTF("gave rx semaphore!.\r\n");
 				}
 			}
 
+		}
+		else{
+			PRINTF("RX: no new message!.\r\n");
 		}
 
 	}
@@ -172,10 +158,23 @@ void uart3_tx_task(void *pvParameters)
 	const TickType_t xBlockTime = pdMS_TO_TICKS(200);
 	char in;
 
+    xSemaphoreTake(xMutex, portMAX_DELAY);
+
+	/* Send introduction message. */
+	error = LPUART_RTOS_Send(&handle3, (uint8_t *)to_send3, strlen(to_send3));
+
+	xSemaphoreGive(xMutex);
+
+
 	while(1){
-		xSemaphoreTake(count_semaphore_tx, xBlockTime);
-		xQueueReceive(uartTxQueue, &in, xBlockTime);
-		LPUART_RTOS_Send(&handle3, &in, 1);
+		if(xSemaphoreTake(count_semaphore_tx, xBlockTime)){
+			xQueueReceive(uartTxQueue, &in, xBlockTime);
+			LPUART_RTOS_Send(&handle3, &in, 1);
+			PRINTF("TX: took semaphore!.\r\n");
+		}
+		else{
+			PRINTF("TX: semaphore unavailable!.\r\n");
+		}
 	}
 
 }
@@ -187,15 +186,25 @@ void process_task(void *pvParameters)
     size_t n = 0;
 	const TickType_t xBlockTime = pdMS_TO_TICKS(200);
 	char in;
+	char buffer[32];
 
 	while(1){
-		xSemaphoreTake(count_semaphore_rx, xBlockTime);
-		xQueueReceive(uartRxQueue, &in, xBlockTime);
-		//do the processing
+		//sprintf(buffer,"Count = %d\n",(int)uxSemaphoreGetCount( count_semaphore_rx ));
+		//PRINTF("process event!.\r\n");
+		//PRINTF("%d\n",(int)uxSemaphoreGetCount( count_semaphore_rx ));
+		if(xSemaphoreTake(count_semaphore_rx, xBlockTime)){
+			PRINTF("RX: took semaphore!.\r\n");
 
-		//
-		if((xQueueSendToBack(uartTxQueue, &in, xBlockTime)) == pdPASS ){
-			xSemaphoreGive(count_semaphore_tx);
+			xQueueReceive(uartRxQueue, &in, xBlockTime);
+			//do the processing
+
+			//
+			if((xQueueSendToBack(uartTxQueue, &in, xBlockTime)) == pdPASS ){
+				xSemaphoreGive(count_semaphore_tx);
+			}
+		}
+		else{
+			PRINTF("RX: semaphore unavailable!.\r\n");
 		}
 
 	}
