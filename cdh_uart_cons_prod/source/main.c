@@ -79,11 +79,10 @@ TaskHandle_t debugIMG_TaskHandle;
 int main(void)
 {
     BOARD_ConfigMPU();
-    //BOARD_InitPins(); //ERROR!
     BOARD_InitBootPeripherals();
     BOARD_InitBootPins();
     BOARD_BootClockRUN();
-    BOARD_InitDebugConsole(); //this uses UART1 to print stuff back
+    //BOARD_InitDebugConsole(); //this uses UART1 to print stuff back
 
     init_tasks();
 
@@ -95,7 +94,8 @@ int main(void)
 
     // (thought:)send the EPS system signal to restart the OBC? since it encountered an error
 
-    for (;;);
+    for (;;)
+    	;
 }
 
 /*******************************************************************************

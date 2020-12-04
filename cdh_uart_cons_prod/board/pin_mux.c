@@ -102,11 +102,39 @@ void BOARD_InitPins(void) {
 //      IOMUXC_GPIO_B0_07_GPIO2_IO07,           /* GPIO_B0_07 is configured as GPIO2_IO07 */
 //      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
-      IOMUXC_GPIO_B0_08_LPUART3_TX,           /* GPIO_B0_08 is configured as LPUART3_TX */
+	  IOMUXC_GPIO_AD_B1_06_LPUART3_TX,           /* GPIO_B0_08 is configured as LPUART3_TX */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
-      IOMUXC_GPIO_B0_09_LPUART3_RX,           /* GPIO_B0_09 is configured as LPUART3_RX */
+	  IOMUXC_GPIO_AD_B1_07_LPUART3_RX,           /* GPIO_B0_09 is configured as LPUART3_RX */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_B1_06_LPUART3_TX,        /* GPIO_AD_B1_06 PAD functional properties : */
+          0x10B0u);                               /* Slew Rate Field: Slow Slew Rate
+                                                     Drive Strength Field: R0/6
+                                                     Speed Field: medium(100MHz)
+                                                     Open Drain Enable Field: Open Drain Disabled
+                                                     Pull / Keep Enable Field: Pull/Keeper Enabled
+                                                     Pull / Keep Select Field: Keeper
+                                                     Pull Up / Down Config. Field: 100K Ohm Pull Down
+
+                                                     Hyst. Enable Field: Hysteresis Disabled */
+      IOMUXC_SetPinConfig(
+      	IOMUXC_GPIO_AD_B1_07_LPUART3_RX,        /* GPIO_AD_B1_07 PAD functional properties : */
+          0x10B0u);                               /* Slew Rate Field: Slow Slew Rate
+                                                     Drive Strength Field: R0/6
+                                                     Speed Field: medium(100MHz)
+                                                     Open Drain Enable Field: Open Drain Disabled
+                                                     Pull / Keep Enable Field: Pull/Keeper Enabled
+                                                     Pull / Keep Select Field: Keeper
+                                                     Pull Up / Down Config. Field: 100K Ohm Pull Down
+                                                     Hyst. Enable Field: Hysteresis Disabled */
+
+
+
+
+
+
 //  IOMUXC_SetPinMux(
 //      IOMUXC_GPIO_B0_10_GPIO2_IO10,           /* GPIO_B0_10 is configured as GPIO2_IO10 */
 //      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
