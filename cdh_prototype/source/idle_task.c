@@ -50,23 +50,22 @@ void idle_task(void *pvParameters)
 
 		PRINTF("entered determineMode_task.\r\n");
 
+
 		// TODO: Create a task to get the voltage from EPS system through I2C Communication
 		// voltage will be between 6.144 and 8.26
-		voltage = 7.5; // the voltage value that we get from the EPS
 
 		// Idle Mode: 6.144 < voltage <= 7.9
-		if (voltage <= 7.4 ) { // what if we dont get a voltage value
+		if (voltage <= 7.4 ) {
 
 			mode = 0;
+			//TODO: switch to low power run
 
-			// no more health check ups needed
-			// start idle mode
-			// set the corresponding flags
 
 		// Safe Mode: 7.4 < voltage <= 7.9
 		} else if (voltage <= 7.9 && voltage > 7.4) {
 
 			mode = 1;
+			//TODO: switch to low power run
 
 //			// do COM health check up
 //			if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkCOM_TaskHandle) != pdPASS) {
@@ -96,6 +95,8 @@ void idle_task(void *pvParameters)
 		} else {
 
 			mode = 2;
+			//TODO: switch to overdrive run mode
+
 //
 //			// do COM health check up
 //			if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkCOM_TaskHandle) != pdPASS) {
