@@ -1,0 +1,3 @@
+system_MIMXRT1021.c:69:6:SystemInit	24	static
+system_MIMXRT1021.c:132:6:SystemCoreClockUpdate	32	static
+system_MIMXRT1021.c:226:29:SystemInitHook	4	static

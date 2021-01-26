@@ -1,0 +1,9 @@
+mpu_armv7.h:191:22:ARM_MPU_Enable	16	static
+mpu_armv7.h:203:22:ARM_MPU_Disable	4	static
+fsl_clock.h:910:24:CLOCK_GetMux	16	static
+fsl_clock.h:946:24:CLOCK_GetDiv	16	static
+fsl_clock.h:1007:24:CLOCK_GetOscFreq	4	static
+fsl_debug_console.h:134:24:DbgConsole_Init	24	static
+board.c:25:10:BOARD_DebugConsoleSrcFreq	24	static
+board.c:44:6:BOARD_InitDebugConsole	16	static
+board.c:52:6:BOARD_ConfigMPU	48	static
