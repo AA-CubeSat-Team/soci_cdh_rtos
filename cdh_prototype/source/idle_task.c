@@ -14,6 +14,7 @@
 
 #include "idle_task.h"
 #include "clock_config.h"
+#include "eps.h"
 
 
 void idle_task(void *pvParameters)
@@ -42,6 +43,7 @@ void idle_task(void *pvParameters)
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
+	//i2c_eps_batteryModuleStatus();
 
 	for (;;) {
 

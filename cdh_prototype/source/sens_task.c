@@ -15,6 +15,7 @@
 
 void sens_task(void *pvParameters)
 {
+	// Question: Can we read all sensors, calculate the response and deliver the response to actuators with the
 
 	// TODO: Can we move structs sens_meas, act_meas etc. to sens_task.c? Does any other task use these values?
 	extern bool g_sunSensActive, g_magSensActive, g_phdSensActive, g_mtqSensActive, g_rwaSensActive;
