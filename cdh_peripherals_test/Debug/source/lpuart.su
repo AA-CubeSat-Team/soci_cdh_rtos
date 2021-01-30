@@ -1,3 +1,4 @@
+core_cm7.h:2013:22:__NVIC_SetPriority	16	static
 lpuart.c:80:6:init_uart_tasks	16	static
 lpuart.c:109:6:uart3_task	32	static
 lpuart.c:146:6:uart6_task	32	static

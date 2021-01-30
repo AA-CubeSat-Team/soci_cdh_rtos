@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2019 NXP
+ * Copyright 2017 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -18,18 +18,10 @@ achieve better performance, it is depend on the IDE Floating point settings, if 
 in IDE, clock_64b_t will switch to double type automatically. only support IAR and MDK here */
 #if __FPU_USED
 
-#if (defined(__ICCARM__))
+#if ((defined(__ICCARM__)) || (defined(__GNUC__)))
 
 #if (__ARMVFP__ >= __ARMFPV5__) && \
     (__ARM_FP == 0xE) /*0xe implies support for half, single and double precision operations*/
-typedef double clock_64b_t;
-#else
-typedef uint64_t clock_64b_t;
-#endif
-
-#elif (defined(__GNUC__))
-
-#if (__ARM_FP == 0xE) /*0xe implies support for half, single and double precision operations*/
 typedef double clock_64b_t;
 #else
 typedef uint64_t clock_64b_t;
@@ -80,7 +72,7 @@ static uint32_t CLOCK_GetPeriphClkFreq(void)
     uint32_t freq;
 
     /* Periph_clk2_clk ---> Periph_clk */
-    if ((CCM->CBCDR & CCM_CBCDR_PERIPH_CLK_SEL_MASK) != 0U)
+    if (CCM->CBCDR & CCM_CBCDR_PERIPH_CLK_SEL_MASK)
     {
         switch (CCM->CBCMR & CCM_CBCMR_PERIPH_CLK2_SEL_MASK)
         {
@@ -161,11 +153,11 @@ void CLOCK_InitExternalClk(bool bypassXtalOsc)
     assert(!bypassXtalOsc);
 
     CCM_ANALOG->MISC0_CLR = CCM_ANALOG_MISC0_XTAL_24M_PWD_MASK; /* Power up */
-    while ((XTALOSC24M->LOWPWR_CTRL & XTALOSC24M_LOWPWR_CTRL_XTALOSC_PWRUP_STAT_MASK) == 0U)
+    while ((XTALOSC24M->LOWPWR_CTRL & XTALOSC24M_LOWPWR_CTRL_XTALOSC_PWRUP_STAT_MASK) == 0)
     {
     }
     CCM_ANALOG->MISC0_SET = CCM_ANALOG_MISC0_OSC_XTALOK_EN_MASK; /* detect freq */
-    while ((CCM_ANALOG->MISC0 & CCM_ANALOG_MISC0_OSC_XTALOK_MASK) == 0UL)
+    while ((CCM_ANALOG->MISC0 & CCM_ANALOG_MISC0_OSC_XTALOK_MASK) == 0)
     {
     }
     CCM_ANALOG->MISC0_CLR = CCM_ANALOG_MISC0_OSC_XTALOK_EN_MASK;
@@ -194,13 +186,9 @@ void CLOCK_DeinitExternalClk(void)
 void CLOCK_SwitchOsc(clock_osc_t osc)
 {
     if (osc == kCLOCK_RcOsc)
-    {
         XTALOSC24M->LOWPWR_CTRL_SET = XTALOSC24M_LOWPWR_CTRL_SET_OSC_SEL_MASK;
-    }
     else
-    {
         XTALOSC24M->LOWPWR_CTRL_CLR = XTALOSC24M_LOWPWR_CTRL_CLR_OSC_SEL_MASK;
-    }
 }
 
 /*!
@@ -239,10 +227,10 @@ uint32_t CLOCK_GetSemcFreq(void)
     uint32_t freq;
 
     /* SEMC alternative clock ---> SEMC Clock */
-    if ((CCM->CBCDR & CCM_CBCDR_SEMC_CLK_SEL_MASK) != 0U)
+    if (CCM->CBCDR & CCM_CBCDR_SEMC_CLK_SEL_MASK)
     {
         /* PLL3 PFD1 ---> SEMC alternative clock ---> SEMC Clock */
-        if ((CCM->CBCDR & CCM_CBCDR_SEMC_ALT_CLK_SEL_MASK) != 0U)
+        if (CCM->CBCDR & CCM_CBCDR_SEMC_ALT_CLK_SEL_MASK)
         {
             freq = CLOCK_GetUsb1PfdFreq(kCLOCK_Pfd1);
         }
@@ -283,14 +271,14 @@ uint32_t CLOCK_GetPerClkFreq(void)
     uint32_t freq;
 
     /* Osc_clk ---> PER Clock*/
-    if ((CCM->CSCMR1 & CCM_CSCMR1_PERCLK_CLK_SEL_MASK) != 0U)
+    if (CCM->CSCMR1 & CCM_CSCMR1_PERCLK_CLK_SEL_MASK)
     {
         freq = CLOCK_GetOscFreq();
     }
     /* Periph_clk ---> AHB Clock ---> IPG Clock ---> PER Clock */
     else
     {
-        freq = CLOCK_GetIpgFreq();
+        freq = CLOCK_GetFreq(kCLOCK_IpgClk);
     }
 
     freq /= (((CCM->CSCMR1 & CCM_CSCMR1_PERCLK_PODF_MASK) >> CCM_CSCMR1_PERCLK_PODF_SHIFT) + 1U);
@@ -405,12 +393,10 @@ uint32_t CLOCK_GetFreq(clock_name_t name)
  */
 bool CLOCK_EnableUsbhs0Clock(clock_usb_src_t src, uint32_t freq)
 {
-    uint32_t i;
     CCM->CCGR6 |= CCM_CCGR6_CG0_MASK;
     USB1->USBCMD |= USBHS_USBCMD_RST_MASK;
-
-    /* Add a delay between RST and RS so make sure there is a DP pullup sequence*/
-    for (i = 0; i < 400000U; i++)
+    for (volatile uint32_t i = 0; i < 400000;
+         i++) /* Add a delay between RST and RS so make sure there is a DP pullup sequence*/
     {
         __ASM("nop");
     }
@@ -432,12 +418,10 @@ bool CLOCK_EnableUsbhs0Clock(clock_usb_src_t src, uint32_t freq)
  */
 bool CLOCK_EnableUsbhs1Clock(clock_usb_src_t src, uint32_t freq)
 {
-    uint32_t i = 0;
     CCM->CCGR6 |= CCM_CCGR6_CG0_MASK;
     USB2->USBCMD |= USBHS_USBCMD_RST_MASK;
-
-    /* Add a delay between RST and RS so make sure there is a DP pullup sequence*/
-    for (i = 0; i < 400000U; i++)
+    for (volatile uint32_t i = 0; i < 400000;
+         i++) /* Add a delay between RST and RS so make sure there is a DP pullup sequence*/
     {
         __ASM("nop");
     }
@@ -458,7 +442,7 @@ bool CLOCK_EnableUsbhs1Clock(clock_usb_src_t src, uint32_t freq)
 bool CLOCK_EnableUsbhs0PhyPllClock(clock_usb_phy_src_t src, uint32_t freq)
 {
     const clock_usb_pll_config_t g_ccmConfigUsbPll = {.loopDivider = 0U};
-    if ((CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_USB1_ENABLE_MASK) != 0U)
+    if (CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_USB1_ENABLE_MASK)
     {
         CCM_ANALOG->PLL_USB1 |= CCM_ANALOG_PLL_USB1_EN_USB_CLKS_MASK;
     }
@@ -502,7 +486,7 @@ void CLOCK_InitArmPll(const clock_arm_pll_config_t *config)
         (CCM_ANALOG->PLL_ARM & (~(CCM_ANALOG_PLL_ARM_DIV_SELECT_MASK | CCM_ANALOG_PLL_ARM_POWERDOWN_MASK))) |
         CCM_ANALOG_PLL_ARM_ENABLE_MASK | CCM_ANALOG_PLL_ARM_DIV_SELECT(config->loopDivider);
 
-    while ((CCM_ANALOG->PLL_ARM & CCM_ANALOG_PLL_ARM_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_ARM & CCM_ANALOG_PLL_ARM_LOCK_MASK) == 0)
     {
     }
 
@@ -536,7 +520,7 @@ void CLOCK_InitSysPll(const clock_sys_pll_config_t *config)
         CCM_ANALOG_PLL_SYS_ENABLE_MASK | CCM_ANALOG_PLL_SYS_DIV_SELECT(config->loopDivider);
 
     /* Initialize the fractional mode */
-    CCM_ANALOG->PLL_SYS_NUM   = CCM_ANALOG_PLL_SYS_NUM_A(config->numerator);
+    CCM_ANALOG->PLL_SYS_NUM = CCM_ANALOG_PLL_SYS_NUM_A(config->numerator);
     CCM_ANALOG->PLL_SYS_DENOM = CCM_ANALOG_PLL_SYS_DENOM_B(config->denominator);
 
     /* Initialize the spread spectrum mode */
@@ -544,7 +528,7 @@ void CLOCK_InitSysPll(const clock_sys_pll_config_t *config)
                              CCM_ANALOG_PLL_SYS_SS_ENABLE(config->ss_enable) |
                              CCM_ANALOG_PLL_SYS_SS_STOP(config->ss_stop);
 
-    while ((CCM_ANALOG->PLL_SYS & CCM_ANALOG_PLL_SYS_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_SYS & CCM_ANALOG_PLL_SYS_LOCK_MASK) == 0)
     {
     }
 
@@ -577,7 +561,7 @@ void CLOCK_InitUsb1Pll(const clock_usb_pll_config_t *config)
                            CCM_ANALOG_PLL_USB1_ENABLE_MASK | CCM_ANALOG_PLL_USB1_POWER_MASK |
                            CCM_ANALOG_PLL_USB1_EN_USB_CLKS_MASK | CCM_ANALOG_PLL_USB1_DIV_SELECT(config->loopDivider);
 
-    while ((CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_USB1_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_USB1_LOCK_MASK) == 0)
     {
     }
 
@@ -610,7 +594,7 @@ void CLOCK_InitUsb2Pll(const clock_usb_pll_config_t *config)
                            CCM_ANALOG_PLL_USB2_ENABLE_MASK | CCM_ANALOG_PLL_USB2_POWER_MASK |
                            CCM_ANALOG_PLL_USB2_EN_USB_CLKS_MASK | CCM_ANALOG_PLL_USB2_DIV_SELECT(config->loopDivider);
 
-    while ((CCM_ANALOG->PLL_USB2 & CCM_ANALOG_PLL_USB2_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_USB2 & CCM_ANALOG_PLL_USB2_LOCK_MASK) == 0)
     {
     }
 
@@ -642,7 +626,7 @@ void CLOCK_InitAudioPll(const clock_audio_pll_config_t *config)
     CCM_ANALOG->PLL_AUDIO = (CCM_ANALOG->PLL_AUDIO & (~CCM_ANALOG_PLL_AUDIO_BYPASS_CLK_SRC_MASK)) |
                             CCM_ANALOG_PLL_AUDIO_BYPASS_MASK | CCM_ANALOG_PLL_AUDIO_BYPASS_CLK_SRC(config->src);
 
-    CCM_ANALOG->PLL_AUDIO_NUM   = CCM_ANALOG_PLL_AUDIO_NUM_A(config->numerator);
+    CCM_ANALOG->PLL_AUDIO_NUM = CCM_ANALOG_PLL_AUDIO_NUM_A(config->numerator);
     CCM_ANALOG->PLL_AUDIO_DENOM = CCM_ANALOG_PLL_AUDIO_DENOM_B(config->denominator);
 
     /*
@@ -697,7 +681,7 @@ void CLOCK_InitAudioPll(const clock_audio_pll_config_t *config)
 
     CCM_ANALOG->PLL_AUDIO = pllAudio;
 
-    while ((CCM_ANALOG->PLL_AUDIO & CCM_ANALOG_PLL_AUDIO_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_AUDIO & CCM_ANALOG_PLL_AUDIO_LOCK_MASK) == 0)
     {
     }
 
@@ -710,7 +694,7 @@ void CLOCK_InitAudioPll(const clock_audio_pll_config_t *config)
  */
 void CLOCK_DeinitAudioPll(void)
 {
-    CCM_ANALOG->PLL_AUDIO = (uint32_t)CCM_ANALOG_PLL_AUDIO_POWERDOWN_MASK;
+    CCM_ANALOG->PLL_AUDIO = CCM_ANALOG_PLL_AUDIO_POWERDOWN_MASK;
 }
 
 /*!
@@ -729,7 +713,7 @@ void CLOCK_InitVideoPll(const clock_video_pll_config_t *config)
     CCM_ANALOG->PLL_VIDEO = (CCM_ANALOG->PLL_VIDEO & (~CCM_ANALOG_PLL_VIDEO_BYPASS_CLK_SRC_MASK)) |
                             CCM_ANALOG_PLL_VIDEO_BYPASS_MASK | CCM_ANALOG_PLL_VIDEO_BYPASS_CLK_SRC(config->src);
 
-    CCM_ANALOG->PLL_VIDEO_NUM   = CCM_ANALOG_PLL_VIDEO_NUM_A(config->numerator);
+    CCM_ANALOG->PLL_VIDEO_NUM = CCM_ANALOG_PLL_VIDEO_NUM_A(config->numerator);
     CCM_ANALOG->PLL_VIDEO_DENOM = CCM_ANALOG_PLL_VIDEO_DENOM_B(config->denominator);
 
     /*
@@ -783,7 +767,7 @@ void CLOCK_InitVideoPll(const clock_video_pll_config_t *config)
 
     CCM_ANALOG->PLL_VIDEO = pllVideo;
 
-    while ((CCM_ANALOG->PLL_VIDEO & CCM_ANALOG_PLL_VIDEO_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_VIDEO & CCM_ANALOG_PLL_VIDEO_LOCK_MASK) == 0)
     {
     }
 
@@ -828,7 +812,7 @@ void CLOCK_InitEnetPll(const clock_enet_pll_config_t *config)
         enet_pll;
 
     /* Wait for stable */
-    while ((CCM_ANALOG->PLL_ENET & CCM_ANALOG_PLL_ENET_LOCK_MASK) == 0UL)
+    while ((CCM_ANALOG->PLL_ENET & CCM_ANALOG_PLL_ENET_LOCK_MASK) == 0)
     {
     }
 
@@ -891,10 +875,10 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
             break;
         case kCLOCK_PllSys:
             /* PLL output frequency = Fref * (DIV_SELECT + NUM/DENOM). */
-            freqTmp = ((clock_64b_t)freq * ((clock_64b_t)(CCM_ANALOG->PLL_SYS_NUM)));
-            freqTmp /= ((clock_64b_t)(CCM_ANALOG->PLL_SYS_DENOM));
+            freqTmp = ((clock_64b_t)freq * ((clock_64b_t)(CCM_ANALOG->PLL_SYS_NUM))) /
+                      ((clock_64b_t)(CCM_ANALOG->PLL_SYS_DENOM));
 
-            if ((CCM_ANALOG->PLL_SYS & CCM_ANALOG_PLL_SYS_DIV_SELECT_MASK) != 0U)
+            if (CCM_ANALOG->PLL_SYS & CCM_ANALOG_PLL_SYS_DIV_SELECT_MASK)
             {
                 freq *= 22U;
             }
@@ -907,7 +891,7 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
             break;
 
         case kCLOCK_PllUsb1:
-            freq = (freq * (((CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_USB1_DIV_SELECT_MASK) != 0UL) ? 22U : 20U));
+            freq = (freq * ((CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_USB1_DIV_SELECT_MASK) ? 22U : 20U));
             break;
 
         case kCLOCK_PllAudio:
@@ -915,8 +899,8 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
             divSelect =
                 (CCM_ANALOG->PLL_AUDIO & CCM_ANALOG_PLL_AUDIO_DIV_SELECT_MASK) >> CCM_ANALOG_PLL_AUDIO_DIV_SELECT_SHIFT;
 
-            freqTmp = ((clock_64b_t)freq * ((clock_64b_t)(CCM_ANALOG->PLL_AUDIO_NUM)));
-            freqTmp /= ((clock_64b_t)(CCM_ANALOG->PLL_AUDIO_DENOM));
+            freqTmp = ((clock_64b_t)freq * ((clock_64b_t)(CCM_ANALOG->PLL_AUDIO_NUM))) /
+                      ((clock_64b_t)(CCM_ANALOG->PLL_AUDIO_DENOM));
 
             freq = freq * divSelect + (uint32_t)freqTmp;
 
@@ -946,12 +930,7 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
                     freq = freq >> 1U;
                     break;
 
-                case CCM_ANALOG_PLL_AUDIO_POST_DIV_SELECT(2U):
-                    freq = freq >> 0U;
-                    break;
-
                 default:
-                    assert(false);
                     break;
             }
 
@@ -965,13 +944,7 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
                     freq >>= 1U;
                     break;
 
-                case CCM_ANALOG_MISC2_AUDIO_DIV_MSB(0) | CCM_ANALOG_MISC2_AUDIO_DIV_LSB(0):
-                case CCM_ANALOG_MISC2_AUDIO_DIV_MSB(1) | CCM_ANALOG_MISC2_AUDIO_DIV_LSB(0):
-                    freq >>= 0U;
-                    break;
-
                 default:
-                    assert(false);
                     break;
             }
             break;
@@ -981,8 +954,9 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
             divSelect =
                 (CCM_ANALOG->PLL_VIDEO & CCM_ANALOG_PLL_VIDEO_DIV_SELECT_MASK) >> CCM_ANALOG_PLL_VIDEO_DIV_SELECT_SHIFT;
 
-            freqTmp = ((clock_64b_t)freq * ((clock_64b_t)(CCM_ANALOG->PLL_VIDEO_NUM)));
-            freqTmp /= ((clock_64b_t)(CCM_ANALOG->PLL_VIDEO_DENOM));
+            freqTmp = ((clock_64b_t)freq * ((clock_64b_t)(CCM_ANALOG->PLL_VIDEO_NUM))) /
+                      ((clock_64b_t)(CCM_ANALOG->PLL_VIDEO_DENOM));
+
             freq = freq * divSelect + (uint32_t)freqTmp;
 
             /* VIDEO PLL output = PLL output frequency / POSTDIV. */
@@ -1011,32 +985,21 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
                     freq = freq >> 1U;
                     break;
 
-                case CCM_ANALOG_PLL_VIDEO_POST_DIV_SELECT(2U):
-                    freq = freq >> 0U;
-                    break;
-
                 default:
-                    assert(false);
                     break;
             }
 
             switch (CCM_ANALOG->MISC2 & CCM_ANALOG_MISC2_VIDEO_DIV_MASK)
             {
-                case CCM_ANALOG_MISC2_VIDEO_DIV(3U):
+                case CCM_ANALOG_MISC2_VIDEO_DIV(3):
                     freq >>= 2U;
                     break;
 
-                case CCM_ANALOG_MISC2_VIDEO_DIV(1U):
+                case CCM_ANALOG_MISC2_VIDEO_DIV(1):
                     freq >>= 1U;
                     break;
 
-                case CCM_ANALOG_MISC2_VIDEO_DIV(0U):
-                case CCM_ANALOG_MISC2_VIDEO_DIV(2U):
-                    freq >>= 0U;
-                    break;
-
                 default:
-                    assert(false);
                     break;
             }
             break;
@@ -1052,7 +1015,7 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
             break;
 
         case kCLOCK_PllUsb2:
-            freq = (freq * (((CCM_ANALOG->PLL_USB2 & CCM_ANALOG_PLL_USB2_DIV_SELECT_MASK) != 0U) ? 22U : 20U));
+            freq = (freq * ((CCM_ANALOG->PLL_USB2 & CCM_ANALOG_PLL_USB2_DIV_SELECT_MASK) ? 22U : 20U));
             break;
         default:
             freq = 0U;
@@ -1078,14 +1041,13 @@ void CLOCK_InitSysPfd(clock_pfd_t pfd, uint8_t pfdFrac)
     uint32_t pfd528;
 
     pfd528 = CCM_ANALOG->PFD_528 &
-             ~(((uint32_t)((uint32_t)CCM_ANALOG_PFD_528_PFD0_CLKGATE_MASK | CCM_ANALOG_PFD_528_PFD0_FRAC_MASK)
-                << (8UL * pfdIndex)));
+             ~((CCM_ANALOG_PFD_528_PFD0_CLKGATE_MASK | CCM_ANALOG_PFD_528_PFD0_FRAC_MASK) << (8 * pfdIndex));
 
     /* Disable the clock output first. */
-    CCM_ANALOG->PFD_528 = pfd528 | ((uint32_t)CCM_ANALOG_PFD_528_PFD0_CLKGATE_MASK << (8UL * pfdIndex));
+    CCM_ANALOG->PFD_528 = pfd528 | (CCM_ANALOG_PFD_528_PFD0_CLKGATE_MASK << (8 * pfdIndex));
 
     /* Set the new value and enable output. */
-    CCM_ANALOG->PFD_528 = pfd528 | (CCM_ANALOG_PFD_528_PFD0_FRAC(pfdFrac) << (8UL * pfdIndex));
+    CCM_ANALOG->PFD_528 = pfd528 | (CCM_ANALOG_PFD_528_PFD0_FRAC(pfdFrac) << (8 * pfdIndex));
 }
 
 /*!
@@ -1097,7 +1059,7 @@ void CLOCK_InitSysPfd(clock_pfd_t pfd, uint8_t pfdFrac)
  */
 void CLOCK_DeinitSysPfd(clock_pfd_t pfd)
 {
-    CCM_ANALOG->PFD_528 |= (uint32_t)CCM_ANALOG_PFD_528_PFD0_CLKGATE_MASK << (8U * (uint8_t)pfd);
+    CCM_ANALOG->PFD_528 |= CCM_ANALOG_PFD_528_PFD0_CLKGATE_MASK << (8 * pfd);
 }
 
 /*!
@@ -1116,14 +1078,13 @@ void CLOCK_InitUsb1Pfd(clock_pfd_t pfd, uint8_t pfdFrac)
     uint32_t pfd480;
 
     pfd480 = CCM_ANALOG->PFD_480 &
-             ~(((uint32_t)((uint32_t)CCM_ANALOG_PFD_480_PFD0_CLKGATE_MASK | CCM_ANALOG_PFD_480_PFD0_FRAC_MASK)
-                << (8UL * pfdIndex)));
+             ~((CCM_ANALOG_PFD_480_PFD0_CLKGATE_MASK | CCM_ANALOG_PFD_480_PFD0_FRAC_MASK) << (8 * pfdIndex));
 
     /* Disable the clock output first. */
-    CCM_ANALOG->PFD_480 = pfd480 | ((uint32_t)CCM_ANALOG_PFD_480_PFD0_CLKGATE_MASK << (8UL * pfdIndex));
+    CCM_ANALOG->PFD_480 = pfd480 | (CCM_ANALOG_PFD_480_PFD0_CLKGATE_MASK << (8 * pfdIndex));
 
     /* Set the new value and enable output. */
-    CCM_ANALOG->PFD_480 = pfd480 | (CCM_ANALOG_PFD_480_PFD0_FRAC(pfdFrac) << (8UL * pfdIndex));
+    CCM_ANALOG->PFD_480 = pfd480 | (CCM_ANALOG_PFD_480_PFD0_FRAC(pfdFrac) << (8 * pfdIndex));
 }
 
 /*!
@@ -1135,7 +1096,7 @@ void CLOCK_InitUsb1Pfd(clock_pfd_t pfd, uint8_t pfdFrac)
  */
 void CLOCK_DeinitUsb1Pfd(clock_pfd_t pfd)
 {
-    CCM_ANALOG->PFD_480 |= (uint32_t)CCM_ANALOG_PFD_480_PFD0_CLKGATE_MASK << (8UL * (uint8_t)pfd);
+    CCM_ANALOG->PFD_480 |= CCM_ANALOG_PFD_480_PFD0_CLKGATE_MASK << (8 * pfd);
 }
 
 /*!

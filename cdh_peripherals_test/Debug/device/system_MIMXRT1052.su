@@ -1,3 +1,5 @@
-system_MIMXRT1052.c:73:6:SystemInit	24	static
+core_cm7.h:2218:22:SCB_EnableICache	4	static
+core_cm7.h:2270:22:SCB_EnableDCache	24	static
+system_MIMXRT1052.c:73:6:SystemInit	8	static
 system_MIMXRT1052.c:128:6:SystemCoreClockUpdate	32	static
 system_MIMXRT1052.c:233:29:SystemInitHook	4	static
