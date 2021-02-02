@@ -19,6 +19,7 @@
 
 void idle_task(void *pvParameters)
 {
+	PRINTF("initialize idle.\r\n");
 	extern bool g_imagActive;
 	extern bool g_commActive;
 	extern bool g_sunSensActive;
@@ -43,14 +44,26 @@ void idle_task(void *pvParameters)
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
-	//i2c_eps_batteryModuleStatus();
+	//I2C
+//	/*Clock setting for LPI2C*/
+//	    CLOCK_SetMux(kCLOCK_Lpi2cMux, LPI2C_CLOCK_SOURCE_SELECT);
+//	    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, LPI2C_CLOCK_SOURCE_DIVIDER);
+
+
+//	LPI2C_RTOS_Init(lpi2c_rtos_handle_t *handle,
+//	                         LPI2C_Type *base,
+//	                         const lpi2c_master_config_t *masterConfig,
+//	                         uint32_t srcClock_Hz);
+//	//i2c_eps_batteryModuleStatus();
+
+	// power up the module
 
 	for (;;) {
 
 		// gets the last wake time
 		TickType_t xLastWakeTime = xTaskGetTickCount();
 
-		PRINTF("entered determineMode_task.\r\n");
+		PRINTF("idle work\r\n");
 
 
 		// TODO: Create a task to get the voltage from EPS system through I2C Communication

@@ -97,26 +97,26 @@ int main(void)
             ;
     }
     if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, NULL) !=
-            pdPASS)
-        {
-            PRINTF("Task creation failed!.\r\n");
-            while (1)
-                ;
-        }
+		pdPASS)
+	{
+		PRINTF("Task creation failed!.\r\n");
+		while (1)
+			;
+	}
     if (xTaskCreate(comm_task, "comm_task", configMINIMAL_STACK_SIZE + 100, NULL, comm_task_PRIORITY, NULL) !=
-            pdPASS)
-        {
-            PRINTF("Task creation failed!.\r\n");
-            while (1)
-                ;
-        }
+		pdPASS)
+	{
+		PRINTF("Task creation failed!.\r\n");
+		while (1)
+			;
+	}
     if (xTaskCreate(sens_task, "sens_task", configMINIMAL_STACK_SIZE + 100, NULL, sens_task_PRIORITY, NULL) !=
-            pdPASS)
-        {
-            PRINTF("Task creation failed!.\r\n");
-            while (1)
-                ;
-        }
+		pdPASS)
+	{
+		PRINTF("Task creation failed!.\r\n");
+		while (1)
+			;
+	}
 
     vTaskStartScheduler();
     for (;;)

@@ -9,12 +9,15 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include xip/subdir.mk
+-include wrappers/subdir.mk
 -include utilities/subdir.mk
+-include tasks/subdir.mk
 -include startup/subdir.mk
 -include source/subdir.mk
 -include freertos/freertos_kernel/portable/MemMang/subdir.mk
 -include freertos/freertos_kernel/portable/GCC/ARM_CM4F/subdir.mk
 -include freertos/freertos_kernel/subdir.mk
+-include drivers/freertos/subdir.mk
 -include drivers/subdir.mk
 -include device/subdir.mk
 -include component/uart/subdir.mk

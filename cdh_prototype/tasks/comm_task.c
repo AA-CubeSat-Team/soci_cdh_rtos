@@ -22,10 +22,14 @@ void comm_task(void *pvParameters)
 
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
+	PRINTF("initialize comm.\r\n");
+
 
 	for (;;) {
 
 		TickType_t xLastWakeTime = xTaskGetTickCount();
+		PRINTF("comm work.\r\n");
+
 		if(g_commActive == true){
 
 

@@ -21,9 +21,12 @@ void imag_task(void *pvParameters)
 
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
+	PRINTF("initialize imag.\r\n");
 
 	for (;;) {
 		TickType_t xLastWakeTime = xTaskGetTickCount();
+		PRINTF("imag work\r\n");
+
 		if(g_imagActive == true){
 
 		}

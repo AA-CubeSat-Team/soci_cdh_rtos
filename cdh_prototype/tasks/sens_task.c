@@ -23,11 +23,15 @@ void sens_task(void *pvParameters)
 	// variables to use with sens task
 
 	// variable to store ticks equivalent to 500 ms
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
+	const TickType_t xDelayms = pdMS_TO_TICKS( 10 );
+	PRINTF("initialize sens.\r\n");
+
 
 	for (;;) {
 
 		TickType_t xLastWakeTime = xTaskGetTickCount();
+		PRINTF("sens work.\r\n");
+
 		if(g_sunSensActive == true){
 			//sens_meas.sun_meas_ss_deg = svfds;
 		}
