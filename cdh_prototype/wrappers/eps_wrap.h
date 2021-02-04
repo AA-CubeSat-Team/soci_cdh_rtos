@@ -1,3 +1,13 @@
+/*
+ *
+ * GPIO_AD_B1_14	I2C1_SCL
+ * GPIO_AD_B1_15	I2C1_SDA
+ *
+ *
+ *
+ * */
+
+
 #pragma once
 #include <stdint.h>
 #include "stdbool.h"

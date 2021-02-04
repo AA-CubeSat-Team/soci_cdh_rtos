@@ -1,6 +1,7 @@
 
 
 /* FreeRTOS kernel includes. */
+#include <eps_wrap.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -14,7 +15,6 @@
 
 #include "idle_task.h"
 #include "clock_config.h"
-#include "eps.h"
 
 
 void idle_task(void *pvParameters)

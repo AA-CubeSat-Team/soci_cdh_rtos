@@ -12,6 +12,7 @@
 #include "board.h"
 
 #include "imag_task.h"
+#include "imag_wrap.h"
 #include "clock_config.h"
 
 void imag_task(void *pvParameters)
@@ -28,7 +29,7 @@ void imag_task(void *pvParameters)
 		PRINTF("imag work\r\n");
 
 		if(g_imagActive == true){
-
+			dummyImagingFunc();
 		}
 //		else{
 //
