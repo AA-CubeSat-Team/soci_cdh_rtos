@@ -24,16 +24,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>doc/readme.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_EVKB_IMXRT1050/boards/evkbimxrt1050/rtos_examples/freertos_hello/readme.txt</locationURI>
-		</link>
-		<link>
-			<name>doc/amazon-freertos/FreeRTOS/portable/readme.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_EVKB_IMXRT1050/rtos/amazon-freertos/lib/FreeRTOS/portable/readme.txt</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

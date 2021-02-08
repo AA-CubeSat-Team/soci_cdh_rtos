@@ -14,10 +14,15 @@ RM := rm -rf
 -include tasks/subdir.mk
 -include startup/subdir.mk
 -include source/subdir.mk
+-include gnc_build/soar_interface_lib_ert_rtw/subdir.mk
+-include gnc_build/soar_interface_lib0_ert_rtw/subdir.mk
+-include gnc_build/nothing_test_ert_rtw/subdir.mk
+-include gnc_build/attitude_controller_ert_rtw/subdir.mk
+-include gnc_build/Subsystem_ert_rtw/subdir.mk
+-include gnc_build/FSW_Lib_ert_rtw/subdir.mk
 -include freertos/freertos_kernel/portable/MemMang/subdir.mk
 -include freertos/freertos_kernel/portable/GCC/ARM_CM4F/subdir.mk
 -include freertos/freertos_kernel/subdir.mk
--include drivers/freertos/subdir.mk
 -include drivers/subdir.mk
 -include device/subdir.mk
 -include component/uart/subdir.mk

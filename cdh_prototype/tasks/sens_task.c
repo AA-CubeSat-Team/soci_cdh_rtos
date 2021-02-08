@@ -12,6 +12,7 @@
 
 #include "sens_task.h"
 #include "clock_config.h"
+#include "FSW_Lib_types.h"
 
 void sens_task(void *pvParameters)
 {

@@ -1,92 +1,92 @@
 utilities/fsl_debug_console.o utilities/fsl_debug_console.d: \
  ../utilities/fsl_debug_console.c \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/FreeRTOS.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/source/FreeRTOSConfig.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/projdefs.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/portable.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/deprecated_definitions.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/portable/GCC/ARM_CM4F/portmacro.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/mpu_wrappers.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/semphr.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/queue.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/task.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/list.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/task.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/FreeRTOS.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\source/FreeRTOSConfig.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/projdefs.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/portable.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/deprecated_definitions.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\portable\GCC\ARM_CM4F/portmacro.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/mpu_wrappers.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/semphr.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/queue.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/task.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/list.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/task.h \
  ../utilities/fsl_debug_console_conf.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/drivers/fsl_common.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/fsl_device_registers.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/MIMXRT1021.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/core_cm7.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/cmsis_version.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/cmsis_compiler.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/cmsis_gcc.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/mpu_armv7.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/system_MIMXRT1021.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/MIMXRT1021_features.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/drivers/fsl_clock.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/drivers/fsl_common.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\drivers/fsl_common.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/fsl_device_registers.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/MIMXRT1021.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/core_cm7.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/cmsis_version.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/cmsis_compiler.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/cmsis_gcc.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/mpu_armv7.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/system_MIMXRT1021.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/MIMXRT1021_features.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\drivers/fsl_clock.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\drivers/fsl_common.h \
  ../utilities/fsl_str.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/component/serial_manager/serial_manager.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/component/serial_manager/serial_port_uart.h \
- /Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/component/uart/uart.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\component\serial_manager/serial_manager.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\component\serial_manager/serial_port_uart.h \
+ C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\component\uart/uart.h \
  ../utilities/fsl_debug_console.h
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/FreeRTOS.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/FreeRTOS.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/source/FreeRTOSConfig.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\source/FreeRTOSConfig.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/projdefs.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/projdefs.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/portable.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/portable.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/deprecated_definitions.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/deprecated_definitions.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/portable/GCC/ARM_CM4F/portmacro.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\portable\GCC\ARM_CM4F/portmacro.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/mpu_wrappers.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/mpu_wrappers.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/semphr.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/semphr.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/queue.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/queue.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/task.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/task.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/list.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/list.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/freertos/freertos_kernel/include/task.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\freertos\freertos_kernel\include/task.h:
 
 ../utilities/fsl_debug_console_conf.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/drivers/fsl_common.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\drivers/fsl_common.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/fsl_device_registers.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/fsl_device_registers.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/MIMXRT1021.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/MIMXRT1021.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/core_cm7.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/core_cm7.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/cmsis_version.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/cmsis_version.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/cmsis_compiler.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/cmsis_compiler.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/cmsis_gcc.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/cmsis_gcc.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/CMSIS/mpu_armv7.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\CMSIS/mpu_armv7.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/system_MIMXRT1021.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/system_MIMXRT1021.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/device/MIMXRT1021_features.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\device/MIMXRT1021_features.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/drivers/fsl_clock.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\drivers/fsl_clock.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/drivers/fsl_common.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\drivers/fsl_common.h:
 
 ../utilities/fsl_str.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/component/serial_manager/serial_manager.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\component\serial_manager/serial_manager.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/component/serial_manager/serial_port_uart.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\component\serial_manager/serial_port_uart.h:
 
-/Users/stlp/Documents/MCUX_workspace/soci_cdh_rtos/cdh_prototype/component/uart/uart.h:
+C:\Users\USER\Desktop\UW\AACT\soci_cdh_rtos\cdh_prototype\component\uart/uart.h:
 
 ../utilities/fsl_debug_console.h:
