@@ -7,4 +7,22 @@
  * */
 
 
-void dummyImagingFunc();
+void testCheckStatus(char parameter);
+
+void testTakePicture();
+
+void testGetThumbnailSize();
+
+void testGetPictureSize();
+
+void testGetThumbnail();
+
+void testGetPicture();
+
+void testSetContrast();
+
+void testSetBrightness();
+
+void testSetExposure();
+
+void testSetSleepTime();
