@@ -5,9 +5,12 @@
  * It should not be assumed to be functional.
  *
  * Jerrold Erickson, 6/23/2020
+ *
+ * Pin #75 GPIO_AD_B1_14	I2C1_SCL
+ * Pin #74 GPIO_AD_B1_15	I2C1_SDA
  */
 
-#include <eps_wrap.h>
+#include "eps_wrap.h"
 #include "fsl_lpi2c.h"
 #include "fsl_lpi2c_freertos.h"
 
