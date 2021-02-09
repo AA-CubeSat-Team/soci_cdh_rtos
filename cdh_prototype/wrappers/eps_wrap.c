@@ -1,19 +1,19 @@
-///* This is a source file for testing the I2C commands required for the flight computer to
-// * communicate with the EPS board and the battery
-// *
-// * As of 6/23/2020, everything in this file is being written without any access to hardware, and is completely untested.
-// * It should not be assumed to be functional.
-// *
-// * Jerrold Erickson, 6/23/2020
-// */
-//
-//#include "eps_wrap.h"
-////#include "fsl_lpi2c.h"
-////#include "fsl_lpi2c_freertos.h"
-//
-//uint8_t g_slave_buff[I2C_DATA_LENGTH];
-//uint8_t g_master_buff[I2C_DATA_LENGTH];
-//
+/* This is a source file for testing the I2C commands required for the flight computer to
+ * communicate with the EPS board and the battery
+ *
+ * As of 6/23/2020, everything in this file is being written without any access to hardware, and is completely untested.
+ * It should not be assumed to be functional.
+ *
+ * Jerrold Erickson, 6/23/2020
+ */
+
+#include <eps_wrap.h>
+#include "fsl_lpi2c.h"
+#include "fsl_lpi2c_freertos.h"
+
+uint8_t g_slave_buff[I2C_DATA_LENGTH];
+uint8_t g_master_buff[I2C_DATA_LENGTH];
+
 //uint32_t master_rtos_handle = 0; // fake variable for RTOS stuff
 //status_t status = 0; // fake variable for RTOS stuff
 //uint8_t kLPI2C_Write = 1; // not sure where this is defined, but I think it differentiates between read/write commands
