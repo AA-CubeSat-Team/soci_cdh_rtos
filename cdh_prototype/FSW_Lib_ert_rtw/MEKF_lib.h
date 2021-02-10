@@ -26,20 +26,20 @@
 #include <string.h>
 #ifndef FSW_Lib_COMMON_INCLUDES_
 # define FSW_Lib_COMMON_INCLUDES_
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
+#include <FSW_Lib_ert_rtw/rtwtypes.h>
 #include "rtw_continuous.h"
 #include "rtw_solver.h"
 #endif                                 /* FSW_Lib_COMMON_INCLUDES_ */
 
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+#include <FSW_Lib_ert_rtw/FSW_Lib_types.h>
 
 /* Child system includes */
-#include <gnc_build/FSW_Lib_ert_rtw/CrossProdMatrix_lib.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rt_sys_MEKF_lib_1.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rt_sys_MEKF_lib_12.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rt_sys_MEKF_lib_5.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rtGetNaN.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rt_nonfinite.h>
+#include <FSW_Lib_ert_rtw/CrossProdMatrix_lib.h>
+#include <FSW_Lib_ert_rtw/rt_sys_MEKF_lib_1.h>
+#include <FSW_Lib_ert_rtw/rt_sys_MEKF_lib_12.h>
+#include <FSW_Lib_ert_rtw/rt_sys_MEKF_lib_5.h>
+#include <FSW_Lib_ert_rtw/rtGetNaN.h>
+#include <FSW_Lib_ert_rtw/rt_nonfinite.h>
 
 /* Block signals and states (default storage) for system '<S1>/MEKF_lib' */
 typedef struct {

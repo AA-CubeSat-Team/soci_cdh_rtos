@@ -3,7 +3,7 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: rt_sys_MEKF_lib_5.h
+ * File: rt_sys_MEKF_lib_1.h
  *
  * Code generated for Simulink model 'FSW_Lib'.
  *
@@ -19,21 +19,22 @@
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_rt_sys_MEKF_lib_5_h_
-#define RTW_HEADER_rt_sys_MEKF_lib_5_h_
+#ifndef RTW_HEADER_rt_sys_MEKF_lib_1_h_
+#define RTW_HEADER_rt_sys_MEKF_lib_1_h_
 #include <math.h>
 #ifndef FSW_Lib_COMMON_INCLUDES_
 # define FSW_Lib_COMMON_INCLUDES_
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
+#include <FSW_Lib_ert_rtw/rtwtypes.h>
 #include "rtw_continuous.h"
 #include "rtw_solver.h"
 #endif                                 /* FSW_Lib_COMMON_INCLUDES_ */
 
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+#include <FSW_Lib_ert_rtw/FSW_Lib_types.h>
 
-extern void NegativeTrace(const real_T rtu_DCM[9], real_T rty_qwqxqyqz[4]);
+extern void PositiveTrace(real_T rtu_traceDCM, const real_T rtu_DCM[9], real_T
+  *rty_qwqxqyqz, real_T rty_qwqxqyqz_e[3]);
 
-#endif                                 /* RTW_HEADER_rt_sys_MEKF_lib_5_h_ */
+#endif                                 /* RTW_HEADER_rt_sys_MEKF_lib_1_h_ */
 
 /*
  * File trailer for generated code.

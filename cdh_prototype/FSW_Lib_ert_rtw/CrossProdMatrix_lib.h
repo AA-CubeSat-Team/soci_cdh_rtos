@@ -24,12 +24,12 @@
 
 #ifndef FSW_Lib_COMMON_INCLUDES_
 # define FSW_Lib_COMMON_INCLUDES_
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
+#include <FSW_Lib_ert_rtw/rtwtypes.h>
 #include "rtw_continuous.h"
 #include "rtw_solver.h"
 #endif                                 /* FSW_Lib_COMMON_INCLUDES_ */
 
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+#include <FSW_Lib_ert_rtw/FSW_Lib_types.h>
 
 extern void CrossProdMatrix_lib(real_T rtu_Vector, real_T rtu_Vector_p, real_T
   rtu_Vector_j, real_T rty_XProdMat[9]);

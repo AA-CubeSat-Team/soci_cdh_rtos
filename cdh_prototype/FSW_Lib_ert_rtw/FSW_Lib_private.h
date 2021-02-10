@@ -21,8 +21,8 @@
 
 #ifndef RTW_HEADER_FSW_Lib_private_h_
 #define RTW_HEADER_FSW_Lib_private_h_
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
+#include <FSW_Lib_ert_rtw/FSW_Lib.h>
+#include <FSW_Lib_ert_rtw/rtwtypes.h>
 
 /* Private macros used by the generated code to access rtModel */
 #ifndef rtmIsMajorTimeStep

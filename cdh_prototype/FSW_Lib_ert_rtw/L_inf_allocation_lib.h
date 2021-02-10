@@ -3,7 +3,7 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: rtGetNaN.h
+ * File: L_inf_allocation_lib.h
  *
  * Code generated for Simulink model 'FSW_Lib'.
  *
@@ -19,16 +19,24 @@
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_rtGetNaN_h_
-#define RTW_HEADER_rtGetNaN_h_
-#include <gnc_build/FSW_Lib_ert_rtw/rt_nonfinite.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
-#include <stddef.h>
+#ifndef RTW_HEADER_L_inf_allocation_lib_h_
+#define RTW_HEADER_L_inf_allocation_lib_h_
+#include <math.h>
+#ifndef FSW_Lib_COMMON_INCLUDES_
+# define FSW_Lib_COMMON_INCLUDES_
+#include <FSW_Lib_ert_rtw/rtwtypes.h>
+#include "rtw_continuous.h"
+#include "rtw_solver.h"
+#endif                                 /* FSW_Lib_COMMON_INCLUDES_ */
 
-extern real_T rtGetNaN(void);
-extern real32_T rtGetNaNF(void);
+#include <FSW_Lib_ert_rtw/FSW_Lib_types.h>
+#include <FSW_Lib_ert_rtw/rtGetNaN.h>
+#include <FSW_Lib_ert_rtw/rt_nonfinite.h>
 
-#endif                                 /* RTW_HEADER_rtGetNaN_h_ */
+extern void L_inf_allocation_lib(const real_T rtu_input_body[3], real_T
+  rty_output_wheel[4]);
+
+#endif                                 /* RTW_HEADER_L_inf_allocation_lib_h_ */
 
 /*
  * File trailer for generated code.

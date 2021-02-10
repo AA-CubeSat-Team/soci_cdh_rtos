@@ -105,7 +105,8 @@ char i2c_eps_powerModuleStatus();
 bool i2c_eps_idRegister();
 char i2c_eps_FDIRflag();
 
-
+bool eps_healthcheck();
+double i2c_eps_getBatteryLevel();
 
 
 

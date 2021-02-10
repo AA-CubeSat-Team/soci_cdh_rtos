@@ -1,7 +1,7 @@
 
 
 /* FreeRTOS kernel includes. */
-#include <eps_wrap.h>
+#include "eps_wrap.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -37,7 +37,8 @@ void idle_task(void *pvParameters)
 	g_phdSensActive = false;
 
 
-	double voltage;
+	double voltage = i2c_eps_getBatteryLevel();
+	PRINTF("Obtained the battery = %f", voltage);
 	int mode;
 
 
@@ -71,7 +72,6 @@ void idle_task(void *pvParameters)
 
 		// Idle Mode: 6.144 < voltage <= 7.9
 		if (voltage <= 7.4 ) {
-
 			mode = 0;
 			//TODO: switch to low power run
 
