@@ -5,7 +5,6 @@
 #include "imag_wrap.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
+//#include "FSW_Lib_types.h"
 
-void dummyImagingFunc(){
-
-}
+void dummyImagingFunc();

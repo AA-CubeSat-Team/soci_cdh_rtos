@@ -13,7 +13,7 @@
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 
-//#include "FSW_Lib_types.h"
+
 
 /*
  * solar_panel_power, phd, mag, sun_sensor, gyro
@@ -29,11 +29,10 @@
   boolean_T gyro_meas_valid[3];
 } sensor_bus;
  */
-extern sensor_bus;
 
+//do each sensor separately
 void sens_read(){
-	//
-	//uart3_handler(), i2c1_handler, i2c2_handler, i2c3_handler
-	//sensor_bus->sun_meas_ss_deg = uart3_hander();
+	//read all the sensors together
+//	sensor_bus.sun_meas_ss_deg = uart3_hander();
 	printf("reading sensors");
 }
