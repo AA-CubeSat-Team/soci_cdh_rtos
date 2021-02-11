@@ -66,7 +66,7 @@ void idle_task(void *pvParameters)
 {
 
 	double voltage;
-
+	int mode = NOMINAL_POWER;
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
@@ -134,7 +134,7 @@ void idle_task(void *pvParameters)
 
 		}
 
-		UpdateFlags(mode) //uses g_operatingMode and mode
+		UpdateFlags(mode); //uses g_operatingMode and mode
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }
