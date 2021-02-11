@@ -16,46 +16,64 @@
 #include "idle_task.h"
 #include "clock_config.h"
 
+extern bool g_imagActive;
+extern bool g_commActive;
+extern bool g_sunSensActive;
+extern bool g_rwaSensActive;
+extern bool g_magSensActive;
+extern bool g_mtqSensActive;
+extern bool g_phdSensActive;
+
+void UpdateFlags(int mode)
+{
+	switch(mode){
+		case CRIT_LOW_POWER:
+			g_imagActive    = false;
+			g_commActive    = false;
+			g_sunSensActive = false;
+			g_rwaSensActive = false;
+			g_mtqSensActive = false;
+			g_magSensActive = false;
+			g_phdSensActive = false;
+			break;
+
+		case LOW_POWER:
+			//TODO: fix flags for low power mode
+			g_imagActive    = false;
+			g_commActive    = true;
+			g_sunSensActive = true;
+			g_rwaSensActive = true;
+			g_mtqSensActive = true;
+			g_magSensActive = true;
+			g_phdSensActive = true;
+			break;
+
+		case NOMINAL_POWER:
+			g_imagActive    = true;
+			g_commActive    = true;
+			g_sunSensActive = true;
+			g_rwaSensActive = true;
+			g_mtqSensActive = true;
+			g_magSensActive = true;
+			g_phdSensActive = true;
+			break;
+		default:
+			break;
+	}
+}
 
 void idle_task(void *pvParameters)
 {
-	PRINTF("initialize idle.\r\n");
-	extern bool g_imagActive;
-	extern bool g_commActive;
-	extern bool g_sunSensActive;
-	extern bool g_rwaSensActive;
-	extern bool g_magSensActive;
-	extern bool g_mtqSensActive;
-	extern bool g_phdSensActive;
-
-	g_imagActive = false;
-	g_commActive = false;
-	g_sunSensActive = false;
-	g_rwaSensActive = false;
-	g_magSensActive = false;
-	g_mtqSensActive = false;
-	g_phdSensActive = false;
-
 
 	double voltage = i2c_eps_getBatteryLevel();
 	PRINTF("Obtained the battery = %f", voltage);
-	int mode;
-
-
+	int mode = NOMINAL_POWER;
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
-	//I2C
-//	/*Clock setting for LPI2C*/
-//	    CLOCK_SetMux(kCLOCK_Lpi2cMux, LPI2C_CLOCK_SOURCE_SELECT);
-//	    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, LPI2C_CLOCK_SOURCE_DIVIDER);
 
-
-//	LPI2C_RTOS_Init(lpi2c_rtos_handle_t *handle,
-//	                         LPI2C_Type *base,
-//	                         const lpi2c_master_config_t *masterConfig,
-//	                         uint32_t srcClock_Hz);
-//	//i2c_eps_batteryModuleStatus();
+	PRINTF("idle: Health check EPS\r\n");
+//	HealthCheck_EPS();
 
 	// power up the module
 
@@ -64,86 +82,60 @@ void idle_task(void *pvParameters)
 		// gets the last wake time
 		TickType_t xLastWakeTime = xTaskGetTickCount();
 
-		PRINTF("idle work\r\n");
+		PRINTF("idle: Get Voltage from EPS\r\n");
 
-
+		//voltage
 		// TODO: Create a task to get the voltage from EPS system through I2C Communication
+
+
+		PRINTF("idle: Power up modules based on voltage\r\n");
+
+
 		// voltage will be between 6.144 and 8.26
 
-		// Idle Mode: 6.144 < voltage <= 7.9
-		if (voltage <= 7.4 ) {
-			mode = 0;
-			//TODO: switch to low power run
+		if (voltage <= 7.4 ) { // CRITICALLY LOW POWER
+			mode = CRIT_LOW_POWER;
+			//MCU_LowPowerMode();
+//			i2c_eps_switchOnOffPdms(RXW, OFF); //THESE SHOULD DO NOTHING IF ALREADY ON!
+//			i2c_eps_switchOnOffPdms(MTQ, OFF);
+//			i2c_eps_switchOnOffPdms(IMG, OFF);
+//			i2c_eps_switchOnOffPdms(COM, OFF);
+//			i2c_eps_switchOnOffPdms(SEN, OFF);
+//			HealthCheck_EPS();//?
 
+		} else if (voltage <= 7.9 && voltage > 7.4) { // LOW POWER
 
-		// Safe Mode: 7.4 < voltage <= 7.9
-		} else if (voltage <= 7.9 && voltage > 7.4) {
-
-			mode = 1;
-			//TODO: switch to low power run
-
-//			// do COM health check up
-//			if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkCOM_TaskHandle) != pdPASS) {
-//				PRINTF("checkCOM_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// do GNC health check up
-//			if (xTaskCreate(checkGNC_task, "checkGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkGNC_TaskHandle) != pdPASS) {
-//				PRINTF("checkGNC_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// do SEN health check up
-//			if (xTaskCreate(checkSEN_task, "checkSEN_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkSEN_TaskHandle) != pdPASS) {
-//				PRINTF("checkSEN_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// start safe mode
-//			if (xTaskCreate(safeMode_task, "safeMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 3, &safeMode_TaskHandle) != pdPASS) {
-//				PRINTF("safeMode_task creation failed!.\r\n");
-//				while (1);
-//			}
+			mode = LOW_POWER;
+			//MCU_LowPowerMode();
+//			i2c_eps_switchOnOffPdms(RXW, OFF);
+//			i2c_eps_switchOnOffPdms(MTQ, OFF);
+//			i2c_eps_switchOnOffPdms(IMG, OFF);
+//			i2c_eps_switchOnOffPdms(COM, ON);
+//			i2c_eps_switchOnOffPdms(SEN, ON);
+//			HealthCheck_EPS();
+//			HealthCheck_COM();
+//			HealthCheck_SEN();
 
 		// Normal Mode: 7.9 < voltage < 8.26
-		} else {
+		} else { // NOMINAL POWER
 
-			mode = 2;
-			//TODO: switch to overdrive run mode
+			mode = NOMINAL_POWER;
+			//MCU_OverdriveMode();
+//			i2c_eps_switchOnOffPdms(RXW, ON);
+//			i2c_eps_switchOnOffPdms(MTQ, ON);
+//			i2c_eps_switchOnOffPdms(IMG, ON);
+//			i2c_eps_switchOnOffPdms(COM, ON);
+//			i2c_eps_switchOnOffPdms(SEN, ON);
+//			HealthCheck_EPS();
+//			HealthCheck_IMG();
+//			HealthCheck_COM();
+//			HealthCheck_SEN();
+//			HealthCheck_RWX();
+//			HealthCheck_MTQ();
 
-//
-//			// do COM health check up
-//			if (xTaskCreate(checkCOM_task, "checkCOM_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkCOM_TaskHandle) != pdPASS) {
-//				PRINTF("checkCOM_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// do GNC health check up
-//			if (xTaskCreate(checkGNC_task, "checkGNC_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkGNC_TaskHandle) != pdPASS) {
-//				PRINTF("checkGNC_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// do SEN health check up
-//			if (xTaskCreate(checkSEN_task, "checkSEN_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkSEN_TaskHandle) != pdPASS) {
-//				PRINTF("checkSEN_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// do IMG health check up
-//			if (xTaskCreate(checkIMG_task, "checkIMG_task", configMINIMAL_STACK_SIZE + 166, NULL, 5, &checkIMG_TaskHandle) != pdPASS) {
-//				PRINTF("checkIMG_task creation failed!.\r\n");
-//				while (1);
-//			}
-//
-//			// start nominal mode
-//			if (xTaskCreate(normalMode_task, "normalMode_task", configMINIMAL_STACK_SIZE + 166, NULL, 2, &normalMode_TaskHandle) != pdPASS) {
-//				PRINTF("normalMode_task creation failed!.\r\n");
-//				while (1);
-//			}
 		}
 
+		UpdateFlags(mode); //uses g_operatingMode and mode
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }

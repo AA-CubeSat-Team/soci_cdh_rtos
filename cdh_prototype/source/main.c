@@ -63,6 +63,30 @@ bool g_gncHealthy;
 bool g_actHealthy;
 bool g_imgHealthy;
 
+int g_operatingMode;
+
+
+
+struct sens_meas{
+	// TODO: to be filled in
+};
+
+struct telecommands{
+
+};
+
+struct act_meas{
+
+};
+
+struct fsw_out{
+	//rwa_cmd_rpm
+};
+
+struct fsw_telem{
+
+};
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
