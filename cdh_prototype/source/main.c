@@ -54,6 +54,9 @@ bool g_mtqSensActive;
 bool g_phdSensActive;
 
 
+int g_operatingMode;
+
+
 
 struct sens_meas{
 	// TODO: to be filled in
