@@ -22,12 +22,14 @@
 #include "clock_config.h"
 
 
-#include "stdbool.h"
+#include <stdbool.h>
 
 #include "idle_task.h"
 #include "imag_task.h"
 #include "comm_task.h"
 #include "sens_task.h"
+#include "eps_wrap.h"
+
 
 // TODO: add includes for uart, spi, i2c, sdram, etc.
 
@@ -53,6 +55,13 @@ bool g_magSensActive;
 bool g_mtqSensActive;
 bool g_phdSensActive;
 
+bool g_epsHealthy;
+bool g_obcHealthy;
+bool g_comHealthy;
+bool g_senHealthy;
+bool g_gncHealthy;
+bool g_actHealthy;
+bool g_imgHealthy;
 
 int g_operatingMode;
 
@@ -86,11 +95,15 @@ struct fsw_telem{
  */
 int main(void)
 {
-    /* Init board hardware. */
+    /* System Power Buses ON: Init board hardware. */
     BOARD_ConfigMPU();
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
+
+    g_epsHealthy = eps_healthcheck();
+    g_obcHealthy = obc_healthcheck();
+
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, idle_task_PRIORITY, NULL) !=
         pdPASS)

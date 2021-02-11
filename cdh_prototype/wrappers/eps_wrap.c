@@ -5,14 +5,22 @@
  * It should not be assumed to be functional.
  *
  * Jerrold Erickson, 6/23/2020
+ *
+ * Pin #75 GPIO_AD_B1_14	I2C1_SCL
+ * Pin #74 GPIO_AD_B1_15	I2C1_SDA
  */
-
-#include <eps_wrap.h>
+#include <stdbool.h>
+#include "eps_wrap.h"
 #include "fsl_lpi2c.h"
 #include "fsl_lpi2c_freertos.h"
 
 uint8_t g_slave_buff[I2C_DATA_LENGTH];
 uint8_t g_master_buff[I2C_DATA_LENGTH];
+
+bool eps_healthcheck() {
+	PRINTF("checking the health of eps!");
+	return true;
+}
 
 //uint32_t master_rtos_handle = 0; // fake variable for RTOS stuff
 //status_t status = 0; // fake variable for RTOS stuff
@@ -67,16 +75,16 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //    }
 //}
 //
-//uint32_t i2c_read_write_helper(gmb_0, gmb_1, gmb_2, gmb_3, d) {
-//	printf("Master will send data :");
+uint32_t i2c_read_write_helper(gmb_0, gmb_1, gmb_2, gmb_3, d) {
+	PRINTF("Master will send data :");
 //	print_i2c_data(g_master_buff);
-//
+
 //	// i2c write
 //
 //	 LPI2C_RTOS_Transfer(lpi2c_rtos_handle_t *handle, lpi2c_master_transfer_t *transfer);
 //
 //
-//I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_0, datasize);
+//	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_0, datasize);
 //	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_1, datasize);
 //	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_2, datasize);
 //
@@ -93,7 +101,7 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //
 //	delay(d);
 //
-//	printf("Master received data from slave: ");
+//	PRINTF("Master received data from slave: ");
 //	print_i2c_data(g_slave_buff);
 //
 //	uint32_t adc_count = 0;
@@ -103,25 +111,30 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //	 * I don't know if this calculation is correct
 //	 */
 //	adc_count = (g_slave_buff[1] << 8) | g_slave_buff[0]);
-//
-//	return adc_count;
-//}
-//
-//// added 11/24/20
-////__________________________________________________________________________________________________________________
-//
-//char i2c_eps_powerModuleStatus()
-//{
-//    /* Set up i2c master to send data to slave */
+	uint32_t adc_count = 0;
+	return adc_count;
+}
+
+// added 11/24/20
+//__________________________________________________________________________________________________________________
+
+double i2c_eps_getBatteryLevel()
+{
+	PRINTF("get the battery value!");
+	return 0.0;
+}
+char i2c_eps_powerModuleStatus()
+{
+    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_POWER_MODULE_STATUS; // i2c command = get EPS telemetry
-//
-//    // send and read
-//    // returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
-//    // delay is unknown?
-//    // thought: regardless if all bytes are moved, it should still return the same adc_count
-//    //          which can still be checked, so it would be best to adjust so all bytes are moved
-//    i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
+
+    // send and read
+    // returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
+    // delay is unknown?
+    // thought: regardless if all bytes are moved, it should still return the same adc_count
+    //          which can still be checked, so it would be best to adjust so all bytes are moved
+//    adc_count = i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
 //
 //    char string[1000];
 //    if (adc_count & (1<<0))
@@ -162,17 +175,18 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //    }
 //
 //    return string;
-//}
-//
-//char i2c_eps_batteryModuleStatus()
-//{
-//    /* Set up i2c master to send data to slave */
+	return "";
+}
+
+char i2c_eps_batteryModuleStatus()
+{
+    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_BATTERY_MODULE_STATUS; // i2c command = get EPS telemetry
-//
-//    // send and read
+
+    // send and read
 //    // returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
-//    i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
+//    adc_count = i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
 //
 //    char string[1000];
 //    if (adc_count & (1<<0))
@@ -205,10 +219,11 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //    }
 //
 //    return string;
-//}
-//
-//char i2c_eps_FDIRflag()
-//{
+	return "";
+}
+
+char i2c_eps_FDIRflag()
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_FDIR; // i2c command = get EPS telemetry
@@ -264,11 +279,12 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //    }
 //
 //    return string;
-//}
-//
-//bool i2c_eps_idRegister()
-//{
-//    /* Set up i2c master to send data to slave */
+	return "";
+}
+
+bool i2c_eps_idRegister()
+{
+    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_ID; // i2c command = get EPS telemetry
 //
@@ -336,10 +352,10 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //    delay(5000);
 //
 //    // dont need to read bc no data returned
-//}
-//
-//void i2c_eps_resetPdm()
-//{
+}
+
+void i2c_eps_resetPdm()
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_RESET_PDMS; // i2c command = get EPS telemetry
@@ -357,14 +373,14 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //    delay(5000);
 //
 //    // dont need to read bc no data returned
-//}
-//
+}
+
 // added 12/6/20
 // will skip on doing telemtry for now until answers on how it outputs is provided
 //
 // for this newPdmState will turn on specific pdm 1-6 which is assigned from bit 0-5 in that order
-//void i2c_eps_switchOnOffPdms(newPdmState)
-//{
+void i2c_eps_switchOnOffPdms(newPdmState)
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_SWITCH_ON_OFF_PDMS; // i2c command = get EPS telemetry
@@ -380,13 +396,13 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //
 //
 //    delay(5000);
-//
-//    // dont need to read bc no data returned
-//}
-//
-//// period can be 1 min 2 min or 4 min
-//void i2c_eps_setHousekeepingPeriod(period)
-//{
+
+    // dont need to read bc no data returned
+}
+
+// period can be 1 min 2 min or 4 min
+void i2c_eps_setHousekeepingPeriod(period)
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD; // i2c command = get EPS telemetry
@@ -402,16 +418,16 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //
 //
 //    delay(5000);
-//
-//    // dont need to read bc no data returned
-//}
-//
-//// QUESTION: how is the i2c write structured
-//// is it 7 bit address -> command -> param [1] -> param [0] (each a byte)
-//// IF SO -> then what for PDM initial state why is it Byte 0 and not Param[0] (typo? as nothing is returned)
-//
-//void i2c_eps_setSafetyHazardEnvironment()
-//{
+
+    // dont need to read bc no data returned
+}
+
+// QUESTION: how is the i2c write structured
+// is it 7 bit address -> command -> param [1] -> param [0] (each a byte)
+// IF SO -> then what for PDM initial state why is it Byte 0 and not Param[0] (typo? as nothing is returned)
+
+void i2c_eps_setSafetyHazardEnvironment()
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT; // i2c command = get EPS telemetry
@@ -427,22 +443,22 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //
 //
 //    delay(5000);
-//
-//    // dont need to read bc no data returned
-//}
-//
-//// some ideas about telemetry
-//// for telemetry, need clarification
-//
-//// for bus Reset
-//// ALSO ASSUMPTION: when asking for byte i am assuming its talking about only one byte of parameter
-//// otherwise when it uses the term parameter, I am assuming there are 2 bytes of parameter
-//// bit 1 and 0 = 1 then 3v3
-//// bit 3 and 2 = 1 then 5v
-//// bit 5 and 4 = 1 then 12v
-//// bit 7 and 6 = 1 then Vbat
-//void i2c_eps_fixedPowerBusReset(busReset)
-//{
+
+    // dont need to read bc no data returned
+}
+
+// some ideas about telemetry
+// for telemetry, need clarification
+
+// for bus Reset
+// ALSO ASSUMPTION: when asking for byte i am assuming its talking about only one byte of parameter
+// otherwise when it uses the term parameter, I am assuming there are 2 bytes of parameter
+// bit 1 and 0 = 1 then 3v3
+// bit 3 and 2 = 1 then 5v
+// bit 5 and 4 = 1 then 12v
+// bit 7 and 6 = 1 then Vbat
+void i2c_eps_fixedPowerBusReset(busReset)
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_FIXED_POWER_BUS_RESET; // i2c command = get EPS telemetry
@@ -457,12 +473,12 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //
 //
 //    delay(5000);
-//
-//    // dont need to read bc no data returned
-//}
-//
-//void i2c_eps_manualReset()
-//{
+
+    // dont need to read bc no data returned
+}
+
+void i2c_eps_manualReset()
+{
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_MANUAL_RESET; // i2c command = get EPS telemetry
@@ -477,6 +493,6 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 //
 //
 //    delay(5000);
-//
-//    // dont need to read bc no data returned
-//}
+
+    // dont need to read bc no data returned
+}

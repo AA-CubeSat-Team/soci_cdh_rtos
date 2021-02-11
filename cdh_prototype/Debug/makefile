@@ -14,9 +14,6 @@ RM := rm -rf
 -include tasks/subdir.mk
 -include startup/subdir.mk
 -include source/subdir.mk
--include freertos/freertos_kernel/portable/MemMang/subdir.mk
--include freertos/freertos_kernel/portable/GCC/ARM_CM4F/subdir.mk
--include freertos/freertos_kernel/subdir.mk
 -include drivers/freertos/subdir.mk
 -include drivers/subdir.mk
 -include device/subdir.mk
@@ -24,6 +21,7 @@ RM := rm -rf
 -include component/serial_manager/subdir.mk
 -include component/lists/subdir.mk
 -include board/subdir.mk
+-include FSW_Lib_ert_rtw/subdir.mk
 -include subdir.mk
 -include objects.mk
 

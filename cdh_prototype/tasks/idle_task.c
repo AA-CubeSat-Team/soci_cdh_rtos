@@ -1,7 +1,7 @@
 
 
 /* FreeRTOS kernel includes. */
-#include <eps_wrap.h>
+#include "eps_wrap.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -65,7 +65,8 @@ void UpdateFlags(int mode)
 void idle_task(void *pvParameters)
 {
 
-	double voltage;
+	double voltage = i2c_eps_getBatteryLevel();
+	PRINTF("Obtained the battery = %f", voltage);
 	int mode = NOMINAL_POWER;
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );

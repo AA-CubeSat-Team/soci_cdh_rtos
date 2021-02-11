@@ -10,7 +10,7 @@
 
 #pragma once
 #include <stdint.h>
-#include "stdbool.h"
+#include <stdbool.h>
 
 
 //#include "soci_cdh_drivers\cdh_i2c_driver\drivers\fsl_common.h"
@@ -105,7 +105,8 @@ char i2c_eps_powerModuleStatus();
 bool i2c_eps_idRegister();
 char i2c_eps_FDIRflag();
 
-
+bool eps_healthcheck();
+double i2c_eps_getBatteryLevel();
 
 
 
