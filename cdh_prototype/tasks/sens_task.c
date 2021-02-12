@@ -1,5 +1,8 @@
 
 /* FreeRTOS kernel includes. */
+//#include "FSW_Lib_types.h"
+
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -12,7 +15,6 @@
 
 #include "sens_task.h"
 #include "clock_config.h"
-//#include "FSW_Lib_types.h"
 
 void sens_task(void *pvParameters)
 {

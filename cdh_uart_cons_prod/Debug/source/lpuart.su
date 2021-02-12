@@ -1,4 +1,0 @@
-lpuart.c:56:6:init_tasks	16	static
-lpuart.c:121:6:uart3_rx_task	40	static
-lpuart.c:167:6:uart3_tx_task	32	static
-lpuart.c:183:6:process_task	32	static

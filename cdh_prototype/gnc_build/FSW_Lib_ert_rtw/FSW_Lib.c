@@ -19,8 +19,8 @@
  * Validation result: Not run
  */
 
-#include <FSW_Lib.h>
-#include <FSW_Lib_private.h>
+#include <gnc_build/FSW_Lib.h>
+#include <gnc_build/FSW_Lib_private.h>
 
 /* Block signals and states (default storage) */
 DW rtDW;

@@ -19,9 +19,9 @@
  * Validation result: Not run
  */
 
-#include <CrossProdMatrix_lib.h>
-#include <FSW_Lib.h>
-#include <FSW_Lib_private.h>
+#include <gnc_build/CrossProdMatrix_lib.h>
+#include <gnc_build/FSW_Lib.h>
+#include <gnc_build/FSW_Lib_private.h>
 
 /*
  * Output and update for atomic system:
