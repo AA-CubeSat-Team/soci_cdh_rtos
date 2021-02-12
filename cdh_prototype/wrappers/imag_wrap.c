@@ -1,68 +1,36 @@
+#include <stdint.h>
 #include <imag_wrap.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 
+/*to send commands to IMG*/
+void sendCommand(unit8_t command, unit8_t param){
 
-int main(void){
+	unit8_t toSend[] = { command, param };
 
-	// define IMAG variables
+	PRINTF("Sending command to IMG System: ")
+
+	int status = LPUART_RTOS_Send(/*handle*/, &toSend, sizeOf(toSend));
+
+	if (status != kStatus_Success){
+		PRINTF("Sending command failed!.\r\n");
+	}
+	else{
+		PRINTF("Sending command succeeded!.\r\n");
+	}
 
 }
-
 
 void testCheckStatus(char parameter) {
 
-	printf("--Begin testCheckStatus--");
+	PRINTF("--Begin Testing All Status--");
 
-	// To check all components
-	if(parameter == '0'){
 
-		/* sendCommand(CHECK_STATUS, COMPONENT_ALL); */
 
-		/* Loop to get all values for responseBytes */
 
-		/* Check contents of responseBytes [0],[1],[2] are proper values,
-		 * otherwise print all contents of responseBytes and report Error
-		 */
 
-	}
 
-	// To check uCamIII
-	else if(parameter == '1'){
 
-		/* sendCommand(CHECK_STATUS, COMPONENT_UCAMIII); */
-
-		/* Loop to get all values for responseBytes */
-
-		/* Check contents of responseBytes [0],[1],[2] are proper values,
-		 * otherwise print all contents of responseBytes and report Error
-		 */
-
-	}
-
-	// To check SD Shield
-	else if(parameter == '2'){
-
-		/* sendCommand(CHECK_STATUS, COMPONENT_SD); */
-
-		/* Loop to get all values for responseBytes */
-
-		/* Check contents of responseBytes [0],[1],[2] are proper values,
-		 * otherwise print all contents of responseBytes and report Error
-		 */
-
-	}
-
-	printf("\n-- testCheckStatus() completed --");
+	PRINTF("\n-- Testing All Status Completed --");
 
 }
-
-void testTakePicture(){
-
-	printf("--Begin testTakePicture--");
-
-
-
-
-}
-
