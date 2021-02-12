@@ -65,13 +65,15 @@ void UpdateFlags(int mode)
 void idle_task(void *pvParameters)
 {
 
-	double voltage = i2c_eps_getBatteryLevel();
-	PRINTF("Obtained the battery = %f", voltage);
+
+	double voltage;
+	voltage = i2c_eps_getBatteryLevel(); //TODO: PRINTF THROWS ERROR WHEN THIS CALLED
+	//PRINTF("Obtained the battery = %f", voltage);
 	int mode = NOMINAL_POWER;
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
-
+	char X = i2c_eps_powerModuleStatus();
 	PRINTF("idle: Health check EPS\r\n");
 //	HealthCheck_EPS();
 

@@ -101,8 +101,8 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
 
-    g_epsHealthy = eps_healthcheck();
-    g_obcHealthy = obc_healthcheck();
+//    g_epsHealthy = eps_healthcheck();
+//    g_obcHealthy = obc_healthcheck();
 
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, idle_task_PRIORITY, NULL) !=

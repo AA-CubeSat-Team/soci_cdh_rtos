@@ -12,7 +12,7 @@
 #include "sens_wrap.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
-
+#include "fsl_debug_console.h"
 
 
 /*

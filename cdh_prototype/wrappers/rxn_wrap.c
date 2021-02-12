@@ -10,6 +10,7 @@
 #include "rxn_wrap.h"
 #include "fsl_lpspi_freertos.h"
 #include "fsl_lpspi.h"
+#include "fsl_debug_console.h"
 
 void dummyRxnWheelFunc(){
 

@@ -14,6 +14,8 @@
 #include "fsl_lpi2c.h"
 #include "fsl_lpi2c_freertos.h"
 
+#include "fsl_debug_console.h"
+
 uint8_t g_slave_buff[I2C_DATA_LENGTH];
 uint8_t g_master_buff[I2C_DATA_LENGTH];
 
@@ -65,10 +67,10 @@ bool eps_healthcheck() {
 //    eps_idRegister = i2c_eps_idRegister();
 //    //enter telemetry here;
 //
-//    printf("%s \n", eps_powerModuleStatus);
-//    printf("%s \n", eps_batteryModuleStatus);
-//    printf("%s \n", eps_FDIRflag);
-//    printf("%s \n", eps_idRegister);
+//    PRINTF("%s \n", eps_powerModuleStatus);
+//    PRINTF("%s \n", eps_batteryModuleStatus);
+//    PRINTF("%s \n", eps_FDIRflag);
+//    PRINTF("%s \n", eps_idRegister);
 //
 //    while (1)
 //    {
@@ -125,6 +127,7 @@ double i2c_eps_getBatteryLevel()
 }
 char i2c_eps_powerModuleStatus()
 {
+	PRINTF("Master will send data :");
     /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
 //    g_master_buff[1] = I2C_EPS_CMD_POWER_MODULE_STATUS; // i2c command = get EPS telemetry
@@ -175,7 +178,7 @@ char i2c_eps_powerModuleStatus()
 //    }
 //
 //    return string;
-	return "";
+	return ' ';
 }
 
 char i2c_eps_batteryModuleStatus()
@@ -314,7 +317,7 @@ bool i2c_eps_idRegister()
 //    //g_master_buff[3] = period;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -342,7 +345,7 @@ bool i2c_eps_idRegister()
 //    g_master_buff[3] = intial_pdms;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -363,7 +366,7 @@ void i2c_eps_resetPdm()
 //    g_master_buff[3] = 0xFF;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -388,7 +391,7 @@ void i2c_eps_switchOnOffPdms(newPdmState)
 //    g_master_buff[3] = newPdmState;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -410,7 +413,7 @@ void i2c_eps_setHousekeepingPeriod(period)
 //    g_master_buff[3] = period;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -435,7 +438,7 @@ void i2c_eps_setSafetyHazardEnvironment()
 //    g_master_buff[3] = 0xFF;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -465,7 +468,7 @@ void i2c_eps_fixedPowerBusReset(busReset)
 //    g_master_buff[2] = 0x00 | busReset;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
@@ -485,7 +488,7 @@ void i2c_eps_manualReset()
 //    g_master_buff[2] = 0xFF;
 //
 //    // this one only needs to read
-//    printf("Master will send data :");
+//    PRINTF("Master will send data :");
 //    print_i2c_data(g_master_buff);
 //
 //    // i2c write
