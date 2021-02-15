@@ -5,6 +5,7 @@
  *
  *
  * */
+#include <stdbool.h>
 
-
-void dummyImagingFunc();
+bool img_healthcheck();
+void img_sendCommand();

@@ -21,6 +21,8 @@ uint8_t g_master_buff[I2C_DATA_LENGTH];
 
 bool eps_healthcheck() {
 	PRINTF("checking the health of eps!");
+	i2c_eps_batteryModuleStatus();
+	i2c_eps_powerModuleStatus();
 	return true;
 }
 

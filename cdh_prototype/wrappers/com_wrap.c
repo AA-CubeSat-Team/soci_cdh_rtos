@@ -9,5 +9,47 @@
 #include "fsl_lpuart.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_debug_console.h"
+#include <stdbool.h>
+
+// commands data: what type? how big?
+// payload data: what type? how big?
+// image data: what type? how big?
+// beacons: what type? how big?
+
+void com_radio_init()
+{
+	//set transmit/receive rate to 19.2 kbps
+	//choose trans FST mode
+	//set RF power to 0.5W
+	//Choose channel (center frequency) within our licensed band
+	PRINTF("initializing COM radio");
+}
+
+bool com_healthcheck()
+{
+	PRINTF("checking COM health");
+	return true;
+}
+
+void com_getCommands() //highest priority
+{
+	PRINTF("getting commands from the ground station");
+}
+
+void com_sendPayloads() //high priority
+{
+	PRINTF("sending payloads");
+}
+
+void com_sendImages() //medium priority
+{
+	PRINTF("sending images");
+}
+
+void com_sendBeacons() //low priority, happens every 60 secs
+{
+	PRINTF("sending beacons");
+}
+
 
 

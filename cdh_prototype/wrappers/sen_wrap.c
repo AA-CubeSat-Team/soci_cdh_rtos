@@ -9,10 +9,11 @@
  * 99	GPIO_AD_B0_09	I2C3_SDA	MAG3, GYRO3
  *
  */
-#include "sens_wrap.h"
+#include <sen_wrap.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_debug_console.h"
+#include <stdbool.h>
 
 
 /*
@@ -30,9 +31,19 @@
 } sensor_bus;
  */
 
+bool sens_healthcheck(){
+	PRINTF("checking sensors health");
+	return true;
+}
 //do each sensor separately
-void sens_read(){
-	//read all the sensors together
-//	sensor_bus.sun_meas_ss_deg = uart3_hander();
-	printf("reading sensors");
+void sens_readSun(){
+	PRINTF("reading sun sensors");
+}
+
+void sens_readMag(){
+	PRINTF("reading magnetometer sensors");
+}
+
+void sens_readPhd(){
+	PRINTF("reading photodiode sensors");
 }

@@ -7,11 +7,18 @@
  * Pin #98	GPIO_AD_B0_10	SPI1_SCK	RXN Wheels
  */
 
-#include "rxn_wrap.h"
+#include <act_wrap.h>
 #include "fsl_lpspi_freertos.h"
 #include "fsl_lpspi.h"
 #include "fsl_debug_console.h"
+#include <stdbool.h>
 
-void dummyRxnWheelFunc(){
+bool rxw_healthcheck(){
+	PRINTF("checking reaction wheel health");
+	return true;
+}
 
+bool mtq_healthcheck(){
+	PRINTF("checking magnetorquer health");
+	return true;
 }

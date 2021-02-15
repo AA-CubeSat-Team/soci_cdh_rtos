@@ -1,6 +1,7 @@
 
 
 /* FreeRTOS kernel includes. */
+#include <img_wrap.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -12,7 +13,6 @@
 #include "board.h"
 
 #include "imag_task.h"
-#include "imag_wrap.h"
 #include "clock_config.h"
 
 void imag_task(void *pvParameters)
@@ -29,7 +29,7 @@ void imag_task(void *pvParameters)
 		PRINTF("imag work\r\n");
 
 		if(g_imagActive == true){
-			dummyImagingFunc();
+			img_sendCommand();
 		}
 //		else{
 //

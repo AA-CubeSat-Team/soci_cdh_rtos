@@ -107,6 +107,7 @@ char i2c_eps_FDIRflag();
 
 bool eps_healthcheck();
 double i2c_eps_getBatteryLevel();
+void i2c_eps_manualReset();
 
 
 

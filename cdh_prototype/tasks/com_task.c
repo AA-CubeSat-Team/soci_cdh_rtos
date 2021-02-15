@@ -10,10 +10,16 @@
 #include "fsl_debug_console.h"
 #include "board.h"
 
-#include "comm_task.h"
+#include "com_wrap.h"
+#include "com_task.h"
 #include "clock_config.h"
 
-
+//flags to check if there's data to send
+//cdh receives these data and sends the data to radio which to
+bool command_request = false;
+bool payload_check = false;
+bool image_check = false;
+bool beacon_check = false;
 
 void comm_task(void *pvParameters)
 {
@@ -31,7 +37,17 @@ void comm_task(void *pvParameters)
 		PRINTF("comm work.\r\n");
 
 		if(g_commActive == true){
-
+			//checking if getting a command request
+			if (command_request){
+				//sending data based on priority
+				if (payload_check) {
+					com_sendPayloads();
+				} else if (image_check) {
+					com_sendImages();
+				} else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
+					com_sendBeacons();
+				}
+			}
 
 		}
 //		else{

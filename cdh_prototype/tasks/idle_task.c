@@ -2,6 +2,11 @@
 
 /* FreeRTOS kernel includes. */
 #include "eps_wrap.h"
+#include "act_wrap.h"
+#include "com_wrap.h"
+#include "img_wrap.h"
+#include "sen_wrap.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -23,6 +28,16 @@ extern bool g_rwaSensActive;
 extern bool g_magSensActive;
 extern bool g_mtqSensActive;
 extern bool g_phdSensActive;
+
+//flags for checking if they're healthy
+extern bool g_epsHealthy;
+extern bool g_obcHealthy;
+extern bool g_comHealthy;
+extern bool g_senHealthy;
+extern bool g_gncHealthy;
+extern bool g_mtqHealthy;
+extern bool g_rxwHealthy;
+extern bool g_imgHealthy;
 
 void UpdateFlags(int mode)
 {
@@ -73,9 +88,9 @@ void idle_task(void *pvParameters)
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
-	char X = i2c_eps_powerModuleStatus();
-	PRINTF("idle: Health check EPS\r\n");
-//	HealthCheck_EPS();
+	//
+//	char X = i2c_eps_powerModuleStatus();
+//	PRINTF("idle: Health check EPS\r\n");
 
 	// power up the module
 
@@ -88,7 +103,7 @@ void idle_task(void *pvParameters)
 
 		//voltage
 		// TODO: Create a task to get the voltage from EPS system through I2C Communication
-
+		voltage = i2c_eps_getBatteryLevel();
 
 		PRINTF("idle: Power up modules based on voltage\r\n");
 
@@ -97,13 +112,14 @@ void idle_task(void *pvParameters)
 
 		if (voltage <= 7.4 ) { // CRITICALLY LOW POWER
 			mode = CRIT_LOW_POWER;
+			PRINTF("enters critically low power mode");
 			//MCU_LowPowerMode();
 //			i2c_eps_switchOnOffPdms(RXW, OFF); //THESE SHOULD DO NOTHING IF ALREADY ON!
 //			i2c_eps_switchOnOffPdms(MTQ, OFF);
 //			i2c_eps_switchOnOffPdms(IMG, OFF);
 //			i2c_eps_switchOnOffPdms(COM, OFF);
 //			i2c_eps_switchOnOffPdms(SEN, OFF);
-//			HealthCheck_EPS();//?
+			g_epsHealthy = eps_healthcheck();
 
 		} else if (voltage <= 7.9 && voltage > 7.4) { // LOW POWER
 
@@ -114,9 +130,19 @@ void idle_task(void *pvParameters)
 //			i2c_eps_switchOnOffPdms(IMG, OFF);
 //			i2c_eps_switchOnOffPdms(COM, ON);
 //			i2c_eps_switchOnOffPdms(SEN, ON);
-//			HealthCheck_EPS();
-//			HealthCheck_COM();
-//			HealthCheck_SEN();
+			while (!g_epsHealthy){
+				g_epsHealthy = eps_healthcheck();
+			}
+			while (!g_comHealthy) {
+				g_comHealthy = com_healthcheck();
+			}
+			while (!g_senHealthy) {
+				g_senHealthy = sens_healthcheck();
+			}
+//			while (!g_gncHealthy) {
+//				g_gncHealthy = gnc_healthcheck();
+//			}
+			com_sendBeacons();
 
 		// Normal Mode: 7.9 < voltage < 8.26
 		} else { // NOMINAL POWER
@@ -128,13 +154,28 @@ void idle_task(void *pvParameters)
 //			i2c_eps_switchOnOffPdms(IMG, ON);
 //			i2c_eps_switchOnOffPdms(COM, ON);
 //			i2c_eps_switchOnOffPdms(SEN, ON);
-//			HealthCheck_EPS();
-//			HealthCheck_IMG();
-//			HealthCheck_COM();
-//			HealthCheck_SEN();
-//			HealthCheck_RWX();
-//			HealthCheck_MTQ();
-
+			while (!g_epsHealthy){
+				g_epsHealthy = eps_healthcheck();
+			}
+			while (!g_comHealthy) {
+				g_comHealthy = com_healthcheck();
+			}
+			while (!g_senHealthy) {
+				g_senHealthy = sens_healthcheck();
+			}
+//			while (!g_gncHealthy) {
+//				g_gncHealthy = gnc_healthcheck();
+//			}
+			while (!g_rxwHealthy) {
+				g_rxwHealthy = rxw_healthcheck();
+			}
+			while (!g_mtqHealthy) {
+				g_mtqHealthy = mtq_healthcheck();
+			}
+			while (!g_imgHealthy) {
+				g_imgHealthy = img_healthcheck();
+			}
+			com_sendBeacons();
 		}
 
 		UpdateFlags(mode); //uses g_operatingMode and mode

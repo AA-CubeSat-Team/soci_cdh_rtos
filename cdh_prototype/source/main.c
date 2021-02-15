@@ -8,6 +8,7 @@
 
 
 /* FreeRTOS kernel includes. */
+#include <com_task.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -26,7 +27,6 @@
 
 #include "idle_task.h"
 #include "imag_task.h"
-#include "comm_task.h"
 #include "sens_task.h"
 #include "eps_wrap.h"
 
@@ -47,6 +47,7 @@
 /*******************************************************************************
  * Flags
  ******************************************************************************/
+//flags for checking if it's turned on or not
 bool g_imagActive;
 bool g_commActive;
 bool g_sunSensActive;
@@ -54,38 +55,39 @@ bool g_rwaSensActive;
 bool g_magSensActive;
 bool g_mtqSensActive;
 bool g_phdSensActive;
-
+//flags for checking if they're healthy
 bool g_epsHealthy;
 bool g_obcHealthy;
 bool g_comHealthy;
 bool g_senHealthy;
 bool g_gncHealthy;
-bool g_actHealthy;
+bool g_mtqHealthy;
+bool g_rxwHealthy;
 bool g_imgHealthy;
 
 int g_operatingMode;
 
 
 
-struct sens_meas{
-	// TODO: to be filled in
-};
-
-struct telecommands{
-
-};
-
-struct act_meas{
-
-};
-
-struct fsw_out{
-	//rwa_cmd_rpm
-};
-
-struct fsw_telem{
-
-};
+//struct sens_meas{
+//	// TODO: to be filled in
+//};
+//
+//struct telecommands{
+//
+//};
+//
+//struct act_meas{
+//
+//};
+//
+//struct fsw_out{
+//	//rwa_cmd_rpm
+//};
+//
+//struct fsw_telem{
+//
+//};
 
 /*******************************************************************************
  * Code
@@ -93,6 +95,14 @@ struct fsw_telem{
 /*!
  * @brief Application entry point.
  */
+bool obc_healthcheck(){
+	PRINTF("checking peripherals of obc");
+	return true;
+}
+void obc_reset(){
+	PRINTF("Hard resetting obc");
+}
+
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
@@ -101,9 +111,16 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
 
-//    g_epsHealthy = eps_healthcheck();
-//    g_obcHealthy = obc_healthcheck();
-
+    while (!g_epsHealthy || !g_obcHealthy){
+        g_epsHealthy = eps_healthcheck();
+        g_obcHealthy = obc_healthcheck();
+        if (!g_epsHealthy){
+        	i2c_eps_manualReset();
+        }
+        if (!g_obcHealthy){
+        	obc_reset();
+        }
+    }
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, idle_task_PRIORITY, NULL) !=
         pdPASS)

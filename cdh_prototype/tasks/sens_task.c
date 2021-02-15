@@ -36,41 +36,41 @@ void sens_task(void *pvParameters)
 		PRINTF("sens work.\r\n");
 
 		if(g_sunSensActive == true){
-			//sens_meas.sun_meas_ss_deg = svfds;
+			sens_readSun();
 		}
 		else{
-
+			PRINTF("sun sensor not active");
 		}
 
 		if(g_magSensActive == true){
-
+			sens_readMag();
 		}
 		else{
-
+			PRINTF("magnetometer not active");
 		}
 
 		if(g_phdSensActive == true){
-
+			sens_readPhd();
 		}
 		else{
-
+			PRINTF("photodiode not active");
 		}
 
 		// TODO: enable rt_OneStep(); after include
 
-
-		if(g_mtqSensActive == true){
-			//uart_send(fsw_out...);
-		}
-		else{
-		}
-
-		if(g_rwaSensActive == true){
-
-		}
-		else{
-
-		}
+		//These two magnetorquer and reaction wheel are not sensors
+//		if(g_mtqSensActive == true){
+//			//uart_send(fsw_out...);
+//		}
+//		else{
+//		}
+//
+//		if(g_rwaSensActive == true){
+//
+//		}
+//		else{
+//
+//		}
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
