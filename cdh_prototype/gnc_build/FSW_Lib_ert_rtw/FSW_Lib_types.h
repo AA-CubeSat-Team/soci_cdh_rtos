@@ -21,7 +21,7 @@
 
 #ifndef RTW_HEADER_FSW_Lib_types_h_
 #define RTW_HEADER_FSW_Lib_types_h_
-#include <FSW_Lib_ert_rtw/rtwtypes.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
 #ifndef DEFINED_TYPEDEF_FOR_sensor_bus_
 #define DEFINED_TYPEDEF_FOR_sensor_bus_
 

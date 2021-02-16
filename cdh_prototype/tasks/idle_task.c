@@ -84,7 +84,7 @@ void idle_task(void *pvParameters)
 	double voltage;
 	voltage = i2c_eps_getBatteryLevel(); //TODO: PRINTF THROWS ERROR WHEN THIS CALLED
 	//PRINTF("Obtained the battery = %f", voltage);
-	int mode = NOMINAL_POWER;
+	int mode = CRIT_LOW_POWER; // to ensure the system bootup from Critically Low Power Mode
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
@@ -167,7 +167,7 @@ void idle_task(void *pvParameters)
 //				g_gncHealthy = gnc_healthcheck();
 //			}
 			while (!g_rxwHealthy) {
-				g_rxwHealthy = rxw_healthcheck();
+				g_rxwHealthy = rwa_healthcheck();
 			}
 			while (!g_mtqHealthy) {
 				g_mtqHealthy = mtq_healthcheck();

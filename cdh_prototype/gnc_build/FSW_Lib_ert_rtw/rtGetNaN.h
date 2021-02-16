@@ -21,8 +21,8 @@
 
 #ifndef RTW_HEADER_rtGetNaN_h_
 #define RTW_HEADER_rtGetNaN_h_
-#include <FSW_Lib_ert_rtw/rt_nonfinite.h>
-#include <FSW_Lib_ert_rtw/rtwtypes.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rt_nonfinite.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
 #include <stddef.h>
 
 extern real_T rtGetNaN(void);

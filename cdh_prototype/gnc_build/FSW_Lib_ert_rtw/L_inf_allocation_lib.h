@@ -30,8 +30,8 @@
 #endif                                 /* FSW_Lib_COMMON_INCLUDES_ */
 
 #include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
-#include <FSW_Lib_ert_rtw/rtGetNaN.h>
-#include <FSW_Lib_ert_rtw/rt_nonfinite.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rtGetNaN.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rt_nonfinite.h>
 
 extern void L_inf_allocation_lib(const real_T rtu_input_body[3], real_T
   rty_output_wheel[4]);

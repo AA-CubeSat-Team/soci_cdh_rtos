@@ -34,12 +34,12 @@
 #include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 
 /* Child system includes */
-#include <FSW_Lib_ert_rtw/CrossProdMatrix_lib.h>
-#include <FSW_Lib_ert_rtw/rt_sys_MEKF_lib_1.h>
-#include <FSW_Lib_ert_rtw/rt_sys_MEKF_lib_12.h>
-#include <FSW_Lib_ert_rtw/rt_sys_MEKF_lib_5.h>
-#include <FSW_Lib_ert_rtw/rtGetNaN.h>
-#include <FSW_Lib_ert_rtw/rt_nonfinite.h>
+#include <gnc_build/FSW_Lib_ert_rtw/CrossProdMatrix_lib.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rt_sys_MEKF_lib_1.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rt_sys_MEKF_lib_12.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rt_sys_MEKF_lib_5.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rtGetNaN.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rt_nonfinite.h>
 
 /* Block signals and states (default storage) for system '<S1>/MEKF_lib' */
 typedef struct {

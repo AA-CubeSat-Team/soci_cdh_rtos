@@ -23,6 +23,7 @@
 #include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
 #include <stddef.h>
 #include <stdio.h>                     /* This ert_main.c example uses printf/fflush */
+#include "act_wrap.h"
 
 /*
  * Associating rt_OneStep with a real-time clock or interrupt service routine

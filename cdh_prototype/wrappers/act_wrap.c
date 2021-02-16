@@ -11,14 +11,56 @@
 #include "fsl_lpspi_freertos.h"
 #include "fsl_lpspi.h"
 #include "fsl_debug_console.h"
+#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 #include <stdbool.h>
 
-bool rxw_healthcheck(){
+// structs we would need for the input and output to communicate with GNC
+//typedef struct {
+//  boolean_T mtq_valid[5];
+//  boolean_T rwa_valid[4];
+//  real_T rwa_power;
+//  real_T mtq_power;
+//  real_T rwa_rpm[4];
+//} actuator_meas;
+//
+//typedef struct {
+//  real_T A[12];
+//  real_T max_norm_ellipsoid_R[3];
+//  uint8_T num_facet;
+//  real_T h_targ_wheel_Nms[4];
+//  real_T feedback_gain;
+//  uint8_T id_facet[12];
+//  uint8_T id_facet_complement[12];
+//  real_T w_facet[18];
+//  real_T g_facet[6];
+//  real_T inrm2[6];
+//} RWA;
+//
+//typedef struct {
+//  real_T rwa_cmd_rpm[4];
+//  real_T mtq_cmd_Am2[5];
+//  real_T gnc_telemetry[6];
+//} fsw_out;
+
+bool rwa_healthcheck()
+{
 	PRINTF("checking reaction wheel health");
 	return true;
 }
 
-bool mtq_healthcheck(){
+bool mtq_healthcheck()
+{
 	PRINTF("checking magnetorquer health");
 	return true;
+}
+
+double readActMeas()
+{
+	PRINTF("Read RWA and MTQ measurements");
+	return 0.0;
+}
+
+void gnc_sendCommand()
+{
+	PRINTF("Sending command to GNC");
 }

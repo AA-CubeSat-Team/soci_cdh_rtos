@@ -21,7 +21,7 @@
 
 #ifndef RTW_HEADER_rt_nonfinite_h_
 #define RTW_HEADER_rt_nonfinite_h_
-#include <FSW_Lib_ert_rtw/rtwtypes.h>
+#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
 #include <stddef.h>
 
 extern real_T rtInf;

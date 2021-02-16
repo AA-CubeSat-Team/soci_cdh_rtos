@@ -5,6 +5,10 @@
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include <stdbool.h>
+#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 
-bool rxw_healthcheck();
+bool rwa_healthcheck();
 bool mtq_healthcheck();
+double readActMeas();
+void gnc_sendCommand();
+void rt_OneStep(void);
