@@ -15,8 +15,8 @@
 
 #include "sens_task.h"
 #include "clock_config.h"
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
+//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
 
 void sens_task(void *pvParameters)
 {
@@ -59,7 +59,10 @@ void sens_task(void *pvParameters)
 		}
 
 		// TODO: enable rt_OneStep(); after include
-		rt_OneStep();
+		// rt_OneStep();
+
+
+
 		//These two magnetorquer and reaction wheel are not sensors
 //		if(g_mtqSensActive == true){
 //			//uart_send(fsw_out...);

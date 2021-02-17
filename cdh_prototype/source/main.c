@@ -48,8 +48,8 @@
  * Flags
  ******************************************************************************/
 //flags for checking if it's turned on or not
-bool g_imagActive;
-bool g_commActive;
+bool g_imgActive;
+bool g_comActive;
 bool g_sunSensActive;
 bool g_rwaSensActive;
 bool g_magSensActive;
@@ -62,7 +62,7 @@ bool g_comHealthy;
 bool g_senHealthy;
 bool g_gncHealthy;
 bool g_mtqHealthy;
-bool g_rxwHealthy;
+bool g_rwaHealthy;
 bool g_imgHealthy;
 
 int g_operatingMode;

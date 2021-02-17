@@ -21,8 +21,8 @@
 #include "idle_task.h"
 #include "clock_config.h"
 
-extern bool g_imagActive;
-extern bool g_commActive;
+extern bool g_imgActive;
+extern bool g_comActive;
 extern bool g_sunSensActive;
 extern bool g_rwaSensActive;
 extern bool g_magSensActive;
@@ -94,12 +94,12 @@ void idle_task(void *pvParameters)
 		PRINTF("idle: Commission Phase 1 Checks\r\n");
 		while (!g_epsHealthy || !g_obcHealthy){
 			g_epsHealthy = eps_healthcheck();
-			g_obcHealthy = obc_healthcheck();
+			//g_obcHealthy = obc_healthcheck();
 			if (!g_epsHealthy){
 				i2c_eps_manualReset();
 			}
 			if (!g_obcHealthy){
-				obc_reset();
+				//obc_reset();
 			}
 		}
 
@@ -149,7 +149,7 @@ void idle_task(void *pvParameters)
 		{
 			g_comHealthy = com_healthcheck();
 			g_senHealthy = sens_healthcheck();
-			g_gncHealthy = gnc_healthcheck();
+			//g_gncHealthy = gnc_healthcheck();
 			g_rwaHealthy = rwa_healthcheck();
 			g_mtqHealthy = mtq_healthcheck();
 			g_imgHealthy = img_healthcheck();

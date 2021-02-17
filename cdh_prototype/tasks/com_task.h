@@ -1,1 +1,1 @@
-void comm_task(void *pvParameters);
+void com_task(void *pvParameters);

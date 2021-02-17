@@ -17,7 +17,7 @@
 
 void imag_task(void *pvParameters)
 {
-	extern bool g_imagActive;
+	extern bool g_imgActive;
 	// variables to use with imag task
 
 	// variable to store ticks equivalent to 500 ms
@@ -28,7 +28,7 @@ void imag_task(void *pvParameters)
 		TickType_t xLastWakeTime = xTaskGetTickCount();
 		PRINTF("imag work\r\n");
 
-		if(g_imagActive == true){
+		if(g_imgActive == true){
 			img_sendCommand();
 		}
 //		else{

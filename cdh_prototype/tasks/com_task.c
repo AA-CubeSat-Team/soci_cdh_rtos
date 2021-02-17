@@ -21,9 +21,9 @@ bool payload_check = false;
 bool image_check = false;
 bool beacon_check = false;
 
-void comm_task(void *pvParameters)
+void com_task(void *pvParameters)
 {
-	extern bool g_commActive;
+	extern bool g_comActive;
 	// variables to use with imag task
 
 	// variable to store ticks equivalent to 500 ms
@@ -36,7 +36,7 @@ void comm_task(void *pvParameters)
 		TickType_t xLastWakeTime = xTaskGetTickCount();
 		PRINTF("comm work.\r\n");
 
-		if(g_commActive == true){
+		if(g_comActive == true){
 			//checking if getting a command request
 			if (command_request){
 				//sending data based on priority
