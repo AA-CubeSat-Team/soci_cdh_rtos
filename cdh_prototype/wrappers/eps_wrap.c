@@ -26,8 +26,7 @@ bool eps_healthcheck() {
 	return true;
 }
 
-//uint32_t master_rtos_handle = 0; // fake variable for RTOS stuff
-//status_t status = 0; // fake variable for RTOS stuff
+
 //uint8_t kLPI2C_Write = 1; // not sure where this is defined, but I think it differentiates between read/write commands
 //uint8_t kLPI2C_Read = 0; // not sure where this is defined, but I think it differentiates between read/write commands
 //
@@ -37,6 +36,7 @@ bool eps_healthcheck() {
 // * [device address -> command -> parameters]
 // * So, this register address is just temporary. A more complete i2c library is needed.
 // */
+
 //uint8_t I2C_EPS_REG_ADDR = 1;
 //size_t datasize = 1U;
 //

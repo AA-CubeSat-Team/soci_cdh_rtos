@@ -22,6 +22,7 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 
+#include "peripherals.h"
 
 #include <stdbool.h>
 
@@ -110,6 +111,7 @@ int main(void)
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
+    BOARD_InitPeripherals();
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, idle_task_PRIORITY, NULL) !=
         pdPASS)
