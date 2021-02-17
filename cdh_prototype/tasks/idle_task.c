@@ -36,15 +36,15 @@ extern bool g_comHealthy;
 extern bool g_senHealthy;
 extern bool g_gncHealthy;
 extern bool g_mtqHealthy;
-extern bool g_rxwHealthy;
+extern bool g_rwaHealthy;
 extern bool g_imgHealthy;
 
 void UpdateFlags(int mode)
 {
 	switch(mode){
 		case CRIT_LOW_POWER:
-			g_imagActive    = false;
-			g_commActive    = false;
+			g_imgActive     = false;
+			g_comActive     = false;
 			g_sunSensActive = false;
 			g_rwaSensActive = false;
 			g_mtqSensActive = false;
@@ -54,8 +54,8 @@ void UpdateFlags(int mode)
 
 		case LOW_POWER:
 			//TODO: fix flags for low power mode
-			g_imagActive    = false;
-			g_commActive    = true;
+			g_imgActive     = false;
+			g_comActive     = true;
 			g_sunSensActive = true;
 			g_rwaSensActive = true;
 			g_mtqSensActive = true;
@@ -64,8 +64,8 @@ void UpdateFlags(int mode)
 			break;
 
 		case NOMINAL_POWER:
-			g_imagActive    = true;
-			g_commActive    = true;
+			g_imgActive     = true;
+			g_comActive     = true;
 			g_sunSensActive = true;
 			g_rwaSensActive = true;
 			g_mtqSensActive = true;
@@ -83,34 +83,35 @@ void idle_task(void *pvParameters)
 
 	double voltage;
 	voltage = i2c_eps_getBatteryLevel(); //TODO: PRINTF THROWS ERROR WHEN THIS CALLED
-	//PRINTF("Obtained the battery = %f", voltage);
 	int mode = CRIT_LOW_POWER; // to ensure the system bootup from Critically Low Power Mode
-	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
-	//
-//	char X = i2c_eps_powerModuleStatus();
-//	PRINTF("idle: Health check EPS\r\n");
-
-	// power up the module
 
 	for (;;) {
+		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
-		// gets the last wake time
-		TickType_t xLastWakeTime = xTaskGetTickCount();
+		/* Step 1. Commission Phase I Checks */
+		PRINTF("idle: Commission Phase 1 Checks\r\n");
+		while (!g_epsHealthy || !g_obcHealthy){
+			g_epsHealthy = eps_healthcheck();
+			g_obcHealthy = obc_healthcheck();
+			if (!g_epsHealthy){
+				i2c_eps_manualReset();
+			}
+			if (!g_obcHealthy){
+				obc_reset();
+			}
+		}
 
+		/* Step 2. Battery Voltage Check */
 		PRINTF("idle: Get Voltage from EPS\r\n");
-
-		//voltage
 		// TODO: Create a task to get the voltage from EPS system through I2C Communication
 		voltage = i2c_eps_getBatteryLevel();
 
-		PRINTF("idle: Power up modules based on voltage\r\n");
-
-
-		// voltage will be between 6.144 and 8.26
-
-		if (voltage <= 7.4 ) { // CRITICALLY LOW POWER
+		/* Step 3. Enters each mode and power up PDMs */
+		PRINTF("idle: PDM Power up modules based on voltage\r\n");
+		if (voltage <= 7.4 ) // CRITICALLY LOW POWER
+		{
 			mode = CRIT_LOW_POWER;
 			PRINTF("enters critically low power mode");
 			//MCU_LowPowerMode();
@@ -119,10 +120,9 @@ void idle_task(void *pvParameters)
 //			i2c_eps_switchOnOffPdms(IMG, OFF);
 //			i2c_eps_switchOnOffPdms(COM, OFF);
 //			i2c_eps_switchOnOffPdms(SEN, OFF);
-			g_epsHealthy = eps_healthcheck();
-
-		} else if (voltage <= 7.9 && voltage > 7.4) { // LOW POWER
-
+		}
+		else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
+		{
 			mode = LOW_POWER;
 			//MCU_LowPowerMode();
 //			i2c_eps_switchOnOffPdms(RXW, OFF);
@@ -130,23 +130,10 @@ void idle_task(void *pvParameters)
 //			i2c_eps_switchOnOffPdms(IMG, OFF);
 //			i2c_eps_switchOnOffPdms(COM, ON);
 //			i2c_eps_switchOnOffPdms(SEN, ON);
-			while (!g_epsHealthy){
-				g_epsHealthy = eps_healthcheck();
-			}
-			while (!g_comHealthy) {
-				g_comHealthy = com_healthcheck();
-			}
-			while (!g_senHealthy) {
-				g_senHealthy = sens_healthcheck();
-			}
-//			while (!g_gncHealthy) {
-//				g_gncHealthy = gnc_healthcheck();
-//			}
-			com_sendBeacons();
 
-		// Normal Mode: 7.9 < voltage < 8.26
-		} else { // NOMINAL POWER
-
+		}
+		else // Normal Mode: 7.9 < voltage < 8.26
+		{ // NOMINAL POWER
 			mode = NOMINAL_POWER;
 			//MCU_OverdriveMode();
 //			i2c_eps_switchOnOffPdms(RXW, ON);
@@ -154,31 +141,28 @@ void idle_task(void *pvParameters)
 //			i2c_eps_switchOnOffPdms(IMG, ON);
 //			i2c_eps_switchOnOffPdms(COM, ON);
 //			i2c_eps_switchOnOffPdms(SEN, ON);
-			while (!g_epsHealthy){
-				g_epsHealthy = eps_healthcheck();
-			}
-			while (!g_comHealthy) {
-				g_comHealthy = com_healthcheck();
-			}
-			while (!g_senHealthy) {
-				g_senHealthy = sens_healthcheck();
-			}
-//			while (!g_gncHealthy) {
-//				g_gncHealthy = gnc_healthcheck();
-//			}
-			while (!g_rxwHealthy) {
-				g_rxwHealthy = rwa_healthcheck();
-			}
-			while (!g_mtqHealthy) {
-				g_mtqHealthy = mtq_healthcheck();
-			}
-			while (!g_imgHealthy) {
-				g_imgHealthy = img_healthcheck();
-			}
-			com_sendBeacons();
 		}
-
 		UpdateFlags(mode); //uses g_operatingMode and mode
+
+		/* Step 4. Health Checks */
+		if (mode == NOMINAL_POWER)
+		{
+			g_comHealthy = com_healthcheck();
+			g_senHealthy = sens_healthcheck();
+			g_gncHealthy = gnc_healthcheck();
+			g_rwaHealthy = rwa_healthcheck();
+			g_mtqHealthy = mtq_healthcheck();
+			g_imgHealthy = img_healthcheck();
+		}
+		else if (mode == LOW_POWER)
+		{
+			g_comHealthy = com_healthcheck();
+			g_senHealthy = sens_healthcheck();
+//			g_gncHealthy = gnc_healthcheck(); //what does this check?
+		}
+		else { //mode == CRIT_LOW_POWER
+			//nothing here
+		}
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }

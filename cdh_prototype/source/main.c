@@ -40,7 +40,7 @@
 /* Task priorities. */
 #define idle_task_PRIORITY 0
 #define imag_task_PRIORITY 1
-#define comm_task_PRIORITY 2
+#define com_task_PRIORITY 2
 #define sens_task_PRIORITY 3
 
 
@@ -111,17 +111,6 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
 
-    while (!g_epsHealthy || !g_obcHealthy){
-        g_epsHealthy = eps_healthcheck();
-        g_obcHealthy = obc_healthcheck();
-        if (!g_epsHealthy){
-        	i2c_eps_manualReset();
-        }
-        if (!g_obcHealthy){
-        	obc_reset();
-        }
-    }
-
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, idle_task_PRIORITY, NULL) !=
         pdPASS)
     {
@@ -136,7 +125,7 @@ int main(void)
 		while (1)
 			;
 	}
-    if (xTaskCreate(comm_task, "comm_task", configMINIMAL_STACK_SIZE + 100, NULL, comm_task_PRIORITY, NULL) !=
+    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, NULL) !=
 		pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");

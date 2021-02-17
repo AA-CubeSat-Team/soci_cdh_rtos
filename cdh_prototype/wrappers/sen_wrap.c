@@ -47,3 +47,8 @@ void sens_readMag(){
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors");
 }
+
+void sens_readGyr(){
+	PRINTF("reading gyroscope sensors");
+	//loop() in gyro.ino by Alex
+}
