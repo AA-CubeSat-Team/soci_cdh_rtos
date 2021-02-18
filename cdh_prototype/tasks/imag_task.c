@@ -36,5 +36,6 @@ void imag_task(void *pvParameters)
 //		}
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		//suspend this task rather than delaying it so we only run it once - single shot?
 	}
 }

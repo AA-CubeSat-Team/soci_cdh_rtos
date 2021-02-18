@@ -384,7 +384,7 @@ void i2c_eps_resetPdm()
 // will skip on doing telemtry for now until answers on how it outputs is provided
 //
 // for this newPdmState will turn on specific pdm 1-6 which is assigned from bit 0-5 in that order
-void i2c_eps_switchOnOffPdms(newPdmState)
+void i2c_eps_switchOnOffPdms(uint8_t newPdmState)
 {
 //    /* Set up i2c master to send data to slave */
 //    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard

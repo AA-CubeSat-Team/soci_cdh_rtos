@@ -60,7 +60,7 @@ double readActMeas()
 	return 0.0;
 }
 
-void gnc_sendCommand()
+void gnc_sendCommand() //we will have something like rwa_writeDeg() to use
 {
 	PRINTF("Sending command to GNC");
 }

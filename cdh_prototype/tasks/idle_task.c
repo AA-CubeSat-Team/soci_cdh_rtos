@@ -39,6 +39,12 @@ extern bool g_mtqHealthy;
 extern bool g_rwaHealthy;
 extern bool g_imgHealthy;
 
+//#define PDM_Imag  1 << (2)
+//#define PDM_Comm  1 << (3)
+//
+//i2c_eps_switchOnOffPdms(PDM_Imag | PDM_Comm);
+
+
 void UpdateFlags(int mode)
 {
 	switch(mode){
@@ -84,6 +90,7 @@ void idle_task(void *pvParameters)
 	double voltage;
 	voltage = i2c_eps_getBatteryLevel(); //TODO: PRINTF THROWS ERROR WHEN THIS CALLED
 	int mode = CRIT_LOW_POWER; // to ensure the system bootup from Critically Low Power Mode
+	UpdateFlags(mode);
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 
 
