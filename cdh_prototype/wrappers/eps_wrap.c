@@ -16,8 +16,8 @@
 
 #include "fsl_debug_console.h"
 
-uint8_t g_slave_buff[I2C_DATA_LENGTH];
-uint8_t g_master_buff[I2C_DATA_LENGTH];
+//uint8_t g_slave_buff[I2C_DATA_LENGTH];
+//uint8_t i2c1_master_buff[I2C_DATA_LENGTH];
 
 bool eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");

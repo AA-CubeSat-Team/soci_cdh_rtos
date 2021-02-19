@@ -12,6 +12,10 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 
+#include "fsl_lpuart.h"
+#include "fsl_lpspi.h"
+#include "fsl_lpi2c.h"
+
 //#define uart_task_PRIORITY (configMAX_PRIORITIES - 1)
 
 /*
@@ -105,6 +109,11 @@ static void LPUART4_init(void) {
 }
 
 
+/*
+ *
+ * SPI 1
+ *
+ */
 
 
 #define TRANSFER_SIZE     (512U)    /*! Transfer dataSize.*/
@@ -119,29 +128,29 @@ uint8_t masterReceiveBuffer[TRANSFER_SIZE] = {0};
 uint8_t masterSendBuffer[TRANSFER_SIZE]    = {0};
 
 lpspi_rtos_handle_t master_rtos_handle;
-lpspi_master_config_t masterConfig;
+lpspi_master_config_t spiMaster_config;
 
 static void LPSPI1_init(void) {
 
-	LPSPI_MasterGetDefaultConfig(&masterConfig);
+	LPSPI_MasterGetDefaultConfig(&spiMaster_config);
 
-	masterConfig.baudRate                      = TRANSFER_BAUDRATE;
-	masterConfig.bitsPerFrame                  = 8 * TRANSFER_SIZE;
-	masterConfig.cpol                          = kLPSPI_ClockPolarityActiveHigh;
-	masterConfig.cpha                          = kLPSPI_ClockPhaseFirstEdge;
-	masterConfig.direction                     = kLPSPI_MsbFirst;
-	masterConfig.pcsToSckDelayInNanoSec        = 1000000000 / masterConfig.baudRate;
-	masterConfig.lastSckToPcsDelayInNanoSec    = 1000000000 / masterConfig.baudRate;
-	masterConfig.betweenTransferDelayInNanoSec = 1000000000 / masterConfig.baudRate;
-	masterConfig.whichPcs                      = LPSPI_MASTER_PCS_FOR_INIT;
-	masterConfig.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
-	masterConfig.pinCfg                        = kLPSPI_SdiInSdoOut;
-	masterConfig.dataOutConfig                 = kLpspiDataOutRetained;
+	spiMaster_config.baudRate                      = TRANSFER_BAUDRATE;
+	spiMaster_config.bitsPerFrame                  = 8 * TRANSFER_SIZE;
+	spiMaster_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
+	spiMaster_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
+	spiMaster_config.direction                     = kLPSPI_MsbFirst;
+	spiMaster_config.pcsToSckDelayInNanoSec        = 1000000000 / spiMaster_config.baudRate;
+	spiMaster_config.lastSckToPcsDelayInNanoSec    = 1000000000 / spiMaster_config.baudRate;
+	spiMaster_config.betweenTransferDelayInNanoSec = 1000000000 / spiMaster_config.baudRate;
+	spiMaster_config.whichPcs                      = LPSPI_MASTER_PCS_FOR_INIT;
+	spiMaster_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
+	spiMaster_config.pinCfg                        = kLPSPI_SdiInSdoOut;
+	spiMaster_config.dataOutConfig                 = kLpspiDataOutRetained;
 
 	uint32_t sourceClock;
 
 	sourceClock = LPSPI_CLOCK_FREQ;
-	if(kStatus_Success != LPSPI_RTOS_Init(&master_rtos_handle, LPSPI1, &masterConfig, sourceClock)) {
+	if(kStatus_Success != LPSPI_RTOS_Init(&master_rtos_handle, LPSPI1, &spiMaster_config, sourceClock)) {
 		PRINTF("SPI Master initialization failed! \r\n");
 	}
 }
@@ -167,8 +176,196 @@ void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer) {
 	}
 }
 
+/*
+ *
+ * I2C 1
+ *
+ */
+
+#define LPI2C_CLOCK_SOURCE_SELECT (0U)
+/* Clock divider for master lpi2c clock source */
+#define LPI2C_CLOCK_SOURCE_DIVIDER (5U)
+/* Get frequency of lpi2c clock */
+#define LPI2C_CLOCK_FREQUENCY ((CLOCK_GetFreq(kCLOCK_Usb1PllClk) / 8) / (LPI2C_CLOCK_SOURCE_DIVIDER + 1U))
+//#define I2C_MASTER_SLAVE_ADDR_7BIT (0x7EU)
+#define I2C_BAUDRATE (100000) /* 100K */
+#define I2C_DATA_LENGTH (32) /* MAX is 256 */
+
+uint8_t i2c1_master_buff[I2C_DATA_LENGTH];
+
+lpi2c_master_config_t i2c1_master_config;
+lpi2c_rtos_handle_t i2c1_master_rtos_handle;
 
 
+static void LPI2C1_init(void) {
+
+	/*
+	 * masterConfig.debugEnable = false;
+	 * masterConfig.ignoreAck = false;
+	 * masterConfig.pinConfig = kLPI2C_2PinOpenDrain;
+	 * masterConfig.baudRate_Hz = 100000U;
+	 * masterConfig.busIdleTimeout_ns = 0;
+	 * masterConfig.pinLowTimeout_ns = 0;
+	 * masterConfig.sdaGlitchFilterWidth_ns = 0;
+	 * masterConfig.sclGlitchFilterWidth_ns = 0;
+	 */
+	LPI2C_MasterGetDefaultConfig(&i2c1_master_config); //defined in fsl_lpi2c.c
+	i2c1_master_config.baudRate_Hz = I2C_BAUDRATE;
+	if(kStatus_Success == LPI2C_RTOS_Init(&i2c1_master_rtos_handle, (LPI2C_Type *)LPI2C1_BASE, &i2c1_master_config, LPI2C_CLOCK_FREQUENCY))
+    {
+		PRINTF("I2C1 Master initialization failed! \r\n");
+    }
+}
+
+
+void LPI2C1_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pass length as well?
+	lpi2c_master_transfer_t masterXfer;
+	status_t status;
+
+	memset(&masterXfer, 0, sizeof(masterXfer));
+	masterXfer.slaveAddress   = slaveAddress;
+	masterXfer.direction      = kLPI2C_Write;
+	masterXfer.subaddress     = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data           = masterSendBuffer;
+	masterXfer.dataSize       = I2C_DATA_LENGTH;
+	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
+
+	status = LPI2C_RTOS_Transfer(&i2c1_master_rtos_handle, &masterXfer);
+	if (status == kStatus_Success)
+	{
+//#if (EXAMPLE_CONNECT_I2C == BOARD_TO_BOARD)
+//		xSemaphoreGive(lpi2c_sem);
+//#endif
+		PRINTF("I2C master transfer completed successfully.\r\n");
+	}
+	else
+	{
+		PRINTF("I2C master transfer completed with error!\r\n");
+	}
+}
+
+
+/*
+ *
+ * I2C 2
+ *
+ */
+
+uint8_t i2c2_master_buff[I2C_DATA_LENGTH];
+
+lpi2c_master_config_t i2c2_master_config;
+lpi2c_rtos_handle_t i2c2_master_rtos_handle;
+
+
+static void LPI2C2_init(void) {
+
+	/*
+	 * masterConfig.debugEnable = false;
+	 * masterConfig.ignoreAck = false;
+	 * masterConfig.pinConfig = kLPI2C_2PinOpenDrain;
+	 * masterConfig.baudRate_Hz = 100000U;
+	 * masterConfig.busIdleTimeout_ns = 0;
+	 * masterConfig.pinLowTimeout_ns = 0;
+	 * masterConfig.sdaGlitchFilterWidth_ns = 0;
+	 * masterConfig.sclGlitchFilterWidth_ns = 0;
+	 */
+	LPI2C_MasterGetDefaultConfig(&i2c2_master_config); //defined in fsl_lpi2c.c
+	i2c2_master_config.baudRate_Hz = I2C_BAUDRATE;
+	if(kStatus_Success == LPI2C_RTOS_Init(&i2c2_master_rtos_handle, (LPI2C_Type *)LPI2C2_BASE, &i2c2_master_config, LPI2C_CLOCK_FREQUENCY))
+    {
+		PRINTF("I2C1 Master initialization failed! \r\n");
+    }
+}
+
+
+void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pass length as well?
+	lpi2c_master_transfer_t masterXfer;
+	status_t status;
+
+	memset(&masterXfer, 0, sizeof(masterXfer));
+	masterXfer.slaveAddress   = slaveAddress;
+	masterXfer.direction      = kLPI2C_Write;
+	masterXfer.subaddress     = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data           = masterSendBuffer;
+	masterXfer.dataSize       = I2C_DATA_LENGTH;
+	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
+
+	status = LPI2C_RTOS_Transfer(&i2c2_master_rtos_handle, &masterXfer);
+	if (status == kStatus_Success)
+	{
+//#if (EXAMPLE_CONNECT_I2C == BOARD_TO_BOARD)
+//		xSemaphoreGive(lpi2c_sem);
+//#endif
+		PRINTF("I2C master transfer completed successfully.\r\n");
+	}
+	else
+	{
+		PRINTF("I2C master transfer completed with error!\r\n");
+	}
+}
+
+
+/*
+ *
+ * I2C 3
+ *
+ */
+
+uint8_t i2c3_master_buff[I2C_DATA_LENGTH];
+
+lpi2c_master_config_t i2c3_master_config;
+lpi2c_rtos_handle_t i2c3_master_rtos_handle;
+
+
+static void LPI2C3_init(void) {
+
+	/*
+	 * masterConfig.debugEnable = false;
+	 * masterConfig.ignoreAck = false;
+	 * masterConfig.pinConfig = kLPI2C_2PinOpenDrain;
+	 * masterConfig.baudRate_Hz = 100000U;
+	 * masterConfig.busIdleTimeout_ns = 0;
+	 * masterConfig.pinLowTimeout_ns = 0;
+	 * masterConfig.sdaGlitchFilterWidth_ns = 0;
+	 * masterConfig.sclGlitchFilterWidth_ns = 0;
+	 */
+	LPI2C_MasterGetDefaultConfig(&i2c3_master_config); //defined in fsl_lpi2c.c
+	i2c3_master_config.baudRate_Hz = I2C_BAUDRATE;
+	if(kStatus_Success == LPI2C_RTOS_Init(&i2c1_master_rtos_handle, (LPI2C_Type *)LPI2C3_BASE, &i2c3_master_config, LPI2C_CLOCK_FREQUENCY))
+    {
+		PRINTF("I2C1 Master initialization failed! \r\n");
+    }
+}
+
+
+void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pass length as well?
+	lpi2c_master_transfer_t masterXfer;
+	status_t status;
+
+	memset(&masterXfer, 0, sizeof(masterXfer));
+	masterXfer.slaveAddress   = slaveAddress;
+	masterXfer.direction      = kLPI2C_Write;
+	masterXfer.subaddress     = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data           = masterSendBuffer;
+	masterXfer.dataSize       = I2C_DATA_LENGTH;
+	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
+
+	status = LPI2C_RTOS_Transfer(&i2c3_master_rtos_handle, &masterXfer);
+	if (status == kStatus_Success)
+	{
+//#if (EXAMPLE_CONNECT_I2C == BOARD_TO_BOARD)
+//		xSemaphoreGive(lpi2c_sem);
+//#endif
+		PRINTF("I2C master transfer completed successfully.\r\n");
+	}
+	else
+	{
+		PRINTF("I2C master transfer completed with error!\r\n");
+	}
+}
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
@@ -181,8 +378,8 @@ void BOARD_InitPeripherals(void)
 
   LPSPI1_init();
 
-//  LPI2C1_init();
-//  LPI2C2_init();
-//  LPI2C3_init();
+  LPI2C1_init();
+  LPI2C2_init();
+  LPI2C3_init();
 }
 
