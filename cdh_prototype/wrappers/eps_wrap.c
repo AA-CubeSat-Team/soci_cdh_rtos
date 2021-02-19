@@ -11,13 +11,59 @@
  */
 #include <stdbool.h>
 #include "eps_wrap.h"
-#include "fsl_lpi2c.h"
+#include "fsl_lpi2c.h" //need these here? already in peripherals
 #include "fsl_lpi2c_freertos.h"
+#include "peripherals.h"
 
 #include "fsl_debug_console.h"
 
-//uint8_t g_slave_buff[I2C_DATA_LENGTH];
-//uint8_t i2c1_master_buff[I2C_DATA_LENGTH];
+#define I2C_EPS_CMD_POWER_MODULE_STATUS 0x01
+#define I2C_EPS_CMD_BATTERY_MODULE_STATUS 0x02
+#define I2C_EPS_CMD_FDIR 0x03
+#define I2C_EPS_CMD_ID 0x04
+#define I2C_EPS_CMD_SET_WATCHDOG_PERIOD 0x05
+#define I2C_EPS_CMD_SET_PDMS_INTIAL_STATE 0x06
+#define I2C_EPS_CMD_RESET_PDMS 0x07
+#define I2C_EPS_CMD_SWITCH_ON_OFF_PDMS 0x08
+#define I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD 0x09
+#define I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT 0x0A
+// put telemetry
+#define I2C_EPS_CMD_FIXED_POWER_BUS_RESET 0xFE
+#define I2C_EPS_CMD_MANUAL_RESET 0xFF
+
+// telemetry pg 14
+// check if thinking about correctly
+// for param[1] (where in I2C is parameter?)
+// also how do you read the byte and bit
+#define I2C_EPS_TELE_BCRS 0x00
+#define I2C_EPS_TELE_SOLAR_PANEL_SENSORS 0x01
+#define I2C_EPS_TELE_POWER_BUSES 0x02
+#define I2C_EPS_TELE_SWITCHABLE_POWER_BUSEs 0x03
+#define I2C_EPS_TELE_BATTERY_MODULE 0x04
+#define I2C_EPS_TELE_SYSTEM_DATA 0x05
+
+#define I2C_EPS_BYTE_0 0x00
+#define I2C_EPS_BYTE_2 0x02
+#define I2C_EPS_BYTE_4 0x04
+#define I2C_EPS_BYTE_6 0x06
+#define I2C_EPS_BYTE_8 0x08
+#define I2C_EPS_BYTE_10 0x10
+#define I2C_EPS_BYTE_12 0x12
+#define I2C_EPS_BYTE_14 0x14
+#define I2C_EPS_BYTE_16 0x16
+#define I2C_EPS_BYTE_18 0x18
+#define I2C_EPS_BYTE_20 0x20
+#define I2C_EPS_BYTE_22 0x22
+
+#define VERIFIED_COM_MASK 0x67D6
+#define NO_RETURN 9999
+
+
+#define EPS_SLAVE_ADDR 0 //change
+#define I2C_DATA_LENGTH 4 //?
+
+uint8_t buffer[I2C_DATA_LENGTH];
+static uint32_t adc_count;
 
 bool eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
@@ -79,18 +125,19 @@ bool eps_healthcheck() {
 //    }
 //}
 //
-uint32_t i2c_read_write_helper(gmb_0, gmb_1, gmb_2, gmb_3, d) {
-	PRINTF("Master will send data :");
-//	print_i2c_data(g_master_buff);
+static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t data_size, uint32_t * i2c_recv_buffer, time_t d) {
 
-//	// i2c write
-//
-//	 LPI2C_RTOS_Transfer(lpi2c_rtos_handle_t *handle, lpi2c_master_transfer_t *transfer);
-//
-//
-//	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_0, datasize);
-//	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_1, datasize);
-//	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, gmb_2, datasize);
+    // send gmb0, gmb1, gmb2, gmb3 in order
+	size_t n;
+	// TODO: send the delay as well
+	LPI2C1_send_receive(EPS_SLAVE_ADDR, i2c_send_buffer, data_size, &adc_count, &n); //n necessary?
+
+    if(d != NO_RETURN){
+        //delay(d);
+    }
+
+    adc_count = 0;
+    //LPI2C1_receive(...)
 //
 //
 //	//OBC: getStatus() in idle_task -> helper -> FreeRTOS_send gmb
@@ -114,8 +161,9 @@ uint32_t i2c_read_write_helper(gmb_0, gmb_1, gmb_2, gmb_3, d) {
 //	 * {0x00     0x00     g_slave_buff[1]     g_slave_buff[0]}
 //	 * I don't know if this calculation is correct
 //	 */
+
 //	adc_count = (g_slave_buff[1] << 8) | g_slave_buff[0]);
-	uint32_t adc_count = 0;
+	
 	return adc_count;
 }
 
@@ -127,257 +175,230 @@ double i2c_eps_getBatteryLevel()
 	PRINTF("get the battery value!\r\n");
 	return 0.0;
 }
-char i2c_eps_powerModuleStatus()
+void i2c_eps_powerModuleStatus()
 {
-	PRINTF("Master will send data :");
-    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_POWER_MODULE_STATUS; // i2c command = get EPS telemetry
+	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+	buffer[1] = I2C_EPS_CMD_POWER_MODULE_STATUS;
+
+	// send and read
+	// returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
+	// delay is unknown?
+	// thought: regardless if all bytes are moved, it should still return the same adc_count
+	//          which can still be checked, so it would be best to adjust so all bytes are moved
+	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+
+
+    if (adc_count & (1<<0))
+    {
+        PRINTF("3V3 output error\n");
+    }
+    if (adc_count & (1<<1))
+    {
+        PRINTF("5V output error\n");
+    }
+    if (adc_count & (1<<2))
+    {
+        PRINTF("12V output error\n");
+    }
+    if (adc_count & (1<<8))
+    {
+        PRINTF("PDM1 error\n");
+    }
+    if (adc_count & (1<<9))
+    {
+        PRINTF("PDM2 error\n");
+    }
+    if (adc_count & (1<<10))
+    {
+        PRINTF("PDM3 error\n");
+    }
+    if (adc_count & (1<<11))
+    {
+        PRINTF("PDM4 error\n");
+    }
+    if (adc_count & (1<<12))
+    {
+        PRINTF("PDM5 error\n");
+    }
+    if (adc_count & (1<<13))
+    {
+        PRINTF("PDM6 error\n");
+    }
+    return;
+}
+
+void i2c_eps_batteryModuleStatus()
+{
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_BATTERY_MODULE_STATUS;
 
     // send and read
-    // returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
+    //  returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
     // delay is unknown?
     // thought: regardless if all bytes are moved, it should still return the same adc_count
     //          which can still be checked, so it would be best to adjust so all bytes are moved
-//    adc_count = i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//    char string[1000];
-//    if (adc_count & (1<<0))
-//    {
-//        strcpy(string, "3V3 output error\n");
-//    }
-//    if (adc_count & (1<<1))
-//    {
-//        strcpy(string, "5V output error\n");
-//    }
-//    if (adc_count & (1<<2))
-//    {
-//        strcpy(string, "12V output error\n");
-//    }
-//    if (adc_count & (1<<8))
-//    {
-//        strcpy(string, "PDM1 error\n");
-//    }
-//    if (adc_count & (1<<9))
-//    {
-//        strcpy(string, "PDM2 error\n");
-//    }
-//    if (adc_count & (1<<10))
-//    {
-//        strcpy(string, "PDM3 error\n");
-//    }
-//    if (adc_count & (1<<11))
-//    {
-//        strcpy(string, "PDM4 error\n");
-//    }
-//    if (adc_count & (1<<12))
-//    {
-//        strcpy(string, "PDM5 error\n");
-//    }
-//    if (adc_count & (1<<13))
-//    {
-//        strcpy(string, "PDM6 error\n");
-//    }
-//
-//    return string;
-	return ' ';
+    i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+
+    if (adc_count & (1<<0))
+    {
+       PRINTF("CC, Charge Control Flag. Set if battery charge is disabled.\n");
+    }
+    if (adc_count & (1<<1))
+    {
+       PRINTF("DC, Discharge Control Flag. Set if battery discharge is disabled.\n");
+    }
+    if (adc_count & (1<<2))
+    {
+       PRINTF(" CHGTF, Charge-Termination Flag. Set if battery is fully charged.\n");
+    }
+    if (adc_count & (1<<4))
+    {
+       PRINTF("SEF, Standby-Empty Flag. Set if capacity is below 10%%, unset if above 15 %%.\n");
+    }
+    if (adc_count & (1<<8))
+    {
+       PRINTF("Set if heater is active.\n");
+    }
+    if (adc_count & (1<<12))
+    {
+       PRINTF("Set if battery balancing is happening from top cell to bottom cell.\n");
+    }
+    if (adc_count & (1<<13))
+    {
+       PRINTF("Set if battery balancing is happening from bottom cell to top cell.\n");
+    }
+    return;
 }
 
-char i2c_eps_batteryModuleStatus()
+void i2c_eps_FDIRflag()
 {
-    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_BATTERY_MODULE_STATUS; // i2c command = get EPS telemetry
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_FDIR;
 
     // send and read
-//    // returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
-//    adc_count = i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//    char string[1000];
-//    if (adc_count & (1<<0))
-//    {
-//        strcpy(string, "CC, Charge Control Flag. Set if battery charge is disabled.\n");
-//    }
-//    if (adc_count & (1<<1))
-//    {
-//        strcpy(string, "DC, Discharge Control Flag. Set if battery discharge is disabled.\n");
-//    }
-//    if (adc_count & (1<<2))
-//    {
-//        strcpy(string, " CHGTF, Charge-Termination Flag. Set if battery is fully charged.\n");
-//    }
-//    if (adc_count & (1<<4))
-//    {
-//        strcpy(string, "SEF, Standby-Empty Flag. Set if capacity is below 10%%, unset if above 15 %%.\n");
-//    }
-//    if (adc_count & (1<<8))
-//    {
-//        strcpy(string, "Set if heater is active.\n");
-//    }
-//    if (adc_count & (1<<12))
-//    {
-//        strcpy(string, "Set if battery balancing is happening from top cell to bottom cell.\n");
-//    }
-//    if (adc_count & (1<<13))
-//    {
-//        strcpy(string, "Set if battery balancing is happening from bottom cell to top cell.\n");
-//    }
-//
-//    return string;
-	return "";
+    // returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
+    // delay is unknown?
+    // thought: regardless if all bytes are moved, it should still return the same adc_count
+    //          which can still be checked, so it would be best to adjust so all bytes are moved
+    i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+
+    if (adc_count & (1<<0))
+    {
+       PRINTF("0 Set if last was command unknown\n");
+    }
+    if (adc_count & (1<<1))
+    {
+       PRINTF("Set if last command parameter was invalid.\n");
+    }
+    if (adc_count & (1<<2))
+    {
+       PRINTF("Set if watchdog was triggered.\n");
+    }
+    if (adc_count & (1<<3))
+    {
+       PRINTF("Set if BOR was triggered.\n");
+    }
+    if (adc_count & (1<<5))
+    {
+       PRINTF("Set if battery manager is unavailable.\n");
+    }
+    if (adc_count & (1<<6))
+    {
+       PRINTF("Set if VBAT1_ADC is out of range.\n");
+    }
+    if (adc_count & (1<<7))
+    {
+       PRINTF("Set if VBAT2_ADC is out of range.\n");
+    }
+    if (adc_count & (1<<8))
+    {
+       PRINTF("Set if IBAT_BM is out of range.\n");
+    }
+    if (adc_count & (1<<9))
+    {
+       PRINTF("Set if TEMP_BM is out of range.\n");
+    }
+    if (adc_count & (1<<10))
+    {
+       PRINTF("Set if TEMP_MB is out of range.\n");
+    }
+    if (adc_count & (1<<11))
+    {
+       PRINTF("Set if TEMP_DB1 is out of range.\n");
+    }
+    return;
 }
 
-char i2c_eps_FDIRflag()
+void i2c_eps_idRegister() ///make bool?
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_FDIR; // i2c command = get EPS telemetry
-//
-//    // send and read
-//    // returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
-//    i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//    char string[1000];
-//    if (adc_count & (1<<0))
-//    {
-//        strcpy(string, "0 Set if last was command unknown\n");
-//    }
-//    if (adc_count & (1<<1))
-//    {
-//        strcpy(string, "Set if last command parameter was invalid.\n");
-//    }
-//    if (adc_count & (1<<2))
-//    {
-//        strcpy(string, "Set if watchdog was triggered.\n");
-//    }
-//    if (adc_count & (1<<3))
-//    {
-//        strcpy(string, "Set if BOR was triggered.\n");
-//    }
-//    if (adc_count & (1<<5))
-//    {
-//        strcpy(string, "Set if battery manager is unavailable.\n");
-//    }
-//    if (adc_count & (1<<6))
-//    {
-//        strcpy(string, "Set if VBAT1_ADC is out of range.\n");
-//    }
-//    if (adc_count & (1<<7))
-//    {
-//        strcpy(string, "Set if VBAT2_ADC is out of range.\n");
-//    }
-//    if (adc_count & (1<<8))
-//    {
-//        strcpy(string, "Set if IBAT_BM is out of range.\n");
-//    }
-//    if (adc_count & (1<<9))
-//    {
-//        strcpy(string, "Set if TEMP_BM is out of range.\n");
-//    }
-//    if (adc_count & (1<<10))
-//    {
-//        strcpy(string, "Set if TEMP_MB is out of range.\n");
-//    }
-//    if (adc_count & (1<<11))
-//    {
-//        strcpy(string, "Set if TEMP_DB1 is out of range.\n");
-//    }
-//
-//    return string;
-	return "";
-}
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_ID;
 
-bool i2c_eps_idRegister()
-{
-    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_ID; // i2c command = get EPS telemetry
-//
-//    // send and read
-//    // returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
-//    i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//    bool verified_com;
-//   verified_com = adc_count && 0x67D6;
-//   char string[100];
-//   if (verified_com) {
-//        strcpy(string, "Communication is verified with module \n");
-//   } else {
-//        strcpy(string, "Communication is NOT verified with module \n");
-//   }
-//   return string;
-//}
+    // send and read
+    // returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
+    // delay is unknown?
+    // thought: regardless if all bytes are moved, it should still return the same adc_count
+    //          which can still be checked, so it would be best to adjust so all bytes are moved
+    i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+  
+    bool verified_com;
+    verified_com = adc_count && VERIFIED_COM_MASK; // TODO: gorkem - are we checking only the first bit here? then the mask is unnecessary
+    if (verified_com) {
+       PRINTF("Communication is verified with module \n");
+    } else {
+       PRINTF("Communication is NOT verified with module \n");
+    }
+    return;
+}
 //
 //// for watchdog, userinput period
 //// only accepts 1, 2, 4 for each period in minutes
-//void i2c_eps_watchdogPeriod(period)
-//{
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_SET_WATCHDOG_PERIOD; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x0000 | period;
-//    //g_master_buff[3] = period;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//    I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, g_master_buff[0], datasize);
-//    I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, g_master_buff[1], datasize);
-//    I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Write, I2C_EPS_REG_ADDR, g_master_buff[2], datasize);
-//
-//    delay(5000);
-//
-//    // dont need to read bc no data returned
-//}
-//
-//// Set PDM initial state has input for initial state
-//// pdm_state = set bit: 00******
-//// bit 0 effects PDM1 state, bit 1 effects PDM2 state, and so on...
-//void i2c_eps_setPdmsInitialState(pdm_state)
-//{
-//    uint32_t intial_pdms = 0x00 | pdm_state; // bit 6 and 7 are reserved
-//                                             // should become 0x00(6 bit pdm)
-//
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_SET_PDMS_INTIAL_STATE; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x00;
-//    g_master_buff[3] = intial_pdms;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
-//
-//    // dont need to read bc no data returned
+void i2c_eps_watchdogPeriod(uint8_t period)
+{
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_ID;
+    buffer[2] = 0x0000 | period;
+    //buffer[3] = period;
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
+    return;
+}
+
+
+// Set PDM initial state has input for initial state
+// pdm_state = set bit: 00******
+// bit 0 effects PDM1 state, bit 1 effects PDM2 state, and so on...
+void i2c_eps_setPdmsInitialState(uint8_t pdm_state)
+{
+    uint32_t intial_pdms = 0x00 | pdm_state; // bit 6 and 7 are reserved
+                                            // should become 0x00(6 bit pdm)
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_SET_PDMS_INTIAL_STATE;
+    buffer[2] = 0x00;
+    buffer[3] = intial_pdms;
+    //buffer[3] = period;
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
+    return;
 }
 
 void i2c_eps_resetPdm()
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_RESET_PDMS; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x00;
-//    g_master_buff[3] = 0xFF;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
-//
-//    // dont need to read bc no data returned
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_RESET_PDMS;
+    buffer[2] = 0x00;
+    buffer[3] = 0xFF; //all ON?
+    
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
+    return;
 }
 
 // added 12/6/20
@@ -386,45 +407,32 @@ void i2c_eps_resetPdm()
 // for this newPdmState will turn on specific pdm 1-6 which is assigned from bit 0-5 in that order
 void i2c_eps_switchOnOffPdms(uint8_t newPdmState)
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_SWITCH_ON_OFF_PDMS; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x00
-//    g_master_buff[3] = newPdmState;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_SWITCH_ON_OFF_PDMS;
+    buffer[2] = 0x00;
+    buffer[3] = newPdmState; 
+    
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
 
-    // dont need to read bc no data returned
+    // TODO: do we want an acknowledgement?
+    return;
 }
 
 // period can be 1 min 2 min or 4 min
-void i2c_eps_setHousekeepingPeriod(period)
+void i2c_eps_setHousekeepingPeriod(uint8_t period)
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x00
-//    g_master_buff[3] = period;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD;
+    buffer[2] = 0x00;
+    buffer[3] = period; 
+    
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
 
-    // dont need to read bc no data returned
+    return;
 }
 
 // QUESTION: how is the i2c write structured
@@ -433,23 +441,16 @@ void i2c_eps_setHousekeepingPeriod(period)
 
 void i2c_eps_setSafetyHazardEnvironment()
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x00;
-//    g_master_buff[3] = 0xFF;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT;
+    buffer[2] = 0x00;
+    buffer[3] = 0xFF; 
+    
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
 
-    // dont need to read bc no data returned
+    return;
 }
 
 // some ideas about telemetry
@@ -462,42 +463,28 @@ void i2c_eps_setSafetyHazardEnvironment()
 // bit 3 and 2 = 1 then 5v
 // bit 5 and 4 = 1 then 12v
 // bit 7 and 6 = 1 then Vbat
-void i2c_eps_fixedPowerBusReset(busReset)
+void i2c_eps_fixedPowerBusReset(uint8_t busReset)
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_FIXED_POWER_BUS_RESET; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0x00 | busReset;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_FIXED_POWER_BUS_RESET;
+    buffer[2] = 0x00 | busReset; 
+    
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
 
-    // dont need to read bc no data returned
+    return;
 }
 
 void i2c_eps_manualReset()
 {
-//    /* Set up i2c master to send data to slave */
-//    g_master_buff[0] = I2C_EPS_ADDR; // i2c slave address = EPS motherboard
-//    g_master_buff[1] = I2C_EPS_CMD_MANUAL_RESET; // i2c command = get EPS telemetry
-//    g_master_buff[2] = 0xFF;
-//
-//    // this one only needs to read
-//    PRINTF("Master will send data :");
-//    print_i2c_data(g_master_buff);
-//
-//    // i2c write
-//	i2c_read_write_helper(g_master_buff[0], g_master_buff[1], g_master_buff[2], g_master_buff[3], 5000);
-//
-//
-//    delay(5000);
+    memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
+    buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
+    buffer[1] = I2C_EPS_CMD_MANUAL_RESET;
+    buffer[2] = 0xFF;
+    
+    i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
+    (void)adc_count; //unused
 
-    // dont need to read bc no data returned
+    return;
 }

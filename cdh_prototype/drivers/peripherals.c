@@ -127,30 +127,30 @@ static void LPUART4_init(void) {
 uint8_t masterReceiveBuffer[TRANSFER_SIZE] = {0};
 uint8_t masterSendBuffer[TRANSFER_SIZE]    = {0};
 
-lpspi_rtos_handle_t master_rtos_handle;
-lpspi_master_config_t spiMaster_config;
+lpspi_rtos_handle_t spi_master_rtos_handle;
+lpspi_master_config_t spi_master_config;
 
 static void LPSPI1_init(void) {
 
-	LPSPI_MasterGetDefaultConfig(&spiMaster_config);
+	LPSPI_MasterGetDefaultConfig(&spi_master_config);
 
-	spiMaster_config.baudRate                      = TRANSFER_BAUDRATE;
-	spiMaster_config.bitsPerFrame                  = 8 * TRANSFER_SIZE;
-	spiMaster_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
-	spiMaster_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
-	spiMaster_config.direction                     = kLPSPI_MsbFirst;
-	spiMaster_config.pcsToSckDelayInNanoSec        = 1000000000 / spiMaster_config.baudRate;
-	spiMaster_config.lastSckToPcsDelayInNanoSec    = 1000000000 / spiMaster_config.baudRate;
-	spiMaster_config.betweenTransferDelayInNanoSec = 1000000000 / spiMaster_config.baudRate;
-	spiMaster_config.whichPcs                      = LPSPI_MASTER_PCS_FOR_INIT;
-	spiMaster_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
-	spiMaster_config.pinCfg                        = kLPSPI_SdiInSdoOut;
-	spiMaster_config.dataOutConfig                 = kLpspiDataOutRetained;
+	spi_master_config.baudRate                      = TRANSFER_BAUDRATE;
+	spi_master_config.bitsPerFrame                  = 8 * TRANSFER_SIZE;
+	spi_master_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
+	spi_master_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
+	spi_master_config.direction                     = kLPSPI_MsbFirst;
+	spi_master_config.pcsToSckDelayInNanoSec        = 1000000000 / spi_master_config.baudRate;
+	spi_master_config.lastSckToPcsDelayInNanoSec    = 1000000000 / spi_master_config.baudRate;
+	spi_master_config.betweenTransferDelayInNanoSec = 1000000000 / spi_master_config.baudRate;
+	spi_master_config.whichPcs                      = LPSPI_MASTER_PCS_FOR_INIT;
+	spi_master_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
+	spi_master_config.pinCfg                        = kLPSPI_SdiInSdoOut;
+	spi_master_config.dataOutConfig                 = kLpspiDataOutRetained;
 
 	uint32_t sourceClock;
 
 	sourceClock = LPSPI_CLOCK_FREQ;
-	if(kStatus_Success != LPSPI_RTOS_Init(&master_rtos_handle, LPSPI1, &spiMaster_config, sourceClock)) {
+	if(kStatus_Success != LPSPI_RTOS_Init(&spi_master_rtos_handle, LPSPI1, &spi_master_config, sourceClock)) {
 		PRINTF("SPI Master initialization failed! \r\n");
 	}
 }
@@ -165,7 +165,7 @@ void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer) {
 	masterXfer.dataSize    = TRANSFER_SIZE; //do we need this as a parameter?
 	masterXfer.configFlags = LPSPI_MASTER_PCS_FOR_TRANSFER | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
 
-	status = LPSPI_RTOS_Transfer(&master_rtos_handle, &masterXfer);
+	status = LPSPI_RTOS_Transfer(&spi_master_rtos_handle, &masterXfer);
 	if (status == kStatus_Success)
 	{
 		PRINTF("LPSPI master transfer completed successfully.\r\n");
@@ -218,7 +218,9 @@ static void LPI2C1_init(void) {
 }
 
 
-void LPI2C1_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pass length as well?
+void LPI2C1_send_receive(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t sendDataSize, uint32_t * masterRecvBuffer, size_t * recvDataSize) { //need to pass length as well?
+	// might want to change uint32_t * masterRecvBuffer to uint8_t * masterRecvBuffer
+
 	lpi2c_master_transfer_t masterXfer;
 	status_t status;
 
@@ -279,7 +281,7 @@ static void LPI2C2_init(void) {
 }
 
 
-void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pass length as well?
+void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize) { //need to pass length as well?
 	lpi2c_master_transfer_t masterXfer;
 	status_t status;
 
@@ -289,7 +291,7 @@ void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pa
 	masterXfer.subaddress     = 0;
 	masterXfer.subaddressSize = 0;
 	masterXfer.data           = masterSendBuffer;
-	masterXfer.dataSize       = I2C_DATA_LENGTH;
+	masterXfer.dataSize       = I2C_DATA_LENGTH; // use dataSize?
 	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
 
 	status = LPI2C_RTOS_Transfer(&i2c2_master_rtos_handle, &masterXfer);
@@ -340,7 +342,7 @@ static void LPI2C3_init(void) {
 }
 
 
-void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer) { //need to pass length as well?
+void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize) { //need to pass length as well?
 	lpi2c_master_transfer_t masterXfer;
 	status_t status;
 

@@ -75,7 +75,7 @@ extern lpuart_rtos_config_t lpuart1_config;
 extern lpuart_rtos_config_t lpuart3_config;
 extern lpuart_rtos_config_t lpuart4_config;
 
-extern lpspi_master_config_t spiMaster_config;
+extern lpspi_master_config_t spi_master_config;
 
 extern lpi2c_master_config_t i2c1Master_config;
 extern lpi2c_master_config_t i2c2Master_config;
@@ -100,9 +100,9 @@ extern lpi2c_master_config_t i2c3Master_config;
 
 void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer);
 
-void LPI2C1_send(uint8_t slaveAddress, uint8_t* masterSendBuffer);
-void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer);
-void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer);
+void LPI2C1_send_receive(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t sendDataSize, uint32_t * masterRecvBuffer, size_t * recvDataSize);
+void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize);
+void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize);
 
 /***********************************************************************************************************************
  * Initialization functions
