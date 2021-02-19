@@ -104,6 +104,7 @@ void obc_reset(){
 	PRINTF("Hard resetting obc");
 }
 
+TaskHandle_t TaskHandler_idle;
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
@@ -113,7 +114,7 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, idle_task_PRIORITY, NULL) !=
+    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, sens_task_PRIORITY+1, &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");

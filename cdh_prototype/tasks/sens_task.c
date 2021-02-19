@@ -28,35 +28,35 @@ void sens_task(void *pvParameters)
 	// variables to use with sens task
 
 	// variable to store ticks equivalent to 500 ms
-	const TickType_t xDelayms = pdMS_TO_TICKS( 10 );
-	PRINTF("initialize sens.\r\n");
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //was 10
+	PRINTF("\ninitialize sens.\r\n");
 
 
 	for (;;) {
 
 		TickType_t xLastWakeTime = xTaskGetTickCount();
-		PRINTF("sens work.\r\n");
+		PRINTF("\nsens work.\r\n");
 
-		if(g_sunSensActive == true){
-			sens_readSun();
-		}
-		else{
-			PRINTF("sun sensor not active");
-		}
-
-		if(g_magSensActive == true){
-			sens_readMag();
-		}
-		else{
-			PRINTF("magnetometer not active");
-		}
-
-		if(g_phdSensActive == true){
-			sens_readPhd();
-		}
-		else{
-			PRINTF("photodiode not active");
-		}
+//		if(g_sunSensActive == true){
+//			sens_readSun();
+//		}
+//		else{
+//			PRINTF("sun sensor not active\r\n");
+//		}
+//
+//		if(g_magSensActive == true){
+//			sens_readMag();
+//		}
+//		else{
+//			PRINTF("magnetometer not active\r\n");
+//		}
+//
+//		if(g_phdSensActive == true){
+//			sens_readPhd();
+//		}
+//		else{
+//			PRINTF("photodiode not active\r\n");
+//		}
 
 		// TODO: enable rt_OneStep(); after include
 		// rt_OneStep();

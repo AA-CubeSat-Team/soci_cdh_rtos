@@ -32,23 +32,23 @@
  */
 
 bool sens_healthcheck(){
-	PRINTF("checking sensors health");
+	PRINTF("checking sensors health\r\n");
 	return true;
 }
 //do each sensor separately
 void sens_readSun(){
-	PRINTF("reading sun sensors");
+	PRINTF("reading sun sensors\r\n");
 }
 
 void sens_readMag(){
-	PRINTF("reading magnetometer sensors");
+	PRINTF("reading magnetometer sensors\r\n");
 }
 
 void sens_readPhd(){
-	PRINTF("reading photodiode sensors");
+	PRINTF("reading photodiode sensors\r\n");
 }
 
 void sens_readGyr(){
-	PRINTF("reading gyroscope sensors");
+	PRINTF("reading gyroscope sensors\r\n");
 	//loop() in gyro.ino by Alex
 }

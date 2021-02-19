@@ -28,28 +28,28 @@ void com_task(void *pvParameters)
 
 	// variable to store ticks equivalent to 500 ms
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
-	PRINTF("initialize comm.\r\n");
+	PRINTF("\ninitialize comm.\r\n");
 
 
 	for (;;) {
 
 		TickType_t xLastWakeTime = xTaskGetTickCount();
-		PRINTF("comm work.\r\n");
+		PRINTF("\ncomm work.\r\n");
 
-		if(g_comActive == true){
-			//checking if getting a command request
-			if (command_request){
-				//sending data based on priority
-				if (payload_check) {
-					com_sendPayloads();
-				} else if (image_check) {
-					com_sendImages();
-				} else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
-					com_sendBeacons();
-				}
-			}
-
-		}
+//		if(g_comActive == true){
+//			//checking if getting a command request
+//			if (command_request){
+//				//sending data based on priority
+//				if (payload_check) {
+//					com_sendPayloads();
+//				} else if (image_check) {
+//					com_sendImages();
+//				} else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
+//					com_sendBeacons();
+//				}
+//			}
+//
+//		}
 //		else{
 //
 //		}

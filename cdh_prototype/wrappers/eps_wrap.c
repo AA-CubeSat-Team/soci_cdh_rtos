@@ -20,7 +20,7 @@ uint8_t g_slave_buff[I2C_DATA_LENGTH];
 uint8_t g_master_buff[I2C_DATA_LENGTH];
 
 bool eps_healthcheck() {
-	PRINTF("checking the health of eps!");
+	PRINTF("checking the health of eps!\r\n");
 	i2c_eps_batteryModuleStatus();
 	i2c_eps_powerModuleStatus();
 	return true;
@@ -124,7 +124,7 @@ uint32_t i2c_read_write_helper(gmb_0, gmb_1, gmb_2, gmb_3, d) {
 
 double i2c_eps_getBatteryLevel()
 {
-	PRINTF("get the battery value!");
+	PRINTF("get the battery value!\r\n");
 	return 0.0;
 }
 char i2c_eps_powerModuleStatus()

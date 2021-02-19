@@ -44,23 +44,23 @@
 
 bool rwa_healthcheck()
 {
-	PRINTF("checking reaction wheel health");
+	PRINTF("checking reaction wheel health\r\n");
 	return true;
 }
 
 bool mtq_healthcheck()
 {
-	PRINTF("checking magnetorquer health");
+	PRINTF("checking magnetorquer health\r\n");
 	return true;
 }
 
 double readActMeas()
 {
-	PRINTF("Read RWA and MTQ measurements");
+	PRINTF("Read RWA and MTQ measurements\r\n");
 	return 0.0;
 }
 
 void gnc_sendCommand() //we will have something like rwa_writeDeg() to use
 {
-	PRINTF("Sending command to GNC");
+	PRINTF("Sending command to GNC\r\n");
 }

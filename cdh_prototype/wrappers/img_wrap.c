@@ -9,10 +9,10 @@
 #include <stdbool.h>
 
 bool img_healthcheck(){
-	PRINTF("checking IMG health");
+	PRINTF("checking IMG health\r\n");
 	return true;
 }
 
 void img_sendCommand(){
-	PRINTF("sending commands to IMG");
+	PRINTF("sending commands to IMG\r\n");
 }

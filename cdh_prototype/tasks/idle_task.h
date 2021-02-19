@@ -18,5 +18,5 @@ enum PLLCommand {
 };
 
 
-
+void resetPriority();
 void idle_task(void *pvParameters);

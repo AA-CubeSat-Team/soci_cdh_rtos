@@ -22,33 +22,33 @@ void com_radio_init()
 	//choose trans FST mode
 	//set RF power to 0.5W
 	//Choose channel (center frequency) within our licensed band
-	PRINTF("initializing COM radio");
+	PRINTF("initializing COM radio\r\n");
 }
 
 bool com_healthcheck()
 {
-	PRINTF("checking COM health");
+	PRINTF("checking COM health\r\n");
 	return true;
 }
 
 void com_getCommands() //highest priority
 {
-	PRINTF("getting commands from the ground station");
+	PRINTF("getting commands from the ground station\r\n");
 }
 
 void com_sendPayloads() //high priority
 {
-	PRINTF("sending payloads");
+	PRINTF("sending payloads\r\n");
 }
 
 void com_sendImages() //medium priority
 {
-	PRINTF("sending images");
+	PRINTF("sending images\r\n");
 }
 
 void com_sendBeacons() //low priority, happens every 60 secs
 {
-	PRINTF("sending beacons");
+	PRINTF("sending beacons\r\n");
 }
 
 
