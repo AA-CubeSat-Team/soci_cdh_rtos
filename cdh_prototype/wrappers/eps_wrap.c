@@ -6,9 +6,15 @@
  *
  * Jerrold Erickson, 6/23/2020
  *
- * Pin #75 GPIO_AD_B1_14	I2C1_SCL
- * Pin #74 GPIO_AD_B1_15	I2C1_SDA
+ *
+MCU Pinouts:
+
+EPS:
+
+75	GPIO_AD_B1_14	I2C1_SCL	EPS, MAG1, GYRO1
+74	GPIO_AD_B1_15	I2C1_SDA	EPS, MAG1, GYRO1
  */
+
 #include <stdbool.h>
 #include "eps_wrap.h"
 #include "fsl_lpi2c.h" //need these here? already in peripherals
@@ -75,19 +81,17 @@ bool eps_healthcheck() {
 
 //uint8_t kLPI2C_Write = 1; // not sure where this is defined, but I think it differentiates between read/write commands
 //uint8_t kLPI2C_Read = 0; // not sure where this is defined, but I think it differentiates between read/write commands
-//
-///* the I2C_read_write_lp function is designed to write to registers within the i2c slave device, so writing i2c data looks like this:
-// * [device address -> register address -> data]
-// * The EPS/battery do not use registers like this, and instead just follow a format like:
-// * [device address -> command -> parameters]
-// * So, this register address is just temporary. A more complete i2c library is needed.
-// */
 
-//uint8_t I2C_EPS_REG_ADDR = 1;
-//size_t datasize = 1U;
-//
-//
-//
+/* the I2C_read_write_lp function is designed to write to registers within the i2c slave device, so writing i2c data looks like this:
+ * [device address -> register address -> data]
+ * The EPS/battery do not use registers like this, and instead just follow a format like:
+ * [device address -> command -> parameters]
+ * So, this register address is just temporary. A more complete i2c library is needed.
+ */
+
+uint8_t I2C_EPS_REG_ADDR = 1;
+size_t datasize = 1U;
+
 //int main(void)
 //{
 //    uint32_t i = 0;
@@ -164,7 +168,6 @@ static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t data_size, ui
 
 //	adc_count = (g_slave_buff[1] << 8) | g_slave_buff[0]);
 	
-	return adc_count;
 }
 
 // added 11/24/20

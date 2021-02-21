@@ -1,11 +1,11 @@
 /*
- *
- * GPIO_AD_B1_14	I2C1_SCL
- * GPIO_AD_B1_15	I2C1_SDA
- *
- *
- *
- * */
+ * MCU Pinouts:
+
+EPS:
+
+75	GPIO_AD_B1_14	I2C1_SCL	EPS, MAG1, GYRO1
+74	GPIO_AD_B1_15	I2C1_SDA	EPS, MAG1, GYRO1
+ */
 
 
 #pragma once

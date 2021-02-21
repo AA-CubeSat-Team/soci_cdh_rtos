@@ -18,6 +18,7 @@
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
 
+
 void sens_task(void *pvParameters)
 {
 	// Question: Can we read all sensors, calculate the response and deliver the response to actuators with the

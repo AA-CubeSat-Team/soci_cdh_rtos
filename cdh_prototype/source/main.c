@@ -69,27 +69,6 @@ bool g_imgHealthy;
 int g_operatingMode;
 
 
-
-//struct sens_meas{
-//	// TODO: to be filled in
-//};
-//
-//struct telecommands{
-//
-//};
-//
-//struct act_meas{
-//
-//};
-//
-//struct fsw_out{
-//	//rwa_cmd_rpm
-//};
-//
-//struct fsw_telem{
-//
-//};
-
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -105,6 +84,11 @@ void obc_reset(){
 }
 
 TaskHandle_t TaskHandler_idle;
+
+static void vTimerReadGyro(TimerHandle_t xTimerGryo)
+{
+	PRINTF("Reading Gyro!\r\n");
+}
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
@@ -143,8 +127,24 @@ int main(void)
 			;
 	}
 
+    /*Testing a auto-reloaded task for potential use for gyro*/
+    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(10), pdTRUE, (void*)0, vTimerReadGyro);
+    if (xTimerGryo==NULL)
+    {
+    	PRINTF("Creating auto-reload task failed. \r\n");
+    	for(;;); /* failure! */
+    }
+    if (xTimerStart(xTimerGryo, 0)!=pdPASS) {
+    	for(;;); /* failure!?! */
+    }
+    /************************************************************/
+
     vTaskStartScheduler();
     for (;;)
         ;
 }
+
+
+
+
 
