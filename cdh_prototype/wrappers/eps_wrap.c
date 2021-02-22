@@ -14,6 +14,10 @@ EPS:
 75	GPIO_AD_B1_14	I2C1_SCL	EPS, MAG1, GYRO1
 74	GPIO_AD_B1_15	I2C1_SDA	EPS, MAG1, GYRO1
  */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
 
 #include <stdbool.h>
 #include "eps_wrap.h"
@@ -73,8 +77,10 @@ static uint32_t adc_count;
 
 bool eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
-	i2c_eps_batteryModuleStatus();
-	i2c_eps_powerModuleStatus();
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
+	vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	PRINTF("Finish delay\r\n");
 	return true;
 }
 

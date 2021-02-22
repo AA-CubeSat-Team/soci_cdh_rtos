@@ -36,7 +36,16 @@ void sens_task(void *pvParameters)
 	for (;;) {
 
 		TickType_t xLastWakeTime = xTaskGetTickCount();
-		PRINTF("\nsens work.\r\n");
+		PRINTF("\nsens START.\r\n");
+
+		int c = 0;
+		while (c < 100000) {
+			PRINTF("");
+			c++;
+		}
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		xLastWakeTime = xTaskGetTickCount();
+		PRINTF("sens END.\r\n");
 
 //		if(g_sunSensActive == true){
 //			sens_readSun();
