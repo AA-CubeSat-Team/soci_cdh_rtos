@@ -71,15 +71,29 @@ extern "C" {
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
-extern lpuart_rtos_config_t lpuart1_config;
-extern lpuart_rtos_config_t lpuart3_config;
-extern lpuart_rtos_config_t lpuart4_config;
+//extern lpuart_rtos_config_t lpuart1_config;
+//extern lpuart_rtos_config_t lpuart3_config;
+//extern lpuart_rtos_config_t lpuart4_config;
+//
+//extern lpspi_master_config_t spi_master_config;
+//
+//extern lpi2c_master_config_t i2c1Master_config;
+//extern lpi2c_master_config_t i2c2Master_config;
+//extern lpi2c_master_config_t i2c3Master_config;
 
-extern lpspi_master_config_t spi_master_config;
 
-extern lpi2c_master_config_t i2c1Master_config;
-extern lpi2c_master_config_t i2c2Master_config;
-extern lpi2c_master_config_t i2c3Master_config;
+
+extern lpuart_rtos_handle_t uart1_handle;
+extern lpuart_rtos_handle_t uart3_handle;
+extern lpuart_rtos_handle_t uart4_handle;
+
+extern lpspi_rtos_handle_t spi_m_rtos_handle;
+
+extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
+extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
+extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
+
+
 
 //
 //

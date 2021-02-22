@@ -5,6 +5,8 @@
 #include "queue.h"
 #include "timers.h"
 
+#include <stdbool.h>
+
 /* Freescale includes. */
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
@@ -13,6 +15,7 @@
 #include "com_wrap.h"
 #include "com_task.h"
 #include "clock_config.h"
+
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
@@ -36,6 +39,11 @@ void com_task(void *pvParameters)
 		TickType_t xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\ncomm work.\r\n");
 
+		if(g_comActive == true){
+			com_getCommands();
+		}
+
+//
 //		if(g_comActive == true){
 //			//checking if getting a command request
 //			if (command_request){
@@ -53,6 +61,9 @@ void com_task(void *pvParameters)
 //		else{
 //
 //		}
+
+
+
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
 	}
