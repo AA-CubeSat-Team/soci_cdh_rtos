@@ -13,6 +13,8 @@ COM:
 #include "fsl_debug_console.h"
 #include <stdbool.h>
 #include "peripherals.h"
+#include "fsl_lpi2c_freertos.h"
+#include "fsl_lpi2c.h"
 
 uint8_t recv_buffer[4];
 

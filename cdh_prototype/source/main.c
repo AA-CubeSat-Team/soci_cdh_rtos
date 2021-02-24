@@ -28,7 +28,7 @@
 
 #include "idle_task.h"
 #include "imag_task.h"
-#include "sens_task.h"
+#include "gnc_task.h"
 #include "eps_wrap.h"
 
 
@@ -42,7 +42,7 @@
 #define idle_task_PRIORITY 0
 #define imag_task_PRIORITY 1
 #define com_task_PRIORITY 2
-#define sens_task_PRIORITY 3
+#define gnc_task_PRIORITY 3
 
 
 /*******************************************************************************
@@ -98,7 +98,7 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, sens_task_PRIORITY+1, &TaskHandler_idle) != //initialize priority to the highest +1
+    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY+1, &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");
@@ -119,7 +119,7 @@ int main(void)
 		while (1)
 			;
 	}
-    if (xTaskCreate(sens_task, "sens_task", configMINIMAL_STACK_SIZE + 100, NULL, sens_task_PRIORITY, NULL) !=
+    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
 		pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");
