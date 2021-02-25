@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'FSW_Lib'.
  *
- * Model version                  : 1.232
+ * Model version                  : 1.319
  * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Wed Sep  9 13:53:00 2020
+ * C/C++ source code generated on : Wed Feb 17 22:43:08 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: NXP->Cortex-M4
@@ -21,26 +21,25 @@
 
 #ifndef RTW_HEADER_rwa_allocation_lib_h_
 #define RTW_HEADER_rwa_allocation_lib_h_
-#include <math.h>
 #include <string.h>
 #ifndef FSW_Lib_COMMON_INCLUDES_
 # define FSW_Lib_COMMON_INCLUDES_
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
-//#include "rtw_continuous.h"
-//#include "rtw_solver.h"
+#include "rtwtypes.h"
+#include "zero_crossing_types.h"
+#include "ecos.h"
 #endif                                 /* FSW_Lib_COMMON_INCLUDES_ */
 
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+#include "FSW_Lib_types.h"
 
 /* Child system includes */
-#include <gnc_build/FSW_Lib_ert_rtw/L_inf_allocation_lib.h>
-#include <gnc_build/FSW_Lib_ert_rtw/rt_assert.h>
+#include "L_inf_allocation_lib.h"
+#include "rt_assert.h"
 
-/* Block signals and states (default storage) for system '<S6>/rwa_allocation_lib' */
+/* Block signals and states (default storage) for system '<S5>/rwa_allocation_lib' */
 typedef struct {
-  real_T DiscreteTimeIntegrator_DSTATE[3];/* '<S164>/Discrete-Time Integrator' */
-  real_T Product_DWORK4[9];            /* '<S170>/Product' */
-  void* Assertion_slioAccessor;        /* '<S170>/Assertion' */
+  real_T DiscreteTimeIntegrator_DSTATE[3];/* '<S159>/Discrete-Time Integrator' */
+  real_T Product_DWORK4[9];            /* '<S165>/Product' */
+  void* Assertion_slioAccessor;        /* '<S165>/Assertion' */
 } DW_rwa_allocation_lib;
 
 extern void rwa_allocation_lib(const real_T rtu_torque_body_Nm[3], const real_T

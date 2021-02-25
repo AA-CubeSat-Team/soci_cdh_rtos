@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="./js/coder_app.js"></script>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="./rtwreport_utils.js"></script>
+<script type="text/javascript" src="./rtwannotate.js"></script>
+<link rel="stylesheet" type="text/css" href="./css/coder_app.css"/>
+</head>
+<body onload="srcFileOnload();">
+<pre id="code">
+<table class="code" id="codeTbl">
+<tr name="1" id="1">
+<td><a id="l1" class='ln'>1</a></td><td><span class="pp"># include "ecos.h"</span></td></tr>
+<tr name="2" id="2">
+<td><a id="l2" class='ln'>2</a></td><td></td></tr>
+<tr name="3" id="3">
+<td><a id="l3" class='ln'>3</a></td><td><span class="kw">void</span> <a id="3c6" class="tk">callecos</a>(<span class="kw">int</span> <a id="3c19" class="tk">n</a>, <span class="kw">int</span> <a id="3c26" class="tk">m</a>, <span class="kw">int</span> <a id="3c33" class="tk">p</a>, <span class="kw">int</span> <a id="3c40" class="tk">l</a>, <span class="kw">int</span> <a id="3c47" class="tk">ncones</a>, <span class="kw">double</span> <a id="3c62" class="tk">*</a><a id="3c63" class="tk">c</a>, <span class="kw">int</span> <a id="3c70" class="tk">*</a><a id="3c71" class="tk">Gjc</a>, <span class="kw">int</span> <a id="3c80" class="tk">*</a><a id="3c81" class="tk">Gir</a>, <span class="kw">double</span> <a id="3c93" class="tk">*</a><a id="3c94" class="tk">Gpr</a>,</td></tr>
+<tr name="4" id="4">
+<td><a id="l4" class='ln'>4</a></td><td>			  <span class="kw">double</span><a id="4c12" class="tk">*</a> <a id="4c14" class="tk">h</a>, <span class="kw">int</span><a id="4c20" class="tk">*</a> <a id="4c22" class="tk">q</a>, <span class="kw">int</span><a id="4c28" class="tk">*</a> <a id="4c30" class="tk">Ajc</a>, <span class="kw">int</span><a id="4c38" class="tk">*</a> <a id="4c40" class="tk">Air</a>, <span class="kw">double</span> <a id="4c52" class="tk">*</a><a id="4c53" class="tk">Apr</a>, <span class="kw">double</span> <a id="4c65" class="tk">*</a><a id="4c66" class="tk">b</a>, <span class="kw">double</span> <a id="4c76" class="tk">*</a><a id="4c77" class="tk">y</a>) <span class="br">{</span></td></tr>
+<tr name="5" id="5">
+<td><a id="l5" class='ln'>5</a></td><td>	<span class="ct">/* Initialize */</span></td></tr>
+<tr name="6" id="6">
+<td><a id="l6" class='ln'>6</a></td><td>	<a id="6c2" class="tk">pwork</a><a id="6c7" class="tk">*</a> <a id="6c9" class="tk">mywork</a> = <a id="6c18" class="tk">ECOS_setup</a>(<a id="6c29" class="tk">n</a>, <a id="6c32" class="tk">m</a>, <a id="6c35" class="tk">p</a>, <a id="6c38" class="tk">l</a>, <a id="6c41" class="tk">ncones</a>, <a id="6c49" class="tk">q</a>, 0, <a id="6c55" class="tk">Gpr</a>, <a id="6c60" class="tk">Gjc</a>, <a id="6c65" class="tk">Gir</a>, <a id="6c70" class="tk">Apr</a>, <a id="6c75" class="tk">Ajc</a>, <a id="6c80" class="tk">Air</a>, <a id="6c85" class="tk">c</a>, <a id="6c88" class="tk">h</a>, <a id="6c91" class="tk">b</a>);</td></tr>
+<tr name="7" id="7">
+<td><a id="l7" class='ln'>7</a></td><td>	<span class="ct">/* Solve */</span></td></tr>
+<tr name="8" id="8">
+<td><a id="l8" class='ln'>8</a></td><td>	<a id="8c2" class="tk">idxint</a> <a id="8c9" class="tk">exitflag</a> = <a id="8c20" class="tk">ECOS_solve</a>(<a id="8c31" class="tk">mywork</a>);</td></tr>
+<tr name="9" id="9">
+<td><a id="l9" class='ln'>9</a></td><td>	<span class="ct">/* Extract optimal solution */</span></td></tr>
+<tr name="10" id="10">
+<td><a id="l10" class='ln'>10</a></td><td>	<span class="kw">int</span> <a id="10c6" class="tk">i</a>;</td></tr>
+<tr name="11" id="11">
+<td><a id="l11" class='ln'>11</a></td><td>    <span class="kw">int</span> <a id="11c9" class="tk">N</a>=332; <span class="ct">// c_size</span></td></tr>
+<tr name="12" id="12">
+<td><a id="l12" class='ln'>12</a></td><td>	<span class="ct">// Save optimal decision vector</span></td></tr>
+<tr name="13" id="13">
+<td><a id="l13" class='ln'>13</a></td><td>	<span class="kw">for</span>(<a id="13c6" class="tk">i</a>=0;<a id="13c10" class="tk">i</a><a id="13c11" class="tk">&lt;</a><a id="13c12" class="tk">N</a>;<a id="13c14" class="tk">i</a><a id="13c15" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="14" id="14">
+<td><a id="l14" class='ln'>14</a></td><td>		<a id="14c3" class="tk">y</a>[<a id="14c5" class="tk">i</a>] = <a id="14c10" class="tk">mywork</a>-&gt;<a id="14c18" class="tk">x</a>[<a id="14c20" class="tk">i</a>];</td></tr>
+<tr name="15" id="15">
+<td><a id="l15" class='ln'>15</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="16" id="16">
+<td><a id="l16" class='ln'>16</a></td><td>	<span class="ct">// Save exitflag</span></td></tr>
+<tr name="17" id="17">
+<td><a id="l17" class='ln'>17</a></td><td>	<a id="17c2" class="tk">y</a>[<a id="17c4" class="tk">N</a>] = <a id="17c9" class="tk">exitflag</a>;</td></tr>
+<tr name="18" id="18">
+<td><a id="l18" class='ln'>18</a></td><td>	<span class="ct">// Save solution time</span></td></tr>
+<tr name="19" id="19">
+<td><a id="l19" class='ln'>19</a></td><td>	<a id="19c2" class="tk">y</a>[<a id="19c4" class="tk">N</a><a id="19c5" class="tk">+</a>1] = <a id="19c11" class="tk">mywork</a>-&gt;<a id="19c19" class="tk">info</a>-&gt;<a id="19c25" class="tk">tsetup</a> <a id="19c32" class="tk">+</a> <a id="19c34" class="tk">mywork</a>-&gt;<a id="19c42" class="tk">info</a>-&gt;<a id="19c48" class="tk">tsolve</a>;</td></tr>
+<tr name="20" id="20">
+<td><a id="l20" class='ln'>20</a></td><td>	<span class="ct">// Clean up memory</span></td></tr>
+<tr name="21" id="21">
+<td><a id="l21" class='ln'>21</a></td><td>	<a id="21c2" class="tk">ECOS_cleanup</a>(<a id="21c15" class="tk">mywork</a>, 0);</td></tr>
+<tr name="22" id="22">
+<td><a id="l22" class='ln'>22</a></td><td><span class="br">}</span></td></tr>
+<tr name="23" id="23">
+<td><a id="l23" class='ln'>23</a></td><td></td></tr>
+<tr name="24" id="24">
+<td><a id="l24" class='ln'>24</a></td><td></td></tr>
+<tr name="25" id="25">
+<td><a id="l25" class='ln'>25</a></td><td></td></tr>
+<tr name="26" id="26">
+<td><a id="l26" class='ln'>26</a></td><td></td></tr>
+<tr name="27" id="27">
+<td><a id="l27" class='ln'>27</a></td><td></td></tr>
+<tr name="28" id="28">
+<td><a id="l28" class='ln'>28</a></td><td></td></tr>
+<tr name="29" id="29">
+<td><a id="l29" class='ln'>29</a></td><td></td></tr>
+</table>
+</pre>
+</body>
+</html>

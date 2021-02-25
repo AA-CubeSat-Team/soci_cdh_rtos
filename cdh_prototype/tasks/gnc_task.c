@@ -15,7 +15,10 @@
 #include "board.h"
 
 #include "clock_config.h"
-//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+
+//#include "FSW_Lib_types.h"
+
+#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
 
 //temporary struct until we receive an functional GNC build folder

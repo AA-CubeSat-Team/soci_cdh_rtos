@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'FSW_Lib'.
  *
- * Model version                  : 1.232
+ * Model version                  : 1.319
  * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Wed Sep  9 13:53:00 2020
+ * C/C++ source code generated on : Wed Feb 17 22:43:08 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: NXP->Cortex-M4
@@ -19,11 +19,11 @@
  * Validation result: Not run
  */
 
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>                   /* Model's header file */
-#include <gnc_build/FSW_Lib_ert_rtw/rtwtypes.h>
 #include <stddef.h>
 #include <stdio.h>                     /* This ert_main.c example uses printf/fflush */
-#include "act_wrap.h"
+#include "FSW_Lib.h"                   /* Model's header file */
+#include "rtwtypes.h"
+#include "zero_crossing_types.h"
 
 /*
  * Associating rt_OneStep with a real-time clock or interrupt service routine
@@ -39,11 +39,11 @@
 void rt_OneStep(void);
 void rt_OneStep(void)
 {
-  static boolean_T OverrunFlags[3] = { 0, 0, 0 };
+  static boolean_T OverrunFlags[2] = { 0, 0 };
 
-  static boolean_T eventFlags[3] = { 0, 0, 0 };/* Model has 3 rates */
+  static boolean_T eventFlags[2] = { 0, 0 };/* Model has 2 rates */
 
-  static int_T taskCounter[3] = { 0, 0, 0 };
+  static int_T taskCounter[2] = { 0, 0 };
 
   /* Disable interrupts here */
 
@@ -63,27 +63,22 @@ void rt_OneStep(void)
    * following code checks whether any subrate overruns,
    * and also sets the rates that need to run this time step.
    */
-  if (taskCounter[2] == 0) {
-    if (eventFlags[2]) {
+  if (taskCounter[1] == 0) {
+    if (eventFlags[1]) {
       OverrunFlags[0] = false;
-      OverrunFlags[2] = true;
+      OverrunFlags[1] = true;
 
       /* Sampling too fast */
       rtmSetErrorStatus(rtM, "Overrun");
       return;
     }
 
-    eventFlags[2] = true;
+    eventFlags[1] = true;
   }
 
   taskCounter[1]++;
-  if (taskCounter[1] == 1) {
+  if (taskCounter[1] == 20) {
     taskCounter[1]= 0;
-  }
-
-  taskCounter[2]++;
-  if (taskCounter[2] == 10) {
-    taskCounter[2]= 0;
   }
 
   /* Set model inputs associated with base rate here */
@@ -102,19 +97,19 @@ void rt_OneStep(void)
   }
 
   /* Step the model for subrate */
-  if (eventFlags[2]) {
-    OverrunFlags[2] = true;
+  if (eventFlags[1]) {
+    OverrunFlags[1] = true;
 
     /* Set model inputs associated with subrates here */
 
-    /* Step the model for subrate 2 */
-    FSW_Lib_step2();
+    /* Step the model for subrate 1 */
+    FSW_Lib_step1();
 
     /* Get model outputs here */
 
     /* Indicate task complete for subrate */
-    OverrunFlags[2] = false;
-    eventFlags[2] = false;
+    OverrunFlags[1] = false;
+    eventFlags[1] = false;
   }
 
   /* Disable interrupts here */
@@ -138,7 +133,7 @@ int_T main(int_T argc, const char *argv[])
   FSW_Lib_initialize();
 
   /* Attach rt_OneStep to a timer or interrupt service routine with
-   * period 0.1 seconds (the model's base sample time) here.  The
+   * period 0.0125 seconds (the model's base sample time) here.  The
    * call syntax for rt_OneStep is
    *
    *  rt_OneStep();
