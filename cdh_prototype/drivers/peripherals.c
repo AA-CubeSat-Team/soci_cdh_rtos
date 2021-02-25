@@ -24,6 +24,9 @@
  *
  */
 
+// TODO: Implement queues for each peripheral (for UART only?) !
+// Timer -> check all peripherals and update corresponding queues (
+
 lpuart_rtos_handle_t uart1_handle;
 struct _lpuart_handle t_handle1;
 uint8_t background_buffer1[32];
@@ -47,6 +50,33 @@ static void LPUART1_init(void) {
 		PRINTF("UART1 initialization failed! \r\n");
 	}
 }
+
+/*
+ * if we want to implement queues for reading from uart
+ *
+ * static QueueHandle_t uartRxQueue;
+ *
+ * uartRxQueue = xQueueCreate(QUEUE_LEN, sizeof(char));
+ * configASSERT(uartRxQueue);
+ *
+ * error = LPUART_RTOS_Receive(&handle3, recv_buffer3, sizeof(recv_buffer3), &n);
+ *
+ * xQueueSendToBack(uartRxQueue, recv_buffer3, xBlockTime)
+ *
+ *
+ * whereever we want to read from uart,
+ *
+ * xQueueReceive(uartRxQueue, &in, xBlockTime);
+ *
+ * instead of
+ *
+ * LPUART_RTOS_Receive(&uart3_handle, recv_buffer, sizeof(recv_buffer), &n);
+ *
+ *
+ *
+ * this portion should be protected : disableInterrupts (not sure if this prevents task switch) or something else to pause scheduler
+ */
+
 
 
 /*

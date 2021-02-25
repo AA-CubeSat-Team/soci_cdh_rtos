@@ -45,6 +45,9 @@ void com_getCommands() //highest priority
 	char * to_send = "com: give me commands";
 
 	memset(recv_buffer, 0, sizeof(recv_buffer)); //necessary?
+	// void * memset ( void * ptr, int value, size_t num );
+
+	// void * memcpy ( void * destination, const void * source, size_t num );
 
 	if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send)))
 	{
