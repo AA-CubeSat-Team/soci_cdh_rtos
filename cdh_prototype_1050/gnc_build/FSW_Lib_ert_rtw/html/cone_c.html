@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="./js/coder_app.js"></script>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="./rtwreport_utils.js"></script>
+<script type="text/javascript" src="./rtwannotate.js"></script>
+<link rel="stylesheet" type="text/css" href="./css/coder_app.css"/>
+</head>
+<body onload="srcFileOnload();">
+<pre id="code">
+<table class="code" id="codeTbl">
+<tr name="1" id="1">
+<td><a id="l1" class='ln'>1</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="2" id="2">
+<td><a id="l2" class='ln'>2</a></td><td><span class="ct"> * ECOS - Embedded Conic Solver.</span></td></tr>
+<tr name="3" id="3">
+<td><a id="l3" class='ln'>3</a></td><td><span class="ct"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span></td></tr>
+<tr name="4" id="4">
+<td><a id="l4" class='ln'>4</a></td><td><span class="ct"> * Automatic Control Lab, ETH Zurich &amp; embotech GmbH, Zurich, Switzerland.</span></td></tr>
+<tr name="5" id="5">
+<td><a id="l5" class='ln'>5</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="6" id="6">
+<td><a id="l6" class='ln'>6</a></td><td><span class="ct"> * This program is free software: you can redistribute it and/or modify</span></td></tr>
+<tr name="7" id="7">
+<td><a id="l7" class='ln'>7</a></td><td><span class="ct"> * it under the terms of the GNU General Public License as published by</span></td></tr>
+<tr name="8" id="8">
+<td><a id="l8" class='ln'>8</a></td><td><span class="ct"> * the Free Software Foundation, either version 3 of the License, or</span></td></tr>
+<tr name="9" id="9">
+<td><a id="l9" class='ln'>9</a></td><td><span class="ct"> * (at your option) any later version.</span></td></tr>
+<tr name="10" id="10">
+<td><a id="l10" class='ln'>10</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="11" id="11">
+<td><a id="l11" class='ln'>11</a></td><td><span class="ct"> * This program is distributed in the hope that it will be useful,</span></td></tr>
+<tr name="12" id="12">
+<td><a id="l12" class='ln'>12</a></td><td><span class="ct"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span></td></tr>
+<tr name="13" id="13">
+<td><a id="l13" class='ln'>13</a></td><td><span class="ct"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></td></tr>
+<tr name="14" id="14">
+<td><a id="l14" class='ln'>14</a></td><td><span class="ct"> * GNU General Public License for more details.</span></td></tr>
+<tr name="15" id="15">
+<td><a id="l15" class='ln'>15</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="16" id="16">
+<td><a id="l16" class='ln'>16</a></td><td><span class="ct"> * You should have received a copy of the GNU General Public License</span></td></tr>
+<tr name="17" id="17">
+<td><a id="l17" class='ln'>17</a></td><td><span class="ct"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></td></tr>
+<tr name="18" id="18">
+<td><a id="l18" class='ln'>18</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="19" id="19">
+<td><a id="l19" class='ln'>19</a></td><td></td></tr>
+<tr name="20" id="20">
+<td><a id="l20" class='ln'>20</a></td><td></td></tr>
+<tr name="21" id="21">
+<td><a id="l21" class='ln'>21</a></td><td><span class="ct">/* cone functions */</span></td></tr>
+<tr name="22" id="22">
+<td><a id="l22" class='ln'>22</a></td><td><span class="pp">#include "cone.h"</span></td></tr>
+<tr name="23" id="23">
+<td><a id="l23" class='ln'>23</a></td><td><span class="pp">#include "spla.h"</span></td></tr>
+<tr name="24" id="24">
+<td><a id="l24" class='ln'>24</a></td><td><span class="pp">#include "ecos.h"</span></td></tr>
+<tr name="25" id="25">
+<td><a id="l25" class='ln'>25</a></td><td><span class="pp">#include "expcone.h"</span></td></tr>
+<tr name="26" id="26">
+<td><a id="l26" class='ln'>26</a></td><td></td></tr>
+<tr name="27" id="27">
+<td><a id="l27" class='ln'>27</a></td><td><span class="pp">#include &lt;stdio.h&gt;</span></td></tr>
+<tr name="28" id="28">
+<td><a id="l28" class='ln'>28</a></td><td><span class="pp">#include &lt;stdlib.h&gt;</span></td></tr>
+<tr name="29" id="29">
+<td><a id="l29" class='ln'>29</a></td><td><span class="pp">#include &lt;math.h&gt;</span></td></tr>
+<tr name="30" id="30">
+<td><a id="l30" class='ln'>30</a></td><td></td></tr>
+<tr name="31" id="31">
+<td><a id="l31" class='ln'>31</a></td><td></td></tr>
+<tr name="32" id="32">
+<td><a id="l32" class='ln'>32</a></td><td><span class="ct">/* PRIVATE METHODS ===================================================== */</span></td></tr>
+<tr name="33" id="33">
+<td><a id="l33" class='ln'>33</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="34" id="34">
+<td><a id="l34" class='ln'>34</a></td><td><span class="ct"> * Computes u0^2 - u1'*u1 for second order cones</span></td></tr>
+<tr name="35" id="35">
+<td><a id="l35" class='ln'>35</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="36" id="36">
+<td><a id="l36" class='ln'>36</a></td><td><a id="36c1" class="tk">pfloat</a> <a id="36c8" class="tk">socres</a>(<a id="36c15" class="tk">pfloat</a><a id="36c21" class="tk">*</a> <a id="36c23" class="tk">u</a>, <a id="36c26" class="tk">idxint</a> <a id="36c33" class="tk">p</a>)</td></tr>
+<tr name="37" id="37">
+<td><a id="l37" class='ln'>37</a></td><td><span class="br">{</span></td></tr>
+<tr name="38" id="38">
+<td><a id="l38" class='ln'>38</a></td><td>	<a id="38c2" class="tk">pfloat</a> <a id="38c9" class="tk">res</a> = <a id="38c15" class="tk">u</a>[0]<a id="38c19" class="tk">*</a><a id="38c20" class="tk">u</a>[0];</td></tr>
+<tr name="39" id="39">
+<td><a id="l39" class='ln'>39</a></td><td>	<a id="39c2" class="tk">idxint</a> <a id="39c9" class="tk">i</a>;</td></tr>
+<tr name="40" id="40">
+<td><a id="l40" class='ln'>40</a></td><td>	<span class="kw">for</span>( <a id="40c7" class="tk">i</a>=1; <a id="40c12" class="tk">i</a><a id="40c13" class="tk">&lt;</a><a id="40c14" class="tk">p</a>; <a id="40c17" class="tk">i</a><a id="40c18" class="tk">++</a>) <span class="br">{</span> <a id="40c24" class="tk">res</a> <a id="40c28" class="tk">-=</a> <a id="40c31" class="tk">u</a>[<a id="40c33" class="tk">i</a>]<a id="40c35" class="tk">*</a><a id="40c36" class="tk">u</a>[<a id="40c38" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="41" id="41">
+<td><a id="l41" class='ln'>41</a></td><td>	<span class="kw">return</span> <a id="41c9" class="tk">res</a>;</td></tr>
+<tr name="42" id="42">
+<td><a id="l42" class='ln'>42</a></td><td><span class="br">}</span></td></tr>
+<tr name="43" id="43">
+<td><a id="l43" class='ln'>43</a></td><td></td></tr>
+<tr name="44" id="44">
+<td><a id="l44" class='ln'>44</a></td><td></td></tr>
+<tr name="45" id="45">
+<td><a id="l45" class='ln'>45</a></td><td><span class="ct">/* PUBLIC METHODS ====================================================== */</span></td></tr>
+<tr name="46" id="46">
+<td><a id="l46" class='ln'>46</a></td><td></td></tr>
+<tr name="47" id="47">
+<td><a id="l47" class='ln'>47</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="48" id="48">
+<td><a id="l48" class='ln'>48</a></td><td><span class="ct"> * Scales a conic variable such that it lies strictly in the cone.</span></td></tr>
+<tr name="49" id="49">
+<td><a id="l49" class='ln'>49</a></td><td><span class="ct"> * If it is already in the cone, r is simply copied to s.</span></td></tr>
+<tr name="50" id="50">
+<td><a id="l50" class='ln'>50</a></td><td><span class="ct"> * Otherwise s = r + (1+alpha)*e where alpha is the biggest residual.</span></td></tr>
+<tr name="51" id="51">
+<td><a id="l51" class='ln'>51</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="52" id="52">
+<td><a id="l52" class='ln'>52</a></td><td><span class="kw">void</span> <a id="52c6" class="tk">bring2cone</a>(<a id="52c17" class="tk">cone</a><a id="52c21" class="tk">*</a> <a id="52c23" class="tk">C</a>, <a id="52c26" class="tk">pfloat</a><a id="52c32" class="tk">*</a> <a id="52c34" class="tk">r</a>, <a id="52c37" class="tk">pfloat</a><a id="52c43" class="tk">*</a> <a id="52c45" class="tk">s</a>)</td></tr>
+<tr name="53" id="53">
+<td><a id="l53" class='ln'>53</a></td><td><span class="br">{</span></td></tr>
+<tr name="54" id="54">
+<td><a id="l54" class='ln'>54</a></td><td>	<a id="54c2" class="tk">pfloat</a> <a id="54c9" class="tk">alpha</a> = <a id="54c17" class="tk">-</a><a id="54c18" class="tk">GAMMA</a>;</td></tr>
+<tr name="55" id="55">
+<td><a id="l55" class='ln'>55</a></td><td>	<a id="55c2" class="tk">pfloat</a> <a id="55c9" class="tk">cres</a>, <a id="55c15" class="tk">r1square</a>;</td></tr>
+<tr name="56" id="56">
+<td><a id="l56" class='ln'>56</a></td><td>	<a id="56c2" class="tk">idxint</a> <a id="56c9" class="tk">i</a>, <a id="56c12" class="tk">l</a>, <a id="56c15" class="tk">j</a>;</td></tr>
+<tr name="57" id="57">
+<td><a id="l57" class='ln'>57</a></td><td></td></tr>
+<tr name="58" id="58">
+<td><a id="l58" class='ln'>58</a></td><td>	<span class="ct">/*</span></td></tr>
+<tr name="59" id="59">
+<td><a id="l59" class='ln'>59</a></td><td><span class="ct">	 * 1. Find maximum residual ----------------------------------------------</span></td></tr>
+<tr name="60" id="60">
+<td><a id="l60" class='ln'>60</a></td><td><span class="ct">	 */</span></td></tr>
+<tr name="61" id="61">
+<td><a id="l61" class='ln'>61</a></td><td></td></tr>
+<tr name="62" id="62">
+<td><a id="l62" class='ln'>62</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="63" id="63">
+<td><a id="l63" class='ln'>63</a></td><td>	<span class="kw">for</span>( <a id="63c7" class="tk">i</a>=0; <a id="63c12" class="tk">i</a><a id="63c13" class="tk">&lt;</a><a id="63c14" class="tk">C</a>-&gt;<a id="63c17" class="tk">lpc</a>-&gt;<a id="63c22" class="tk">p</a>; <a id="63c25" class="tk">i</a><a id="63c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="64" id="64">
+<td><a id="l64" class='ln'>64</a></td><td>		<span class="kw">if</span>( <a id="64c7" class="tk">r</a>[<a id="64c9" class="tk">i</a>] <a id="64c12" class="tk">&lt;=</a> 0 <a id="64c17" class="tk">&amp;&amp;</a> <a id="64c20" class="tk">-</a><a id="64c21" class="tk">r</a>[<a id="64c23" class="tk">i</a>] <a id="64c26" class="tk">&gt;</a> <a id="64c28" class="tk">alpha</a> )<span class="br">{</span> <a id="64c37" class="tk">alpha</a> = <a id="64c45" class="tk">-</a><a id="64c46" class="tk">r</a>[<a id="64c48" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="65" id="65">
+<td><a id="l65" class='ln'>65</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="66" id="66">
+<td><a id="l66" class='ln'>66</a></td><td></td></tr>
+<tr name="67" id="67">
+<td><a id="l67" class='ln'>67</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="68" id="68">
+<td><a id="l68" class='ln'>68</a></td><td>	<span class="kw">for</span>( <a id="68c7" class="tk">l</a>=0; <a id="68c12" class="tk">l</a> <a id="68c14" class="tk">&lt;</a> <a id="68c16" class="tk">C</a>-&gt;<a id="68c19" class="tk">nsoc</a>; <a id="68c25" class="tk">l</a><a id="68c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="69" id="69">
+<td><a id="l69" class='ln'>69</a></td><td>		<a id="69c3" class="tk">cres</a> = <a id="69c10" class="tk">r</a>[<a id="69c12" class="tk">i</a><a id="69c13" class="tk">++</a>]; <a id="69c18" class="tk">r1square</a> = 0;</td></tr>
+<tr name="70" id="70">
+<td><a id="l70" class='ln'>70</a></td><td>		<span class="kw">for</span>( <a id="70c8" class="tk">j</a>=1; <a id="70c13" class="tk">j</a><a id="70c14" class="tk">&lt;</a><a id="70c15" class="tk">C</a>-&gt;<a id="70c18" class="tk">soc</a>[<a id="70c22" class="tk">l</a>].<a id="70c25" class="tk">p</a>; <a id="70c28" class="tk">j</a><a id="70c29" class="tk">++</a> )<span class="br">{</span> <a id="70c35" class="tk">r1square</a> <a id="70c44" class="tk">+=</a> <a id="70c47" class="tk">r</a>[<a id="70c49" class="tk">i</a>]<a id="70c51" class="tk">*</a><a id="70c52" class="tk">r</a>[<a id="70c54" class="tk">i</a>]; <a id="70c58" class="tk">i</a><a id="70c59" class="tk">++</a>; <span class="br">}</span></td></tr>
+<tr name="71" id="71">
+<td><a id="l71" class='ln'>71</a></td><td>		<a id="71c3" class="tk">cres</a> <a id="71c8" class="tk">-=</a> <a id="71c11" class="tk">sqrt</a>(<a id="71c16" class="tk">r1square</a>);</td></tr>
+<tr name="72" id="72">
+<td><a id="l72" class='ln'>72</a></td><td>		<span class="kw">if</span>( <a id="72c7" class="tk">cres</a> <a id="72c12" class="tk">&lt;=</a> 0 <a id="72c17" class="tk">&amp;&amp;</a> <a id="72c20" class="tk">-</a><a id="72c21" class="tk">cres</a> <a id="72c26" class="tk">&gt;</a> <a id="72c28" class="tk">alpha</a> )<span class="br">{</span> <a id="72c37" class="tk">alpha</a> = <a id="72c45" class="tk">-</a><a id="72c46" class="tk">cres</a>; <span class="br">}</span></td></tr>
+<tr name="73" id="73">
+<td><a id="l73" class='ln'>73</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="74" id="74">
+<td><a id="l74" class='ln'>74</a></td><td></td></tr>
+<tr name="75" id="75">
+<td><a id="l75" class='ln'>75</a></td><td></td></tr>
+<tr name="76" id="76">
+<td><a id="l76" class='ln'>76</a></td><td>	<span class="ct">/*</span></td></tr>
+<tr name="77" id="77">
+<td><a id="l77" class='ln'>77</a></td><td><span class="ct">	 * 2. compute s = r + (1+alpha)*e -------------------------------------</span></td></tr>
+<tr name="78" id="78">
+<td><a id="l78" class='ln'>78</a></td><td><span class="ct">	 */</span></td></tr>
+<tr name="79" id="79">
+<td><a id="l79" class='ln'>79</a></td><td></td></tr>
+<tr name="80" id="80">
+<td><a id="l80" class='ln'>80</a></td><td>	<a id="80c2" class="tk">alpha</a> <a id="80c8" class="tk">+=</a> 1.0;</td></tr>
+<tr name="81" id="81">
+<td><a id="l81" class='ln'>81</a></td><td></td></tr>
+<tr name="82" id="82">
+<td><a id="l82" class='ln'>82</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="83" id="83">
+<td><a id="l83" class='ln'>83</a></td><td>	<span class="kw">for</span>( <a id="83c7" class="tk">i</a>=0; <a id="83c12" class="tk">i</a> <a id="83c14" class="tk">&lt;</a> <a id="83c16" class="tk">C</a>-&gt;<a id="83c19" class="tk">lpc</a>-&gt;<a id="83c24" class="tk">p</a>; <a id="83c27" class="tk">i</a><a id="83c28" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="84" id="84">
+<td><a id="l84" class='ln'>84</a></td><td>		<a id="84c3" class="tk">s</a>[<a id="84c5" class="tk">i</a>] = <a id="84c10" class="tk">r</a>[<a id="84c12" class="tk">i</a>] <a id="84c15" class="tk">+</a> <a id="84c17" class="tk">alpha</a>;</td></tr>
+<tr name="85" id="85">
+<td><a id="l85" class='ln'>85</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="86" id="86">
+<td><a id="l86" class='ln'>86</a></td><td></td></tr>
+<tr name="87" id="87">
+<td><a id="l87" class='ln'>87</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="88" id="88">
+<td><a id="l88" class='ln'>88</a></td><td>	<span class="kw">for</span>( <a id="88c7" class="tk">l</a>=0; <a id="88c12" class="tk">l</a> <a id="88c14" class="tk">&lt;</a> <a id="88c16" class="tk">C</a>-&gt;<a id="88c19" class="tk">nsoc</a>; <a id="88c25" class="tk">l</a><a id="88c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="89" id="89">
+<td><a id="l89" class='ln'>89</a></td><td>		<a id="89c3" class="tk">s</a>[<a id="89c5" class="tk">i</a>] = <a id="89c10" class="tk">r</a>[<a id="89c12" class="tk">i</a>] <a id="89c15" class="tk">+</a> <a id="89c17" class="tk">alpha</a>; <a id="89c24" class="tk">i</a><a id="89c25" class="tk">++</a>;</td></tr>
+<tr name="90" id="90">
+<td><a id="l90" class='ln'>90</a></td><td>		<span class="kw">for</span>( <a id="90c8" class="tk">j</a>=1; <a id="90c13" class="tk">j</a> <a id="90c15" class="tk">&lt;</a> <a id="90c17" class="tk">C</a>-&gt;<a id="90c20" class="tk">soc</a>[<a id="90c24" class="tk">l</a>].<a id="90c27" class="tk">p</a>; <a id="90c30" class="tk">j</a><a id="90c31" class="tk">++</a> )<span class="br">{</span> <a id="90c37" class="tk">s</a>[<a id="90c39" class="tk">i</a>] = <a id="90c44" class="tk">r</a>[<a id="90c46" class="tk">i</a>]; <a id="90c50" class="tk">i</a><a id="90c51" class="tk">++</a>; <span class="br">}</span></td></tr>
+<tr name="91" id="91">
+<td><a id="l91" class='ln'>91</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="92" id="92">
+<td><a id="l92" class='ln'>92</a></td><td><span class="br">}</span></td></tr>
+<tr name="93" id="93">
+<td><a id="l93" class='ln'>93</a></td><td></td></tr>
+<tr name="94" id="94">
+<td><a id="l94" class='ln'>94</a></td><td><span class="pp">#ifdef</span> <a id="94c8" class="tk">EXPCONE</a></td></tr>
+<tr name="95" id="95">
+<td><a id="l95" class='ln'>95</a></td><td></td></tr>
+<tr name="96" id="96">
+<td><a id="l96" class='ln'>96</a></td><td><span class="ct">/* Sets the initial point to the jordan algebra identity e times scaling for the symmetric cones</span></td></tr>
+<tr name="97" id="97">
+<td><a id="l97" class='ln'>97</a></td><td><span class="ct"> * and the central ray for the exponential cone, scaled by scaling</span></td></tr>
+<tr name="98" id="98">
+<td><a id="l98" class='ln'>98</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="99" id="99">
+<td><a id="l99" class='ln'>99</a></td><td><span class="kw">void</span> <a id="99c6" class="tk">unitInitialization</a>(<a id="99c25" class="tk">cone</a><a id="99c29" class="tk">*</a> <a id="99c31" class="tk">C</a>, <a id="99c34" class="tk">pfloat</a><a id="99c40" class="tk">*</a> <a id="99c42" class="tk">s</a>, <a id="99c45" class="tk">pfloat</a><a id="99c51" class="tk">*</a> <a id="99c53" class="tk">z</a>, <a id="99c56" class="tk">pfloat</a> <a id="99c63" class="tk">scaling</a>)</td></tr>
+<tr name="100" id="100">
+<td><a id="l100" class='ln'>100</a></td><td><span class="br">{</span></td></tr>
+<tr name="101" id="101">
+<td><a id="l101" class='ln'>101</a></td><td>    <a id="101c5" class="tk">idxint</a> <a id="101c12" class="tk">i</a>,<a id="101c14" class="tk">l</a>,<a id="101c16" class="tk">j</a>;</td></tr>
+<tr name="102" id="102">
+<td><a id="l102" class='ln'>102</a></td><td></td></tr>
+<tr name="103" id="103">
+<td><a id="l103" class='ln'>103</a></td><td>    <span class="ct">/* LP cone */</span></td></tr>
+<tr name="104" id="104">
+<td><a id="l104" class='ln'>104</a></td><td>    <span class="kw">for</span>( <a id="104c10" class="tk">i</a>=0; <a id="104c15" class="tk">i</a> <a id="104c17" class="tk">&lt;</a> <a id="104c19" class="tk">C</a>-&gt;<a id="104c22" class="tk">lpc</a>-&gt;<a id="104c27" class="tk">p</a>; <a id="104c30" class="tk">i</a><a id="104c31" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="105" id="105">
+<td><a id="l105" class='ln'>105</a></td><td>        <a id="105c9" class="tk">s</a>[<a id="105c11" class="tk">i</a>] = <a id="105c16" class="tk">scaling</a>;</td></tr>
+<tr name="106" id="106">
+<td><a id="l106" class='ln'>106</a></td><td>        <a id="106c9" class="tk">z</a>[<a id="106c11" class="tk">i</a>] = <a id="106c16" class="tk">scaling</a>;</td></tr>
+<tr name="107" id="107">
+<td><a id="l107" class='ln'>107</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="108" id="108">
+<td><a id="l108" class='ln'>108</a></td><td></td></tr>
+<tr name="109" id="109">
+<td><a id="l109" class='ln'>109</a></td><td>    <span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="110" id="110">
+<td><a id="l110" class='ln'>110</a></td><td>    <span class="kw">for</span>( <a id="110c10" class="tk">l</a>=0; <a id="110c15" class="tk">l</a> <a id="110c17" class="tk">&lt;</a> <a id="110c19" class="tk">C</a>-&gt;<a id="110c22" class="tk">nsoc</a>; <a id="110c28" class="tk">l</a><a id="110c29" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="111" id="111">
+<td><a id="l111" class='ln'>111</a></td><td>        <a id="111c9" class="tk">s</a>[<a id="111c11" class="tk">i</a>] = <a id="111c16" class="tk">scaling</a>; <a id="111c25" class="tk">z</a>[<a id="111c27" class="tk">i</a>] = <a id="111c32" class="tk">scaling</a>;  <a id="111c42" class="tk">i</a><a id="111c43" class="tk">++</a>;</td></tr>
+<tr name="112" id="112">
+<td><a id="l112" class='ln'>112</a></td><td>        <span class="kw">for</span>( <a id="112c14" class="tk">j</a>=1; <a id="112c19" class="tk">j</a> <a id="112c21" class="tk">&lt;</a> <a id="112c23" class="tk">C</a>-&gt;<a id="112c26" class="tk">soc</a>[<a id="112c30" class="tk">l</a>].<a id="112c33" class="tk">p</a>; <a id="112c36" class="tk">j</a><a id="112c37" class="tk">++</a> )<span class="br">{</span> <a id="112c43" class="tk">s</a>[<a id="112c45" class="tk">i</a>] = 0.0; <a id="112c55" class="tk">z</a>[<a id="112c57" class="tk">i</a>] = 0.0; <a id="112c67" class="tk">i</a><a id="112c68" class="tk">++</a>; <span class="br">}</span></td></tr>
+<tr name="113" id="113">
+<td><a id="l113" class='ln'>113</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="114" id="114">
+<td><a id="l114" class='ln'>114</a></td><td>    <span class="ct">/* Exponential cone */</span></td></tr>
+<tr name="115" id="115">
+<td><a id="l115" class='ln'>115</a></td><td>    <span class="kw">for</span>(<a id="115c9" class="tk">l</a>=0;<a id="115c13" class="tk">l</a><a id="115c14" class="tk">&lt;</a><a id="115c15" class="tk">C</a>-&gt;<a id="115c18" class="tk">nexc</a>;<a id="115c23" class="tk">l</a><a id="115c24" class="tk">++</a>)</td></tr>
+<tr name="116" id="116">
+<td><a id="l116" class='ln'>116</a></td><td>    <span class="br">{</span></td></tr>
+<tr name="117" id="117">
+<td><a id="l117" class='ln'>117</a></td><td>       <a id="117c8" class="tk">s</a>[<a id="117c10" class="tk">i</a>]   = <a id="117c17" class="tk">scaling</a><a id="117c24" class="tk">*</a>(<a id="117c26" class="tk">-</a>1.051383945322714);</td></tr>
+<tr name="118" id="118">
+<td><a id="l118" class='ln'>118</a></td><td>       <a id="118c8" class="tk">s</a>[<a id="118c10" class="tk">i</a><a id="118c11" class="tk">+</a>1] = <a id="118c17" class="tk">scaling</a><a id="118c24" class="tk">*</a>(1.258967884768947);</td></tr>
+<tr name="119" id="119">
+<td><a id="l119" class='ln'>119</a></td><td>       <a id="119c8" class="tk">s</a>[<a id="119c10" class="tk">i</a><a id="119c11" class="tk">+</a>2] = <a id="119c17" class="tk">scaling</a><a id="119c24" class="tk">*</a>(0.556409619469370);</td></tr>
+<tr name="120" id="120">
+<td><a id="l120" class='ln'>120</a></td><td>       <a id="120c8" class="tk">z</a>[<a id="120c10" class="tk">i</a>]   = <a id="120c17" class="tk">scaling</a><a id="120c24" class="tk">*</a>(<a id="120c26" class="tk">-</a>1.051383945322714);</td></tr>
+<tr name="121" id="121">
+<td><a id="l121" class='ln'>121</a></td><td>       <a id="121c8" class="tk">z</a>[<a id="121c10" class="tk">i</a><a id="121c11" class="tk">+</a>1] = <a id="121c17" class="tk">scaling</a><a id="121c24" class="tk">*</a>(1.258967884768947);</td></tr>
+<tr name="122" id="122">
+<td><a id="l122" class='ln'>122</a></td><td>       <a id="122c8" class="tk">z</a>[<a id="122c10" class="tk">i</a><a id="122c11" class="tk">+</a>2] = <a id="122c17" class="tk">scaling</a><a id="122c24" class="tk">*</a>(0.556409619469370);</td></tr>
+<tr name="123" id="123">
+<td><a id="l123" class='ln'>123</a></td><td>       <a id="123c8" class="tk">i</a>=<a id="123c10" class="tk">i</a><a id="123c11" class="tk">+</a>3;</td></tr>
+<tr name="124" id="124">
+<td><a id="l124" class='ln'>124</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="125" id="125">
+<td><a id="l125" class='ln'>125</a></td><td><span class="br">}</span></td></tr>
+<tr name="126" id="126">
+<td><a id="l126" class='ln'>126</a></td><td></td></tr>
+<tr name="127" id="127">
+<td><a id="l127" class='ln'>127</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="128" id="128">
+<td><a id="l128" class='ln'>128</a></td><td></td></tr>
+<tr name="129" id="129">
+<td><a id="l129" class='ln'>129</a></td><td></td></tr>
+<tr name="130" id="130">
+<td><a id="l130" class='ln'>130</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="131" id="131">
+<td><a id="l131" class='ln'>131</a></td><td><span class="ct"> * Update scalings.</span></td></tr>
+<tr name="132" id="132">
+<td><a id="l132" class='ln'>132</a></td><td><span class="ct"> * Returns OUTSIDE_CONE as soon as any multiplier or slack leaves the cone,</span></td></tr>
+<tr name="133" id="133">
+<td><a id="l133" class='ln'>133</a></td><td><span class="ct"> * as this indicates severe problems.</span></td></tr>
+<tr name="134" id="134">
+<td><a id="l134" class='ln'>134</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="135" id="135">
+<td><a id="l135" class='ln'>135</a></td><td><span class="pp">#ifdef</span> <a id="135c8" class="tk">EXPCONE</a></td></tr>
+<tr name="136" id="136">
+<td><a id="l136" class='ln'>136</a></td><td><a id="136c1" class="tk">idxint</a> <a id="136c8" class="tk">updateScalings</a>(<a id="136c23" class="tk">cone</a><a id="136c27" class="tk">*</a> <a id="136c29" class="tk">C</a>, <a id="136c32" class="tk">pfloat</a><a id="136c38" class="tk">*</a> <a id="136c40" class="tk">s</a>, <a id="136c43" class="tk">pfloat</a><a id="136c49" class="tk">*</a> <a id="136c51" class="tk">z</a>, <a id="136c54" class="tk">pfloat</a><a id="136c60" class="tk">*</a> <a id="136c62" class="tk">lambda</a>, <a id="136c70" class="tk">pfloat</a> <a id="136c77" class="tk">mu</a>)</td></tr>
+<tr name="137" id="137">
+<td><a id="l137" class='ln'>137</a></td><td><span class="pp">#else</span></td></tr>
+<tr name="138" id="138">
+<td><a id="l138" class='ln'>138</a></td><td><a id="138c1" class="tk">idxint</a> <a id="138c8" class="tk">updateScalings</a>(<a id="138c23" class="tk">cone</a><a id="138c27" class="tk">*</a> <a id="138c29" class="tk">C</a>, <a id="138c32" class="tk">pfloat</a><a id="138c38" class="tk">*</a> <a id="138c40" class="tk">s</a>, <a id="138c43" class="tk">pfloat</a><a id="138c49" class="tk">*</a> <a id="138c51" class="tk">z</a>, <a id="138c54" class="tk">pfloat</a><a id="138c60" class="tk">*</a> <a id="138c62" class="tk">lambda</a>)</td></tr>
+<tr name="139" id="139">
+<td><a id="l139" class='ln'>139</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="140" id="140">
+<td><a id="l140" class='ln'>140</a></td><td><span class="br">{</span></td></tr>
+<tr name="141" id="141">
+<td><a id="l141" class='ln'>141</a></td><td>	<a id="141c2" class="tk">idxint</a> <a id="141c9" class="tk">i</a>, <a id="141c12" class="tk">l</a>, <a id="141c15" class="tk">k</a>, <a id="141c18" class="tk">p</a>; <span class="ct">/*, pm1; */</span></td></tr>
+<tr name="142" id="142">
+<td><a id="l142" class='ln'>142</a></td><td>	<a id="142c2" class="tk">pfloat</a> <a id="142c9" class="tk">sres</a>, <a id="142c15" class="tk">zres</a>, <a id="142c21" class="tk">snorm</a>, <a id="142c28" class="tk">znorm</a>, <a id="142c35" class="tk">gamma</a>, <a id="142c42" class="tk">one_over_2gamma</a>;</td></tr>
+<tr name="143" id="143">
+<td><a id="l143" class='ln'>143</a></td><td>	<a id="143c2" class="tk">pfloat</a><a id="143c8" class="tk">*</a> <a id="143c10" class="tk">sk</a>;</td></tr>
+<tr name="144" id="144">
+<td><a id="l144" class='ln'>144</a></td><td>	<a id="144c2" class="tk">pfloat</a><a id="144c8" class="tk">*</a> <a id="144c10" class="tk">zk</a>;</td></tr>
+<tr name="145" id="145">
+<td><a id="l145" class='ln'>145</a></td><td>    <a id="145c5" class="tk">pfloat</a> <a id="145c12" class="tk">a</a>, <a id="145c15" class="tk">c</a>, <a id="145c18" class="tk">d</a>, <a id="145c21" class="tk">w</a>, <a id="145c24" class="tk">temp</a>, <a id="145c30" class="tk">divisor</a>; <span class="ct">/*, b; */</span></td></tr>
+<tr name="146" id="146">
+<td><a id="l146" class='ln'>146</a></td><td><span class="pp">#if</span> <a id="146c5" class="tk">CONEMODE</a> <a id="146c14" class="tk">==</a> 0</td></tr>
+<tr name="147" id="147">
+<td><a id="l147" class='ln'>147</a></td><td>    <a id="147c5" class="tk">pfloat</a> <a id="147c12" class="tk">u0</a>, <a id="147c16" class="tk">u0_square</a>, <a id="147c27" class="tk">u1</a>, <a id="147c31" class="tk">v1</a>, <a id="147c35" class="tk">d1</a>, <a id="147c39" class="tk">c2byu02_d</a>, <a id="147c50" class="tk">c2byu02</a>, <a id="147c59" class="tk">c_square</a>;</td></tr>
+<tr name="148" id="148">
+<td><a id="l148" class='ln'>148</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="149" id="149">
+<td><a id="l149" class='ln'>149</a></td><td></td></tr>
+<tr name="150" id="150">
+<td><a id="l150" class='ln'>150</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="151" id="151">
+<td><a id="l151" class='ln'>151</a></td><td>	<span class="kw">for</span>( <a id="151c7" class="tk">i</a>=0; <a id="151c12" class="tk">i</a> <a id="151c14" class="tk">&lt;</a> <a id="151c16" class="tk">C</a>-&gt;<a id="151c19" class="tk">lpc</a>-&gt;<a id="151c24" class="tk">p</a>; <a id="151c27" class="tk">i</a><a id="151c28" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="152" id="152">
+<td><a id="l152" class='ln'>152</a></td><td>		<a id="152c3" class="tk">C</a>-&gt;<a id="152c6" class="tk">lpc</a>-&gt;<a id="152c11" class="tk">v</a>[<a id="152c13" class="tk">i</a>] = <a id="152c18" class="tk">SAFEDIV_POS</a>(<a id="152c30" class="tk">s</a>[<a id="152c32" class="tk">i</a>], <a id="152c36" class="tk">z</a>[<a id="152c38" class="tk">i</a>]);</td></tr>
+<tr name="153" id="153">
+<td><a id="l153" class='ln'>153</a></td><td>		<a id="153c3" class="tk">C</a>-&gt;<a id="153c6" class="tk">lpc</a>-&gt;<a id="153c11" class="tk">w</a>[<a id="153c13" class="tk">i</a>] = <a id="153c18" class="tk">sqrt</a>(<a id="153c23" class="tk">C</a>-&gt;<a id="153c26" class="tk">lpc</a>-&gt;<a id="153c31" class="tk">v</a>[<a id="153c33" class="tk">i</a>]);</td></tr>
+<tr name="154" id="154">
+<td><a id="l154" class='ln'>154</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="155" id="155">
+<td><a id="l155" class='ln'>155</a></td><td></td></tr>
+<tr name="156" id="156">
+<td><a id="l156" class='ln'>156</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="157" id="157">
+<td><a id="l157" class='ln'>157</a></td><td>	<a id="157c2" class="tk">k</a> = <a id="157c6" class="tk">C</a>-&gt;<a id="157c9" class="tk">lpc</a>-&gt;<a id="157c14" class="tk">p</a>;</td></tr>
+<tr name="158" id="158">
+<td><a id="l158" class='ln'>158</a></td><td>	<span class="kw">for</span>( <a id="158c7" class="tk">l</a>=0; <a id="158c12" class="tk">l</a> <a id="158c14" class="tk">&lt;</a> <a id="158c16" class="tk">C</a>-&gt;<a id="158c19" class="tk">nsoc</a>; <a id="158c25" class="tk">l</a><a id="158c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="159" id="159">
+<td><a id="l159" class='ln'>159</a></td><td></td></tr>
+<tr name="160" id="160">
+<td><a id="l160" class='ln'>160</a></td><td>		<span class="ct">/* indices and variables */</span></td></tr>
+<tr name="161" id="161">
+<td><a id="l161" class='ln'>161</a></td><td>		<a id="161c3" class="tk">sk</a> = <a id="161c8" class="tk">s</a><a id="161c9" class="tk">+</a><a id="161c10" class="tk">k</a>; <a id="161c13" class="tk">zk</a> = <a id="161c18" class="tk">z</a><a id="161c19" class="tk">+</a><a id="161c20" class="tk">k</a>; <a id="161c23" class="tk">p</a> = <a id="161c27" class="tk">C</a>-&gt;<a id="161c30" class="tk">soc</a>[<a id="161c34" class="tk">l</a>].<a id="161c37" class="tk">p</a>; <span class="ct">/* pm1 = p-1; */</span></td></tr>
+<tr name="162" id="162">
+<td><a id="l162" class='ln'>162</a></td><td></td></tr>
+<tr name="163" id="163">
+<td><a id="l163" class='ln'>163</a></td><td>		<span class="ct">/* check residuals and quit if they're negative */</span></td></tr>
+<tr name="164" id="164">
+<td><a id="l164" class='ln'>164</a></td><td>		<a id="164c3" class="tk">sres</a> = <a id="164c10" class="tk">socres</a>(<a id="164c17" class="tk">sk</a>, <a id="164c21" class="tk">p</a>);  <a id="164c26" class="tk">zres</a> = <a id="164c33" class="tk">socres</a>(<a id="164c40" class="tk">zk</a>, <a id="164c44" class="tk">p</a>);</td></tr>
+<tr name="165" id="165">
+<td><a id="l165" class='ln'>165</a></td><td>        <span class="kw">if</span>( <a id="165c13" class="tk">sres</a> <a id="165c18" class="tk">&lt;=</a> 0 <a id="165c23" class="tk">||</a> <a id="165c26" class="tk">zres</a> <a id="165c31" class="tk">&lt;=</a> 0 )<span class="br">{</span> <span class="kw">return</span> <a id="165c46" class="tk">OUTSIDE_CONE</a>; <span class="br">}</span></td></tr>
+<tr name="166" id="166">
+<td><a id="l166" class='ln'>166</a></td><td></td></tr>
+<tr name="167" id="167">
+<td><a id="l167" class='ln'>167</a></td><td>		<span class="ct">/* normalize variables */</span></td></tr>
+<tr name="168" id="168">
+<td><a id="l168" class='ln'>168</a></td><td>		<a id="168c3" class="tk">snorm</a> = <a id="168c11" class="tk">sqrt</a>(<a id="168c16" class="tk">sres</a>);    <a id="168c26" class="tk">znorm</a> = <a id="168c34" class="tk">sqrt</a>(<a id="168c39" class="tk">zres</a>);</td></tr>
+<tr name="169" id="169">
+<td><a id="l169" class='ln'>169</a></td><td>		<span class="kw">for</span>( <a id="169c8" class="tk">i</a>=0; <a id="169c13" class="tk">i</a><a id="169c14" class="tk">&lt;</a><a id="169c15" class="tk">p</a>; <a id="169c18" class="tk">i</a><a id="169c19" class="tk">++</a> )<span class="br">{</span> <a id="169c25" class="tk">C</a>-&gt;<a id="169c28" class="tk">soc</a>[<a id="169c32" class="tk">l</a>].<a id="169c35" class="tk">skbar</a>[<a id="169c41" class="tk">i</a>] = <a id="169c46" class="tk">SAFEDIV_POS</a>(<a id="169c58" class="tk">sk</a>[<a id="169c61" class="tk">i</a>],<a id="169c64" class="tk">snorm</a>); <span class="br">}</span></td></tr>
+<tr name="170" id="170">
+<td><a id="l170" class='ln'>170</a></td><td>		<span class="kw">for</span>( <a id="170c8" class="tk">i</a>=0; <a id="170c13" class="tk">i</a><a id="170c14" class="tk">&lt;</a><a id="170c15" class="tk">p</a>; <a id="170c18" class="tk">i</a><a id="170c19" class="tk">++</a> )<span class="br">{</span> <a id="170c25" class="tk">C</a>-&gt;<a id="170c28" class="tk">soc</a>[<a id="170c32" class="tk">l</a>].<a id="170c35" class="tk">zkbar</a>[<a id="170c41" class="tk">i</a>] = <a id="170c46" class="tk">SAFEDIV_POS</a>(<a id="170c58" class="tk">zk</a>[<a id="170c61" class="tk">i</a>],<a id="170c64" class="tk">znorm</a>); <span class="br">}</span></td></tr>
+<tr name="171" id="171">
+<td><a id="l171" class='ln'>171</a></td><td>		<a id="171c3" class="tk">C</a>-&gt;<a id="171c6" class="tk">soc</a>[<a id="171c10" class="tk">l</a>].<a id="171c13" class="tk">eta_square</a> = <a id="171c26" class="tk">SAFEDIV_POS</a>(<a id="171c38" class="tk">snorm</a>,<a id="171c44" class="tk">znorm</a>);</td></tr>
+<tr name="172" id="172">
+<td><a id="l172" class='ln'>172</a></td><td>		<a id="172c3" class="tk">C</a>-&gt;<a id="172c6" class="tk">soc</a>[<a id="172c10" class="tk">l</a>].<a id="172c13" class="tk">eta</a> = <a id="172c19" class="tk">sqrt</a>(<a id="172c24" class="tk">C</a>-&gt;<a id="172c27" class="tk">soc</a>[<a id="172c31" class="tk">l</a>].<a id="172c34" class="tk">eta_square</a>);</td></tr>
+<tr name="173" id="173">
+<td><a id="l173" class='ln'>173</a></td><td></td></tr>
+<tr name="174" id="174">
+<td><a id="l174" class='ln'>174</a></td><td>		<span class="ct">/* Normalized Nesterov-Todd scaling point */</span></td></tr>
+<tr name="175" id="175">
+<td><a id="l175" class='ln'>175</a></td><td>		<a id="175c3" class="tk">gamma</a> = 1.0;</td></tr>
+<tr name="176" id="176">
+<td><a id="l176" class='ln'>176</a></td><td>		<span class="kw">for</span>( <a id="176c8" class="tk">i</a>=0; <a id="176c13" class="tk">i</a><a id="176c14" class="tk">&lt;</a><a id="176c15" class="tk">p</a>; <a id="176c18" class="tk">i</a><a id="176c19" class="tk">++</a>)<span class="br">{</span> <a id="176c24" class="tk">gamma</a> <a id="176c30" class="tk">+=</a> <a id="176c33" class="tk">C</a>-&gt;<a id="176c36" class="tk">soc</a>[<a id="176c40" class="tk">l</a>].<a id="176c43" class="tk">skbar</a>[<a id="176c49" class="tk">i</a>]<a id="176c51" class="tk">*</a><a id="176c52" class="tk">C</a>-&gt;<a id="176c55" class="tk">soc</a>[<a id="176c59" class="tk">l</a>].<a id="176c62" class="tk">zkbar</a>[<a id="176c68" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="177" id="177">
+<td><a id="l177" class='ln'>177</a></td><td>		<a id="177c3" class="tk">gamma</a> = <a id="177c11" class="tk">sqrt</a>(0.5<a id="177c19" class="tk">*</a><a id="177c20" class="tk">gamma</a>);</td></tr>
+<tr name="178" id="178">
+<td><a id="l178" class='ln'>178</a></td><td>		<a id="178c3" class="tk">one_over_2gamma</a> = <a id="178c21" class="tk">SAFEDIV_POS</a>(0.5,<a id="178c37" class="tk">gamma</a>);</td></tr>
+<tr name="179" id="179">
+<td><a id="l179" class='ln'>179</a></td><td>		<a id="179c3" class="tk">a</a> = <a id="179c7" class="tk">one_over_2gamma</a><a id="179c22" class="tk">*</a>(<a id="179c24" class="tk">C</a>-&gt;<a id="179c27" class="tk">soc</a>[<a id="179c31" class="tk">l</a>].<a id="179c34" class="tk">skbar</a>[0] <a id="179c43" class="tk">+</a> <a id="179c45" class="tk">C</a>-&gt;<a id="179c48" class="tk">soc</a>[<a id="179c52" class="tk">l</a>].<a id="179c55" class="tk">zkbar</a>[0]);</td></tr>
+<tr name="180" id="180">
+<td><a id="l180" class='ln'>180</a></td><td>		<a id="180c3" class="tk">w</a> = 0;</td></tr>
+<tr name="181" id="181">
+<td><a id="l181" class='ln'>181</a></td><td>		<span class="kw">for</span>( <a id="181c8" class="tk">i</a>=1; <a id="181c13" class="tk">i</a><a id="181c14" class="tk">&lt;</a><a id="181c15" class="tk">p</a>; <a id="181c18" class="tk">i</a><a id="181c19" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="182" id="182">
+<td><a id="l182" class='ln'>182</a></td><td>			<a id="182c4" class="tk">C</a>-&gt;<a id="182c7" class="tk">soc</a>[<a id="182c11" class="tk">l</a>].<a id="182c14" class="tk">q</a>[<a id="182c16" class="tk">i</a><a id="182c17" class="tk">-</a>1] = <a id="182c23" class="tk">one_over_2gamma</a><a id="182c38" class="tk">*</a>(<a id="182c40" class="tk">C</a>-&gt;<a id="182c43" class="tk">soc</a>[<a id="182c47" class="tk">l</a>].<a id="182c50" class="tk">skbar</a>[<a id="182c56" class="tk">i</a>] <a id="182c59" class="tk">-</a> <a id="182c61" class="tk">C</a>-&gt;<a id="182c64" class="tk">soc</a>[<a id="182c68" class="tk">l</a>].<a id="182c71" class="tk">zkbar</a>[<a id="182c77" class="tk">i</a>]);</td></tr>
+<tr name="183" id="183">
+<td><a id="l183" class='ln'>183</a></td><td>			<a id="183c4" class="tk">w</a> <a id="183c6" class="tk">+=</a> <a id="183c9" class="tk">C</a>-&gt;<a id="183c12" class="tk">soc</a>[<a id="183c16" class="tk">l</a>].<a id="183c19" class="tk">q</a>[<a id="183c21" class="tk">i</a><a id="183c22" class="tk">-</a>1]<a id="183c25" class="tk">*</a><a id="183c26" class="tk">C</a>-&gt;<a id="183c29" class="tk">soc</a>[<a id="183c33" class="tk">l</a>].<a id="183c36" class="tk">q</a>[<a id="183c38" class="tk">i</a><a id="183c39" class="tk">-</a>1];</td></tr>
+<tr name="184" id="184">
+<td><a id="l184" class='ln'>184</a></td><td>		<span class="br">}</span></td></tr>
+<tr name="185" id="185">
+<td><a id="l185" class='ln'>185</a></td><td>        <a id="185c9" class="tk">C</a>-&gt;<a id="185c12" class="tk">soc</a>[<a id="185c16" class="tk">l</a>].<a id="185c19" class="tk">w</a> = <a id="185c23" class="tk">w</a>;</td></tr>
+<tr name="186" id="186">
+<td><a id="l186" class='ln'>186</a></td><td>        <a id="186c9" class="tk">C</a>-&gt;<a id="186c12" class="tk">soc</a>[<a id="186c16" class="tk">l</a>].<a id="186c19" class="tk">a</a> = <a id="186c23" class="tk">a</a>;</td></tr>
+<tr name="187" id="187">
+<td><a id="l187" class='ln'>187</a></td><td></td></tr>
+<tr name="188" id="188">
+<td><a id="l188" class='ln'>188</a></td><td>		<span class="ct">/* pre-compute variables needed for KKT matrix (kkt_update uses those) */</span></td></tr>
+<tr name="189" id="189">
+<td><a id="l189" class='ln'>189</a></td><td>        <a id="189c9" class="tk">temp</a> = 1.0 <a id="189c20" class="tk">+</a> <a id="189c22" class="tk">a</a>;</td></tr>
+<tr name="190" id="190">
+<td><a id="l190" class='ln'>190</a></td><td>        <span class="ct">/* b = SAFEDIV_POS(1.0,temp); */</span></td></tr>
+<tr name="191" id="191">
+<td><a id="l191" class='ln'>191</a></td><td>        <a id="191c9" class="tk">c</a> = 1.0 <a id="191c17" class="tk">+</a> <a id="191c19" class="tk">a</a> <a id="191c21" class="tk">+</a> <a id="191c23" class="tk">SAFEDIV_POS</a>(<a id="191c35" class="tk">w</a>,<a id="191c37" class="tk">temp</a>);</td></tr>
+<tr name="192" id="192">
+<td><a id="l192" class='ln'>192</a></td><td>        <a id="192c9" class="tk">divisor</a> = <a id="192c19" class="tk">temp</a><a id="192c23" class="tk">*</a><a id="192c24" class="tk">temp</a>;</td></tr>
+<tr name="193" id="193">
+<td><a id="l193" class='ln'>193</a></td><td>        <a id="193c9" class="tk">d</a> = 1 <a id="193c15" class="tk">+</a> <a id="193c17" class="tk">SAFEDIV_POS</a>(2,<a id="193c31" class="tk">temp</a>) <a id="193c37" class="tk">+</a> <a id="193c39" class="tk">SAFEDIV_POS</a>(<a id="193c51" class="tk">w</a>,<a id="193c53" class="tk">divisor</a>);</td></tr>
+<tr name="194" id="194">
+<td><a id="l194" class='ln'>194</a></td><td><span class="pp">#if</span> <a id="194c5" class="tk">CONEMODE</a> <a id="194c14" class="tk">&gt;</a> 0</td></tr>
+<tr name="195" id="195">
+<td><a id="l195" class='ln'>195</a></td><td>        <a id="195c9" class="tk">C</a>-&gt;<a id="195c12" class="tk">soc</a>[<a id="195c16" class="tk">l</a>].<a id="195c19" class="tk">c</a> = <a id="195c23" class="tk">c</a>;</td></tr>
+<tr name="196" id="196">
+<td><a id="l196" class='ln'>196</a></td><td>        <a id="196c9" class="tk">C</a>-&gt;<a id="196c12" class="tk">soc</a>[<a id="196c16" class="tk">l</a>].<a id="196c19" class="tk">d</a> = <a id="196c23" class="tk">d</a>;</td></tr>
+<tr name="197" id="197">
+<td><a id="l197" class='ln'>197</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="198" id="198">
+<td><a id="l198" class='ln'>198</a></td><td><span class="pp">#if</span> <a id="198c5" class="tk">CONEMODE</a> <a id="198c14" class="tk">==</a> 0</td></tr>
+<tr name="199" id="199">
+<td><a id="l199" class='ln'>199</a></td><td>        <a id="199c9" class="tk">c_square</a> = <a id="199c20" class="tk">c</a><a id="199c21" class="tk">*</a><a id="199c22" class="tk">c</a>;</td></tr>
+<tr name="200" id="200">
+<td><a id="l200" class='ln'>200</a></td><td>        <a id="200c9" class="tk">divisor</a> = 1.0 <a id="200c23" class="tk">+</a> <a id="200c25" class="tk">w</a><a id="200c26" class="tk">*</a><a id="200c27" class="tk">d</a>;</td></tr>
+<tr name="201" id="201">
+<td><a id="l201" class='ln'>201</a></td><td>        <a id="201c9" class="tk">d1</a> = 0.5<a id="201c17" class="tk">*</a>(<a id="201c19" class="tk">a</a><a id="201c20" class="tk">*</a><a id="201c21" class="tk">a</a> <a id="201c23" class="tk">+</a> <a id="201c25" class="tk">w</a><a id="201c26" class="tk">*</a>(1.0 <a id="201c32" class="tk">-</a> <a id="201c34" class="tk">SAFEDIV_POS</a>(<a id="201c46" class="tk">c_square</a>,<a id="201c55" class="tk">divisor</a>) ));  <span class="kw">if</span>( <a id="201c73" class="tk">d1</a> <a id="201c76" class="tk">&lt;</a> 0 )<span class="br">{</span> <a id="201c83" class="tk">d1</a> = 0; <span class="br">}</span></td></tr>
+<tr name="202" id="202">
+<td><a id="l202" class='ln'>202</a></td><td>        <a id="202c9" class="tk">u0_square</a> = <a id="202c21" class="tk">a</a><a id="202c22" class="tk">*</a><a id="202c23" class="tk">a</a> <a id="202c25" class="tk">+</a> <a id="202c27" class="tk">w</a> <a id="202c29" class="tk">-</a> <a id="202c31" class="tk">d1</a>;</td></tr>
+<tr name="203" id="203">
+<td><a id="l203" class='ln'>203</a></td><td>        <a id="203c9" class="tk">u0</a> = <a id="203c14" class="tk">sqrt</a>(<a id="203c19" class="tk">u0_square</a>);</td></tr>
+<tr name="204" id="204">
+<td><a id="l204" class='ln'>204</a></td><td>        <a id="204c9" class="tk">c2byu02</a> = <a id="204c19" class="tk">SAFEDIV_POS</a>((<a id="204c32" class="tk">c</a><a id="204c33" class="tk">*</a><a id="204c34" class="tk">c</a>),<a id="204c37" class="tk">u0_square</a>);</td></tr>
+<tr name="205" id="205">
+<td><a id="l205" class='ln'>205</a></td><td>        <a id="205c9" class="tk">c2byu02_d</a> = <a id="205c21" class="tk">c2byu02</a> <a id="205c29" class="tk">-</a> <a id="205c31" class="tk">d</a>;</td></tr>
+<tr name="206" id="206">
+<td><a id="l206" class='ln'>206</a></td><td>        <span class="kw">if</span> (<a id="206c13" class="tk">c2byu02_d</a> <a id="206c23" class="tk">&lt;=</a> 0) <span class="br">{</span> <span class="kw">return</span> <a id="206c38" class="tk">OUTSIDE_CONE</a>; <span class="br">}</span></td></tr>
+<tr name="207" id="207">
+<td><a id="l207" class='ln'>207</a></td><td>        <a id="207c9" class="tk">v1</a> = <a id="207c14" class="tk">sqrt</a>(<a id="207c19" class="tk">c2byu02_d</a>);</td></tr>
+<tr name="208" id="208">
+<td><a id="l208" class='ln'>208</a></td><td>        <a id="208c9" class="tk">u1</a> = <a id="208c14" class="tk">sqrt</a>(<a id="208c19" class="tk">c2byu02</a>);</td></tr>
+<tr name="209" id="209">
+<td><a id="l209" class='ln'>209</a></td><td>        <a id="209c9" class="tk">C</a>-&gt;<a id="209c12" class="tk">soc</a>[<a id="209c16" class="tk">l</a>].<a id="209c19" class="tk">d1</a> = <a id="209c24" class="tk">d1</a>;</td></tr>
+<tr name="210" id="210">
+<td><a id="l210" class='ln'>210</a></td><td>        <a id="210c9" class="tk">C</a>-&gt;<a id="210c12" class="tk">soc</a>[<a id="210c16" class="tk">l</a>].<a id="210c19" class="tk">u0</a> = <a id="210c24" class="tk">u0</a>;</td></tr>
+<tr name="211" id="211">
+<td><a id="l211" class='ln'>211</a></td><td>        <a id="211c9" class="tk">C</a>-&gt;<a id="211c12" class="tk">soc</a>[<a id="211c16" class="tk">l</a>].<a id="211c19" class="tk">u1</a> = <a id="211c24" class="tk">u1</a>;</td></tr>
+<tr name="212" id="212">
+<td><a id="l212" class='ln'>212</a></td><td>        <a id="212c9" class="tk">C</a>-&gt;<a id="212c12" class="tk">soc</a>[<a id="212c16" class="tk">l</a>].<a id="212c19" class="tk">v1</a> = <a id="212c24" class="tk">v1</a>;</td></tr>
+<tr name="213" id="213">
+<td><a id="l213" class='ln'>213</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="214" id="214">
+<td><a id="l214" class='ln'>214</a></td><td></td></tr>
+<tr name="215" id="215">
+<td><a id="l215" class='ln'>215</a></td><td>		<span class="ct">/* increase offset for next cone */</span></td></tr>
+<tr name="216" id="216">
+<td><a id="l216" class='ln'>216</a></td><td>		<a id="216c3" class="tk">k</a> <a id="216c5" class="tk">+=</a> <a id="216c8" class="tk">C</a>-&gt;<a id="216c11" class="tk">soc</a>[<a id="216c15" class="tk">l</a>].<a id="216c18" class="tk">p</a>;</td></tr>
+<tr name="217" id="217">
+<td><a id="l217" class='ln'>217</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="218" id="218">
+<td><a id="l218" class='ln'>218</a></td><td><span class="pp">#ifdef</span> <a id="218c8" class="tk">EXPCONE</a></td></tr>
+<tr name="219" id="219">
+<td><a id="l219" class='ln'>219</a></td><td>       <span class="ct">/*Exponential cones*/</span></td></tr>
+<tr name="220" id="220">
+<td><a id="l220" class='ln'>220</a></td><td>        <a id="220c9" class="tk">k</a> = <a id="220c13" class="tk">C</a>-&gt;<a id="220c16" class="tk">fexv</a>;</td></tr>
+<tr name="221" id="221">
+<td><a id="l221" class='ln'>221</a></td><td>        <span class="kw">for</span>(<a id="221c13" class="tk">l</a>=0;<a id="221c17" class="tk">l</a><a id="221c18" class="tk">&lt;</a><a id="221c19" class="tk">C</a>-&gt;<a id="221c22" class="tk">nexc</a>;<a id="221c27" class="tk">l</a><a id="221c28" class="tk">++</a>)</td></tr>
+<tr name="222" id="222">
+<td><a id="l222" class='ln'>222</a></td><td>        <span class="br">{</span></td></tr>
+<tr name="223" id="223">
+<td><a id="l223" class='ln'>223</a></td><td>            <a id="223c13" class="tk">evalExpHessian</a>(<a id="223c28" class="tk">z</a><a id="223c29" class="tk">+</a><a id="223c30" class="tk">k</a>, <a id="223c33" class="tk">C</a>-&gt;<a id="223c36" class="tk">expc</a>[<a id="223c41" class="tk">l</a>].<a id="223c44" class="tk">v</a>, <a id="223c47" class="tk">mu</a>);</td></tr>
+<tr name="224" id="224">
+<td><a id="l224" class='ln'>224</a></td><td>            <a id="224c13" class="tk">evalExpGradient</a>(<a id="224c29" class="tk">z</a><a id="224c30" class="tk">+</a><a id="224c31" class="tk">k</a>, <a id="224c34" class="tk">C</a>-&gt;<a id="224c37" class="tk">expc</a>[<a id="224c42" class="tk">l</a>].<a id="224c45" class="tk">g</a>);</td></tr>
+<tr name="225" id="225">
+<td><a id="l225" class='ln'>225</a></td><td>            <a id="225c13" class="tk">k</a><a id="225c14" class="tk">+=</a>3;</td></tr>
+<tr name="226" id="226">
+<td><a id="l226" class='ln'>226</a></td><td>        <span class="br">}</span></td></tr>
+<tr name="227" id="227">
+<td><a id="l227" class='ln'>227</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="228" id="228">
+<td><a id="l228" class='ln'>228</a></td><td>	<span class="ct">/* lambda = W*z */</span></td></tr>
+<tr name="229" id="229">
+<td><a id="l229" class='ln'>229</a></td><td>	<a id="229c2" class="tk">scale</a>(<a id="229c8" class="tk">z</a>, <a id="229c11" class="tk">C</a>, <a id="229c14" class="tk">lambda</a>);</td></tr>
+<tr name="230" id="230">
+<td><a id="l230" class='ln'>230</a></td><td></td></tr>
+<tr name="231" id="231">
+<td><a id="l231" class='ln'>231</a></td><td>	<span class="kw">return</span> <a id="231c9" class="tk">INSIDE_CONE</a>;</td></tr>
+<tr name="232" id="232">
+<td><a id="l232" class='ln'>232</a></td><td><span class="br">}</span></td></tr>
+<tr name="233" id="233">
+<td><a id="l233" class='ln'>233</a></td><td></td></tr>
+<tr name="234" id="234">
+<td><a id="l234" class='ln'>234</a></td><td><span class="pp">#ifdef</span> <a id="234c8" class="tk">EXPCONE</a></td></tr>
+<tr name="235" id="235">
+<td><a id="l235" class='ln'>235</a></td><td><span class="ct">/* Evaulates log(s) + log(z) + log(t) + log(k) + logbarriersocp - (D+1) */</span></td></tr>
+<tr name="236" id="236">
+<td><a id="l236" class='ln'>236</a></td><td><a id="236c1" class="tk">pfloat</a> <a id="236c8" class="tk">evalSymmetricBarrierValue</a>(<a id="236c34" class="tk">pfloat</a><a id="236c40" class="tk">*</a> <a id="236c42" class="tk">siter</a>, <a id="236c49" class="tk">pfloat</a> <a id="236c56" class="tk">*</a><a id="236c57" class="tk">ziter</a>, <a id="236c64" class="tk">pfloat</a> <a id="236c71" class="tk">tauIter</a>, <a id="236c80" class="tk">pfloat</a> <a id="236c87" class="tk">kapIter</a>, <a id="236c96" class="tk">cone</a><a id="236c100" class="tk">*</a> <a id="236c102" class="tk">C</a>, <a id="236c105" class="tk">pfloat</a> <a id="236c112" class="tk">D</a>)</td></tr>
+<tr name="237" id="237">
+<td><a id="l237" class='ln'>237</a></td><td><span class="br">{</span></td></tr>
+<tr name="238" id="238">
+<td><a id="l238" class='ln'>238</a></td><td>   <a id="238c4" class="tk">pfloat</a> <a id="238c11" class="tk">barrier</a> = 0.0;</td></tr>
+<tr name="239" id="239">
+<td><a id="l239" class='ln'>239</a></td><td>   <a id="239c4" class="tk">idxint</a> <a id="239c11" class="tk">j</a>,<a id="239c13" class="tk">k</a>,<a id="239c15" class="tk">l</a>;</td></tr>
+<tr name="240" id="240">
+<td><a id="l240" class='ln'>240</a></td><td>   <a id="240c4" class="tk">pfloat</a> <a id="240c11" class="tk">normAccumS</a> = 0.0;</td></tr>
+<tr name="241" id="241">
+<td><a id="l241" class='ln'>241</a></td><td>   <a id="241c4" class="tk">pfloat</a> <a id="241c11" class="tk">normAccumZ</a> = 0.0;</td></tr>
+<tr name="242" id="242">
+<td><a id="l242" class='ln'>242</a></td><td>   <a id="242c4" class="tk">idxint</a> <a id="242c11" class="tk">socDim</a>;</td></tr>
+<tr name="243" id="243">
+<td><a id="l243" class='ln'>243</a></td><td>   <span class="ct">/* Positive orthant barrier */</span></td></tr>
+<tr name="244" id="244">
+<td><a id="l244" class='ln'>244</a></td><td>   <span class="kw">for</span>(<a id="244c8" class="tk">k</a>=0;<a id="244c12" class="tk">k</a><a id="244c13" class="tk">&lt;</a><a id="244c14" class="tk">C</a>-&gt;<a id="244c17" class="tk">lpc</a>-&gt;<a id="244c22" class="tk">p</a>;<a id="244c24" class="tk">k</a><a id="244c25" class="tk">++</a>)</td></tr>
+<tr name="245" id="245">
+<td><a id="l245" class='ln'>245</a></td><td>        <a id="245c9" class="tk">barrier</a> <a id="245c17" class="tk">-=</a> (<a id="245c21" class="tk">siter</a>[<a id="245c27" class="tk">k</a>]<a id="245c29" class="tk">&lt;=</a>0<a id="245c32" class="tk">||</a><a id="245c34" class="tk">ziter</a>[<a id="245c40" class="tk">k</a>]<a id="245c42" class="tk">&lt;=</a>0)<a id="245c46" class="tk">?</a> <a id="245c48" class="tk">ECOS_INFINITY</a> <a id="245c62" class="tk">:</a> (<a id="245c65" class="tk">log</a>(<a id="245c69" class="tk">siter</a>[<a id="245c75" class="tk">k</a>])<a id="245c78" class="tk">+</a><a id="245c79" class="tk">log</a>(<a id="245c83" class="tk">ziter</a>[<a id="245c89" class="tk">k</a>]));</td></tr>
+<tr name="246" id="246">
+<td><a id="l246" class='ln'>246</a></td><td></td></tr>
+<tr name="247" id="247">
+<td><a id="l247" class='ln'>247</a></td><td>    <a id="247c5" class="tk">barrier</a><a id="247c12" class="tk">-=</a> (<a id="247c16" class="tk">tauIter</a><a id="247c23" class="tk">&lt;=</a>0<a id="247c26" class="tk">||</a><a id="247c28" class="tk">kapIter</a><a id="247c35" class="tk">&lt;=</a>0) <a id="247c40" class="tk">?</a> <a id="247c42" class="tk">ECOS_INFINITY</a> <a id="247c56" class="tk">:</a> (<a id="247c59" class="tk">log</a>(<a id="247c63" class="tk">tauIter</a>)<a id="247c71" class="tk">+</a><a id="247c72" class="tk">log</a>(<a id="247c76" class="tk">kapIter</a>));</td></tr>
+<tr name="248" id="248">
+<td><a id="l248" class='ln'>248</a></td><td>    <span class="ct">/* Socp cones */</span></td></tr>
+<tr name="249" id="249">
+<td><a id="l249" class='ln'>249</a></td><td>    <span class="kw">for</span>(<a id="249c9" class="tk">l</a>=0;<a id="249c13" class="tk">l</a><a id="249c14" class="tk">&lt;</a><a id="249c15" class="tk">C</a>-&gt;<a id="249c18" class="tk">nsoc</a>;<a id="249c23" class="tk">l</a><a id="249c24" class="tk">++</a>)</td></tr>
+<tr name="250" id="250">
+<td><a id="l250" class='ln'>250</a></td><td>    <span class="br">{</span></td></tr>
+<tr name="251" id="251">
+<td><a id="l251" class='ln'>251</a></td><td>        <a id="251c9" class="tk">socDim</a> = <a id="251c18" class="tk">C</a>-&gt;<a id="251c21" class="tk">soc</a>[<a id="251c25" class="tk">l</a>].<a id="251c28" class="tk">p</a>;</td></tr>
+<tr name="252" id="252">
+<td><a id="l252" class='ln'>252</a></td><td>        <a id="252c9" class="tk">normAccumS</a> = 0.0;</td></tr>
+<tr name="253" id="253">
+<td><a id="l253" class='ln'>253</a></td><td>        <a id="253c9" class="tk">normAccumZ</a> = 0.0;</td></tr>
+<tr name="254" id="254">
+<td><a id="l254" class='ln'>254</a></td><td>        <a id="254c9" class="tk">normAccumS</a> = <a id="254c22" class="tk">siter</a>[<a id="254c28" class="tk">k</a>]<a id="254c30" class="tk">*</a><a id="254c31" class="tk">siter</a>[<a id="254c37" class="tk">k</a>]; <span class="ct">/* Root variable of the socp cone */</span></td></tr>
+<tr name="255" id="255">
+<td><a id="l255" class='ln'>255</a></td><td>        <a id="255c9" class="tk">normAccumZ</a> = <a id="255c22" class="tk">ziter</a>[<a id="255c28" class="tk">k</a>]<a id="255c30" class="tk">*</a><a id="255c31" class="tk">ziter</a>[<a id="255c37" class="tk">k</a>];</td></tr>
+<tr name="256" id="256">
+<td><a id="l256" class='ln'>256</a></td><td>        <a id="256c9" class="tk">k</a><a id="256c10" class="tk">++</a>;</td></tr>
+<tr name="257" id="257">
+<td><a id="l257" class='ln'>257</a></td><td>        <span class="kw">for</span>(<a id="257c13" class="tk">j</a>=1;<a id="257c17" class="tk">j</a><a id="257c18" class="tk">&lt;</a><a id="257c19" class="tk">socDim</a>;<a id="257c26" class="tk">j</a><a id="257c27" class="tk">++</a>)</td></tr>
+<tr name="258" id="258">
+<td><a id="l258" class='ln'>258</a></td><td>        <span class="br">{</span></td></tr>
+<tr name="259" id="259">
+<td><a id="l259" class='ln'>259</a></td><td>            <a id="259c13" class="tk">normAccumS</a> <a id="259c24" class="tk">-=</a> <a id="259c27" class="tk">siter</a>[<a id="259c33" class="tk">k</a>]<a id="259c35" class="tk">*</a><a id="259c36" class="tk">siter</a>[<a id="259c42" class="tk">k</a>];</td></tr>
+<tr name="260" id="260">
+<td><a id="l260" class='ln'>260</a></td><td>            <a id="260c13" class="tk">normAccumZ</a> <a id="260c24" class="tk">-=</a> <a id="260c27" class="tk">ziter</a>[<a id="260c33" class="tk">k</a>]<a id="260c35" class="tk">*</a><a id="260c36" class="tk">ziter</a>[<a id="260c42" class="tk">k</a>];</td></tr>
+<tr name="261" id="261">
+<td><a id="l261" class='ln'>261</a></td><td>            <a id="261c13" class="tk">k</a><a id="261c14" class="tk">++</a>;</td></tr>
+<tr name="262" id="262">
+<td><a id="l262" class='ln'>262</a></td><td>        <span class="br">}</span></td></tr>
+<tr name="263" id="263">
+<td><a id="l263" class='ln'>263</a></td><td>        <a id="263c9" class="tk">barrier</a><a id="263c16" class="tk">-=</a> <a id="263c19" class="tk">normAccumS</a><a id="263c29" class="tk">&lt;=</a>0.0<a id="263c34" class="tk">?</a> <a id="263c36" class="tk">ECOS_INFINITY</a> <a id="263c50" class="tk">:</a> 0.5<a id="263c55" class="tk">*</a><a id="263c56" class="tk">log</a>(<a id="263c60" class="tk">normAccumS</a>);</td></tr>
+<tr name="264" id="264">
+<td><a id="l264" class='ln'>264</a></td><td>        <a id="264c9" class="tk">barrier</a><a id="264c16" class="tk">-=</a> <a id="264c19" class="tk">normAccumZ</a><a id="264c29" class="tk">&lt;=</a>0.0<a id="264c34" class="tk">?</a> <a id="264c36" class="tk">ECOS_INFINITY</a> <a id="264c50" class="tk">:</a> 0.5<a id="264c55" class="tk">*</a><a id="264c56" class="tk">log</a>(<a id="264c60" class="tk">normAccumZ</a>);</td></tr>
+<tr name="265" id="265">
+<td><a id="l265" class='ln'>265</a></td><td></td></tr>
+<tr name="266" id="266">
+<td><a id="l266" class='ln'>266</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="267" id="267">
+<td><a id="l267" class='ln'>267</a></td><td>    <span class="kw">return</span> <a id="267c12" class="tk">barrier</a><a id="267c19" class="tk">-</a><a id="267c20" class="tk">D</a><a id="267c21" class="tk">-</a>1;</td></tr>
+<tr name="268" id="268">
+<td><a id="l268" class='ln'>268</a></td><td><span class="br">}</span></td></tr>
+<tr name="269" id="269">
+<td><a id="l269" class='ln'>269</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="270" id="270">
+<td><a id="l270" class='ln'>270</a></td><td></td></tr>
+<tr name="271" id="271">
+<td><a id="l271" class='ln'>271</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="272" id="272">
+<td><a id="l272" class='ln'>272</a></td><td><span class="ct"> * Fast multiplication by scaling matrix.</span></td></tr>
+<tr name="273" id="273">
+<td><a id="l273" class='ln'>273</a></td><td><span class="ct"> * Returns lambda = W*z</span></td></tr>
+<tr name="274" id="274">
+<td><a id="l274" class='ln'>274</a></td><td><span class="ct"> * The exponential variables are not touched.</span></td></tr>
+<tr name="275" id="275">
+<td><a id="l275" class='ln'>275</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="276" id="276">
+<td><a id="l276" class='ln'>276</a></td><td><span class="kw">void</span> <a id="276c6" class="tk">scale</a>(<a id="276c12" class="tk">pfloat</a><a id="276c18" class="tk">*</a> <a id="276c20" class="tk">z</a>, <a id="276c23" class="tk">cone</a><a id="276c27" class="tk">*</a> <a id="276c29" class="tk">C</a>, <a id="276c32" class="tk">pfloat</a><a id="276c38" class="tk">*</a> <a id="276c40" class="tk">lambda</a>)</td></tr>
+<tr name="277" id="277">
+<td><a id="l277" class='ln'>277</a></td><td><span class="br">{</span></td></tr>
+<tr name="278" id="278">
+<td><a id="l278" class='ln'>278</a></td><td>	<a id="278c2" class="tk">idxint</a> <a id="278c9" class="tk">i</a>, <a id="278c12" class="tk">j</a>, <a id="278c15" class="tk">l</a>, <a id="278c18" class="tk">cone_start</a>;</td></tr>
+<tr name="279" id="279">
+<td><a id="l279" class='ln'>279</a></td><td>	<a id="279c2" class="tk">pfloat</a> <a id="279c9" class="tk">zeta</a>, <a id="279c15" class="tk">factor</a>;</td></tr>
+<tr name="280" id="280">
+<td><a id="l280" class='ln'>280</a></td><td></td></tr>
+<tr name="281" id="281">
+<td><a id="l281" class='ln'>281</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="282" id="282">
+<td><a id="l282" class='ln'>282</a></td><td>	<span class="kw">for</span>( <a id="282c7" class="tk">i</a>=0; <a id="282c12" class="tk">i</a> <a id="282c14" class="tk">&lt;</a> <a id="282c16" class="tk">C</a>-&gt;<a id="282c19" class="tk">lpc</a>-&gt;<a id="282c24" class="tk">p</a>; <a id="282c27" class="tk">i</a><a id="282c28" class="tk">++</a> )<span class="br">{</span> <a id="282c34" class="tk">lambda</a>[<a id="282c41" class="tk">i</a>] = <a id="282c46" class="tk">C</a>-&gt;<a id="282c49" class="tk">lpc</a>-&gt;<a id="282c54" class="tk">w</a>[<a id="282c56" class="tk">i</a>] <a id="282c59" class="tk">*</a> <a id="282c61" class="tk">z</a>[<a id="282c63" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="283" id="283">
+<td><a id="l283" class='ln'>283</a></td><td></td></tr>
+<tr name="284" id="284">
+<td><a id="l284" class='ln'>284</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="285" id="285">
+<td><a id="l285" class='ln'>285</a></td><td>	<a id="285c2" class="tk">cone_start</a> = <a id="285c15" class="tk">C</a>-&gt;<a id="285c18" class="tk">lpc</a>-&gt;<a id="285c23" class="tk">p</a>;</td></tr>
+<tr name="286" id="286">
+<td><a id="l286" class='ln'>286</a></td><td>	<span class="kw">for</span>( <a id="286c7" class="tk">l</a>=0; <a id="286c12" class="tk">l</a> <a id="286c14" class="tk">&lt;</a> <a id="286c16" class="tk">C</a>-&gt;<a id="286c19" class="tk">nsoc</a>; <a id="286c25" class="tk">l</a><a id="286c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="287" id="287">
+<td><a id="l287" class='ln'>287</a></td><td></td></tr>
+<tr name="288" id="288">
+<td><a id="l288" class='ln'>288</a></td><td>		<span class="ct">/* zeta = q'*z1 */</span></td></tr>
+<tr name="289" id="289">
+<td><a id="l289" class='ln'>289</a></td><td>		<a id="289c3" class="tk">zeta</a> = 0;</td></tr>
+<tr name="290" id="290">
+<td><a id="l290" class='ln'>290</a></td><td>		<span class="kw">for</span>( <a id="290c8" class="tk">i</a>=1; <a id="290c13" class="tk">i</a> <a id="290c15" class="tk">&lt;</a> <a id="290c17" class="tk">C</a>-&gt;<a id="290c20" class="tk">soc</a>[<a id="290c24" class="tk">l</a>].<a id="290c27" class="tk">p</a>; <a id="290c30" class="tk">i</a><a id="290c31" class="tk">++</a> )<span class="br">{</span> <a id="290c37" class="tk">zeta</a> <a id="290c42" class="tk">+=</a> <a id="290c45" class="tk">C</a>-&gt;<a id="290c48" class="tk">soc</a>[<a id="290c52" class="tk">l</a>].<a id="290c55" class="tk">q</a>[<a id="290c57" class="tk">i</a><a id="290c58" class="tk">-</a>1] <a id="290c62" class="tk">*</a> <a id="290c64" class="tk">z</a>[<a id="290c66" class="tk">cone_start</a> <a id="290c77" class="tk">+</a> <a id="290c79" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="291" id="291">
+<td><a id="l291" class='ln'>291</a></td><td></td></tr>
+<tr name="292" id="292">
+<td><a id="l292" class='ln'>292</a></td><td>		<span class="ct">/* factor = z0 + zeta / (1+a); */</span></td></tr>
+<tr name="293" id="293">
+<td><a id="l293" class='ln'>293</a></td><td>		<a id="293c3" class="tk">factor</a> = <a id="293c12" class="tk">z</a>[<a id="293c14" class="tk">cone_start</a>] <a id="293c26" class="tk">+</a> <a id="293c28" class="tk">SAFEDIV_POS</a>(<a id="293c40" class="tk">zeta</a>,(1<a id="293c47" class="tk">+</a><a id="293c48" class="tk">C</a>-&gt;<a id="293c51" class="tk">soc</a>[<a id="293c55" class="tk">l</a>].<a id="293c58" class="tk">a</a>));</td></tr>
+<tr name="294" id="294">
+<td><a id="l294" class='ln'>294</a></td><td></td></tr>
+<tr name="295" id="295">
+<td><a id="l295" class='ln'>295</a></td><td>		<span class="ct">/* second pass (on k): write out result */</span></td></tr>
+<tr name="296" id="296">
+<td><a id="l296" class='ln'>296</a></td><td>		<a id="296c3" class="tk">lambda</a>[<a id="296c10" class="tk">cone_start</a>] = <a id="296c24" class="tk">C</a>-&gt;<a id="296c27" class="tk">soc</a>[<a id="296c31" class="tk">l</a>].<a id="296c34" class="tk">eta</a><a id="296c37" class="tk">*</a>(<a id="296c39" class="tk">C</a>-&gt;<a id="296c42" class="tk">soc</a>[<a id="296c46" class="tk">l</a>].<a id="296c49" class="tk">a</a><a id="296c50" class="tk">*</a><a id="296c51" class="tk">z</a>[<a id="296c53" class="tk">cone_start</a>] <a id="296c65" class="tk">+</a> <a id="296c67" class="tk">zeta</a>); <span class="ct">/* lambda[0] */</span></td></tr>
+<tr name="297" id="297">
+<td><a id="l297" class='ln'>297</a></td><td>		<span class="kw">for</span>( <a id="297c8" class="tk">i</a>=1; <a id="297c13" class="tk">i</a> <a id="297c15" class="tk">&lt;</a> <a id="297c17" class="tk">C</a>-&gt;<a id="297c20" class="tk">soc</a>[<a id="297c24" class="tk">l</a>].<a id="297c27" class="tk">p</a>; <a id="297c30" class="tk">i</a><a id="297c31" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="298" id="298">
+<td><a id="l298" class='ln'>298</a></td><td>			<a id="298c4" class="tk">j</a> = <a id="298c8" class="tk">cone_start</a><a id="298c18" class="tk">+</a><a id="298c19" class="tk">i</a>;</td></tr>
+<tr name="299" id="299">
+<td><a id="l299" class='ln'>299</a></td><td>			<a id="299c4" class="tk">lambda</a>[<a id="299c11" class="tk">j</a>] = <a id="299c16" class="tk">C</a>-&gt;<a id="299c19" class="tk">soc</a>[<a id="299c23" class="tk">l</a>].<a id="299c26" class="tk">eta</a><a id="299c29" class="tk">*</a>(<a id="299c31" class="tk">z</a>[<a id="299c33" class="tk">j</a>] <a id="299c36" class="tk">+</a> <a id="299c38" class="tk">factor</a><a id="299c44" class="tk">*</a><a id="299c45" class="tk">C</a>-&gt;<a id="299c48" class="tk">soc</a>[<a id="299c52" class="tk">l</a>].<a id="299c55" class="tk">q</a>[<a id="299c57" class="tk">i</a><a id="299c58" class="tk">-</a>1]);</td></tr>
+<tr name="300" id="300">
+<td><a id="l300" class='ln'>300</a></td><td>		<span class="br">}</span></td></tr>
+<tr name="301" id="301">
+<td><a id="l301" class='ln'>301</a></td><td></td></tr>
+<tr name="302" id="302">
+<td><a id="l302" class='ln'>302</a></td><td>		<a id="302c3" class="tk">cone_start</a> <a id="302c14" class="tk">+=</a> <a id="302c17" class="tk">C</a>-&gt;<a id="302c20" class="tk">soc</a>[<a id="302c24" class="tk">l</a>].<a id="302c27" class="tk">p</a>;</td></tr>
+<tr name="303" id="303">
+<td><a id="l303" class='ln'>303</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="304" id="304">
+<td><a id="l304" class='ln'>304</a></td><td><span class="br">}</span></td></tr>
+<tr name="305" id="305">
+<td><a id="l305" class='ln'>305</a></td><td></td></tr>
+<tr name="306" id="306">
+<td><a id="l306" class='ln'>306</a></td><td></td></tr>
+<tr name="307" id="307">
+<td><a id="l307" class='ln'>307</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="308" id="308">
+<td><a id="l308" class='ln'>308</a></td><td><span class="ct"> *                                       [ D   v   u  ]</span></td></tr>
+<tr name="309" id="309">
+<td><a id="l309" class='ln'>309</a></td><td><span class="ct"> * Fast multiplication with V =  eta^2 * [ v'  1   0  ] = W^2</span></td></tr>
+<tr name="310" id="310">
+<td><a id="l310" class='ln'>310</a></td><td><span class="ct"> *                                       [ u   0  -1  ]</span></td></tr>
+<tr name="311" id="311">
+<td><a id="l311" class='ln'>311</a></td><td><span class="ct"> * Computes y += W^2*x;</span></td></tr>
+<tr name="312" id="312">
+<td><a id="l312" class='ln'>312</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="313" id="313">
+<td><a id="l313" class='ln'>313</a></td><td><span class="kw">void</span> <a id="313c6" class="tk">scale2add</a>(<a id="313c16" class="tk">pfloat</a> <a id="313c23" class="tk">*</a><a id="313c24" class="tk">x</a>, <a id="313c27" class="tk">pfloat</a><a id="313c33" class="tk">*</a> <a id="313c35" class="tk">y</a>, <a id="313c38" class="tk">cone</a><a id="313c42" class="tk">*</a> <a id="313c44" class="tk">C</a>)</td></tr>
+<tr name="314" id="314">
+<td><a id="l314" class='ln'>314</a></td><td><span class="br">{</span></td></tr>
+<tr name="315" id="315">
+<td><a id="l315" class='ln'>315</a></td><td>    <a id="315c5" class="tk">idxint</a> <a id="315c12" class="tk">i</a>, <a id="315c15" class="tk">l</a>, <a id="315c18" class="tk">cone_start</a>, <a id="315c30" class="tk">conesize</a>, <a id="315c40" class="tk">conesize_m1</a>;</td></tr>
+<tr name="316" id="316">
+<td><a id="l316" class='ln'>316</a></td><td>    <a id="316c5" class="tk">pfloat</a> <a id="316c12" class="tk">*</a><a id="316c13" class="tk">x1</a>, <a id="316c17" class="tk">*</a><a id="316c18" class="tk">x2</a>, <a id="316c22" class="tk">*</a><a id="316c23" class="tk">y1</a>, <a id="316c27" class="tk">*</a><a id="316c28" class="tk">y2</a>, <a id="316c32" class="tk">eta_square</a>, <a id="316c44" class="tk">*</a><a id="316c45" class="tk">q</a>;</td></tr>
+<tr name="317" id="317">
+<td><a id="l317" class='ln'>317</a></td><td><span class="pp">#if</span> <a id="317c5" class="tk">CONEMODE</a> <a id="317c14" class="tk">==</a> 0</td></tr>
+<tr name="318" id="318">
+<td><a id="l318" class='ln'>318</a></td><td>    <a id="318c5" class="tk">pfloat</a> <a id="318c12" class="tk">*</a><a id="318c13" class="tk">x3</a>, <a id="318c17" class="tk">*</a><a id="318c18" class="tk">x4</a>, <a id="318c22" class="tk">*</a><a id="318c23" class="tk">y3</a>, <a id="318c27" class="tk">*</a><a id="318c28" class="tk">y4</a>;</td></tr>
+<tr name="319" id="319">
+<td><a id="l319" class='ln'>319</a></td><td>    <a id="319c5" class="tk">pfloat</a> <a id="319c12" class="tk">d1</a>, <a id="319c16" class="tk">u0</a>, <a id="319c20" class="tk">u1</a>, <a id="319c24" class="tk">v1</a>;</td></tr>
+<tr name="320" id="320">
+<td><a id="l320" class='ln'>320</a></td><td>    <a id="320c5" class="tk">pfloat</a> <a id="320c12" class="tk">v1x3_plus_u1x4</a>;</td></tr>
+<tr name="321" id="321">
+<td><a id="l321" class='ln'>321</a></td><td>    <a id="321c5" class="tk">pfloat</a> <a id="321c12" class="tk">qtx2</a>;</td></tr>
+<tr name="322" id="322">
+<td><a id="l322" class='ln'>322</a></td><td><span class="pp">#else</span></td></tr>
+<tr name="323" id="323">
+<td><a id="l323" class='ln'>323</a></td><td>    <a id="323c5" class="tk">pfloat</a> <a id="323c12" class="tk">zeta</a>, <a id="323c18" class="tk">temp</a>, <a id="323c24" class="tk">a</a>, <a id="323c27" class="tk">w</a>, <a id="323c30" class="tk">c</a>, <a id="323c33" class="tk">d</a>;</td></tr>
+<tr name="324" id="324">
+<td><a id="l324" class='ln'>324</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="325" id="325">
+<td><a id="l325" class='ln'>325</a></td><td></td></tr>
+<tr name="326" id="326">
+<td><a id="l326" class='ln'>326</a></td><td>    <span class="ct">/* LP cone */</span></td></tr>
+<tr name="327" id="327">
+<td><a id="l327" class='ln'>327</a></td><td>	<span class="kw">for</span>( <a id="327c7" class="tk">i</a>=0; <a id="327c12" class="tk">i</a> <a id="327c14" class="tk">&lt;</a> <a id="327c16" class="tk">C</a>-&gt;<a id="327c19" class="tk">lpc</a>-&gt;<a id="327c24" class="tk">p</a>; <a id="327c27" class="tk">i</a><a id="327c28" class="tk">++</a> )<span class="br">{</span> <a id="327c34" class="tk">y</a>[<a id="327c36" class="tk">i</a>] <a id="327c39" class="tk">+=</a> <a id="327c42" class="tk">C</a>-&gt;<a id="327c45" class="tk">lpc</a>-&gt;<a id="327c50" class="tk">v</a>[<a id="327c52" class="tk">i</a>] <a id="327c55" class="tk">*</a> <a id="327c57" class="tk">x</a>[<a id="327c59" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="328" id="328">
+<td><a id="l328" class='ln'>328</a></td><td></td></tr>
+<tr name="329" id="329">
+<td><a id="l329" class='ln'>329</a></td><td>    <span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="330" id="330">
+<td><a id="l330" class='ln'>330</a></td><td>    <a id="330c5" class="tk">cone_start</a> = <a id="330c18" class="tk">C</a>-&gt;<a id="330c21" class="tk">lpc</a>-&gt;<a id="330c26" class="tk">p</a>;</td></tr>
+<tr name="331" id="331">
+<td><a id="l331" class='ln'>331</a></td><td><span class="pp">#if</span> <a id="331c5" class="tk">CONEMODE</a> <a id="331c14" class="tk">==</a> 0</td></tr>
+<tr name="332" id="332">
+<td><a id="l332" class='ln'>332</a></td><td></td></tr>
+<tr name="333" id="333">
+<td><a id="l333" class='ln'>333</a></td><td>	<span class="kw">for</span>( <a id="333c7" class="tk">l</a>=0; <a id="333c12" class="tk">l</a> <a id="333c14" class="tk">&lt;</a> <a id="333c16" class="tk">C</a>-&gt;<a id="333c19" class="tk">nsoc</a>; <a id="333c25" class="tk">l</a><a id="333c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="334" id="334">
+<td><a id="l334" class='ln'>334</a></td><td></td></tr>
+<tr name="335" id="335">
+<td><a id="l335" class='ln'>335</a></td><td>        <a id="335c9" class="tk">getSOCDetails</a>(<a id="335c23" class="tk">&amp;</a><a id="335c24" class="tk">C</a>-&gt;<a id="335c27" class="tk">soc</a>[<a id="335c31" class="tk">l</a>], <a id="335c35" class="tk">&amp;</a><a id="335c36" class="tk">conesize</a>, <a id="335c46" class="tk">&amp;</a><a id="335c47" class="tk">eta_square</a>, <a id="335c59" class="tk">&amp;</a><a id="335c60" class="tk">d1</a>, <a id="335c64" class="tk">&amp;</a><a id="335c65" class="tk">u0</a>, <a id="335c69" class="tk">&amp;</a><a id="335c70" class="tk">u1</a>, <a id="335c74" class="tk">&amp;</a><a id="335c75" class="tk">v1</a>, <a id="335c79" class="tk">&amp;</a><a id="335c80" class="tk">q</a>);</td></tr>
+<tr name="336" id="336">
+<td><a id="l336" class='ln'>336</a></td><td>        <a id="336c9" class="tk">conesize_m1</a> = <a id="336c23" class="tk">conesize</a> <a id="336c32" class="tk">-</a> 1;</td></tr>
+<tr name="337" id="337">
+<td><a id="l337" class='ln'>337</a></td><td></td></tr>
+<tr name="338" id="338">
+<td><a id="l338" class='ln'>338</a></td><td>        <a id="338c9" class="tk">x1</a> = <a id="338c14" class="tk">x</a> <a id="338c16" class="tk">+</a> <a id="338c18" class="tk">cone_start</a>;</td></tr>
+<tr name="339" id="339">
+<td><a id="l339" class='ln'>339</a></td><td>        <a id="339c9" class="tk">x2</a> = <a id="339c14" class="tk">x1</a> <a id="339c17" class="tk">+</a> 1;</td></tr>
+<tr name="340" id="340">
+<td><a id="l340" class='ln'>340</a></td><td>        <a id="340c9" class="tk">x3</a> = <a id="340c14" class="tk">x2</a> <a id="340c17" class="tk">+</a> <a id="340c19" class="tk">conesize</a> <a id="340c28" class="tk">-</a> 1;</td></tr>
+<tr name="341" id="341">
+<td><a id="l341" class='ln'>341</a></td><td>        <a id="341c9" class="tk">x4</a> = <a id="341c14" class="tk">x3</a> <a id="341c17" class="tk">+</a> 1;</td></tr>
+<tr name="342" id="342">
+<td><a id="l342" class='ln'>342</a></td><td></td></tr>
+<tr name="343" id="343">
+<td><a id="l343" class='ln'>343</a></td><td>        <a id="343c9" class="tk">y1</a> = <a id="343c14" class="tk">y</a> <a id="343c16" class="tk">+</a> <a id="343c18" class="tk">cone_start</a>;</td></tr>
+<tr name="344" id="344">
+<td><a id="l344" class='ln'>344</a></td><td>        <a id="344c9" class="tk">y2</a> = <a id="344c14" class="tk">y1</a> <a id="344c17" class="tk">+</a> 1;</td></tr>
+<tr name="345" id="345">
+<td><a id="l345" class='ln'>345</a></td><td>        <a id="345c9" class="tk">y3</a> = <a id="345c14" class="tk">y2</a> <a id="345c17" class="tk">+</a> <a id="345c19" class="tk">conesize</a> <a id="345c28" class="tk">-</a> 1;</td></tr>
+<tr name="346" id="346">
+<td><a id="l346" class='ln'>346</a></td><td>        <a id="346c9" class="tk">y4</a> = <a id="346c14" class="tk">y3</a> <a id="346c17" class="tk">+</a> 1;</td></tr>
+<tr name="347" id="347">
+<td><a id="l347" class='ln'>347</a></td><td></td></tr>
+<tr name="348" id="348">
+<td><a id="l348" class='ln'>348</a></td><td>        <span class="ct">/* y1 += d1*x1 + u0*x4 */</span></td></tr>
+<tr name="349" id="349">
+<td><a id="l349" class='ln'>349</a></td><td>        <a id="349c9" class="tk">y1</a>[0] <a id="349c15" class="tk">+=</a> <a id="349c18" class="tk">eta_square</a><a id="349c28" class="tk">*</a>(<a id="349c30" class="tk">d1</a><a id="349c32" class="tk">*</a><a id="349c33" class="tk">x1</a>[0] <a id="349c39" class="tk">+</a> <a id="349c41" class="tk">u0</a><a id="349c43" class="tk">*</a><a id="349c44" class="tk">x4</a>[0]);</td></tr>
+<tr name="350" id="350">
+<td><a id="l350" class='ln'>350</a></td><td></td></tr>
+<tr name="351" id="351">
+<td><a id="l351" class='ln'>351</a></td><td>        <span class="ct">/* y2 += x2 + v1*q*x3 + u1*q*x4 */</span></td></tr>
+<tr name="352" id="352">
+<td><a id="l352" class='ln'>352</a></td><td>        <a id="352c9" class="tk">v1x3_plus_u1x4</a> = <a id="352c26" class="tk">v1</a><a id="352c28" class="tk">*</a><a id="352c29" class="tk">x3</a>[0] <a id="352c35" class="tk">+</a> <a id="352c37" class="tk">u1</a><a id="352c39" class="tk">*</a><a id="352c40" class="tk">x4</a>[0];</td></tr>
+<tr name="353" id="353">
+<td><a id="l353" class='ln'>353</a></td><td>        <a id="353c9" class="tk">qtx2</a> = 0;</td></tr>
+<tr name="354" id="354">
+<td><a id="l354" class='ln'>354</a></td><td>        <span class="kw">for</span> (<a id="354c14" class="tk">i</a>=0; <a id="354c19" class="tk">i</a><a id="354c20" class="tk">&lt;</a><a id="354c21" class="tk">conesize_m1</a>; <a id="354c34" class="tk">i</a><a id="354c35" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="355" id="355">
+<td><a id="l355" class='ln'>355</a></td><td>            <a id="355c13" class="tk">y2</a>[<a id="355c16" class="tk">i</a>] <a id="355c19" class="tk">+=</a> <a id="355c22" class="tk">eta_square</a><a id="355c32" class="tk">*</a>(<a id="355c34" class="tk">x2</a>[<a id="355c37" class="tk">i</a>] <a id="355c40" class="tk">+</a> <a id="355c42" class="tk">v1x3_plus_u1x4</a><a id="355c56" class="tk">*</a><a id="355c57" class="tk">q</a>[<a id="355c59" class="tk">i</a>]);</td></tr>
+<tr name="356" id="356">
+<td><a id="l356" class='ln'>356</a></td><td>            <a id="356c13" class="tk">qtx2</a> <a id="356c18" class="tk">+=</a> <a id="356c21" class="tk">q</a>[<a id="356c23" class="tk">i</a>]<a id="356c25" class="tk">*</a><a id="356c26" class="tk">x2</a>[<a id="356c29" class="tk">i</a>];</td></tr>
+<tr name="357" id="357">
+<td><a id="l357" class='ln'>357</a></td><td>        <span class="br">}</span></td></tr>
+<tr name="358" id="358">
+<td><a id="l358" class='ln'>358</a></td><td></td></tr>
+<tr name="359" id="359">
+<td><a id="l359" class='ln'>359</a></td><td>        <span class="ct">/* y3 += v1*q'*x2 + x3 */</span></td></tr>
+<tr name="360" id="360">
+<td><a id="l360" class='ln'>360</a></td><td>        <a id="360c9" class="tk">y3</a>[0] <a id="360c15" class="tk">+=</a> <a id="360c18" class="tk">eta_square</a><a id="360c28" class="tk">*</a>(<a id="360c30" class="tk">v1</a><a id="360c32" class="tk">*</a><a id="360c33" class="tk">qtx2</a> <a id="360c38" class="tk">+</a> <a id="360c40" class="tk">x3</a>[0]);</td></tr>
+<tr name="361" id="361">
+<td><a id="l361" class='ln'>361</a></td><td></td></tr>
+<tr name="362" id="362">
+<td><a id="l362" class='ln'>362</a></td><td>        <span class="ct">/* y4 += u0*x1 + u1*q'*x2 - x4 */</span></td></tr>
+<tr name="363" id="363">
+<td><a id="l363" class='ln'>363</a></td><td>        <a id="363c9" class="tk">y4</a>[0] <a id="363c15" class="tk">+=</a> <a id="363c18" class="tk">eta_square</a><a id="363c28" class="tk">*</a>(<a id="363c30" class="tk">u0</a><a id="363c32" class="tk">*</a><a id="363c33" class="tk">x1</a>[0] <a id="363c39" class="tk">+</a> <a id="363c41" class="tk">u1</a><a id="363c43" class="tk">*</a><a id="363c44" class="tk">qtx2</a> <a id="363c49" class="tk">-</a> <a id="363c51" class="tk">x4</a>[0]);</td></tr>
+<tr name="364" id="364">
+<td><a id="l364" class='ln'>364</a></td><td></td></tr>
+<tr name="365" id="365">
+<td><a id="l365" class='ln'>365</a></td><td>        <span class="ct">/* prepare index for next cone */</span></td></tr>
+<tr name="366" id="366">
+<td><a id="l366" class='ln'>366</a></td><td>        <a id="366c9" class="tk">cone_start</a> <a id="366c20" class="tk">+=</a> <a id="366c23" class="tk">conesize</a> <a id="366c32" class="tk">+</a> 2;</td></tr>
+<tr name="367" id="367">
+<td><a id="l367" class='ln'>367</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="368" id="368">
+<td><a id="l368" class='ln'>368</a></td><td></td></tr>
+<tr name="369" id="369">
+<td><a id="l369" class='ln'>369</a></td><td><span class="pp">#else</span></td></tr>
+<tr name="370" id="370">
+<td><a id="l370" class='ln'>370</a></td><td></td></tr>
+<tr name="371" id="371">
+<td><a id="l371" class='ln'>371</a></td><td>	<span class="kw">for</span>( <a id="371c7" class="tk">l</a>=0; <a id="371c12" class="tk">l</a> <a id="371c14" class="tk">&lt;</a> <a id="371c16" class="tk">C</a>-&gt;<a id="371c19" class="tk">nsoc</a>; <a id="371c25" class="tk">l</a><a id="371c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="372" id="372">
+<td><a id="l372" class='ln'>372</a></td><td></td></tr>
+<tr name="373" id="373">
+<td><a id="l373" class='ln'>373</a></td><td>        <a id="373c9" class="tk">conesize</a> = <a id="373c20" class="tk">C</a>-&gt;<a id="373c23" class="tk">soc</a>[<a id="373c27" class="tk">l</a>].<a id="373c30" class="tk">p</a>;</td></tr>
+<tr name="374" id="374">
+<td><a id="l374" class='ln'>374</a></td><td>        <a id="374c9" class="tk">conesize_m1</a> = <a id="374c23" class="tk">conesize</a> <a id="374c32" class="tk">-</a> 1;</td></tr>
+<tr name="375" id="375">
+<td><a id="l375" class='ln'>375</a></td><td>        <a id="375c9" class="tk">eta_square</a> = <a id="375c22" class="tk">C</a>-&gt;<a id="375c25" class="tk">soc</a>[<a id="375c29" class="tk">l</a>].<a id="375c32" class="tk">eta_square</a>;</td></tr>
+<tr name="376" id="376">
+<td><a id="l376" class='ln'>376</a></td><td>        <a id="376c9" class="tk">a</a> = <a id="376c13" class="tk">C</a>-&gt;<a id="376c16" class="tk">soc</a>[<a id="376c20" class="tk">l</a>].<a id="376c23" class="tk">a</a>;</td></tr>
+<tr name="377" id="377">
+<td><a id="l377" class='ln'>377</a></td><td>        <a id="377c9" class="tk">c</a> = <a id="377c13" class="tk">C</a>-&gt;<a id="377c16" class="tk">soc</a>[<a id="377c20" class="tk">l</a>].<a id="377c23" class="tk">c</a>;</td></tr>
+<tr name="378" id="378">
+<td><a id="l378" class='ln'>378</a></td><td>        <a id="378c9" class="tk">d</a> = <a id="378c13" class="tk">C</a>-&gt;<a id="378c16" class="tk">soc</a>[<a id="378c20" class="tk">l</a>].<a id="378c23" class="tk">d</a>;</td></tr>
+<tr name="379" id="379">
+<td><a id="l379" class='ln'>379</a></td><td>        <a id="379c9" class="tk">q</a> = <a id="379c13" class="tk">C</a>-&gt;<a id="379c16" class="tk">soc</a>[<a id="379c20" class="tk">l</a>].<a id="379c23" class="tk">q</a>;</td></tr>
+<tr name="380" id="380">
+<td><a id="l380" class='ln'>380</a></td><td>        <a id="380c9" class="tk">w</a> = <a id="380c13" class="tk">C</a>-&gt;<a id="380c16" class="tk">soc</a>[<a id="380c20" class="tk">l</a>].<a id="380c23" class="tk">w</a>;</td></tr>
+<tr name="381" id="381">
+<td><a id="l381" class='ln'>381</a></td><td></td></tr>
+<tr name="382" id="382">
+<td><a id="l382" class='ln'>382</a></td><td>        <a id="382c9" class="tk">x1</a> = <a id="382c14" class="tk">x</a> <a id="382c16" class="tk">+</a> <a id="382c18" class="tk">cone_start</a>;</td></tr>
+<tr name="383" id="383">
+<td><a id="l383" class='ln'>383</a></td><td>        <a id="383c9" class="tk">x2</a> = <a id="383c14" class="tk">x1</a> <a id="383c17" class="tk">+</a> 1;</td></tr>
+<tr name="384" id="384">
+<td><a id="l384" class='ln'>384</a></td><td></td></tr>
+<tr name="385" id="385">
+<td><a id="l385" class='ln'>385</a></td><td>        <a id="385c9" class="tk">y1</a> = <a id="385c14" class="tk">y</a> <a id="385c16" class="tk">+</a> <a id="385c18" class="tk">cone_start</a>;</td></tr>
+<tr name="386" id="386">
+<td><a id="l386" class='ln'>386</a></td><td>        <a id="386c9" class="tk">y2</a> = <a id="386c14" class="tk">y1</a> <a id="386c17" class="tk">+</a> 1;</td></tr>
+<tr name="387" id="387">
+<td><a id="l387" class='ln'>387</a></td><td></td></tr>
+<tr name="388" id="388">
+<td><a id="l388" class='ln'>388</a></td><td>        <span class="ct">/* zeta = q'*x2 */</span></td></tr>
+<tr name="389" id="389">
+<td><a id="l389" class='ln'>389</a></td><td>        <a id="389c9" class="tk">zeta</a> = 0;</td></tr>
+<tr name="390" id="390">
+<td><a id="l390" class='ln'>390</a></td><td>        <span class="kw">for</span> (<a id="390c14" class="tk">i</a>=0; <a id="390c19" class="tk">i</a><a id="390c20" class="tk">&lt;</a><a id="390c21" class="tk">conesize</a><a id="390c29" class="tk">-</a>1; <a id="390c33" class="tk">i</a><a id="390c34" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="391" id="391">
+<td><a id="l391" class='ln'>391</a></td><td>            <a id="391c13" class="tk">zeta</a> <a id="391c18" class="tk">+=</a> <a id="391c21" class="tk">q</a>[<a id="391c23" class="tk">i</a>]<a id="391c25" class="tk">*</a><a id="391c26" class="tk">x2</a>[<a id="391c29" class="tk">i</a>];</td></tr>
+<tr name="392" id="392">
+<td><a id="l392" class='ln'>392</a></td><td>        <span class="br">}</span></td></tr>
+<tr name="393" id="393">
+<td><a id="l393" class='ln'>393</a></td><td></td></tr>
+<tr name="394" id="394">
+<td><a id="l394" class='ln'>394</a></td><td>        <span class="ct">/* y1 += eta^2*[ (a^2 + w)x1 + c*zeta ] */</span></td></tr>
+<tr name="395" id="395">
+<td><a id="l395" class='ln'>395</a></td><td>        <a id="395c9" class="tk">y1</a>[0] <a id="395c15" class="tk">+=</a> <a id="395c18" class="tk">eta_square</a><a id="395c28" class="tk">*</a>( (<a id="395c32" class="tk">a</a><a id="395c33" class="tk">*</a><a id="395c34" class="tk">a</a><a id="395c35" class="tk">+</a><a id="395c36" class="tk">w</a>)<a id="395c38" class="tk">*</a><a id="395c39" class="tk">x1</a>[0] <a id="395c45" class="tk">+</a> <a id="395c47" class="tk">c</a><a id="395c48" class="tk">*</a><a id="395c49" class="tk">zeta</a> );</td></tr>
+<tr name="396" id="396">
+<td><a id="l396" class='ln'>396</a></td><td></td></tr>
+<tr name="397" id="397">
+<td><a id="l397" class='ln'>397</a></td><td>        <span class="ct">/* y2 += eta^2*[ (c*q*x1 + x2 + d*q*zeta ] */</span></td></tr>
+<tr name="398" id="398">
+<td><a id="l398" class='ln'>398</a></td><td>        <a id="398c9" class="tk">temp</a> = <a id="398c16" class="tk">c</a><a id="398c17" class="tk">*</a><a id="398c18" class="tk">x1</a>[0] <a id="398c24" class="tk">+</a> <a id="398c26" class="tk">d</a><a id="398c27" class="tk">*</a><a id="398c28" class="tk">zeta</a>;</td></tr>
+<tr name="399" id="399">
+<td><a id="l399" class='ln'>399</a></td><td>        <span class="kw">for</span> (<a id="399c14" class="tk">i</a>=0; <a id="399c19" class="tk">i</a><a id="399c20" class="tk">&lt;</a><a id="399c21" class="tk">conesize_m1</a>; <a id="399c34" class="tk">i</a><a id="399c35" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="400" id="400">
+<td><a id="l400" class='ln'>400</a></td><td>            <a id="400c13" class="tk">y2</a>[<a id="400c16" class="tk">i</a>] <a id="400c19" class="tk">+=</a> <a id="400c22" class="tk">eta_square</a><a id="400c32" class="tk">*</a>( <a id="400c35" class="tk">temp</a><a id="400c39" class="tk">*</a><a id="400c40" class="tk">q</a>[<a id="400c42" class="tk">i</a>] <a id="400c45" class="tk">+</a> <a id="400c47" class="tk">x2</a>[<a id="400c50" class="tk">i</a>] );</td></tr>
+<tr name="401" id="401">
+<td><a id="l401" class='ln'>401</a></td><td>        <span class="br">}</span></td></tr>
+<tr name="402" id="402">
+<td><a id="l402" class='ln'>402</a></td><td></td></tr>
+<tr name="403" id="403">
+<td><a id="l403" class='ln'>403</a></td><td>        <span class="ct">/* prepare index for next cone */</span></td></tr>
+<tr name="404" id="404">
+<td><a id="l404" class='ln'>404</a></td><td>        <a id="404c9" class="tk">cone_start</a> <a id="404c20" class="tk">+=</a> <a id="404c23" class="tk">conesize</a>;</td></tr>
+<tr name="405" id="405">
+<td><a id="l405" class='ln'>405</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="406" id="406">
+<td><a id="l406" class='ln'>406</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="407" id="407">
+<td><a id="l407" class='ln'>407</a></td><td><span class="pp">#ifdef</span> <a id="407c8" class="tk">EXPCONE</a></td></tr>
+<tr name="408" id="408">
+<td><a id="l408" class='ln'>408</a></td><td>    <a id="408c5" class="tk">scaleToAddExpcone</a>(<a id="408c23" class="tk">y</a>,<a id="408c25" class="tk">x</a>,<a id="408c27" class="tk">C</a>-&gt;<a id="408c30" class="tk">expc</a>,<a id="408c35" class="tk">C</a>-&gt;<a id="408c38" class="tk">nexc</a>,<a id="408c43" class="tk">cone_start</a>);</td></tr>
+<tr name="409" id="409">
+<td><a id="l409" class='ln'>409</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="410" id="410">
+<td><a id="l410" class='ln'>410</a></td><td><span class="br">}</span></td></tr>
+<tr name="411" id="411">
+<td><a id="l411" class='ln'>411</a></td><td></td></tr>
+<tr name="412" id="412">
+<td><a id="l412" class='ln'>412</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="413" id="413">
+<td><a id="l413" class='ln'>413</a></td><td><span class="ct"> * Fast left-division by scaling matrix.</span></td></tr>
+<tr name="414" id="414">
+<td><a id="l414" class='ln'>414</a></td><td><span class="ct"> * Returns z = W\lambda</span></td></tr>
+<tr name="415" id="415">
+<td><a id="l415" class='ln'>415</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="416" id="416">
+<td><a id="l416" class='ln'>416</a></td><td><span class="kw">void</span> <a id="416c6" class="tk">unscale</a>(<a id="416c14" class="tk">pfloat</a><a id="416c20" class="tk">*</a> <a id="416c22" class="tk">lambda</a>, <a id="416c30" class="tk">cone</a><a id="416c34" class="tk">*</a> <a id="416c36" class="tk">C</a>, <a id="416c39" class="tk">pfloat</a><a id="416c45" class="tk">*</a> <a id="416c47" class="tk">z</a>)</td></tr>
+<tr name="417" id="417">
+<td><a id="l417" class='ln'>417</a></td><td><span class="br">{</span></td></tr>
+<tr name="418" id="418">
+<td><a id="l418" class='ln'>418</a></td><td>	<a id="418c2" class="tk">idxint</a> <a id="418c9" class="tk">i</a>, <a id="418c12" class="tk">j</a>, <a id="418c15" class="tk">l</a>, <a id="418c18" class="tk">cone_start</a>;</td></tr>
+<tr name="419" id="419">
+<td><a id="l419" class='ln'>419</a></td><td>	<a id="419c2" class="tk">pfloat</a> <a id="419c9" class="tk">zeta</a>, <a id="419c15" class="tk">factor</a>;</td></tr>
+<tr name="420" id="420">
+<td><a id="l420" class='ln'>420</a></td><td></td></tr>
+<tr name="421" id="421">
+<td><a id="l421" class='ln'>421</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="422" id="422">
+<td><a id="l422" class='ln'>422</a></td><td>	<span class="kw">for</span>( <a id="422c7" class="tk">i</a>=0; <a id="422c12" class="tk">i</a> <a id="422c14" class="tk">&lt;</a> <a id="422c16" class="tk">C</a>-&gt;<a id="422c19" class="tk">lpc</a>-&gt;<a id="422c24" class="tk">p</a>; <a id="422c27" class="tk">i</a><a id="422c28" class="tk">++</a> )<span class="br">{</span> <a id="422c34" class="tk">z</a>[<a id="422c36" class="tk">i</a>] = <a id="422c41" class="tk">SAFEDIV_POS</a>(<a id="422c53" class="tk">lambda</a>[<a id="422c60" class="tk">i</a>], <a id="422c64" class="tk">C</a>-&gt;<a id="422c67" class="tk">lpc</a>-&gt;<a id="422c72" class="tk">w</a>[<a id="422c74" class="tk">i</a>]); <span class="br">}</span></td></tr>
+<tr name="423" id="423">
+<td><a id="l423" class='ln'>423</a></td><td></td></tr>
+<tr name="424" id="424">
+<td><a id="l424" class='ln'>424</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="425" id="425">
+<td><a id="l425" class='ln'>425</a></td><td>	<a id="425c2" class="tk">cone_start</a> = <a id="425c15" class="tk">C</a>-&gt;<a id="425c18" class="tk">lpc</a>-&gt;<a id="425c23" class="tk">p</a>;</td></tr>
+<tr name="426" id="426">
+<td><a id="l426" class='ln'>426</a></td><td>	<span class="kw">for</span>( <a id="426c7" class="tk">l</a>=0; <a id="426c12" class="tk">l</a> <a id="426c14" class="tk">&lt;</a> <a id="426c16" class="tk">C</a>-&gt;<a id="426c19" class="tk">nsoc</a>; <a id="426c25" class="tk">l</a><a id="426c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="427" id="427">
+<td><a id="l427" class='ln'>427</a></td><td></td></tr>
+<tr name="428" id="428">
+<td><a id="l428" class='ln'>428</a></td><td>		<span class="ct">/* zeta = q'*lambda1 */</span></td></tr>
+<tr name="429" id="429">
+<td><a id="l429" class='ln'>429</a></td><td>		<a id="429c3" class="tk">zeta</a> = 0;</td></tr>
+<tr name="430" id="430">
+<td><a id="l430" class='ln'>430</a></td><td>		<span class="kw">for</span>( <a id="430c8" class="tk">i</a>=1; <a id="430c13" class="tk">i</a> <a id="430c15" class="tk">&lt;</a> <a id="430c17" class="tk">C</a>-&gt;<a id="430c20" class="tk">soc</a>[<a id="430c24" class="tk">l</a>].<a id="430c27" class="tk">p</a>; <a id="430c30" class="tk">i</a><a id="430c31" class="tk">++</a> )<span class="br">{</span> <a id="430c37" class="tk">zeta</a> <a id="430c42" class="tk">+=</a> <a id="430c45" class="tk">C</a>-&gt;<a id="430c48" class="tk">soc</a>[<a id="430c52" class="tk">l</a>].<a id="430c55" class="tk">q</a>[<a id="430c57" class="tk">i</a><a id="430c58" class="tk">-</a>1] <a id="430c62" class="tk">*</a> <a id="430c64" class="tk">lambda</a>[<a id="430c71" class="tk">cone_start</a> <a id="430c82" class="tk">+</a> <a id="430c84" class="tk">i</a>]; <span class="br">}</span></td></tr>
+<tr name="431" id="431">
+<td><a id="l431" class='ln'>431</a></td><td></td></tr>
+<tr name="432" id="432">
+<td><a id="l432" class='ln'>432</a></td><td>		<span class="ct">/* factor = -lambda0 + zeta / (1+a); */</span></td></tr>
+<tr name="433" id="433">
+<td><a id="l433" class='ln'>433</a></td><td>		<a id="433c3" class="tk">factor</a> = <a id="433c12" class="tk">-</a><a id="433c13" class="tk">lambda</a>[<a id="433c20" class="tk">cone_start</a>] <a id="433c32" class="tk">+</a> <a id="433c34" class="tk">SAFEDIV_POS</a>(<a id="433c46" class="tk">zeta</a>,(1<a id="433c53" class="tk">+</a><a id="433c54" class="tk">C</a>-&gt;<a id="433c57" class="tk">soc</a>[<a id="433c61" class="tk">l</a>].<a id="433c64" class="tk">a</a>));</td></tr>
+<tr name="434" id="434">
+<td><a id="l434" class='ln'>434</a></td><td></td></tr>
+<tr name="435" id="435">
+<td><a id="l435" class='ln'>435</a></td><td>		<span class="ct">/* second pass (on k): write out result */</span></td></tr>
+<tr name="436" id="436">
+<td><a id="l436" class='ln'>436</a></td><td>		<a id="436c3" class="tk">z</a>[<a id="436c5" class="tk">cone_start</a>] = <a id="436c19" class="tk">SAFEDIV_POS</a>( (<a id="436c33" class="tk">C</a>-&gt;<a id="436c36" class="tk">soc</a>[<a id="436c40" class="tk">l</a>].<a id="436c43" class="tk">a</a><a id="436c44" class="tk">*</a><a id="436c45" class="tk">lambda</a>[<a id="436c52" class="tk">cone_start</a>] <a id="436c64" class="tk">-</a> <a id="436c66" class="tk">zeta</a>), <a id="436c73" class="tk">C</a>-&gt;<a id="436c76" class="tk">soc</a>[<a id="436c80" class="tk">l</a>].<a id="436c83" class="tk">eta</a> );</td></tr>
+<tr name="437" id="437">
+<td><a id="l437" class='ln'>437</a></td><td>		<span class="kw">for</span>( <a id="437c8" class="tk">i</a>=1; <a id="437c13" class="tk">i</a> <a id="437c15" class="tk">&lt;</a> <a id="437c17" class="tk">C</a>-&gt;<a id="437c20" class="tk">soc</a>[<a id="437c24" class="tk">l</a>].<a id="437c27" class="tk">p</a>; <a id="437c30" class="tk">i</a><a id="437c31" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="438" id="438">
+<td><a id="l438" class='ln'>438</a></td><td>			<a id="438c4" class="tk">j</a> = <a id="438c8" class="tk">cone_start</a><a id="438c18" class="tk">+</a><a id="438c19" class="tk">i</a>;</td></tr>
+<tr name="439" id="439">
+<td><a id="l439" class='ln'>439</a></td><td>			<a id="439c4" class="tk">z</a>[<a id="439c6" class="tk">j</a>] = <a id="439c11" class="tk">SAFEDIV_POS</a>( (<a id="439c25" class="tk">lambda</a>[<a id="439c32" class="tk">j</a>] <a id="439c35" class="tk">+</a> <a id="439c37" class="tk">factor</a><a id="439c43" class="tk">*</a><a id="439c44" class="tk">C</a>-&gt;<a id="439c47" class="tk">soc</a>[<a id="439c51" class="tk">l</a>].<a id="439c54" class="tk">q</a>[<a id="439c56" class="tk">i</a><a id="439c57" class="tk">-</a>1]), <a id="439c63" class="tk">C</a>-&gt;<a id="439c66" class="tk">soc</a>[<a id="439c70" class="tk">l</a>].<a id="439c73" class="tk">eta</a> );</td></tr>
+<tr name="440" id="440">
+<td><a id="l440" class='ln'>440</a></td><td>		<span class="br">}</span></td></tr>
+<tr name="441" id="441">
+<td><a id="l441" class='ln'>441</a></td><td></td></tr>
+<tr name="442" id="442">
+<td><a id="l442" class='ln'>442</a></td><td>		<a id="442c3" class="tk">cone_start</a> <a id="442c14" class="tk">+=</a> <a id="442c17" class="tk">C</a>-&gt;<a id="442c20" class="tk">soc</a>[<a id="442c24" class="tk">l</a>].<a id="442c27" class="tk">p</a>;</td></tr>
+<tr name="443" id="443">
+<td><a id="l443" class='ln'>443</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="444" id="444">
+<td><a id="l444" class='ln'>444</a></td><td><span class="br">}</span></td></tr>
+<tr name="445" id="445">
+<td><a id="l445" class='ln'>445</a></td><td></td></tr>
+<tr name="446" id="446">
+<td><a id="l446" class='ln'>446</a></td><td></td></tr>
+<tr name="447" id="447">
+<td><a id="l447" class='ln'>447</a></td><td></td></tr>
+<tr name="448" id="448">
+<td><a id="l448" class='ln'>448</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="449" id="449">
+<td><a id="l449" class='ln'>449</a></td><td><span class="ct"> * Conic product, implements the "o" operator, w = u o v</span></td></tr>
+<tr name="450" id="450">
+<td><a id="l450" class='ln'>450</a></td><td><span class="ct"> * and returns e'*w (where e is the conic 1-vector)</span></td></tr>
+<tr name="451" id="451">
+<td><a id="l451" class='ln'>451</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="452" id="452">
+<td><a id="l452" class='ln'>452</a></td><td><a id="452c1" class="tk">pfloat</a> <a id="452c8" class="tk">conicProduct</a>(<a id="452c21" class="tk">pfloat</a><a id="452c27" class="tk">*</a> <a id="452c29" class="tk">u</a>, <a id="452c32" class="tk">pfloat</a><a id="452c38" class="tk">*</a> <a id="452c40" class="tk">v</a>, <a id="452c43" class="tk">cone</a><a id="452c47" class="tk">*</a> <a id="452c49" class="tk">C</a>, <a id="452c52" class="tk">pfloat</a><a id="452c58" class="tk">*</a> <a id="452c60" class="tk">w</a>)</td></tr>
+<tr name="453" id="453">
+<td><a id="l453" class='ln'>453</a></td><td><span class="br">{</span></td></tr>
+<tr name="454" id="454">
+<td><a id="l454" class='ln'>454</a></td><td>	<a id="454c2" class="tk">idxint</a> <a id="454c9" class="tk">i</a>, <a id="454c12" class="tk">j</a>, <a id="454c15" class="tk">k</a>, <a id="454c18" class="tk">cone_start</a>, <a id="454c30" class="tk">conesize</a>;</td></tr>
+<tr name="455" id="455">
+<td><a id="l455" class='ln'>455</a></td><td>	<a id="455c2" class="tk">pfloat</a> <a id="455c9" class="tk">u0</a>, <a id="455c13" class="tk">v0</a>, <a id="455c17" class="tk">mu</a>;</td></tr>
+<tr name="456" id="456">
+<td><a id="l456" class='ln'>456</a></td><td></td></tr>
+<tr name="457" id="457">
+<td><a id="l457" class='ln'>457</a></td><td>    <a id="457c5" class="tk">mu</a> = 0;</td></tr>
+<tr name="458" id="458">
+<td><a id="l458" class='ln'>458</a></td><td>	<a id="458c2" class="tk">k</a>=0;</td></tr>
+<tr name="459" id="459">
+<td><a id="l459" class='ln'>459</a></td><td></td></tr>
+<tr name="460" id="460">
+<td><a id="l460" class='ln'>460</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="461" id="461">
+<td><a id="l461" class='ln'>461</a></td><td>	<span class="kw">for</span>( <a id="461c7" class="tk">i</a>=0; <a id="461c12" class="tk">i</a> <a id="461c14" class="tk">&lt;</a> <a id="461c16" class="tk">C</a>-&gt;<a id="461c19" class="tk">lpc</a>-&gt;<a id="461c24" class="tk">p</a>; <a id="461c27" class="tk">i</a><a id="461c28" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="462" id="462">
+<td><a id="l462" class='ln'>462</a></td><td>        <a id="462c9" class="tk">w</a>[<a id="462c11" class="tk">k</a>] = <a id="462c16" class="tk">u</a>[<a id="462c18" class="tk">i</a>] <a id="462c21" class="tk">*</a> <a id="462c23" class="tk">v</a>[<a id="462c25" class="tk">i</a>];</td></tr>
+<tr name="463" id="463">
+<td><a id="l463" class='ln'>463</a></td><td>        <a id="463c9" class="tk">mu</a> <a id="463c12" class="tk">+=</a> <a id="463c15" class="tk">w</a>[<a id="463c17" class="tk">k</a>] <a id="463c20" class="tk">&lt;</a> 0 <a id="463c24" class="tk">?</a> <a id="463c26" class="tk">-</a><a id="463c27" class="tk">w</a>[<a id="463c29" class="tk">k</a>] <a id="463c32" class="tk">:</a> <a id="463c34" class="tk">w</a>[<a id="463c36" class="tk">k</a>];</td></tr>
+<tr name="464" id="464">
+<td><a id="l464" class='ln'>464</a></td><td>        <a id="464c9" class="tk">k</a><a id="464c10" class="tk">++</a>;</td></tr>
+<tr name="465" id="465">
+<td><a id="l465" class='ln'>465</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="466" id="466">
+<td><a id="l466" class='ln'>466</a></td><td></td></tr>
+<tr name="467" id="467">
+<td><a id="l467" class='ln'>467</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="468" id="468">
+<td><a id="l468" class='ln'>468</a></td><td>	<a id="468c2" class="tk">cone_start</a> = <a id="468c15" class="tk">C</a>-&gt;<a id="468c18" class="tk">lpc</a>-&gt;<a id="468c23" class="tk">p</a>;</td></tr>
+<tr name="469" id="469">
+<td><a id="l469" class='ln'>469</a></td><td>	<span class="kw">for</span>( <a id="469c7" class="tk">i</a>=0; <a id="469c12" class="tk">i</a> <a id="469c14" class="tk">&lt;</a> <a id="469c16" class="tk">C</a>-&gt;<a id="469c19" class="tk">nsoc</a>; <a id="469c25" class="tk">i</a><a id="469c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="470" id="470">
+<td><a id="l470" class='ln'>470</a></td><td>		<a id="470c3" class="tk">conesize</a> = <a id="470c14" class="tk">C</a>-&gt;<a id="470c17" class="tk">soc</a>[<a id="470c21" class="tk">i</a>].<a id="470c24" class="tk">p</a>;</td></tr>
+<tr name="471" id="471">
+<td><a id="l471" class='ln'>471</a></td><td>		<a id="471c3" class="tk">u0</a> = <a id="471c8" class="tk">u</a>[<a id="471c10" class="tk">cone_start</a>];</td></tr>
+<tr name="472" id="472">
+<td><a id="l472" class='ln'>472</a></td><td>		<a id="472c3" class="tk">v0</a> = <a id="472c8" class="tk">v</a>[<a id="472c10" class="tk">cone_start</a>];</td></tr>
+<tr name="473" id="473">
+<td><a id="l473" class='ln'>473</a></td><td>		<a id="473c3" class="tk">w</a>[<a id="473c5" class="tk">k</a>] = <a id="473c10" class="tk">eddot</a>(<a id="473c16" class="tk">conesize</a>, <a id="473c26" class="tk">u</a><a id="473c27" class="tk">+</a><a id="473c28" class="tk">cone_start</a>, <a id="473c40" class="tk">v</a><a id="473c41" class="tk">+</a><a id="473c42" class="tk">cone_start</a>);</td></tr>
+<tr name="474" id="474">
+<td><a id="l474" class='ln'>474</a></td><td>        <a id="474c9" class="tk">mu</a> <a id="474c12" class="tk">+=</a> <a id="474c15" class="tk">w</a>[<a id="474c17" class="tk">k</a>] <a id="474c20" class="tk">&lt;</a> 0 <a id="474c24" class="tk">?</a> <a id="474c26" class="tk">-</a><a id="474c27" class="tk">w</a>[<a id="474c29" class="tk">k</a>] <a id="474c32" class="tk">:</a> <a id="474c34" class="tk">w</a>[<a id="474c36" class="tk">k</a>];</td></tr>
+<tr name="475" id="475">
+<td><a id="l475" class='ln'>475</a></td><td>        <a id="475c9" class="tk">k</a><a id="475c10" class="tk">++</a>;</td></tr>
+<tr name="476" id="476">
+<td><a id="l476" class='ln'>476</a></td><td>		<span class="kw">for</span>( <a id="476c8" class="tk">j</a>=1; <a id="476c13" class="tk">j</a> <a id="476c15" class="tk">&lt;</a> <a id="476c17" class="tk">conesize</a>; <a id="476c27" class="tk">j</a><a id="476c28" class="tk">++</a> )<span class="br">{</span> <a id="476c34" class="tk">w</a>[<a id="476c36" class="tk">k</a><a id="476c37" class="tk">++</a>] = <a id="476c43" class="tk">u0</a><a id="476c45" class="tk">*</a><a id="476c46" class="tk">v</a>[<a id="476c48" class="tk">cone_start</a><a id="476c58" class="tk">+</a><a id="476c59" class="tk">j</a>] <a id="476c62" class="tk">+</a> <a id="476c64" class="tk">v0</a><a id="476c66" class="tk">*</a><a id="476c67" class="tk">u</a>[<a id="476c69" class="tk">cone_start</a><a id="476c79" class="tk">+</a><a id="476c80" class="tk">j</a>]; <span class="br">}</span></td></tr>
+<tr name="477" id="477">
+<td><a id="l477" class='ln'>477</a></td><td>		<a id="477c3" class="tk">cone_start</a> <a id="477c14" class="tk">+=</a> <a id="477c17" class="tk">conesize</a>;</td></tr>
+<tr name="478" id="478">
+<td><a id="l478" class='ln'>478</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="479" id="479">
+<td><a id="l479" class='ln'>479</a></td><td></td></tr>
+<tr name="480" id="480">
+<td><a id="l480" class='ln'>480</a></td><td>    <span class="kw">return</span> <a id="480c12" class="tk">mu</a>;</td></tr>
+<tr name="481" id="481">
+<td><a id="l481" class='ln'>481</a></td><td><span class="br">}</span></td></tr>
+<tr name="482" id="482">
+<td><a id="l482" class='ln'>482</a></td><td></td></tr>
+<tr name="483" id="483">
+<td><a id="l483" class='ln'>483</a></td><td></td></tr>
+<tr name="484" id="484">
+<td><a id="l484" class='ln'>484</a></td><td></td></tr>
+<tr name="485" id="485">
+<td><a id="l485" class='ln'>485</a></td><td><span class="ct">/**</span></td></tr>
+<tr name="486" id="486">
+<td><a id="l486" class='ln'>486</a></td><td><span class="ct"> * Conic division, implements the "\" operator, v = u \ w</span></td></tr>
+<tr name="487" id="487">
+<td><a id="l487" class='ln'>487</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="488" id="488">
+<td><a id="l488" class='ln'>488</a></td><td><span class="kw">void</span> <a id="488c6" class="tk">conicDivision</a>(<a id="488c20" class="tk">pfloat</a><a id="488c26" class="tk">*</a> <a id="488c28" class="tk">u</a>, <a id="488c31" class="tk">pfloat</a><a id="488c37" class="tk">*</a> <a id="488c39" class="tk">w</a>, <a id="488c42" class="tk">cone</a><a id="488c46" class="tk">*</a> <a id="488c48" class="tk">C</a>, <a id="488c51" class="tk">pfloat</a><a id="488c57" class="tk">*</a> <a id="488c59" class="tk">v</a>)</td></tr>
+<tr name="489" id="489">
+<td><a id="l489" class='ln'>489</a></td><td><span class="br">{</span></td></tr>
+<tr name="490" id="490">
+<td><a id="l490" class='ln'>490</a></td><td>	<a id="490c2" class="tk">idxint</a> <a id="490c9" class="tk">i</a>, <a id="490c12" class="tk">j</a>, <a id="490c15" class="tk">k</a>, <a id="490c18" class="tk">cone_start</a>, <a id="490c30" class="tk">conesize</a>;</td></tr>
+<tr name="491" id="491">
+<td><a id="l491" class='ln'>491</a></td><td>	<a id="491c2" class="tk">pfloat</a> <a id="491c9" class="tk">rho</a>, <a id="491c14" class="tk">zeta</a>, <a id="491c20" class="tk">u0</a>, <a id="491c24" class="tk">w0</a>, <a id="491c28" class="tk">factor</a>, <a id="491c36" class="tk">temp</a>;</td></tr>
+<tr name="492" id="492">
+<td><a id="l492" class='ln'>492</a></td><td></td></tr>
+<tr name="493" id="493">
+<td><a id="l493" class='ln'>493</a></td><td>	<span class="ct">/* LP cone */</span></td></tr>
+<tr name="494" id="494">
+<td><a id="l494" class='ln'>494</a></td><td>	<span class="kw">for</span>( <a id="494c7" class="tk">i</a>=0; <a id="494c12" class="tk">i</a> <a id="494c14" class="tk">&lt;</a> <a id="494c16" class="tk">C</a>-&gt;<a id="494c19" class="tk">lpc</a>-&gt;<a id="494c24" class="tk">p</a>; <a id="494c27" class="tk">i</a><a id="494c28" class="tk">++</a> )<span class="br">{</span> <a id="494c34" class="tk">v</a>[<a id="494c36" class="tk">i</a>] = <a id="494c41" class="tk">SAFEDIV_POS</a>(<a id="494c53" class="tk">w</a>[<a id="494c55" class="tk">i</a>],<a id="494c58" class="tk">u</a>[<a id="494c60" class="tk">i</a>]); <span class="br">}</span></td></tr>
+<tr name="495" id="495">
+<td><a id="l495" class='ln'>495</a></td><td></td></tr>
+<tr name="496" id="496">
+<td><a id="l496" class='ln'>496</a></td><td>	<span class="ct">/* Second-order cone */</span></td></tr>
+<tr name="497" id="497">
+<td><a id="l497" class='ln'>497</a></td><td>	<a id="497c2" class="tk">cone_start</a> = <a id="497c15" class="tk">C</a>-&gt;<a id="497c18" class="tk">lpc</a>-&gt;<a id="497c23" class="tk">p</a>;</td></tr>
+<tr name="498" id="498">
+<td><a id="l498" class='ln'>498</a></td><td>	<span class="kw">for</span>( <a id="498c7" class="tk">i</a>=0; <a id="498c12" class="tk">i</a> <a id="498c14" class="tk">&lt;</a> <a id="498c16" class="tk">C</a>-&gt;<a id="498c19" class="tk">nsoc</a>; <a id="498c25" class="tk">i</a><a id="498c26" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="499" id="499">
+<td><a id="l499" class='ln'>499</a></td><td>		<a id="499c3" class="tk">conesize</a> = <a id="499c14" class="tk">C</a>-&gt;<a id="499c17" class="tk">soc</a>[<a id="499c21" class="tk">i</a>].<a id="499c24" class="tk">p</a>;</td></tr>
+<tr name="500" id="500">
+<td><a id="l500" class='ln'>500</a></td><td>		<a id="500c3" class="tk">u0</a> = <a id="500c8" class="tk">u</a>[<a id="500c10" class="tk">cone_start</a>]; <a id="500c23" class="tk">w0</a> = <a id="500c28" class="tk">w</a>[<a id="500c30" class="tk">cone_start</a>];</td></tr>
+<tr name="501" id="501">
+<td><a id="l501" class='ln'>501</a></td><td>		<a id="501c3" class="tk">rho</a> = <a id="501c9" class="tk">u0</a><a id="501c11" class="tk">*</a><a id="501c12" class="tk">u0</a>;   <a id="501c18" class="tk">zeta</a> = 0;</td></tr>
+<tr name="502" id="502">
+<td><a id="l502" class='ln'>502</a></td><td>		<span class="kw">for</span>( <a id="502c8" class="tk">j</a>=1; <a id="502c13" class="tk">j</a> <a id="502c15" class="tk">&lt;</a> <a id="502c17" class="tk">conesize</a>; <a id="502c27" class="tk">j</a><a id="502c28" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="503" id="503">
+<td><a id="l503" class='ln'>503</a></td><td>			<a id="503c4" class="tk">k</a> = <a id="503c8" class="tk">cone_start</a><a id="503c18" class="tk">+</a><a id="503c19" class="tk">j</a>;</td></tr>
+<tr name="504" id="504">
+<td><a id="l504" class='ln'>504</a></td><td>			<a id="504c4" class="tk">rho</a> <a id="504c8" class="tk">-=</a> <a id="504c11" class="tk">u</a>[<a id="504c13" class="tk">k</a>]<a id="504c15" class="tk">*</a><a id="504c16" class="tk">u</a>[<a id="504c18" class="tk">k</a>];</td></tr>
+<tr name="505" id="505">
+<td><a id="l505" class='ln'>505</a></td><td>			<a id="505c4" class="tk">zeta</a> <a id="505c9" class="tk">+=</a> <a id="505c12" class="tk">u</a>[<a id="505c14" class="tk">k</a>]<a id="505c16" class="tk">*</a><a id="505c17" class="tk">w</a>[<a id="505c19" class="tk">k</a>];</td></tr>
+<tr name="506" id="506">
+<td><a id="l506" class='ln'>506</a></td><td>		<span class="br">}</span></td></tr>
+<tr name="507" id="507">
+<td><a id="l507" class='ln'>507</a></td><td>        <a id="507c9" class="tk">temp</a> = <a id="507c16" class="tk">SAFEDIV_POS</a>(<a id="507c28" class="tk">zeta</a>,<a id="507c33" class="tk">u0</a>) <a id="507c37" class="tk">-</a> <a id="507c39" class="tk">w0</a>;</td></tr>
+<tr name="508" id="508">
+<td><a id="l508" class='ln'>508</a></td><td>        <a id="508c9" class="tk">factor</a> = <a id="508c18" class="tk">SAFEDIV_POS</a>(<a id="508c30" class="tk">temp</a>,<a id="508c35" class="tk">rho</a>);</td></tr>
+<tr name="509" id="509">
+<td><a id="l509" class='ln'>509</a></td><td>        <a id="509c9" class="tk">temp</a> = <a id="509c16" class="tk">u0</a><a id="509c18" class="tk">*</a><a id="509c19" class="tk">w0</a> <a id="509c22" class="tk">-</a> <a id="509c24" class="tk">zeta</a>;</td></tr>
+<tr name="510" id="510">
+<td><a id="l510" class='ln'>510</a></td><td>		<a id="510c3" class="tk">v</a>[<a id="510c5" class="tk">cone_start</a>] = <a id="510c19" class="tk">SAFEDIV_POS</a>(<a id="510c31" class="tk">temp</a>,<a id="510c36" class="tk">rho</a>);</td></tr>
+<tr name="511" id="511">
+<td><a id="l511" class='ln'>511</a></td><td>		<span class="kw">for</span>( <a id="511c8" class="tk">j</a>=1; <a id="511c13" class="tk">j</a> <a id="511c15" class="tk">&lt;</a> <a id="511c17" class="tk">conesize</a>; <a id="511c27" class="tk">j</a><a id="511c28" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="512" id="512">
+<td><a id="l512" class='ln'>512</a></td><td>			<a id="512c4" class="tk">k</a> = <a id="512c8" class="tk">cone_start</a><a id="512c18" class="tk">+</a><a id="512c19" class="tk">j</a>;</td></tr>
+<tr name="513" id="513">
+<td><a id="l513" class='ln'>513</a></td><td>			<a id="513c4" class="tk">v</a>[<a id="513c6" class="tk">cone_start</a><a id="513c16" class="tk">+</a><a id="513c17" class="tk">j</a>] = <a id="513c22" class="tk">factor</a><a id="513c28" class="tk">*</a><a id="513c29" class="tk">u</a>[<a id="513c31" class="tk">k</a>] <a id="513c34" class="tk">+</a> <a id="513c36" class="tk">SAFEDIV_POS</a>(<a id="513c48" class="tk">w</a>[<a id="513c50" class="tk">k</a>],<a id="513c53" class="tk">u0</a>);</td></tr>
+<tr name="514" id="514">
+<td><a id="l514" class='ln'>514</a></td><td>		<span class="br">}</span></td></tr>
+<tr name="515" id="515">
+<td><a id="l515" class='ln'>515</a></td><td>		<a id="515c3" class="tk">cone_start</a> <a id="515c14" class="tk">+=</a> <a id="515c17" class="tk">C</a>-&gt;<a id="515c20" class="tk">soc</a>[<a id="515c24" class="tk">i</a>].<a id="515c27" class="tk">p</a>;</td></tr>
+<tr name="516" id="516">
+<td><a id="l516" class='ln'>516</a></td><td>	<span class="br">}</span></td></tr>
+<tr name="517" id="517">
+<td><a id="l517" class='ln'>517</a></td><td><span class="br">}</span></td></tr>
+<tr name="518" id="518">
+<td><a id="l518" class='ln'>518</a></td><td></td></tr>
+<tr name="519" id="519">
+<td><a id="l519" class='ln'>519</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="520" id="520">
+<td><a id="l520" class='ln'>520</a></td><td><span class="ct"> * Returns details on second order cone</span></td></tr>
+<tr name="521" id="521">
+<td><a id="l521" class='ln'>521</a></td><td><span class="ct"> * Purpose: cleaner code</span></td></tr>
+<tr name="522" id="522">
+<td><a id="l522" class='ln'>522</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="523" id="523">
+<td><a id="l523" class='ln'>523</a></td><td><span class="kw">void</span> <a id="523c6" class="tk">getSOCDetails</a>(<a id="523c20" class="tk">socone</a> <a id="523c27" class="tk">*</a><a id="523c28" class="tk">soc</a>, <a id="523c33" class="tk">idxint</a> <a id="523c40" class="tk">*</a><a id="523c41" class="tk">conesize</a>, <a id="523c51" class="tk">pfloat</a><a id="523c57" class="tk">*</a> <a id="523c59" class="tk">eta_square</a>, <a id="523c71" class="tk">pfloat</a><a id="523c77" class="tk">*</a> <a id="523c79" class="tk">d1</a>, <a id="523c83" class="tk">pfloat</a><a id="523c89" class="tk">*</a> <a id="523c91" class="tk">u0</a>, <a id="523c95" class="tk">pfloat</a><a id="523c101" class="tk">*</a> <a id="523c103" class="tk">u1</a>, <a id="523c107" class="tk">pfloat</a><a id="523c113" class="tk">*</a> <a id="523c115" class="tk">v1</a>, <a id="523c119" class="tk">pfloat</a> <a id="523c126" class="tk">*</a><a id="523c127" class="tk">*</a><a id="523c128" class="tk">q</a>)</td></tr>
+<tr name="524" id="524">
+<td><a id="l524" class='ln'>524</a></td><td><span class="br">{</span></td></tr>
+<tr name="525" id="525">
+<td><a id="l525" class='ln'>525</a></td><td><span class="pp">#if</span> <a id="525c5" class="tk">CONEMODE</a> <a id="525c14" class="tk">==</a> 0</td></tr>
+<tr name="526" id="526">
+<td><a id="l526" class='ln'>526</a></td><td>    <a id="526c5" class="tk">*</a><a id="526c6" class="tk">conesize</a> = <a id="526c17" class="tk">soc</a>-&gt;<a id="526c22" class="tk">p</a>;</td></tr>
+<tr name="527" id="527">
+<td><a id="l527" class='ln'>527</a></td><td>    <a id="527c5" class="tk">*</a><a id="527c6" class="tk">eta_square</a> = <a id="527c19" class="tk">soc</a>-&gt;<a id="527c24" class="tk">eta_square</a>;</td></tr>
+<tr name="528" id="528">
+<td><a id="l528" class='ln'>528</a></td><td>    <a id="528c5" class="tk">*</a><a id="528c6" class="tk">d1</a> = <a id="528c11" class="tk">soc</a>-&gt;<a id="528c16" class="tk">d1</a>;</td></tr>
+<tr name="529" id="529">
+<td><a id="l529" class='ln'>529</a></td><td>    <a id="529c5" class="tk">*</a><a id="529c6" class="tk">u0</a> = <a id="529c11" class="tk">soc</a>-&gt;<a id="529c16" class="tk">u0</a>;</td></tr>
+<tr name="530" id="530">
+<td><a id="l530" class='ln'>530</a></td><td>    <a id="530c5" class="tk">*</a><a id="530c6" class="tk">u1</a> = <a id="530c11" class="tk">soc</a>-&gt;<a id="530c16" class="tk">u1</a>;</td></tr>
+<tr name="531" id="531">
+<td><a id="l531" class='ln'>531</a></td><td>    <a id="531c5" class="tk">*</a><a id="531c6" class="tk">v1</a> = <a id="531c11" class="tk">soc</a>-&gt;<a id="531c16" class="tk">v1</a>;</td></tr>
+<tr name="532" id="532">
+<td><a id="l532" class='ln'>532</a></td><td>    <a id="532c5" class="tk">*</a><a id="532c6" class="tk">q</a> = <a id="532c10" class="tk">soc</a>-&gt;<a id="532c15" class="tk">q</a>;</td></tr>
+<tr name="533" id="533">
+<td><a id="l533" class='ln'>533</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="534" id="534">
+<td><a id="l534" class='ln'>534</a></td><td><span class="br">}</span></td></tr>
+<tr name="535" id="535">
+<td><a id="l535" class='ln'>535</a></td><td></td></tr>
+<tr name="536" id="536">
+<td><a id="l536" class='ln'>536</a></td><td></td></tr>
+<tr name="537" id="537">
+<td><a id="l537" class='ln'>537</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="538" id="538">
+<td><a id="l538" class='ln'>538</a></td><td><span class="ct"> * Returns dx, dy and dz from the expanded and permuted version of</span></td></tr>
+<tr name="539" id="539">
+<td><a id="l539" class='ln'>539</a></td><td><span class="ct"> * a search direction vector.</span></td></tr>
+<tr name="540" id="540">
+<td><a id="l540" class='ln'>540</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="541" id="541">
+<td><a id="l541" class='ln'>541</a></td><td><span class="kw">void</span> <a id="541c6" class="tk">unstretch</a>(<a id="541c16" class="tk">idxint</a> <a id="541c23" class="tk">n</a>, <a id="541c26" class="tk">idxint</a> <a id="541c33" class="tk">p</a>, <a id="541c36" class="tk">cone</a> <a id="541c41" class="tk">*</a><a id="541c42" class="tk">C</a>, <a id="541c45" class="tk">idxint</a> <a id="541c52" class="tk">*</a><a id="541c53" class="tk">Pinv</a>, <a id="541c59" class="tk">pfloat</a> <a id="541c66" class="tk">*</a><a id="541c67" class="tk">Px</a>, <a id="541c71" class="tk">pfloat</a> <a id="541c78" class="tk">*</a><a id="541c79" class="tk">dx</a>, <a id="541c83" class="tk">pfloat</a> <a id="541c90" class="tk">*</a><a id="541c91" class="tk">dy</a>, <a id="541c95" class="tk">pfloat</a> <a id="541c102" class="tk">*</a><a id="541c103" class="tk">dz</a>)</td></tr>
+<tr name="542" id="542">
+<td><a id="l542" class='ln'>542</a></td><td><span class="br">{</span></td></tr>
+<tr name="543" id="543">
+<td><a id="l543" class='ln'>543</a></td><td>    <a id="543c5" class="tk">idxint</a> <a id="543c12" class="tk">i</a>,<a id="543c14" class="tk">j</a>,<a id="543c16" class="tk">k</a>,<a id="543c18" class="tk">l</a>;</td></tr>
+<tr name="544" id="544">
+<td><a id="l544" class='ln'>544</a></td><td>    <a id="544c5" class="tk">k</a> = 0;</td></tr>
+<tr name="545" id="545">
+<td><a id="l545" class='ln'>545</a></td><td>    <span class="kw">for</span>( <a id="545c10" class="tk">i</a>=0; <a id="545c15" class="tk">i</a><a id="545c16" class="tk">&lt;</a><a id="545c17" class="tk">n</a>; <a id="545c20" class="tk">i</a><a id="545c21" class="tk">++</a> )<span class="br">{</span> <a id="545c27" class="tk">dx</a>[<a id="545c30" class="tk">i</a>] = <a id="545c35" class="tk">Px</a>[<a id="545c38" class="tk">Pinv</a>[<a id="545c43" class="tk">k</a><a id="545c44" class="tk">++</a>]]; <span class="br">}</span></td></tr>
+<tr name="546" id="546">
+<td><a id="l546" class='ln'>546</a></td><td>    <span class="kw">for</span>( <a id="546c10" class="tk">i</a>=0; <a id="546c15" class="tk">i</a><a id="546c16" class="tk">&lt;</a><a id="546c17" class="tk">p</a>; <a id="546c20" class="tk">i</a><a id="546c21" class="tk">++</a> )<span class="br">{</span> <a id="546c27" class="tk">dy</a>[<a id="546c30" class="tk">i</a>] = <a id="546c35" class="tk">Px</a>[<a id="546c38" class="tk">Pinv</a>[<a id="546c43" class="tk">k</a><a id="546c44" class="tk">++</a>]]; <span class="br">}</span></td></tr>
+<tr name="547" id="547">
+<td><a id="l547" class='ln'>547</a></td><td>    <a id="547c5" class="tk">j</a> = 0;</td></tr>
+<tr name="548" id="548">
+<td><a id="l548" class='ln'>548</a></td><td>    <span class="kw">for</span>( <a id="548c10" class="tk">i</a>=0; <a id="548c15" class="tk">i</a><a id="548c16" class="tk">&lt;</a><a id="548c17" class="tk">C</a>-&gt;<a id="548c20" class="tk">lpc</a>-&gt;<a id="548c25" class="tk">p</a>; <a id="548c28" class="tk">i</a><a id="548c29" class="tk">++</a> )<span class="br">{</span> <a id="548c35" class="tk">dz</a>[<a id="548c38" class="tk">j</a><a id="548c39" class="tk">++</a>] = <a id="548c45" class="tk">Px</a>[<a id="548c48" class="tk">Pinv</a>[<a id="548c53" class="tk">k</a><a id="548c54" class="tk">++</a>]]; <span class="br">}</span></td></tr>
+<tr name="549" id="549">
+<td><a id="l549" class='ln'>549</a></td><td>    <span class="kw">for</span>( <a id="549c10" class="tk">l</a>=0; <a id="549c15" class="tk">l</a><a id="549c16" class="tk">&lt;</a><a id="549c17" class="tk">C</a>-&gt;<a id="549c20" class="tk">nsoc</a>; <a id="549c26" class="tk">l</a><a id="549c27" class="tk">++</a> )<span class="br">{</span></td></tr>
+<tr name="550" id="550">
+<td><a id="l550" class='ln'>550</a></td><td>        <span class="kw">for</span>( <a id="550c14" class="tk">i</a>=0; <a id="550c19" class="tk">i</a><a id="550c20" class="tk">&lt;</a><a id="550c21" class="tk">C</a>-&gt;<a id="550c24" class="tk">soc</a>[<a id="550c28" class="tk">l</a>].<a id="550c31" class="tk">p</a>; <a id="550c34" class="tk">i</a><a id="550c35" class="tk">++</a> )<span class="br">{</span> <a id="550c41" class="tk">dz</a>[<a id="550c44" class="tk">j</a><a id="550c45" class="tk">++</a>] = <a id="550c51" class="tk">Px</a>[<a id="550c54" class="tk">Pinv</a>[<a id="550c59" class="tk">k</a><a id="550c60" class="tk">++</a>]]; <span class="br">}</span></td></tr>
+<tr name="551" id="551">
+<td><a id="l551" class='ln'>551</a></td><td><span class="pp">#if</span> <a id="551c5" class="tk">CONEMODE</a> <a id="551c14" class="tk">==</a> 0</td></tr>
+<tr name="552" id="552">
+<td><a id="l552" class='ln'>552</a></td><td>        <a id="552c9" class="tk">k</a> <a id="552c11" class="tk">+=</a> 2;</td></tr>
+<tr name="553" id="553">
+<td><a id="l553" class='ln'>553</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="554" id="554">
+<td><a id="l554" class='ln'>554</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="555" id="555">
+<td><a id="l555" class='ln'>555</a></td><td><span class="pp">#ifdef</span> <a id="555c8" class="tk">EXPCONE</a></td></tr>
+<tr name="556" id="556">
+<td><a id="l556" class='ln'>556</a></td><td>    <span class="kw">for</span>( <a id="556c10" class="tk">l</a>=0; <a id="556c15" class="tk">l</a><a id="556c16" class="tk">&lt;</a><a id="556c17" class="tk">C</a>-&gt;<a id="556c20" class="tk">nexc</a>; <a id="556c26" class="tk">l</a><a id="556c27" class="tk">++</a>)</td></tr>
+<tr name="557" id="557">
+<td><a id="l557" class='ln'>557</a></td><td>    <span class="br">{</span></td></tr>
+<tr name="558" id="558">
+<td><a id="l558" class='ln'>558</a></td><td>        <span class="kw">for</span>( <a id="558c14" class="tk">i</a>=0; <a id="558c19" class="tk">i</a><a id="558c20" class="tk">&lt;</a>3; <a id="558c24" class="tk">i</a><a id="558c25" class="tk">++</a> )<span class="br">{</span> <a id="558c31" class="tk">dz</a>[<a id="558c34" class="tk">j</a><a id="558c35" class="tk">++</a>] = <a id="558c41" class="tk">Px</a>[<a id="558c44" class="tk">Pinv</a>[<a id="558c49" class="tk">k</a><a id="558c50" class="tk">++</a>]]; <span class="br">}</span></td></tr>
+<tr name="559" id="559">
+<td><a id="l559" class='ln'>559</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="560" id="560">
+<td><a id="l560" class='ln'>560</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="561" id="561">
+<td><a id="l561" class='ln'>561</a></td><td><span class="br">}</span></td></tr>
+<tr name="562" id="562">
+<td><a id="l562" class='ln'>562</a></td><td></td></tr>
+</table>
+</pre>
+</body>
+</html>
