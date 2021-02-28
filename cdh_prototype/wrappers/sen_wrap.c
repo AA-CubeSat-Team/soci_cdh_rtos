@@ -19,6 +19,7 @@ Sun Sensor:
 
  */
 #include <sen_wrap.h>
+#include "gnc_task.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpi2c_freertos.h"
@@ -50,17 +51,21 @@ bool sens_healthcheck(){
 //do each sensor separately
 void sens_readSun(){
 	PRINTF("reading sun sensors\r\n");
+//	sens_var.sun_meas_ss_deg[0] = 180;
 }
 
 void sens_readMag(){
 	PRINTF("reading magnetometer sensors\r\n");
+//	sens_var.mag_body_T[0] = 111;
 }
 
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors\r\n");
+//	sens_var.photodiodes_A[0] = 222;
 }
 
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
+//	sens_var.gyro_body_radps[0] = 333;
 	//loop() in gyro.ino by Alex
 }

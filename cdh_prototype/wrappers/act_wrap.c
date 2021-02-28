@@ -28,12 +28,13 @@ Reaction wheel:
  */
 
 #include <act_wrap.h>
+#include "gnc_task.h"
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 #include "fsl_lpspi_freertos.h"
 #include "fsl_lpspi.h"
 #include "fsl_debug_console.h"
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 #include <stdbool.h>
 #include "peripherals.h"
 
@@ -65,6 +66,9 @@ Reaction wheel:
 //  real_T gnc_telemetry[6];
 //} fsw_out;
 
+//extern actuator_meas actu_var;
+//extern fsw_out fsw_var;
+
 bool rwa_healthcheck()
 {
 	PRINTF("checking reaction wheel health\r\n");
@@ -77,13 +81,15 @@ bool mtq_healthcheck()
 	return true;
 }
 
-double readActMeas()
+void readActMeas()
 {
 	PRINTF("Read RWA and MTQ measurements\r\n");
-	return 0.0;
+//	actu_var.mtq_power[0] = 100;
+//	actu_var.rwa_rpm[0] = 500;
 }
 
 void gnc_sendCommand() //we will have something like rwa_writeDeg() to use
 {
 	PRINTF("Sending command to GNC\r\n");
+//	fsw_var.rwa_cmd_rpm[0] = actu_var.rwa_rpm[0];
 }

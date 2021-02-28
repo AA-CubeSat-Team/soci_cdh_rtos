@@ -75,15 +75,10 @@ int g_operatingMode;
 /*!
  * @brief Application entry point.
  */
-bool obc_healthcheck(){
-	PRINTF("checking peripherals of obc");
-	return true;
-}
-void obc_reset(){
-	PRINTF("Hard resetting obc");
-}
+
 
 TaskHandle_t TaskHandler_idle;
+TaskHandle_t TaskHandler_img;
 
 static void vTimerReadGyro(TimerHandle_t xTimerGryo)
 {
@@ -105,7 +100,7 @@ int main(void)
         while (1)
             ;
     }
-    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, NULL) !=
+    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
 		pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");
@@ -126,18 +121,18 @@ int main(void)
 		while (1)
 			;
 	}
-
-    /*Testing a auto-reloaded task for potential use for gyro*/
-    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(10), pdTRUE, (void*)0, vTimerReadGyro);
-    if (xTimerGryo==NULL)
-    {
-    	PRINTF("Creating auto-reload task failed. \r\n");
-    	for(;;); /* failure! */
-    }
-    if (xTimerStart(xTimerGryo, 0)!=pdPASS) {
-    	for(;;); /* failure!?! */
-    }
-    /************************************************************/
+//
+//    /*Testing a auto-reloaded task for potential use for gyro*/
+//    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(250), pdTRUE, (void*)0, vTimerReadGyro);
+//    if (xTimerGryo==NULL)
+//    {
+//    	PRINTF("Creating auto-reload task failed. \r\n");
+//    	for(;;); /* failure! */
+//    }
+//    if (xTimerStart(xTimerGryo, 0)!=pdPASS) {
+//    	for(;;); /* failure!?! */
+//    }
+//    /************************************************************/
 
     vTaskStartScheduler();
     for (;;)

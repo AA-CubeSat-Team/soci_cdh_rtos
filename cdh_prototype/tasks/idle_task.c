@@ -20,6 +20,7 @@
 
 #include "idle_task.h"
 #include "clock_config.h"
+#include <stdbool.h>
 
 extern bool g_imgActive;
 extern bool g_comActive;
@@ -91,6 +92,14 @@ void UpdateFlags(int mode)
 	}
 }
 
+bool obc_healthcheck(){
+	PRINTF("checking peripherals of obc\r\n");
+	return true;
+}
+void obc_reset(){
+	PRINTF("Hard resetting obc\r\n");
+}
+
 void idle_task(void *pvParameters)
 {
 
@@ -99,19 +108,24 @@ void idle_task(void *pvParameters)
 	int mode = CRIT_LOW_POWER; // to ensure the system boot up from Critically Low Power Mode
 	UpdateFlags(mode);
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
-	resetPriority();
+//	PRINTF("hi im reseting the priority\r\n");
+//	resetPriority();
+//	PRINTF("hi i've reset the priority\r\n");
 //	vTaskPrioritySet(idle_task, 0);
 
 	for (;;) {
+//		vTaskSuspendAll();
 		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
 		/* Step 1. Commission Phase I Checks */
 		PRINTF("\nidle: Commission Phase 1 Checks\r\n");
 		while (!g_epsHealthy || !g_obcHealthy){
 			g_epsHealthy = eps_healthcheck();
+			PRINTF("i HAVN'T SWITCHED");
 			g_obcHealthy = obc_healthcheck();
+			PRINTF("I SWITCHED!");
 			if (!g_epsHealthy){
-				i2c_eps_manualReset();
+//				i2c_eps_manualReset();
 			}
 			if (!g_obcHealthy){
 				//obc_reset();
@@ -130,20 +144,20 @@ void idle_task(void *pvParameters)
 			mode = CRIT_LOW_POWER;
 			PRINTF("enters critically low power mode\r\n");
 			//MCU_LowPowerMode();
-			i2c_eps_switchOnOffPdms(0); //nothing should be on
+//			i2c_eps_switchOnOffPdms(0); //nothing should be on
 		}
 		else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
 		{
 			mode = LOW_POWER;
 			//MCU_LowPowerMode();
-			i2c_eps_switchOnOffPdms(PDM_COM | PDM_SEN); //not mentioned PDMs are automatically set 0 in the bits
+//			i2c_eps_switchOnOffPdms(PDM_COM | PDM_SEN); //not mentioned PDMs are automatically set 0 in the bits
 
 		}
 		else // Normal Mode: 7.9 < voltage < 8.26
 		{ // NOMINAL POWER
 			mode = NOMINAL_POWER;
 			//MCU_OverdriveMode();
-			i2c_eps_switchOnOffPdms(PDM_RWA | PDM_MTQ | PDM_IMG | PDM_COM | PDM_SEN);
+//			i2c_eps_switchOnOffPdms(PDM_RWA | PDM_MTQ | PDM_IMG | PDM_COM | PDM_SEN);
 		}
 		UpdateFlags(mode); //uses g_operatingMode and mode
 
@@ -169,7 +183,11 @@ void idle_task(void *pvParameters)
 
 //		int p = (int) uxTaskPriorityGet(idle_task);
 //		PRINTF("PRIORITY OF IDLE %d", p);
-
+		if (uxTaskPriorityGet(TaskHandler_idle) != 0)
+		{
+			resetPriority();
+		}
+//		xTaskResumeAll();
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }

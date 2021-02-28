@@ -77,10 +77,9 @@ static uint32_t adc_count;
 
 bool eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
-	TickType_t xLastWakeTime = xTaskGetTickCount();
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
-	vTaskDelayUntil(&xLastWakeTime, xDelayms);
-	PRINTF("Finish delay\r\n");
+//	TickType_t xLastWakeTime = xTaskGetTickCount();
+//	vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( 10 ));
+//	PRINTF("Finish delay\r\n");
 	return true;
 }
 

@@ -24,6 +24,8 @@ bool payload_check = false;
 bool image_check = false;
 bool beacon_check = false;
 
+extern TaskHandle_t TaskHandler_img;
+
 void com_task(void *pvParameters)
 {
 	extern bool g_comActive;
@@ -33,6 +35,7 @@ void com_task(void *pvParameters)
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
 	PRINTF("\ninitialize comm.\r\n");
 
+	int count = 0;
 
 	for (;;) {
 
@@ -40,7 +43,14 @@ void com_task(void *pvParameters)
 		PRINTF("\ncomm work.\r\n");
 
 		if(g_comActive == true){
-			com_getCommands();
+//			com_getCommands();
+		}
+		count++;
+		PRINTF("count = %d\n", count);
+		if (count >= 5){
+			vTaskResume(&TaskHandler_img);
+			count = 0;
+			PRINTF("resuming img task\r\n");
 		}
 
 //
