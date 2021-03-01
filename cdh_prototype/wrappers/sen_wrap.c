@@ -18,8 +18,8 @@ Sun Sensor:
 93	GPIO_AD_B0_15	UART3_RX	Sun Sensor
 
  */
+#include "dummy_type.h"
 #include <sen_wrap.h>
-#include "gnc_task.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpi2c_freertos.h"
@@ -28,21 +28,7 @@ Sun Sensor:
 #include <stdbool.h>
 #include "peripherals.h"
 
-
-/*
- * solar_panel_power, phd, mag, sun_sensor, gyro
- *
- * struct {
-  real_T solar_panel_power_W[6];
-  real_T photodiodes_A[6];
-  real_T mag_body_T[9];
-  boolean_T mag_meas_valid[3];
-  real_T sun_meas_ss_deg[2];
-  boolean_T sun_meas_valid;
-  real_T gyro_body_radps[9];
-  boolean_T gyro_meas_valid[3];
-} sensor_bus;
- */
+extern sensor_bus sens_var;
 
 bool sens_healthcheck(){
 	PRINTF("checking sensors health\r\n");
@@ -51,21 +37,21 @@ bool sens_healthcheck(){
 //do each sensor separately
 void sens_readSun(){
 	PRINTF("reading sun sensors\r\n");
-//	sens_var.sun_meas_ss_deg[0] = 180;
+	sens_var.sun_meas_ss_deg[0] = 180;
 }
 
 void sens_readMag(){
 	PRINTF("reading magnetometer sensors\r\n");
-//	sens_var.mag_body_T[0] = 111;
+	sens_var.mag_body_T[0] = 111;
 }
 
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors\r\n");
-//	sens_var.photodiodes_A[0] = 222;
+	sens_var.photodiodes_A[0] = 222;
 }
 
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
-//	sens_var.gyro_body_radps[0] = 333;
+	sens_var.gyro_body_radps[0] = 333;
 	//loop() in gyro.ino by Alex
 }

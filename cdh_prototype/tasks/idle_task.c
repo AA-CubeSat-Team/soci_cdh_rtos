@@ -112,11 +112,15 @@ void idle_task(void *pvParameters)
 //	resetPriority();
 //	PRINTF("hi i've reset the priority\r\n");
 //	vTaskPrioritySet(idle_task, 0);
+	vTaskSuspendAll();
+	//func
+	//vTaskResumeAll();
+	//change priority to 0
 
+	//vTaskSuspend();
 	for (;;) {
-//		vTaskSuspendAll();
 		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-
+//func
 		/* Step 1. Commission Phase I Checks */
 		PRINTF("\nidle: Commission Phase 1 Checks\r\n");
 		while (!g_epsHealthy || !g_obcHealthy){
@@ -185,6 +189,7 @@ void idle_task(void *pvParameters)
 //		PRINTF("PRIORITY OF IDLE %d", p);
 		if (uxTaskPriorityGet(TaskHandler_idle) != 0)
 		{
+			xTaskResumeAll();
 			resetPriority();
 		}
 //		xTaskResumeAll();

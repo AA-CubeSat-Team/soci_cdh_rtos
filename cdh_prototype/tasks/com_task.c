@@ -47,8 +47,8 @@ void com_task(void *pvParameters)
 		}
 		count++;
 		PRINTF("count = %d\n", count);
-		if (count >= 5){
-			vTaskResume(&TaskHandler_img);
+		if (count >= 5){ //later: receive a command to take a pic
+			vTaskResume(TaskHandler_img);
 			count = 0;
 			PRINTF("resuming img task\r\n");
 		}

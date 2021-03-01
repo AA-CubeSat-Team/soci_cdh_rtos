@@ -15,6 +15,7 @@
 #include "imag_task.h"
 #include "clock_config.h"
 
+
 void imag_task(void *pvParameters)
 {
 	extern bool g_imgActive;
