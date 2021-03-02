@@ -40,6 +40,8 @@ extern bool g_mtqHealthy;
 extern bool g_rwaHealthy;
 extern bool g_imgHealthy;
 
+int mode;
+
 #define PDM_MTQ  1 << (0)
 #define PDM_RWA  1 << (1)
 #define PDM_IMG  1 << (2)
@@ -96,103 +98,97 @@ bool obc_healthcheck(){
 	PRINTF("checking peripherals of obc\r\n");
 	return true;
 }
+
 void obc_reset(){
 	PRINTF("Hard resetting obc\r\n");
 }
 
+/* Step 1. Commission Phase I Checks */
+void idle_phase1() {
+	PRINTF("\nidle: Commission Phase 1 Checks\r\n");
+	while (!g_epsHealthy || !g_obcHealthy){
+		g_epsHealthy = eps_healthcheck();
+		PRINTF("i HAVN'T SWITCHED");
+		g_obcHealthy = obc_healthcheck();
+		PRINTF("I SWITCHED!");
+		if (!g_epsHealthy){
+//			i2c_eps_manualReset();
+		}
+		if (!g_obcHealthy){
+			//obc_reset();
+		}
+	}
+
+}
+
+/* get the battery voltage and decides the appropriate pdm */
+void idle_phase2() {
+	/* Battery Voltage Check */
+	PRINTF("idle: Get Voltage from EPS\r\n");
+	// TODO: Create a task to get the voltage from EPS system through I2C Communication
+	double voltage = i2c_eps_getBatteryLevel();
+	PRINTF("idle: PDM Power up modules based on voltage\r\n");
+	if (voltage <= 7.4 ) // CRITICALLY LOW POWER
+	{
+		mode = CRIT_LOW_POWER;
+		PRINTF("enters critically low power mode\r\n");
+		//MCU_LowPowerMode();
+//		i2c_eps_switchOnOffPdms(0); //nothing should be on
+	}
+	else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
+	{
+		mode = LOW_POWER;
+		//MCU_LowPowerMode();
+//		i2c_eps_switchOnOffPdms(PDM_COM | PDM_SEN); //not mentioned PDMs are automatically set 0 in the bits
+
+	}
+	else // Normal Mode: 7.9 < voltage < 8.26
+	{ // NOMINAL POWER
+		mode = NOMINAL_POWER;
+		//MCU_OverdriveMode();
+//		i2c_eps_switchOnOffPdms(PDM_RWA | PDM_MTQ | PDM_IMG | PDM_COM | PDM_SEN);
+	}
+	UpdateFlags(mode); //uses g_operatingMode and mode
+}
+
+/* Health checks subsystems */
+void idle_phase3() {
+	if (mode == NOMINAL_POWER)
+	{
+		g_comHealthy = com_healthcheck();
+		g_senHealthy = sens_healthcheck();
+		//g_gncHealthy = gnc_healthcheck();
+		g_rwaHealthy = rwa_healthcheck();
+		g_mtqHealthy = mtq_healthcheck();
+		g_imgHealthy = img_healthcheck();
+	}
+	else if (mode == LOW_POWER)
+	{
+		g_comHealthy = com_healthcheck();
+		g_senHealthy = sens_healthcheck();
+//		g_gncHealthy = gnc_healthcheck(); //what does this check?
+	}
+	else { //mode == CRIT_LOW_POWER
+		//nothing here
+	}
+}
 void idle_task(void *pvParameters)
 {
-
-
-	double voltage;
-	int mode = CRIT_LOW_POWER; // to ensure the system boot up from Critically Low Power Mode
-	UpdateFlags(mode);
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 );
-//	PRINTF("hi im reseting the priority\r\n");
-//	resetPriority();
-//	PRINTF("hi i've reset the priority\r\n");
-//	vTaskPrioritySet(idle_task, 0);
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	int mode = CRIT_LOW_POWER;
+	UpdateFlags(mode); //initialize mode to be CRIT_LOW_POWER
 	vTaskSuspendAll();
-	//func
-	//vTaskResumeAll();
-	//change priority to 0
+	idle_phase1(); //Commission Phase I Checks
+	idle_phase2(); //pdm decider
+	idle_phase3(); //health checks subsystem
+	resetPriority(); //resetting priority of idle task to 0
+	xTaskResumeAll();
 
-	//vTaskSuspend();
 	for (;;) {
 		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-//func
-		/* Step 1. Commission Phase I Checks */
-		PRINTF("\nidle: Commission Phase 1 Checks\r\n");
-		while (!g_epsHealthy || !g_obcHealthy){
-			g_epsHealthy = eps_healthcheck();
-			PRINTF("i HAVN'T SWITCHED");
-			g_obcHealthy = obc_healthcheck();
-			PRINTF("I SWITCHED!");
-			if (!g_epsHealthy){
-//				i2c_eps_manualReset();
-			}
-			if (!g_obcHealthy){
-				//obc_reset();
-			}
-		}
-
-		/* Step 2. Battery Voltage Check */
-		PRINTF("idle: Get Voltage from EPS\r\n");
-		// TODO: Create a task to get the voltage from EPS system through I2C Communication
-		voltage = i2c_eps_getBatteryLevel();
-
-		/* Step 3. Enters each mode and power up PDMs */
-		PRINTF("idle: PDM Power up modules based on voltage\r\n");
-		if (voltage <= 7.4 ) // CRITICALLY LOW POWER
-		{
-			mode = CRIT_LOW_POWER;
-			PRINTF("enters critically low power mode\r\n");
-			//MCU_LowPowerMode();
-//			i2c_eps_switchOnOffPdms(0); //nothing should be on
-		}
-		else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
-		{
-			mode = LOW_POWER;
-			//MCU_LowPowerMode();
-//			i2c_eps_switchOnOffPdms(PDM_COM | PDM_SEN); //not mentioned PDMs are automatically set 0 in the bits
-
-		}
-		else // Normal Mode: 7.9 < voltage < 8.26
-		{ // NOMINAL POWER
-			mode = NOMINAL_POWER;
-			//MCU_OverdriveMode();
-//			i2c_eps_switchOnOffPdms(PDM_RWA | PDM_MTQ | PDM_IMG | PDM_COM | PDM_SEN);
-		}
-		UpdateFlags(mode); //uses g_operatingMode and mode
-
-		/* Step 4. Health Checks */
-		if (mode == NOMINAL_POWER)
-		{
-			g_comHealthy = com_healthcheck();
-			g_senHealthy = sens_healthcheck();
-			//g_gncHealthy = gnc_healthcheck();
-			g_rwaHealthy = rwa_healthcheck();
-			g_mtqHealthy = mtq_healthcheck();
-			g_imgHealthy = img_healthcheck();
-		}
-		else if (mode == LOW_POWER)
-		{
-			g_comHealthy = com_healthcheck();
-			g_senHealthy = sens_healthcheck();
-//			g_gncHealthy = gnc_healthcheck(); //what does this check?
-		}
-		else { //mode == CRIT_LOW_POWER
-			//nothing here
-		}
-
-//		int p = (int) uxTaskPriorityGet(idle_task);
-//		PRINTF("PRIORITY OF IDLE %d", p);
-		if (uxTaskPriorityGet(TaskHandler_idle) != 0)
-		{
-			xTaskResumeAll();
-			resetPriority();
-		}
-//		xTaskResumeAll();
+		idle_phase1(); //Commission Phase I Checks
+		idle_phase2(); //pdm decider
+		idle_phase3(); //health checks subsystem
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }

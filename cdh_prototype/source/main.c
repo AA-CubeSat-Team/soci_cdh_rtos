@@ -80,10 +80,14 @@ int g_operatingMode;
 TaskHandle_t TaskHandler_idle;
 TaskHandle_t TaskHandler_img;
 
+/*
+ * Test for auto-reloaded single-shot task
 static void vTimerReadGyro(TimerHandle_t xTimerGryo)
 {
 	PRINTF("Reading Gyro!\r\n");
 }
+ */
+
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
