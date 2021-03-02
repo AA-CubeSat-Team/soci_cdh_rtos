@@ -31,6 +31,6 @@ Reaction wheel:
 
 bool rwa_healthcheck();
 bool mtq_healthcheck();
-double readActMeas();
+void readActMeas();
 void gnc_sendCommand();
 void rt_OneStep(void);

@@ -20,3 +20,5 @@ enum PLLCommand {
 
 void resetPriority();
 void idle_task(void *pvParameters);
+bool obc_healthcheck();
+void obc_reset();

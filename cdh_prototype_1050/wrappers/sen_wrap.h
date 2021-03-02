@@ -22,5 +22,10 @@ Sun Sensor:
 
 #include <stdbool.h>
 
+
 bool sens_healthcheck();
-void sens_read();
+void sens_readSun();
+void sens_readMag();
+void sens_readPhd();
+void sens_readGyr();
+

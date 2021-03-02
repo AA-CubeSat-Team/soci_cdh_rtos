@@ -26,44 +26,19 @@ Reaction wheel:
 90	GPIO_AD_B1_02	SPI1_EN2	Enable - RXN Wheel 3
 89	GPIO_AD_B1_03	SPI1_EN3	Enable - RXN Wheel 4
  */
-
+#include "dummy_type.h"
 #include <act_wrap.h>
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 #include "fsl_lpspi_freertos.h"
 #include "fsl_lpspi.h"
 #include "fsl_debug_console.h"
-#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
+//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 #include <stdbool.h>
 #include "peripherals.h"
-
-// structs we would need for the input and output to communicate with GNC
-//typedef struct {
-//  boolean_T mtq_valid[5];
-//  boolean_T rwa_valid[4];
-//  real_T rwa_power;
-//  real_T mtq_power;
-//  real_T rwa_rpm[4];
-//} actuator_meas;
 //
-//typedef struct {
-//  real_T A[12];
-//  real_T max_norm_ellipsoid_R[3];
-//  uint8_T num_facet;
-//  real_T h_targ_wheel_Nms[4];
-//  real_T feedback_gain;
-//  uint8_T id_facet[12];
-//  uint8_T id_facet_complement[12];
-//  real_T w_facet[18];
-//  real_T g_facet[6];
-//  real_T inrm2[6];
-//} RWA;
-//
-//typedef struct {
-//  real_T rwa_cmd_rpm[4];
-//  real_T mtq_cmd_Am2[5];
-//  real_T gnc_telemetry[6];
-//} fsw_out;
+extern actuator_meas actu_var;
+extern fsw_out fsw_var;
 
 bool rwa_healthcheck()
 {
@@ -77,13 +52,15 @@ bool mtq_healthcheck()
 	return true;
 }
 
-double readActMeas()
+void readActMeas()
 {
 	PRINTF("Read RWA and MTQ measurements\r\n");
-	return 0.0;
+	actu_var.mtq_power = 100;
+	actu_var.rwa_rpm[0] = 500;
 }
 
 void gnc_sendCommand() //we will have something like rwa_writeDeg() to use
 {
 	PRINTF("Sending command to GNC\r\n");
+	fsw_var.rwa_cmd_rpm[0] = actu_var.rwa_rpm[0];
 }
