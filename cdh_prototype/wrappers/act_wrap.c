@@ -55,6 +55,7 @@ bool mtq_healthcheck()
 void readActMeas()
 {
 	PRINTF("Read RWA and MTQ measurements\r\n");
+
 	actu_var.mtq_power = 100;
 	actu_var.rwa_rpm[0] = 500;
 }

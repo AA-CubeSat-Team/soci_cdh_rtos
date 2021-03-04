@@ -39,10 +39,12 @@
  ******************************************************************************/
 
 /* Task priorities. */
-#define idle_task_PRIORITY 0
-#define imag_task_PRIORITY 1
-#define com_task_PRIORITY 2
-#define gnc_task_PRIORITY 3
+#define idle_task_PRIORITY	 			0
+#define imag_task_PRIORITY 				1
+#define com_task_PRIORITY				2
+#define gnc_task_PRIORITY 				3
+#define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
+
 
 
 /*******************************************************************************
@@ -97,7 +99,7 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY+1, &TaskHandler_idle) != //initialize priority to the highest +1
+    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");

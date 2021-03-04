@@ -122,7 +122,7 @@ void idle_phase1() {
 }
 
 /* get the battery voltage and decides the appropriate pdm */
-void idle_phase2() {
+void idle_phase2(int * mode) {
 	/* Battery Voltage Check */
 	PRINTF("idle: Get Voltage from EPS\r\n");
 	// TODO: Create a task to get the voltage from EPS system through I2C Communication
@@ -130,25 +130,25 @@ void idle_phase2() {
 	PRINTF("idle: PDM Power up modules based on voltage\r\n");
 	if (voltage <= 7.4 ) // CRITICALLY LOW POWER
 	{
-		mode = CRIT_LOW_POWER;
+		*mode = CRIT_LOW_POWER;
 		PRINTF("enters critically low power mode\r\n");
 		//MCU_LowPowerMode();
 //		i2c_eps_switchOnOffPdms(0); //nothing should be on
 	}
 	else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
 	{
-		mode = LOW_POWER;
+		*mode = LOW_POWER;
 		//MCU_LowPowerMode();
 //		i2c_eps_switchOnOffPdms(PDM_COM | PDM_SEN); //not mentioned PDMs are automatically set 0 in the bits
 
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{ // NOMINAL POWER
-		mode = NOMINAL_POWER;
+		*mode = NOMINAL_POWER;
 		//MCU_OverdriveMode();
 //		i2c_eps_switchOnOffPdms(PDM_RWA | PDM_MTQ | PDM_IMG | PDM_COM | PDM_SEN);
 	}
-	UpdateFlags(mode); //uses g_operatingMode and mode
+	UpdateFlags(*mode); //uses g_operatingMode and mode
 }
 
 /* Health checks subsystems */
@@ -176,19 +176,20 @@ void idle_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	int mode = CRIT_LOW_POWER;
-	UpdateFlags(mode); //initialize mode to be CRIT_LOW_POWER
+	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 	vTaskSuspendAll();
 	idle_phase1(); //Commission Phase I Checks
-	idle_phase2(); //pdm decider
-	idle_phase3(); //health checks subsystem
+	idle_phase2(&mode); //pdm decider
+	//idle_phase3(); //health checks subsystem - doesnt do before initializing
 	resetPriority(); //resetting priority of idle task to 0
 	xTaskResumeAll();
+	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
 	for (;;) {
-		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 		idle_phase1(); //Commission Phase I Checks
-		idle_phase2(); //pdm decider
-		idle_phase3(); //health checks subsystem
+		idle_phase2(&mode); //pdm decider
+		idle_phase3(); //health checks subsystem TODO: is this done once at least before we run the tasks after init?
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }
