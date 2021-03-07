@@ -18,6 +18,7 @@ Sun Sensor:
 93	GPIO_AD_B0_15	UART3_RX	Sun Sensor
 
  */
+#include <gyro_wrapper/gyro_wrap.h>
 #include "dummy_type.h"
 #include <sen_wrap.h>
 #include "fsl_lpuart_freertos.h"
@@ -29,6 +30,8 @@ Sun Sensor:
 #include "peripherals.h"
 
 extern sensor_bus sens_var;
+extern gyro_t * Gyro;
+
 
 bool sens_healthcheck(){
 	PRINTF("checking sensors health\r\n");
@@ -53,5 +56,7 @@ void sens_readPhd(){
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
 	sens_var.gyro_body_radps[0] = 333;
-	//loop() in gyro.ino by Alex
+	readTempData(Gyro);
+	readGyroData(Gyro);
+
 }
