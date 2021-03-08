@@ -5,8 +5,10 @@ COM:
 
 105	GPIO_AD_B0_06	UART1_TX	COM Board
 101	GPIO_AD_B0_07	UART1_RX	COM Board
+83	GPIO_AD_B1_07	ANT_BURN_WIRE1	Antenna Burn Wire 1
+78	GPIO_AD_B1_12	ANT_BURN_WIRE2	Antenna Burn Wire 2
  */
-
+#include "fsl_gpio.h"
 #include "com_wrap.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpuart_freertos.h"
@@ -30,6 +32,16 @@ void com_radio_init()
 	//set RF power to 0.5W
 	//Choose channel (center frequency) within our licensed band
 	PRINTF("initializing COM radio\r\n");
+}
+
+void com_init()
+{
+	com_radio_init();
+	GPIO_PinInit (GPIO, uint32_t port, uint32_t pin, const gpio_pin_config_t *config)
+}
+void com_set_burn_wire()
+{
+
 }
 
 bool com_healthcheck()
