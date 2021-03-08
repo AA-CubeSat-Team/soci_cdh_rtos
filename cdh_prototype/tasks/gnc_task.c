@@ -28,17 +28,17 @@ fsw_out fsw_var;
 
 extern bool g_sunSensActive, g_magSensActive, g_phdSensActive, g_mtqSensActive, g_rwaSensActive;
 
-// gyro data
-lpi2c_rtos_handle_t *gyroHandle;
-lpi2c_master_transfer_t *transfer;
-gyro_t * Gyro;
+//// gyro data
+//lpi2c_rtos_handle_t *gyroHandle;
+//lpi2c_master_transfer_t *transfer;
+//gyro_t * Gyro;
 
 void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
-	startGyro(Gyro, gyroHandle, transfer);
+//	startGyro(Gyro, gyroHandle, transfer);
 //	 FSW_Lib_initialize(); //GNC board initialization
 
 
@@ -70,7 +70,7 @@ void gnc_task(void *pvParameters)
 		sens_readSun();
 		sens_readMag();
 		sens_readPhd();
-		sens_readGyr();
+//		sens_readGyr();
 		readActMeas();
 
 		/* call GNC rt_OneStep() */

@@ -33,6 +33,8 @@ void com_task(void *pvParameters)
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("\ninitialize comm.\r\n");
 	com_init();
+	com_set_burn_wire1();
+	com_set_burn_wire2();
 	int count = 0;
 	for (;;) {
 		TickType_t xLastWakeTime = xTaskGetTickCount();
