@@ -37,12 +37,23 @@ void com_radio_init()
 void com_init()
 {
 	com_radio_init();
-	GPIO_PinInit (GPIO, uint32_t port, uint32_t pin, const gpio_pin_config_t *config)
+	gpio_pin_config_t gpioConfig = {
+			kGPIO_DigitalOutput, 0, kGPIO_NoIntmode
+	};
+	GPIO_PinInit(GPIO1, 83, &gpioConfig);
+	GPIO_PinInit(GPIO1, 78, &gpioConfig);
 }
-void com_set_burn_wire()
-{
 
+void com_set_burn_wire1()
+{
+	GPIO_PinWrite(GPIO1, 83, 1);
 }
+
+void com_set_burn_wire2()
+{
+	GPIO_PinWrite(GPIO1, 78, 1);
+}
+
 
 bool com_healthcheck()
 {

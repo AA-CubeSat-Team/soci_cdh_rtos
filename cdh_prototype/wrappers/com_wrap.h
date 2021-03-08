@@ -10,6 +10,9 @@ COM:
 #include <stdbool.h>
 
 void com_radio_init();
+void com_init();
+void com_set_burn_wire1();
+void com_set_burn_wire2();
 bool com_healthcheck();
 void com_getCommands();
 void com_sendPayloads();
