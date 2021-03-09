@@ -40,18 +40,18 @@ void com_init()
 	gpio_pin_config_t gpioConfig = {
 			kGPIO_DigitalOutput, 0, kGPIO_NoIntmode
 	};
-	GPIO_PinInit(GPIO1, 12, &gpioConfig); //GPIO_AD_B1_12
-	GPIO_PinInit(GPIO1, 3, &gpioConfig);
+	GPIO_PinInit(GPIO1, 23, &gpioConfig); //GPIO_AD_B1_07
+	GPIO_PinInit(GPIO1, 28, &gpioConfig); //GPIO_AD_B1_12
 }
 
 void com_set_burn_wire1()
 {
-	GPIO_PinWrite(GPIO1, 12, 0);
+	GPIO_PinWrite(GPIO1, 23, 1); //GPIO_AD_B1_07, J19-1
 }
 
 void com_set_burn_wire2()
 {
-	GPIO_PinWrite(GPIO1, 3, 0);
+	GPIO_PinWrite(GPIO1, 28, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
 }
 
 
