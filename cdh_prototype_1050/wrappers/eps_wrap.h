@@ -33,6 +33,7 @@ void i2c_eps_resetPdm();
 
 void i2c_eps_switchOnOffPdms(uint8_t newPdmState);
 
+void i2c_eps_getTelemetryGroup(uint16_t families);
 
 void i2c_eps_setHousekeepingPeriod(uint8_t period);
 
