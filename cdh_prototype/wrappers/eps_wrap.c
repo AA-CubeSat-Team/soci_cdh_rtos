@@ -93,58 +93,24 @@ bool eps_healthcheck() {
  */
 
 uint8_t I2C_EPS_REG_ADDR = 1;
-size_t datasize = 1U;
 
-//int main(void)
-//{
-//    uint32_t i = 0;
-//
-//    /* Init board hardware. */
-//    BOARD_ConfigMPU();
-//    BOARD_InitPins();
-//    BOARD_BootClockRUN();
-//    BOARD_InitDebugConsole();
-//
-//    /*Clock setting for LPI2C*/
-//    CLOCK_SetMux(kCLOCK_Lpi2cMux, LPI2C_CLOCK_SOURCE_SELECT);
-//    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, LPI2C_CLOCK_SOURCE_DIVIDER);
-//
-//
-//    //EPS telemetry
-//    char eps_powerModuleStatus[1000];
-//    char eps_batteryModuleStatus[1000];
-//    char eps_FDIRflag[1000];
-//    char eps_idRegister[1000];
-//
-//    eps_powerModuleStatus = i2c_eps_powerModuleStatus();
-//    eps_batteryModuleStatus = i2c_eps_batteryModuleStatus();
-//    eps_FDIRflag = i2c_eps_FDIRflag();
-//    eps_idRegister = i2c_eps_idRegister();
-//    //enter telemetry here;
-//
-//    PRINTF("%s \n", eps_powerModuleStatus);
-//    PRINTF("%s \n", eps_batteryModuleStatus);
-//    PRINTF("%s \n", eps_FDIRflag);
-//    PRINTF("%s \n", eps_idRegister);
-//
-//    while (1)
-//    {
-//    }
-//}
-//
-static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t data_size, uint32_t * i2c_recv_buffer, time_t d) {
+
+static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint8_t * i2c_recv_buffer, size_t rx_size, time_t d) {
 
 	// send gmb0, gmb1, gmb2, gmb3 in order
 	size_t n;
-	// TODO: send the delay as well
-	LPI2C1_send_receive(EPS_SLAVE_ADDR, i2c_send_buffer, data_size, &adc_count, &n); //n necessary?
+	// TODO: send the delay as well?
+
+	I2C_send(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, i2c_send_buffer, tx_size);
 
 	if (d != NO_RETURN) {
 		//delay(d);
+		I2C_request(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, i2c_recv_buffer, rx_size);
 	}
 
+
 	adc_count = 0;
-	//LPI2C1_receive(...)
+
 //
 //
 //	//OBC: getStatus() in idle_task -> helper -> FreeRTOS_send gmb
@@ -173,6 +139,7 @@ static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t data_size, ui
 
 }
 
+
 // added 11/24/20
 //__________________________________________________________________________________________________________________
 
@@ -193,8 +160,15 @@ uint32_t i2c_eps_powerModuleStatus()
 	// delay is unknown?
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+	uint8_t recv_buffer[4];
+	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
 
+	adc_count = 0;
+	for(int i=0; i<4; i++)
+	{
+		adc_count <<= 8;
+		adc_count |= recv_buffer[i];
+	}
 
 	if (adc_count & (1 << 0))
 	{
@@ -246,7 +220,15 @@ uint32_t i2c_eps_batteryModuleStatus()
 	// delay is unknown?
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+	uint8_t recv_buffer[4];
+	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+
+	adc_count = 0;
+	for(int i=0; i<4; i++)
+	{
+		adc_count <<= 8;
+		adc_count |= recv_buffer[i];
+	}
 
 	if (adc_count & (1 << 0))
 	{
@@ -290,7 +272,15 @@ void i2c_eps_FDIRflag()
 	// delay is unknown?
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+	uint8_t recv_buffer[4];
+	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+
+	adc_count = 0;
+	for(int i=0; i<4; i++) //converts byte array into 32 bit adc_count
+	{
+		adc_count <<= 8;
+		adc_count |= recv_buffer[i];
+	}
 
 	if (adc_count & (1 << 0))
 	{
@@ -350,7 +340,15 @@ void i2c_eps_idRegister() ///make bool?
 	// delay is unknown?
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
+	uint8_t recv_buffer[4];
+	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+
+	adc_count = 0;
+	for(int i=0; i<4; i++)
+	{
+		adc_count <<= 8;
+		adc_count |= recv_buffer[i];
+	}
 
 	bool verified_com;
 	verified_com = adc_count && VERIFIED_COM_MASK; // TODO: gorkem - are we checking only the first bit here? then the mask is unnecessary
@@ -372,8 +370,9 @@ void i2c_eps_watchdogPeriod(uint8_t period)
 	buffer[1] = I2C_EPS_CMD_ID;
 	buffer[2] = 0x0000 | period;
 	//buffer[3] = period;
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
+
 	return;
 }
 
@@ -390,9 +389,9 @@ void i2c_eps_setPdmsInitialState(uint8_t pdm_state)
 	buffer[1] = I2C_EPS_CMD_SET_PDMS_INTIAL_STATE;
 	buffer[2] = 0x00;
 	buffer[3] = intial_pdms;
-	//buffer[3] = period;
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
+
+	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 	return;
 }
 
@@ -404,8 +403,8 @@ void i2c_eps_resetPdm()
 	buffer[2] = 0x00;
 	buffer[3] = 0xFF; //all ON?
 
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 	return;
 }
 
@@ -421,8 +420,8 @@ void i2c_eps_switchOnOffPdms(uint8_t newPdmState)
 	buffer[2] = 0x00;
 	buffer[3] = newPdmState;
 
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 
 	// TODO: do we want an acknowledgement?
 	return;
@@ -437,8 +436,8 @@ void i2c_eps_setHousekeepingPeriod(uint8_t period)
 	buffer[2] = 0x00;
 	buffer[3] = period;
 
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 
 	return;
 }
@@ -455,8 +454,8 @@ void i2c_eps_setSafetyHazardEnvironment()
 	buffer[2] = 0x00;
 	buffer[3] = 0xFF;
 
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 
 	return;
 }
@@ -474,25 +473,16 @@ void i2c_eps_setSafetyHazardEnvironment()
 // twos compliment times 0.5 which is needed to convert the temperatures below
 static int twosComp(uint16_t x)
 {
-	// turn into 2s compliment
-	for (int i = 15; i >= 0; i--)
-	{
-		if (x[i] == '1')
-		{
-			x[i] = '0';
-		}
-		else
-		{
-			x[i] = '1';
-		}
-	}
-	x = x + 1;
-
-	return x;
+	return (~x)+1; //TODO: Check this!
 }
 
-
-
+// telemetry helper function declarations
+char telemetry_bcrs(uint32_t * data);
+char telemetry_solarPanelSensors(uint32_t * data);
+char telemetry_powerBuses(uint32_t * data);
+char telemetry_switchablePowerBuses(uint32_t * data);
+char telemetry_batteryModule(uint32_t * data);
+char telemetry_systemData(uint32_t * data);
 
 // VERSION 2 OF TELEMETRY - SAVES RUNTIME AND SPACE____________________________________
 // I feel like for convenience we can have user type the family they want and it will be
@@ -515,9 +505,9 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	buffer[2] = families;
 
 
-	uint32_t returnArray[6]; //holds array of 24 bytes
+	uint8_t returnArray[24]; //holds array of 24 bytes
 
-	i2c_read_write_helper(buffer, 4, returnArray, 5000);
+	i2c_read_write_helper(buffer, 2, returnArray, 24, 5000); //TODO: is reading 24 bytes at once possible? helper might need to handle this
 
 	/* get the ADC count returned using bitwise operations
 	 * adc_count will be a 32-bit int of the form:
@@ -537,31 +527,34 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	// for calculations on which family
 	if (families == 0x00)
 	{
-		telemetry_bcrs(returnArray);
+		//telemetry_bcrs(returnArray);
 	}
 	else if (families == 0x01)
 	{
-		telemetry_solarPanelSensors(returnArray);
+		//telemetry_solarPanelSensors(returnArray);
 	}
 	else if (families == 0x02)
 	{
-		telemetry_powerBuses(returnArray);
+		//telemetry_powerBuses(returnArray);
 	}
 	else if (families == 0x03)
 	{
-		telemetry_switchablePowerBuses(returnArray);
+		//telemetry_switchablePowerBuses(returnArray);
 	}
 	else if (families == 0x04)
 	{
-		telemetry_batteryModule(returnArray);
+		//telemetry_batteryModule(returnArray);
 	}
 	else if (families == 0x05)
 	{
-		telemetry_systemData(returnArray);
+		//telemetry_systemData(returnArray);
 	}
 
 	return;
 }
+
+
+// TELEMETRY HELPER FUNCTIONS
 
 char telemetry_bcrs(uint32_t * data)
 {
@@ -642,17 +635,17 @@ char telemetry_powerBuses(uint32_t * data)
 char telemetry_switchablePowerBuses(uint32_t * data)
 {
 	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
 	int tm3 = (data[1] & BYTE16CAST) * 0.0030945;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
 	int tm5 = (data[2] & BYTE16CAST) * 0.0030945;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
 	int tm7 = (data[3] & BYTE16CAST) * 0.0030945;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
 	int tm9 = (data[4] & BYTE16CAST) * 0.0030945;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
 	int tm11 = (data[5] & BYTE16CAST) * 0.0030945;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
 
 	PRINTF("SW1_V = %d V \n", tm1);
 	PRINTF("SW1_C = %d A \n", tm2);
@@ -733,9 +726,8 @@ void i2c_eps_fixedPowerBusReset(uint8_t busReset)
 	buffer[1] = I2C_EPS_CMD_FIXED_POWER_BUS_RESET;
 	buffer[2] = 0x00 | busReset;
 
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
-
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 	return;
 }
 
@@ -746,8 +738,7 @@ void i2c_eps_manualReset()
 	buffer[1] = I2C_EPS_CMD_MANUAL_RESET;
 	buffer[2] = 0xFF;
 
-	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
-	(void)adc_count; //unused
-
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
+	//(void)adc_count; //unused
 	return;
 }

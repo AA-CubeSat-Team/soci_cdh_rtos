@@ -185,7 +185,8 @@ static void LPSPI1_init(void) {
 	}
 }
 
-void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer) {
+void SPI_send(lpspi_rtos_handle_t * handle, uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer) {
+
 	lpspi_transfer_t masterXfer;
 	status_t status;
 
@@ -195,7 +196,7 @@ void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer) {
 	masterXfer.dataSize    = TRANSFER_SIZE; //do we need this as a parameter?
 	masterXfer.configFlags = LPSPI_MASTER_PCS_FOR_TRANSFER | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
 
-	status = LPSPI_RTOS_Transfer(&spi_m_rtos_handle, &masterXfer);
+	status = LPSPI_RTOS_Transfer(handle, &masterXfer);
 	if (status == kStatus_Success)
 	{
 		PRINTF("LPSPI master transfer completed successfully.\r\n");
@@ -241,42 +242,12 @@ static void LPI2C1_init(void) {
 	 */
 	LPI2C_MasterGetDefaultConfig(&i2c1_master_config); //defined in fsl_lpi2c.c
 	i2c1_master_config.baudRate_Hz = I2C_BAUDRATE;
-	if(kStatus_Success == LPI2C_RTOS_Init(&i2c1_m_rtos_handle, (LPI2C_Type *)LPI2C1_BASE, &i2c1_master_config, LPI2C_CLOCK_FREQUENCY))
+	if(kStatus_Success != LPI2C_RTOS_Init(&i2c1_m_rtos_handle, (LPI2C_Type *)LPI2C1_BASE, &i2c1_master_config, LPI2C_CLOCK_FREQUENCY))
     {
 		PRINTF("I2C1 Master initialization failed! \r\n");
     }
+	//return status?
 }
-
-
-void LPI2C1_send_receive(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t sendDataSize, uint32_t * masterRecvBuffer, size_t * recvDataSize) { //need to pass length as well?
-	// might want to change uint32_t * masterRecvBuffer to uint8_t * masterRecvBuffer
-
-	lpi2c_master_transfer_t masterXfer;
-	status_t status;
-
-	memset(&masterXfer, 0, sizeof(masterXfer));
-	masterXfer.slaveAddress   = slaveAddress;
-	masterXfer.direction      = kLPI2C_Write;
-	masterXfer.subaddress     = 0;
-	masterXfer.subaddressSize = 0;
-	masterXfer.data           = masterSendBuffer;
-	masterXfer.dataSize       = I2C_DATA_LENGTH;
-	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
-
-	status = LPI2C_RTOS_Transfer(&i2c1_m_rtos_handle, &masterXfer);
-	if (status == kStatus_Success)
-	{
-//#if (EXAMPLE_CONNECT_I2C == BOARD_TO_BOARD)
-//		xSemaphoreGive(lpi2c_sem);
-//#endif
-		PRINTF("I2C master transfer completed successfully.\r\n");
-	}
-	else
-	{
-		PRINTF("I2C master transfer completed with error!\r\n");
-	}
-}
-
 
 /*
  *
@@ -304,38 +275,10 @@ static void LPI2C2_init(void) {
 	 */
 	LPI2C_MasterGetDefaultConfig(&i2c2_master_config); //defined in fsl_lpi2c.c
 	i2c2_master_config.baudRate_Hz = I2C_BAUDRATE;
-	if(kStatus_Success == LPI2C_RTOS_Init(&i2c2_m_rtos_handle, (LPI2C_Type *)LPI2C2_BASE, &i2c2_master_config, LPI2C_CLOCK_FREQUENCY))
+	if(kStatus_Success != LPI2C_RTOS_Init(&i2c2_m_rtos_handle, (LPI2C_Type *)LPI2C2_BASE, &i2c2_master_config, LPI2C_CLOCK_FREQUENCY))
     {
 		PRINTF("I2C1 Master initialization failed! \r\n");
     }
-}
-
-
-void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize) { //need to pass length as well?
-	lpi2c_master_transfer_t masterXfer;
-	status_t status;
-
-	memset(&masterXfer, 0, sizeof(masterXfer));
-	masterXfer.slaveAddress   = slaveAddress;
-	masterXfer.direction      = kLPI2C_Write;
-	masterXfer.subaddress     = 0;
-	masterXfer.subaddressSize = 0;
-	masterXfer.data           = masterSendBuffer;
-	masterXfer.dataSize       = I2C_DATA_LENGTH; // use dataSize?
-	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
-
-	status = LPI2C_RTOS_Transfer(&i2c2_m_rtos_handle, &masterXfer);
-	if (status == kStatus_Success)
-	{
-//#if (EXAMPLE_CONNECT_I2C == BOARD_TO_BOARD)
-//		xSemaphoreGive(lpi2c_sem);
-//#endif
-		PRINTF("I2C master transfer completed successfully.\r\n");
-	}
-	else
-	{
-		PRINTF("I2C master transfer completed with error!\r\n");
-	}
 }
 
 
@@ -365,16 +308,30 @@ static void LPI2C3_init(void) {
 	 */
 	LPI2C_MasterGetDefaultConfig(&i2c3_master_config); //defined in fsl_lpi2c.c
 	i2c3_master_config.baudRate_Hz = I2C_BAUDRATE;
-	if(kStatus_Success == LPI2C_RTOS_Init(&i2c1_m_rtos_handle, (LPI2C_Type *)LPI2C3_BASE, &i2c3_master_config, LPI2C_CLOCK_FREQUENCY))
+	if(kStatus_Success != LPI2C_RTOS_Init(&i2c1_m_rtos_handle, (LPI2C_Type *)LPI2C3_BASE, &i2c3_master_config, LPI2C_CLOCK_FREQUENCY))
     {
 		PRINTF("I2C1 Master initialization failed! \r\n");
     }
 }
 
 
-void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize) { //need to pass length as well?
+void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size) {
 	lpi2c_master_transfer_t masterXfer;
 	status_t status;
+
+#if DEBUG_MODE
+	PRINTF("I2C - master will send data :");
+	int i=0;
+	for (i = 0; i < tx_size; i++)
+	{
+		if (i % 8 == 0)
+		{
+			PRINTF("\r\n");
+		}
+		PRINTF("0x%2x  ", tx_buffer[i]);
+	}
+	PRINTF("\r\n\r\n");
+#endif
 
 	memset(&masterXfer, 0, sizeof(masterXfer));
 	masterXfer.slaveAddress   = slaveAddress;
@@ -382,20 +339,53 @@ void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSiz
 	masterXfer.subaddress     = 0;
 	masterXfer.subaddressSize = 0;
 	masterXfer.data           = masterSendBuffer;
-	masterXfer.dataSize       = I2C_DATA_LENGTH;
+	masterXfer.dataSize       = tx_size; //generally I2C_DATA_LENGTH used
 	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
 
-	status = LPI2C_RTOS_Transfer(&i2c3_m_rtos_handle, &masterXfer);
+	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
 	if (status == kStatus_Success)
 	{
-//#if (EXAMPLE_CONNECT_I2C == BOARD_TO_BOARD)
-//		xSemaphoreGive(lpi2c_sem);
-//#endif
 		PRINTF("I2C master transfer completed successfully.\r\n");
 	}
 	else
 	{
 		PRINTF("I2C master transfer completed with error!\r\n");
+	}
+}
+
+
+void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size) {
+	lpi2c_master_transfer_t masterXfer;
+	status_t status;
+
+	PRINTF("Master will request data\r\n");
+
+	memset(&masterXfer, 0, sizeof(masterXfer));
+	masterXfer.slaveAddress   = slaveAddress;
+	masterXfer.direction      = kLPI2C_Read;
+	masterXfer.subaddress     = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data           = rx_buffer;
+	masterXfer.dataSize       = rx_size;
+	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
+
+	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
+	if (status == kStatus_Success)
+	{
+		PRINTF("Received data :\r\n");
+		int i;
+		for (i = 0; i < rx_size; i++)
+		{
+			if (i % 8 == 0)
+			{
+				PRINTF("\r\n");
+			}
+			PRINTF("0x%2x  ", rx_buffer[i]);
+		}
+		PRINTF("\r\n\r\n");
+	}
+	else {
+		PRINTF("Failed receive!\r\n");
 	}
 }
 /***********************************************************************************************************************
