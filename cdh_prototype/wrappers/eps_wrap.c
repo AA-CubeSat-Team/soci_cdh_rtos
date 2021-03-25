@@ -152,8 +152,7 @@ double i2c_eps_getBatteryLevel()
 uint32_t i2c_eps_powerModuleStatus()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_POWER_MODULE_STATUS;
+	buffer[0] = I2C_EPS_CMD_POWER_MODULE_STATUS;
 
 	// send and read
 	// returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
@@ -161,7 +160,7 @@ uint32_t i2c_eps_powerModuleStatus()
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+	i2c_read_write_helper(buffer, 1, recv_buffer, 4, 5000);
 
 	adc_count = 0;
 	for(int i=0; i<4; i++)
@@ -212,8 +211,7 @@ uint32_t i2c_eps_powerModuleStatus()
 uint32_t i2c_eps_batteryModuleStatus()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_BATTERY_MODULE_STATUS;
+	buffer[0] = I2C_EPS_CMD_BATTERY_MODULE_STATUS;
 
 	// send and read
 	//  returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
@@ -221,7 +219,7 @@ uint32_t i2c_eps_batteryModuleStatus()
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+	i2c_read_write_helper(buffer, 1, recv_buffer, 4, 5000);
 
 	adc_count = 0;
 	for(int i=0; i<4; i++)
@@ -264,8 +262,7 @@ uint32_t i2c_eps_batteryModuleStatus()
 void i2c_eps_FDIRflag()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_FDIR;
+	buffer[0] = I2C_EPS_CMD_FDIR;
 
 	// send and read
 	// returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
@@ -273,7 +270,7 @@ void i2c_eps_FDIRflag()
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+	i2c_read_write_helper(buffer, 1, recv_buffer, 4, 5000);
 
 	adc_count = 0;
 	for(int i=0; i<4; i++) //converts byte array into 32 bit adc_count
@@ -332,26 +329,25 @@ void i2c_eps_FDIRflag()
 void i2c_eps_idRegister() ///make bool?
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_ID;
+	buffer[0] = I2C_EPS_CMD_ID;
 
 	// send and read
 	// returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
 	// delay is unknown?
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 2, recv_buffer, 4, 5000);
+	uint8_t recv_buffer;
+	i2c_read_write_helper(buffer, 1, &recv_buffer, 1, 5000);
 
-	adc_count = 0;
-	for(int i=0; i<4; i++)
-	{
-		adc_count <<= 8;
-		adc_count |= recv_buffer[i];
-	}
+//	adc_count = 0;
+//	for(int i=0; i<4; i++)
+//	{
+//		adc_count <<= 8;
+//		adc_count |= recv_buffer[i];
+//	}
 
 	bool verified_com;
-	verified_com = adc_count && VERIFIED_COM_MASK; // TODO: gorkem - are we checking only the first bit here? then the mask is unnecessary
+	verified_com = recv_buffer && VERIFIED_COM_MASK;
 	if (verified_com) {
 		PRINTF("Communication is verified with module \n");
 	}
@@ -366,11 +362,10 @@ void i2c_eps_idRegister() ///make bool?
 void i2c_eps_watchdogPeriod(uint8_t period)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_ID;
-	buffer[2] = 0x0000 | period;
+	buffer[0] = I2C_EPS_CMD_ID;
+	buffer[1] = 0x0000 | period;
 	//buffer[3] = period;
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 
 	return;
@@ -382,15 +377,12 @@ void i2c_eps_watchdogPeriod(uint8_t period)
 // bit 0 effects PDM1 state, bit 1 effects PDM2 state, and so on...
 void i2c_eps_setPdmsInitialState(uint8_t pdm_state)
 {
-	uint32_t intial_pdms = 0x00 | pdm_state; // bit 6 and 7 are reserved
-											// should become 0x00(6 bit pdm)
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_SET_PDMS_INTIAL_STATE;
-	buffer[2] = 0x00;
-	buffer[3] = intial_pdms;
+	buffer[0] = I2C_EPS_CMD_SET_PDMS_INTIAL_STATE;
+	buffer[1] = 0x00;
+	buffer[2] = 0x00 | pdm_state; // initial pdms - bit 6 and 7 are reserved
 
-	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 	return;
 }
@@ -398,12 +390,11 @@ void i2c_eps_setPdmsInitialState(uint8_t pdm_state)
 void i2c_eps_resetPdm()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_RESET_PDMS;
-	buffer[2] = 0x00;
-	buffer[3] = 0xFF; //all ON?
+	buffer[0] = I2C_EPS_CMD_RESET_PDMS;
+	buffer[1] = 0x00;
+	buffer[2] = 0xFF; //all ON?
 
-	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 	return;
 }
@@ -415,12 +406,11 @@ void i2c_eps_resetPdm()
 void i2c_eps_switchOnOffPdms(uint8_t newPdmState)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_SWITCH_ON_OFF_PDMS;
-	buffer[2] = 0x00;
-	buffer[3] = newPdmState;
+	buffer[0] = I2C_EPS_CMD_SWITCH_ON_OFF_PDMS;
+	buffer[1] = 0x00;
+	buffer[2] = newPdmState;
 
-	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 
 	// TODO: do we want an acknowledgement?
@@ -431,12 +421,11 @@ void i2c_eps_switchOnOffPdms(uint8_t newPdmState)
 void i2c_eps_setHousekeepingPeriod(uint8_t period)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD;
-	buffer[2] = 0x00;
-	buffer[3] = period;
+	buffer[0] = I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD;
+	buffer[1] = 0x00;
+	buffer[2] = period;
 
-	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 
 	return;
@@ -449,12 +438,11 @@ void i2c_eps_setHousekeepingPeriod(uint8_t period)
 void i2c_eps_setSafetyHazardEnvironment()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT;
-	buffer[2] = 0x00;
-	buffer[3] = 0xFF;
+	buffer[0] = I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT;
+	buffer[1] = 0x00;
+	buffer[2] = 0xFF;
 
-	i2c_read_write_helper(buffer, 4, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 
 	return;
@@ -490,8 +478,7 @@ char telemetry_systemData(uint32_t * data);
 void i2c_eps_getTelemetryGroup(uint16_t families)
 {
 	/* Set up i2c master to send data to slave */
-	buffer[0] = EPS_SLAVE_ADDR; // i2c slave address = EPS motherboard
-	buffer[1] = I2C_EPS_CMD_GET_TELEMETRY_GROUP; // i2c command = get EPS telemetry
+	buffer[0] = I2C_EPS_CMD_GET_TELEMETRY_GROUP; // i2c command = get EPS telemetry
 
 	// possible families
 	// 0x00 BCRs
@@ -502,12 +489,12 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	// 0x05 System Data
 
 	// add user input here
-	buffer[2] = families;
+	buffer[1] = families; //TODO: this is 16 bits being written into 8 bits!
 
 
-	uint8_t returnArray[24]; //holds array of 24 bytes
+	uint8_t recv_buffer[24]; //holds array of 24 bytes
 
-	i2c_read_write_helper(buffer, 2, returnArray, 24, 5000); //TODO: is reading 24 bytes at once possible? helper might need to handle this
+	i2c_read_write_helper(buffer, 2, recv_buffer, 24, 5000);
 
 	/* get the ADC count returned using bitwise operations
 	 * adc_count will be a 32-bit int of the form:
@@ -524,30 +511,32 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	 // 16 bytes		Battery Module Telemetry
 	 // 12 bytes		System Data
 
+	uint32_t * returnArray = (uint32_t *)recv_buffer; // TODO: make sure this works OR modify telemetry helper functions
+
 	// for calculations on which family
 	if (families == 0x00)
 	{
-		//telemetry_bcrs(returnArray);
+		telemetry_bcrs(returnArray);
 	}
 	else if (families == 0x01)
 	{
-		//telemetry_solarPanelSensors(returnArray);
+		telemetry_solarPanelSensors(returnArray);
 	}
 	else if (families == 0x02)
 	{
-		//telemetry_powerBuses(returnArray);
+		telemetry_powerBuses(returnArray);
 	}
 	else if (families == 0x03)
 	{
-		//telemetry_switchablePowerBuses(returnArray);
+		telemetry_switchablePowerBuses(returnArray);
 	}
 	else if (families == 0x04)
 	{
-		//telemetry_batteryModule(returnArray);
+		telemetry_batteryModule(returnArray);
 	}
 	else if (families == 0x05)
 	{
-		//telemetry_systemData(returnArray);
+		telemetry_systemData(returnArray);
 	}
 
 	return;
@@ -722,11 +711,10 @@ char telemetry_systemData(uint32_t * data)
 void i2c_eps_fixedPowerBusReset(uint8_t busReset)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_FIXED_POWER_BUS_RESET;
-	buffer[2] = 0x00 | busReset;
+	buffer[0] = I2C_EPS_CMD_FIXED_POWER_BUS_RESET;
+	buffer[1] = 0x00 | busReset;
 
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 	return;
 }
@@ -734,11 +722,10 @@ void i2c_eps_fixedPowerBusReset(uint8_t busReset)
 void i2c_eps_manualReset()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
-	buffer[1] = I2C_EPS_CMD_MANUAL_RESET;
-	buffer[2] = 0xFF;
+	buffer[0] = I2C_EPS_CMD_MANUAL_RESET;
+	buffer[1] = 0xFF;
 
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 	//(void)adc_count; //unused
 	return;
 }
