@@ -18,7 +18,18 @@ COM:
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 
-uint8_t recv_buffer[4];
+#define I2C_COM_DOOR1_STATUS 0;  //0 is door closed, 1 is door open-- do i need these 4, think i only need to know if all 4 are deployed
+#define I2C_COM_DOOR2_STATUS 0;
+#define I2C_COM_DOOR3_STATUS 0;
+#define I2C_COM_DOOR4_STATUS 0;
+#define I2C_COM_ALL_DOORS_DEPLOYED 0;
+
+#define I2C_COM_OPERATION_MODE 0; //0 is normal mode, 1 is test mode
+#define I2C_COM_DEPLOY_ALGORITHM 0; //01 is algorithm 1, 10 is algorithm 2
+
+
+uint8_t recv_buffer[rx_size];
+
 
 // commands data: what type? how big?
 // payload data: what type? how big?
@@ -102,6 +113,29 @@ void com_getCommands() //highest priority
 	PRINTF("getting commands from the ground station\r\n");
 }
 
+
+void com_deployAntenna()
+{
+
+    //command format passed in is 00 s1 s0 ant4 ant3 ant2 ant1 where s1 and s0 are which algorithm to use
+    // and ant1-4 are which door/antenna rod to be deployed
+    if (rx_buffer[2] == 1) //replace w/ actual name instead of constant
+    {
+        com_i2c_algorithmTwo();
+    } else if (rx_buffer[2] == 0 && rx_buffer[3] == 1) //if 3rd bit in command is a 1 i execute command 1
+    {
+       i2c_com_algorithmOne();
+    }
+}
+
+void com_all_doors_deployed() //this is probably not necessary
+{
+    if (I2C_COM_DOOR1_STATUS && I2C_COM_DOOR2_STATUS && I2C_COM_DOOR3_STATUS && I2C_COM_DOOR4_STATUS) {
+        I2C_COM_ALL_DOORS_DEPLOYED = 1;
+    }
+}
+
+
 void com_sendPayloads() //high priority
 {
 
@@ -120,4 +154,28 @@ void com_sendBeacons() //low priority, happens every 60 secs
 }
 
 
+//void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size)
+//void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size)
 
+
+void com_i2c_algorithmOne()
+{
+    if (!I2C_COM_ALL_DOORS_DEPLOYED) {
+            com_set_burn_wire1();
+            //wait 5 seconds
+            if (I2C_COM_ALL_DOORS_DEPLOYED == 0){
+                com_set_burn_wire2();
+                I2C_COM_ALL_DOORS_DEPLOYED = 1;
+            }
+    }
+}
+
+
+void com_i2c_algorithmTwo()
+{
+    com_set_burn_wire1();
+    com_set_burn_wire2();
+    //wait 20 seconds
+    I2C_COM_ALL_DOORS_DEPLOYED = 1;
+
+}
