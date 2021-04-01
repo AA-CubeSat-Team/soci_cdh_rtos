@@ -122,7 +122,7 @@ void com_deployAntenna()
     if (rx_buffer[2] == 1) //replace w/ actual name instead of constant
     {
         com_i2c_algorithmTwo();
-    } else if (rx_buffer[2] == 0 && rx_buffer[3] == 1) //if 3rd bit in command is a 1 i execute command 1
+    } else if (rx_buffer[2] == 0 && rx_buffer[3] == 1) //if 3rd bit in command is a 1 execute command 1
     {
        i2c_com_algorithmOne();
     }
@@ -158,7 +158,7 @@ void com_sendBeacons() //low priority, happens every 60 secs
 //void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size)
 
 
-void com_i2c_algorithmOne()
+void com_i2c_algorithmOne() //algorithm detailed in user manual
 {
     if (!I2C_COM_ALL_DOORS_DEPLOYED) {
             com_set_burn_wire1();
@@ -177,5 +177,10 @@ void com_i2c_algorithmTwo()
     com_set_burn_wire2();
     //wait 20 seconds
     I2C_COM_ALL_DOORS_DEPLOYED = 1;
+}
 
+
+bool com_i2c_checkDeploy() //returns a true if doors are deployed
+{
+    return (com_all_doors_deployed == 1);
 }
