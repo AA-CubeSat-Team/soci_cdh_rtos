@@ -30,6 +30,7 @@ extern bool g_imgActive;
 
 void com_task(void *pvParameters)
 {
+#if COM_ENABLE
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("\ninitialize comm.\r\n");
 	com_init();
@@ -71,4 +72,5 @@ void com_task(void *pvParameters)
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
 	}
+#endif
 }

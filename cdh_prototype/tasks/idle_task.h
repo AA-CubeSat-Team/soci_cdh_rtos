@@ -1,3 +1,4 @@
+#define IDLE_ENABLE	1
 
 enum PowerMode {
 	CRIT_LOW_POWER = 0,

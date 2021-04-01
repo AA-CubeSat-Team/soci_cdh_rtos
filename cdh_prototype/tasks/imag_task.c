@@ -17,6 +17,7 @@
 
 void imag_task(void *pvParameters)
 {
+#if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 
 	// suspend ourselves here
@@ -26,4 +27,5 @@ void imag_task(void *pvParameters)
 		PRINTF("\nimag work\r\n");
 		vTaskSuspend( NULL );
 	}
+#endif
 }

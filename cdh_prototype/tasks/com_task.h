@@ -1,3 +1,5 @@
+#define COM_ENABLE	0
+
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"

@@ -174,6 +174,7 @@ void idle_phase3() {
 }
 void idle_task(void *pvParameters)
 {
+#if IDLE_ENABLE
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	int mode = CRIT_LOW_POWER;
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
@@ -192,4 +193,5 @@ void idle_task(void *pvParameters)
 		idle_phase3(); //health checks subsystem TODO: is this done once at least before we run the tasks after init?
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
+#endif
 }

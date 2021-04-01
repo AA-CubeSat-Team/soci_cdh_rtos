@@ -35,6 +35,7 @@ extern bool g_sunSensActive, g_magSensActive, g_phdSensActive, g_mtqSensActive, 
 
 void gnc_task(void *pvParameters)
 {
+#if GNC_ENABLE
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
@@ -80,4 +81,5 @@ void gnc_task(void *pvParameters)
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
 	}
+#endif
 }

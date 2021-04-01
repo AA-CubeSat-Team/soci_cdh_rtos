@@ -1,3 +1,5 @@
+#define GNC_ENABLE	0
+
 //#include <wrappers/FSW_Lib_types.h>
 //#ifndef STRUCTS
 //#define STRUCTS
