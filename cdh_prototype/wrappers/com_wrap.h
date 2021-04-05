@@ -18,3 +18,6 @@ void com_getCommands();
 void com_sendPayloads();
 void com_sendImages();
 void com_sendBeacons();
+bool com_i2c_checkDeploy();
+void com_deployAntenna_algorithmOne();
+void com_deployAntenna_algorithmTwo();

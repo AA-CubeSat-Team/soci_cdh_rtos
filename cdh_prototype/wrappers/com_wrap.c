@@ -14,21 +14,24 @@ COM:
 #include "fsl_lpuart_freertos.h"
 #include "fsl_debug_console.h"
 #include <stdbool.h>
+#include <time.h>
 #include "peripherals.h"
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 
-#define I2C_COM_DOOR1_STATUS 0;  //0 is door closed, 1 is door open-- do i need these 4, think i only need to know if all 4 are deployed
-#define I2C_COM_DOOR2_STATUS 0;
-#define I2C_COM_DOOR3_STATUS 0;
-#define I2C_COM_DOOR4_STATUS 0;
-#define I2C_COM_ALL_DOORS_DEPLOYED 0;
 
 #define I2C_COM_OPERATION_MODE 0; //0 is normal mode, 1 is test mode
 #define I2C_COM_DEPLOY_ALGORITHM 0; //01 is algorithm 1, 10 is algorithm 2
+#define ANTENNA_SLAVE_ADDRESS 0x33; //0x33 is slave address but convert to 16 bit somehow 
+#define rx_size = 4; //receiving 4 bytes
+
+uint8_t rx_buffer[rx_size];
+bool i2c_com_antennaDeployed = False;
+uint8_t algorithmOne[] = {0x00, 0x00, 0x00, 0x1F};
+uint8_t algorithmTwo[] = {0x00, 0x00, 0x00, 0x2F};
 
 
-uint8_t recv_buffer[rx_size];
+void delay();
 
 
 // commands data: what type? how big?
@@ -114,32 +117,24 @@ void com_getCommands() //highest priority
 }
 
 
-void com_deployAntenna()
-{
 
-    //command format passed in is 00 s1 s0 ant4 ant3 ant2 ant1 where s1 and s0 are which algorithm to use
-    // and ant1-4 are which door/antenna rod to be deployed
-    if (rx_buffer[2] == 1) //replace w/ actual name instead of constant
-    {
-        com_i2c_algorithmTwo();
-    } else if (rx_buffer[2] == 0 && rx_buffer[3] == 1) //if 3rd bit in command is a 1 execute command 1
-    {
-       i2c_com_algorithmOne();
-    }
+//proper code below:
+
+void com_deployAntenna_algorithmOne()
+{		
+    i2c_send(handle, ANTENNA_SLAVE_ADDRESS, (uint8_t *)algorithmOne, sizeof(algorithmOne));
+    delay(15); //longest time possible to deploy is 15 seconds
 }
 
-void com_all_doors_deployed() //this is probably not necessary
+void com_deployAntenna_algorithmTwo()
 {
-    if (I2C_COM_DOOR1_STATUS && I2C_COM_DOOR2_STATUS && I2C_COM_DOOR3_STATUS && I2C_COM_DOOR4_STATUS) {
-        I2C_COM_ALL_DOORS_DEPLOYED = 1;
-    }
+	I2C_send(handle, ANTENNA_SLAVE_ADDRESS, (uint8_t *)algorithmTwo, sizeof(algorithmTwo));
+	delay(30); //longest time possible to deploy is 30 seconds
 }
 
 
 void com_sendPayloads() //high priority
 {
-
-
 	PRINTF("sending payloads\r\n");
 }
 
@@ -158,29 +153,42 @@ void com_sendBeacons() //low priority, happens every 60 secs
 //void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size)
 
 
-void com_i2c_algorithmOne() //algorithm detailed in user manual
-{
-    if (!I2C_COM_ALL_DOORS_DEPLOYED) {
-            com_set_burn_wire1();
-            //wait 5 seconds
-            if (I2C_COM_ALL_DOORS_DEPLOYED == 0){
-                com_set_burn_wire2();
-                I2C_COM_ALL_DOORS_DEPLOYED = 1;
-            }
-    }
-}
-
-
-void com_i2c_algorithmTwo()
-{
-    com_set_burn_wire1();
-    com_set_burn_wire2();
-    //wait 20 seconds
-    I2C_COM_ALL_DOORS_DEPLOYED = 1;
-}
-
-
 bool com_i2c_checkDeploy() //returns a true if doors are deployed
 {
-    return (com_all_doors_deployed == 1);
+	memset(rx_buffer, 0, sizeof(*rx_buffer));
+	I2C_request(handle, ANTENNA_SLAVE_ADDRESS, rx_buffer, sizeof(rx_buffer));
+	//Receive 4 bytes back with status of antenna
+	//First byte of rx_buffer is: 
+	//MSB LSB D4 D3 D2 D1 0 M S2 S1 
+	uint8_t rx_byteZero = rx_buffer[0];
+	//iterate through first byte to find if all rods are deployed
+	bool allDeployed = true;
+	for (int i = 0; i < 4; i++) {
+		//not 100% sure if this is the right way to parse bit by bit
+		unsigned checkBit = rx_byteZero << 1;
+		if (!(checkBit & 1)) { //check if the bit is 0
+			allDeployed = false;
+		}
+	}
+	
+    if (allDeployed) {
+    	i2c_com_antennaDeployed = true;
+        PRINTF("antenna deployed\r\n");
+    } else {
+    	i2c_com_antennaDeployed = false;
+        PRINTF("antenna not deployed\r\n");
+    }
+    return i2c_com_all_doors_deployed;
+}
+
+//function from https://www.geeksforgeeks.org/time-delay-c/
+void delay(int number_of_seconds)
+{
+    // Converting time into milli_seconds
+    int milli_seconds = 1000 * number_of_seconds;
+    // Storing start time
+    clock_t start_time = clock();
+    // looping till required time is not achieved
+    while (clock() < start_time + milli_seconds)
+        ;
 }
