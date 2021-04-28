@@ -73,14 +73,33 @@ EPS:
 uint8_t buffer[I2C_DATA_LENGTH];
 static uint32_t adc_count;
 
-bool eps_healthcheck() {
+uint32_t* eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
 	//	TickType_t xLastWakeTime = xTaskGetTickCount();
 	//	vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( 10 ));
 	//	PRINTF("Finish delay\r\n");
+	uint32_t* arrayOfFlags[4] 
+	arrayOfFlags[0] = i2c_eps_powerModuleStatus();
+	arrayOfFlags[1] = i2c_eps_batteryModuleStatus();
+	arrayOfFlags[2] = i2c_eps_getTelemetryGroup(0x01); // gets solar pannel temp
+	arrayOfFlags[3] = i2c_eps_FDIRflag();
+	return arrayOfFlags;
+}
+
+bool eps_initialization() {
+	PRINTF("Starting the initialization of eps!\r\n");
+	i2c_eps_idRegister();
+	i2c_eps_setHousekeepingPeriod(0x04);
+	i2c_eps_setSafetyHazardEnvironment();
+	i2c_eps_setPdmsInitialState(0x3F); // all pdm on  
+	i2c_eps_watchdogPeriod(0x04);
+	i2c_eps_getTelemetryGroup(0x05); // gets system data 
 	return true;
 }
 
+//power module status 
+//FDIR flags
+//what data cdh wants and return adc_count
 
 //uint8_t kLPI2C_Write = 1; // not sure where this is defined, but I think it differentiates between read/write commands
 //uint8_t kLPI2C_Read = 0; // not sure where this is defined, but I think it differentiates between read/write commands
@@ -279,7 +298,7 @@ uint32_t i2c_eps_batteryModuleStatus()
 	return adc_count;
 }
 
-void i2c_eps_FDIRflag()
+uint32_t i2c_eps_FDIRflag()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
@@ -336,7 +355,7 @@ void i2c_eps_FDIRflag()
 	{
 		PRINTF("Set if TEMP_DB1 is out of range.\n");
 	}
-	return;
+	return adc_count;
 }
 
 void i2c_eps_idRegister() ///make bool?
@@ -362,6 +381,7 @@ void i2c_eps_idRegister() ///make bool?
 	}
 	return;
 }
+
 //
 //// for watchdog, userinput period
 //// only accepts 1, 2, 4 for each period in minutes
@@ -376,7 +396,6 @@ void i2c_eps_watchdogPeriod(uint8_t period)
 	(void)adc_count; //unused
 	return;
 }
-
 
 // Set PDM initial state has input for initial state
 // pdm_state = set bit: 00******
@@ -447,13 +466,14 @@ void i2c_eps_setHousekeepingPeriod(uint8_t period)
 // is it 7 bit address -> command -> param [1] -> param [0] (each a byte)
 // IF SO -> then what for PDM initial state why is it Byte 0 and not Param[0] (typo? as nothing is returned)
 
+// need to add function to reenable
 void i2c_eps_setSafetyHazardEnvironment()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = EPS_SLAVE_ADDR; // do we need to send this as part of data on i2c bus?
 	buffer[1] = I2C_EPS_CMD_SET_SAFETY_HAZARD_ENVIRONMENT;
 	buffer[2] = 0x00;
-	buffer[3] = 0xFF;
+	buffer[3] = 0xFF; // rn only disableing
 
 	i2c_read_write_helper(buffer, 4, 0, NO_RETURN);
 	(void)adc_count; //unused
@@ -497,7 +517,7 @@ void i2c_eps_setSafetyHazardEnvironment()
 // VERSION 2 OF TELEMETRY - SAVES RUNTIME AND SPACE____________________________________
 // I feel like for convenience we can have user type the family they want and it will be
 // the input for families which can set the buffer
-void i2c_eps_getTelemetryGroup(uint16_t families)
+uint32_t* i2c_eps_getTelemetryGroup(uint16_t families)
 {
 	/* Set up i2c master to send data to slave */
 	buffer[0] = EPS_SLAVE_ADDR; // i2c slave address = EPS motherboard
@@ -535,35 +555,38 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	 // 12 bytes		System Data
 
 	// for calculations on which family
+
+	uint32_t* ptr;
+
 	if (families == 0x00)
 	{
-		telemetry_bcrs(returnArray);
+		ptr = telemetry_bcrs(returnArray);
 	}
 	else if (families == 0x01)
 	{
-		telemetry_solarPanelSensors(returnArray);
+		ptr = telemetry_solarPanelSensors(returnArray);
 	}
 	else if (families == 0x02)
 	{
-		telemetry_powerBuses(returnArray);
+		ptr = telemetry_powerBuses(returnArray);
 	}
 	else if (families == 0x03)
 	{
-		telemetry_switchablePowerBuses(returnArray);
+		ptr = telemetry_switchablePowerBuses(returnArray);
 	}
 	else if (families == 0x04)
 	{
-		telemetry_batteryModule(returnArray);
+		ptr = telemetry_batteryModule(returnArray);
 	}
 	else if (families == 0x05)
 	{
-		telemetry_systemData(returnArray);
+		ptr = telemetry_systemData(returnArray);
 	}
 
-	return;
+	return ptr;
 }
 
-char telemetry_bcrs(uint32_t * data)
+uint32_t* telemetry_bcrs(uint32_t * data)
 {
 	int tm1 = (data[0] & BYTE16CAST) * 0.008;
 	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 2;
@@ -591,10 +614,12 @@ char telemetry_bcrs(uint32_t * data)
 	PRINTF("BCR3W Output Voltage = %d V \n", tm11);
 	PRINTF("BCR3W Output Current = %d mA \n", tm12);
 
+	uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
+	return tmList;
 }
 
 // twos comp done here
-char telemetry_solarPanelSensors(uint32_t * data)
+uint32_t* telemetry_solarPanelSensors(uint32_t * data)
 {
 	int tm1 = (~(data[0] & BYTE16CAST) + 1) * 0.5;
 	int tm2 = (~((data[0] >> 16) & BYTE16CAST) + 1) * 0.5;
@@ -608,9 +633,11 @@ char telemetry_solarPanelSensors(uint32_t * data)
 	PRINTF("M_SP Temperature Y- = %d C \n", tm4);
 	PRINTF("M_SP Temperature Z+ = %d C \n", tm5);
 
+	uint32_t tmList[5] = {tm1, tm2, tm3, tm4, tm5};
+	return tmList;
 }
 
-char telemetry_powerBuses(uint32_t * data)
+uint32_t* telemetry_powerBuses(uint32_t * data)
 {
 	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
 	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0020676;
@@ -637,10 +664,11 @@ char telemetry_powerBuses(uint32_t * data)
 	PRINTF("Vbat Power Bus Current = %d A \n", tm10);
 	PRINTF("12V Power Bus Voltage = %d V \n", tm11);
 	PRINTF("12V Power Bus Current = %d A \n", tm12);
-
+	uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
+	return tmList;
 }
 
-char telemetry_switchablePowerBuses(uint32_t * data)
+uint32_t* telemetry_switchablePowerBuses(uint32_t * data)
 {
 	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
 	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
@@ -668,10 +696,12 @@ char telemetry_switchablePowerBuses(uint32_t * data)
 	PRINTF("SW6_V = %d V \n", tm11);
 	PRINTF("SW6_C = %d A \n", tm12);
 
+	uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
+	return tmList;
 }
 
 // twos comp done here on 3,4,5
-char telemetry_batteryModule(uint32_t * data)
+uint32_t* telemetry_batteryModule(uint32_t * data)
 {
 	int tm1 = (data[0] & BYTE16CAST) * 4.883;
 	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 4.883;
@@ -691,9 +721,11 @@ char telemetry_batteryModule(uint32_t * data)
 	PRINTF("Remaining Capacity = %d %% \n", tm7);
 	PRINTF("Accumulated Battery Current = %d mAh \n", tm8);
 
+	uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8};
+	return tmList;
 }
 
-char telemetry_systemData(uint32_t * data)
+uint32_t* telemetry_systemData(uint32_t * data)
 {
 	int tm1 = (data[0] & BYTE16CAST);
 	int tm2 = ((data[0] >> 16) & BYTE16CAST);
@@ -714,6 +746,9 @@ char telemetry_systemData(uint32_t * data)
 
 	}
 	PRINTF("Safety hazard environment = %d \n", tm6);
+
+	uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6};
+	return tmList;
 }
 
 
