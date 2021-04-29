@@ -26,7 +26,7 @@ TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_img;
 extern TaskHandle_t TaskHandler_com;
 
-static int operatingMode;
+int operatingMode;
 
 #define PDM5_MTQ  1 << (0)
 #define PDM6_RWA  1 << (1)

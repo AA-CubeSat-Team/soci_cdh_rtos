@@ -15,7 +15,7 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-//extern bool g_sunSensActive, g_magSensActive, g_phdSensActive, g_mtqSensActive, g_rwaSensActive;
+
 
 /*******************************************************************************
  * Function declarations

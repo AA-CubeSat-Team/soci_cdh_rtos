@@ -16,21 +16,25 @@
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
-////flags for checking if it's turned on or not
-//bool g_sunSensActive;
-//bool g_rwaSensActive;
-//bool g_magSensActive;
-//bool g_mtqSensActive;
-//bool g_phdSensActive;
-////flags for checking if they're healthy
-//bool g_epsHealthy;
-//bool g_obcHealthy;
-//bool g_comHealthy;
-//bool g_senHealthy;
-//bool g_gncHealthy;
-//bool g_mtqHealthy;
-//bool g_rwaHealthy;
-//bool g_imgHealthy;
+//flags for checking if it's turned on or not
+extern bool g_sunSensActive;
+extern bool g_rwaSensActive;
+extern bool g_magSensActive;
+extern bool g_mtqSensActive;
+extern bool g_phdSensActive;
+//flags for checking if they're healthy
+extern bool g_epsHealthy;
+extern bool g_obcHealthy;
+extern bool g_comHealthy;
+extern bool g_senHealthy;
+extern bool g_gncHealthy;
+extern bool g_mtqHealthy;
+extern bool g_rwaHealthy;
+extern bool g_imgHealthy;
+
+extern int operatingMode;
+extern TaskHandle_t TaskHandler_idle;
+
 
 
 enum PowerMode {

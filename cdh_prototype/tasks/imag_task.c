@@ -2,9 +2,6 @@
 #include "imag_task.h"
 
 
-/*******************************************************************************
- * Variable Declarations
- ******************************************************************************/
 TaskHandle_t TaskHandler_img;
 
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task

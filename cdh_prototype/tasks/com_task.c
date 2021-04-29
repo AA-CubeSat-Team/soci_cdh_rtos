@@ -4,10 +4,6 @@
 #include "clock_config.h"
 #include "timers.h"
 
-/*******************************************************************************
- * Variable Declarations
- ******************************************************************************/
-
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
 bool command_request = false;
