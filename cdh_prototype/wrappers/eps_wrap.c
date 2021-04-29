@@ -387,6 +387,7 @@ void i2c_eps_setPdmsInitialState(uint8_t pdm_state)
 	return;
 }
 
+// Does this only turn everything on or does it do the reset?
 void i2c_eps_resetPdm()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);

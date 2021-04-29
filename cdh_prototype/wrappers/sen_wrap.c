@@ -19,7 +19,6 @@ Sun Sensor:
 
  */
 #include <gyro_wrapper/gyro_wrap.h>
-#include "dummy_type.h"
 #include <sen_wrap.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
@@ -29,7 +28,6 @@ Sun Sensor:
 #include <stdbool.h>
 #include "peripherals.h"
 
-extern sensor_bus sens_var;
 extern gyro_t * Gyro;
 
 
@@ -40,22 +38,18 @@ bool sens_healthcheck(){
 //do each sensor separately
 void sens_readSun(){
 	PRINTF("reading sun sensors\r\n");
-	sens_var.sun_meas_ss_deg[0] = 180;
 }
 
 void sens_readMag(){
 	PRINTF("reading magnetometer sensors\r\n");
-	sens_var.mag_body_T[0] = 111;
 }
 
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors\r\n");
-	sens_var.photodiodes_A[0] = 222;
 }
 
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
-	sens_var.gyro_body_radps[0] = 333;
 	readTempData(Gyro);
 	readGyroData(Gyro);
 

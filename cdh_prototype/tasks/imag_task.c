@@ -1,31 +1,27 @@
-
-
-/* FreeRTOS kernel includes. */
-#include <img_wrap.h>
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "timers.h"
-
-/* Freescale includes. */
-#include "fsl_device_registers.h"
-#include "fsl_debug_console.h"
-#include "board.h"
-
+#include "img_wrap.h"
 #include "imag_task.h"
-#include "clock_config.h"
 
+
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
+TaskHandle_t TaskHandler_img;
+
+//TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
 {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 
-	// suspend ourselves here
-	vTaskSuspend( NULL );
 
 	for (;;) {
 		PRINTF("\nimag work\r\n");
+
 		vTaskSuspend( NULL );
 	}
+#else
+	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 #endif
 }

@@ -18,6 +18,7 @@ COM:
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 
+bool i2c_com_antennaDeployed;
 uint8_t recv_buffer[4];
 
 // commands data: what type? how big?

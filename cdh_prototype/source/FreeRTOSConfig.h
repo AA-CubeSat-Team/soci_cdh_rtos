@@ -41,9 +41,9 @@
  *----------------------------------------------------------*/
 
 #define configUSE_PREEMPTION                    1
-#define configUSE_TICKLESS_IDLE                 0
+#define configUSE_TICKLESS_IDLE                 1 //was 0
 #define configCPU_CLOCK_HZ                      (SystemCoreClock)
-#define configTICK_RATE_HZ                      ((TickType_t)200)
+#define configTICK_RATE_HZ                      ((TickType_t)200) //maybe change to 1000
 #define configMAX_PRIORITIES                    10
 #define configMINIMAL_STACK_SIZE                ((unsigned short)90)
 #define configMAX_TASK_NAME_LEN                 20
@@ -61,6 +61,15 @@
 #define configENABLE_BACKWARD_COMPATIBILITY     0
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 5
 
+/****************************/
+/* Use systick 100K clock source */
+#define configSYSTICK_CLOCK_HZ                  (100000U)
+/* Low power Tickless idle. Low power timer (GPT) is initialized in application code. */
+#define configGPT_CLOCK_HZ                    (32768U)
+#define configGPTick_RATE_HZ                  ((TickType_t)1024)
+
+
+/****************************/
 /* Used memory allocation (heap_x.c) */
 #define configFRTOS_MEMORY_SCHEME               4
 /* Tasks.c additions (e.g. Thread Aware Debug capability) */

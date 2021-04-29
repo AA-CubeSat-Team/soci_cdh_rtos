@@ -17,9 +17,9 @@ bool eps_healthcheck();
 
 double i2c_eps_getBatteryLevel();
 
-void i2c_eps_powerModuleStatus();
+uint8_t i2c_eps_powerModuleStatus();
 
-void i2c_eps_batteryModuleStatus();
+uint8_t i2c_eps_batteryModuleStatus();
 
 void i2c_eps_FDIRflag();
 

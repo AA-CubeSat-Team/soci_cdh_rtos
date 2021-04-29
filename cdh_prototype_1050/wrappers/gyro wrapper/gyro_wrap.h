@@ -8,7 +8,7 @@
 #ifndef GYRO_WRAP_H_
 #define GYRO_WRAP_H_
 
-#define ARDUINO_CODE            1
+#define ARDUINO_CODE            0
 
 #if ARDUINO_CODE
 #include <Wire.h>

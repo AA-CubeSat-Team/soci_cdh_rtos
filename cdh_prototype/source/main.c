@@ -8,7 +8,6 @@
 
 
 /* FreeRTOS kernel includes. */
-#include <com_task.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -18,19 +17,21 @@
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "board.h"
-
 #include "pin_mux.h"
 #include "clock_config.h"
-
 #include "peripherals.h"
-
-#include <stdbool.h>
+#include "lpm.h"
 
 #include "idle_task.h"
 #include "imag_task.h"
 #include "gnc_task.h"
-#include "eps_wrap.h"
+#include "com_task.h"
 
+#include "eps_wrap.h"
+#include "act_wrap.h"
+#include "sen_wrap.h"
+#include "img_wrap.h"
+#include "com_wrap.h"
 
 // TODO: add includes for uart, spi, i2c, sdram, etc.
 
@@ -46,31 +47,6 @@
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 
 
-
-/*******************************************************************************
- * Flags
- ******************************************************************************/
-//flags for checking if it's turned on or not
-bool g_imgActive;
-bool g_comActive;
-bool g_sunSensActive;
-bool g_rwaSensActive;
-bool g_magSensActive;
-bool g_mtqSensActive;
-bool g_phdSensActive;
-//flags for checking if they're healthy
-bool g_epsHealthy;
-bool g_obcHealthy;
-bool g_comHealthy;
-bool g_senHealthy;
-bool g_gncHealthy;
-bool g_mtqHealthy;
-bool g_rwaHealthy;
-bool g_imgHealthy;
-
-int g_operatingMode;
-
-
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -78,17 +54,31 @@ int g_operatingMode;
  * @brief Application entry point.
  */
 
+// Task handlers declared in each task files in tasks folder.
+extern TaskHandle_t TaskHandler_idle;
+extern TaskHandle_t TaskHandler_com;
+extern TaskHandle_t TaskHandler_img;
 
-TaskHandle_t TaskHandler_idle;
-TaskHandle_t TaskHandler_img;
-
-/*
- * Test for auto-reloaded single-shot task
-static void vTimerReadGyro(TimerHandle_t xTimerGryo)
-{
-	PRINTF("Reading Gyro!\r\n");
+/* Reset the priority of the task */
+void resetPriority(TaskHandle_t handler) {
+	vTaskPrioritySet(handler, 0);
 }
- */
+
+/* Check if the task is suspended or not, if not, suspend it. */
+void suspendTask (TaskHandle_t handler) {
+	if (eTaskGetState(handler) != eSuspended) {
+		vTaskSuspend(handler);
+	}
+}
+
+/* Check if the task is suspended or not, if so, resume it. */
+void resumeTask (TaskHandle_t handler) {
+	if (eTaskGetState(handler) == eSuspended) {
+		//TODO: check if we actually need to check the current state of the tasks
+		//Also, might need to add other edge cases (ex. eRunning, eReady, eBlocked...)
+		vTaskResume(handler);
+	}
+}
 
 int main(void)
 {
@@ -113,7 +103,7 @@ int main(void)
 		while (1)
 			;
 	}
-    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, NULL) !=
+    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
 		pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");
@@ -127,18 +117,6 @@ int main(void)
 		while (1)
 			;
 	}
-
-    /*Testing a auto-reloaded task for potential use for gyro*/
-//    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(250), pdTRUE, (void*)0, vTimerReadGyro);
-//    if (xTimerGryo==NULL)
-//    {
-//    	PRINTF("Creating auto-reload task failed. \r\n");
-//    	for(;;); /* failure! */
-//    }
-//    if (xTimerStart(xTimerGryo, 0)!=pdPASS) {
-//    	for(;;); /* failure!?! */
-//    }
-//    /************************************************************/
 
     vTaskStartScheduler();
     for (;;)

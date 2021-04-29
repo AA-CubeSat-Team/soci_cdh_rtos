@@ -107,7 +107,7 @@ void obc_reset(){
 void idle_phase1() {
 	PRINTF("\nidle: Commission Phase 1 Checks\r\n");
 	while (!g_epsHealthy || !g_obcHealthy){
-		g_epsHealthy = eps_healthcheck();
+//		g_epsHealthy = eps_healthcheck();
 		PRINTF("i HAVN'T SWITCHED");
 		g_obcHealthy = obc_healthcheck();
 		PRINTF("I SWITCHED!");
@@ -126,8 +126,9 @@ void idle_phase2() {
 	/* Battery Voltage Check */
 	PRINTF("idle: Get Voltage from EPS\r\n");
 	// TODO: Create a task to get the voltage from EPS system through I2C Communication
-	double voltage = i2c_eps_getBatteryLevel();
+//	double voltage = i2c_eps_getBatteryLevel();
 	PRINTF("idle: PDM Power up modules based on voltage\r\n");
+	float voltage = 0;
 	if (voltage <= 7.4 ) // CRITICALLY LOW POWER
 	{
 		mode = CRIT_LOW_POWER;
