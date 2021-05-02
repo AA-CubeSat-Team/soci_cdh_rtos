@@ -6,50 +6,76 @@
 #include <stdbool.h>
 #include "peripherals.h"
 
+// Each command has a specific command byte that it sends to IMG
+uint8_t commandByte0 = 0; // checkStatus
+uint8_t commandByte1 = 1; // takePicture
+uint8_t commandByte2 = 2; // getThumbnailSize
+uint8_t commandByte3 = 3; // getPictureSize
+uint8_t commandByte4 = 4; // getThumbnail
+uint8_t commandByte5 = 5; // getPicture
+uint8_t commandByte6 = 6; // setContrast
+uint8_t commandByte7 = 7; // setBrightness
+uint8_t commandByte8 = 8; // setExposure
+uint8_t commandByte9 = 9; // setSleepTime
+
+static uint8_t recv_buffer[5]; // Receive 5 bytes
+
 // To send commands to IMG
 // Param command  The main command to send
 // Param param    Specifies a sub command 
-void sendCommand(uint8_t command, uint8_t param){
+status_t sendCommand(uint8_t command, uint8_t param){
 
+	status_t status; 
 	uint8_t toSend[] = { command, param };
 
-	PRINTF("Sending command to IMG System \n");
+	PRINTF("Sending command to IMG System... \n");
 
-	int status; 
-
-	do {
+	// Send command to IMG (Max. 3 attempts)
+	for (int attempt = 1; attempt <= 3; attempt++){
+		
 		status = LPUART_RTOS_Send(&uart4_handle, toSend, sizeOf(toSend));
 
-		if (status == kStatus_Fail){
-			printf("Sending command failed. Retrying...\r\n");
+		if(status == kStatus_Success){
+			PRINTF("Sending command succeeded!\r\n");
+			return status; 
 		} else if (status == kStatus_InvalidArgument){
-			printf("Invalid Argument. Command cannot be sent.\r\n");
-		} else if (status == kStatus_Success){
-			PRINTF("Sending command succeeded!.\r\n");
+			PRINTF("Invalid argument. Command cannot be sent.\r\n");
+			return status;
+		} else if (status == kStatus_Fail) {
+			PRINTF("Attempt %d failed to send. Retrying...\r\n", attempt);
 		}
-	}
-	while (status == kStatus_Fail);
+	}	
+	return status;
 }
 
-//getResponse()
+// To fetch response from IMG
+size_t getResponse(){
 
-void getResponse(/*&responseArray*/){
+	//Response format: <Response> <Command> <Command specifier> <Error> <Padding> *Padding is sometimes significant
+	status_t status;
+	size_t responseSize = 0; // Default value, will update to number of bytes received ("5" expected)
 
-	//Always read 5 bytes
-	//Response format: <Response> <Command> <depends on "Command"> <Error> <Padding> *Padding is sometimes significant
+	PRINTF("Fetching response from the IMG system... \n");
 
-	
-	//uart receive, retry if not == success
-	int LPUART_RTOS_Receive(&uart4_handle, /* rec_v buffer, sizeOf(rec_v buffer), &n */);
+	// Reset buffer memory before receiving
+	memset(recv_buffer, 0, sizeOf(recv_buffer));
 
+	// fetch response from IMG, store in recv_buffer (Max. 3 attempts)
+	for (int attempt = 1; attempt <= 3; attempt++){
+		
+		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeOf(recv_buffer), &responseSize);
 
-	//declare uint8_t array with 5 slots
-	uint8_t responseArray[] = {response, command, integer, error, padding};
-
-	//print "Fetching Response"
-
-	//return uint array with response bytes
-
+		if(status == kStatus_Success){
+			PRINTF("Fetching response succeeded!\r\n");
+			return responseSize; 
+		} else if (status == kStatus_InvalidArgument){
+			PRINTF("Invalid argument. Response could not be fetched.\r\n");
+			return 7; // Arbitrary value for error checking
+		} else if (status == kStatus_Fail) {
+			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
+		}
+	}	
+	return 8; // Arbitrary value for error checking
 }
 
 
@@ -57,8 +83,6 @@ void getResponse(/*&responseArray*/){
 // device - Designates which device's status to check 
 // (0) All Systems (1) uCamIII (2) SD Breakout Board
 void checkStatus(uint8_t device) {
-
-	uint8_t commandByte = 0; // commandByte is 0 for checkStatus command
 
 	if (device == 1) { 
 		PRINTF("-- Begin checking the health of the uCamIII --");
@@ -68,7 +92,7 @@ void checkStatus(uint8_t device) {
 		//Default status check operation
 		PRINTF("-- Begin checking the health of All Components --");
 	}
-	sendCommand(commandByte, device); 
+	sendCommand(commandByte0, device); 
 	getResponse();
 
 	//Error checking
@@ -81,9 +105,7 @@ void checkStatus(uint8_t device) {
 // Param slot  Indicates where in the microSD card to store the thumbnail
 void takePicture(uint8_t slot){
 
-	uint8_t commandByte = 1; // commandByte is 1 for takePicture command
-
-	sendCommand(commandByte, slot);
+	sendCommand(commandByte1, slot);
 	getResponse();
 }
 
@@ -92,9 +114,7 @@ void takePicture(uint8_t slot){
 // Param slot  Indicates where in the microSD card to find the thumbnail
 void getThumbnailSize(uint8_t slot){
 
-	uint8_t commandByte = 2; // commandByte is 2 for getThumbnailSize command
-
-	sendCommand(commandByte, slot);
+	sendCommand(commandByte2, slot);
 	getResponse;
 
 
@@ -103,9 +123,7 @@ void getThumbnailSize(uint8_t slot){
 // Param slot  Indicates where in the microSD card to find the picture
 void getPictureSize(uint8_t slot){
 
-	uint8_t commandByte = 3; // commandByte is 3 for getPicture command
-
-	sendCommand(commandByte, slot);
+	sendCommand(commandByte3, slot);
 	getResponse;
 
 
@@ -114,9 +132,7 @@ void getPictureSize(uint8_t slot){
 // Param slot  Indicates where in the microSD card to find the thumbnail
 void getThumbnail(uint8_t slot){
 
-	uint8_t commandByte = 4; // commandByte is 4 for getThumbnail command
-
-	sendCommand(commandByte, slot);
+	sendCommand(commandByte4, slot);
 	getResponse();
 
 }
@@ -124,9 +140,7 @@ void getThumbnail(uint8_t slot){
 // Param slot  Indicates where in the microSD card to find the picture
 void getPicture(uint8_t slot){
 
-	uint8_t commandByte = 5; // commandByte is 5 for getPicture command
-
-	sendCommand(commandByte, slot);
+	sendCommand(commandByte5, slot);
 	getResponse();
 
 
@@ -135,40 +149,32 @@ void getPicture(uint8_t slot){
 // Param contrastLevel  Corresponds to a level of contrast
 void setContrast(uint8_t contrastLevel){
 
-	uint8_t commandByte = 6; // commandByte is 6 for setContrast command
-
-	sendCommand(commandByte, contrastLevel);
+	sendCommand(commandByte6, contrastLevel);
 	getResponse();
 
 }
 
 // Param brightnessLevel  Corresponds to a level of brightness
-void setBrightness(uint8_t commandByte, uint8_t brightnessLevel){
+void setBrightness(uint8_t brightnessLevel){
 
-	//uint8_t commandByte = 7; // commandByte is 7 for setBrightness command
-
-	sendCommand(commandByte, brightnessLevel);
+	sendCommand(commandByte7, brightnessLevel);
 	getResponse();
 
 }
 
-void setExposure(uint8_t commandByte, uint8_t exposureLevel){
+// Param exposureLevel  Corresponds to a level of exposure
+void setExposure(uint8_t exposureLevel){
 
-	//uint8_t commandByte = 8; // commandByte is 8 for setExposure command
-
-	sendCommand(commandByte, exposureLevel);
+	sendCommand(commandByte8, exposureLevel);
 	getResponse();
 
 }
 
+// Param setSleepTime Corresponds to a length of time
+void setSleepTime(uint8_t seconds){
 
-void setSleepTime(uint8_t commandByte, uint8_t seconds){
-
-	//uint8_t commandByte = 9; // commandByte is 9 for setSleepTime command
-
-	sendCommand(commandByte, seconds);
-
-
+	sendCommand(commandByte9, seconds);
+	getResponse();
 }
 
 
