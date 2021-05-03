@@ -17,8 +17,9 @@ uint8_t commandByte6 = 6; // setContrast
 uint8_t commandByte7 = 7; // setBrightness
 uint8_t commandByte8 = 8; // setExposure
 uint8_t commandByte9 = 9; // setSleepTime
+const int MAX_RESPONSE_BYTES = 5;
 
-extern uint8_t recv_buffer[5]; // Receive 5 bytes
+extern uint8_t recv_buffer[MAX_RESPONSE_BYTES]; // Receive 5 bytes
 
 // To send commands to IMG
 // Param command  The main command to send
@@ -43,6 +44,9 @@ status_t sendCommand(uint8_t command, uint8_t param){
 			return status;
 		} else if (status == kStatus_Fail) {
 			PRINTF("Attempt %d failed to send. Retrying...\r\n", attempt);
+			if(attempt == 3){
+				PRINTF("All attempts failed. Command not sent.");
+			}
 		}
 	}	
 	return status;
@@ -73,8 +77,12 @@ size_t getResponse(){
 			return responseSize;
 		} else if (status == kStatus_Fail) {
 			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
+			if(attempt == 3){
+				PRINTF("Failed to fetch response.");
+			}
 		}
 	}	
+
 	return responseSize; 
 }
 
@@ -112,6 +120,7 @@ uint8_t checkError(){
 	}
 
 	//Print the recv_buffer (loop = 3 if no error, loop = 4 if error detected.)
+	PRINTF("Received : ");
 	for(int i = 0; i < loop; i++){
 		PRINTF("%x \n", recv_buffer[i]);
 	}
@@ -125,17 +134,23 @@ uint8_t checkError(){
 void checkStatus(uint8_t device) {
 
 	if (device == 1) { 
-		PRINTF("-- Begin checking the health of the uCamIII --");
+		PRINTF("-- Begin checking the health of the uCamIII --\n");
 	} else if (device == 2) {
-		PRINTF("-- Begin checking the health of the SD Breakout Board --");
+		PRINTF("-- Begin checking the health of the SD Breakout Board --\n");
 	} else {
 		//Default status check operation
-		PRINTF("-- Begin checking the health of All Components --");
+		PRINTF("-- Begin checking the health of All Components --\n");
 	}
 
 	status_t sendStatus = sendCommand(commandByte0, device); 
 	size_t bytesReceived = getResponse();
 	uint8_t errorCheck = checkError();
+
+	// Check Error in sending 
+	// Check Error in receiving 
+	// Check Error in execution <-- Are these three checks necessary in the individual command function?
+
+	PRINTF("-- checkStatus complete --\n");
 }
 
 
