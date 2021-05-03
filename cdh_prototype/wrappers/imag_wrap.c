@@ -184,8 +184,7 @@ uint8_t checkStatus(uint8_t device) {
 // Param slot  Indicates where in the microSD card to store the thumbnail
 uint8_t takePicture(uint8_t slot){
 
-PRINTF("-- Sending command to take a picture (with thumbnail stored at slot 0x%X) --\r\n", slot);
-
+	PRINTF("-- Sending command to take a picture (with thumbnail stored at slot 0x%X) --\r\n", slot);
 	status_t sendStatus = sendCommand(commandByte1, slot); 
 	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
 		size_t bytesReceived = getResponse();
@@ -216,8 +215,7 @@ PRINTF("-- Sending command to take a picture (with thumbnail stored at slot 0x%X
 // Param slot  Indicates where in the microSD card to find the thumbnail
 uint8_t getThumbnailSize(uint8_t slot){
 
-PRINTF("-- Fetching the size of thumbnail at slot 0x%X --\r\n", slot);
-
+	PRINTF("-- Fetching the size of thumbnail at slot 0x%X --\r\n", slot);
 	status_t sendStatus = sendCommand(commandByte2, slot); 
 	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
 		size_t bytesReceived = getResponse();
@@ -246,10 +244,9 @@ PRINTF("-- Fetching the size of thumbnail at slot 0x%X --\r\n", slot);
 }
 
 // Param slot  Indicates where in the microSD card to find the picture
-void getPictureSize(uint8_t slot){
+uint8_t getPictureSize(uint8_t slot){
 
 	PRINTF("-- Fetching the size of picture at slot 0x%X --\r\n", slot);
-
 	status_t sendStatus = sendCommand(commandByte3, slot); 
 	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
 		size_t bytesReceived = getResponse();
@@ -277,14 +274,40 @@ void getPictureSize(uint8_t slot){
 	}
 }
 
+// NEEDS WORK 
 // Param slot  Indicates where in the microSD card to find the thumbnail
-void getThumbnail(uint8_t slot){
+uint8_t getThumbnail(uint8_t slot){
 
-	sendCommand(commandByte4, slot);
-	getResponse();
+	PRINTF("-- Fetching the thumbnail at slot 0x%X --\r\n", slot);
 
+	status_t sendStatus = sendCommand(commandByte4, slot); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte4 ||
+			recv_buffer[2] != slot) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte4, slot, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Thumbnail size is 0x%X 0x%X. --\n", commandByte4, slot, recv_buffer[3], recv_buffer[4]);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- getThumbnail complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send getThumbnail command to IMG --\n");
+		return FAILURE;
+	}
 }
 
+//NEEDS WORK (Same idea as getThumbnail)
 // Param slot  Indicates where in the microSD card to find the picture
 void getPicture(uint8_t slot){
 
@@ -294,28 +317,131 @@ void getPicture(uint8_t slot){
 
 }
 
+
 // Param contrastLevel  Corresponds to a level of contrast
-void setContrast(uint8_t contrastLevel){
+uint8_t setContrast(uint8_t contrastLevel){
 
-	sendCommand(commandByte6, contrastLevel);
-	getResponse();
+	if(contrastLevel == 0){
+		PRINTF("-- Setting the contrast to 0x%X (Min). --\n", contrastLevel);
+	} else if (contrastLevel == 1){
+		PRINTF("-- Setting the contrast to 0x%X (Low). --\n", contrastLevel);
+	} else if (contrastLevel == 2){
+		PRINTF("-- Setting the contrast to 0x%X (High). --\n", contrastLevel);
+	} else if (contrastLevel == 3){
+		PRINTF("-- Setting the contrast to 0x%X (Max). --\n", contrastLevel);
+	} else { //Default
+		PRINTF("-- Setting the contrast to 0x%X (Normal). --\n", contrastLevel);
+	}
 
+	status_t sendStatus = sendCommand(commandByte6, contrastLevel); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte6 ||
+			recv_buffer[2] != contrastLevel) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte6, contrastLevel, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Contrast is now 0x%X. --\n", commandByte6, contrastLevel);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- setContrast complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send setContrast command to IMG --\n");
+		return FAILURE;
+	}
 }
 
 // Param brightnessLevel  Corresponds to a level of brightness
-void setBrightness(uint8_t brightnessLevel){
+uint8_t setBrightness(uint8_t brightnessLevel){
 
-	sendCommand(commandByte7, brightnessLevel);
-	getResponse();
+	if(brightnessLevel == 0){
+		PRINTF("-- Setting the brightness to 0x%X (Min). --\n", brightnessLevel);
+	} else if (brightnessLevel == 1){
+		PRINTF("-- Setting the brightness to 0x%X (Low). --\n", brightnessLevel);
+	} else if (brightnessLevel == 2){
+		PRINTF("-- Setting the brightness to 0x%X (High). --\n", brightnessLevel);
+	} else if (brightnessLevel == 3){
+		PRINTF("-- Setting the brightness to 0x%X (Max). --\n", brightnessLevel);
+	} else { //Default
+		PRINTF("-- Setting the brightness to 0x%X (Normal). --\n", brightnessLevel);
+	}
 
+	status_t sendStatus = sendCommand(commandByte7, brightnessLevel); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte7 ||
+			recv_buffer[2] != brightnessLevel) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte7, brightnessLevel, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Brightness is now 0x%X. --\n", commandByte7, brightnessLevel);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- setBrightness complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send setBrightness command to IMG --\n");
+		return FAILURE;
+	}
 }
 
 // Param exposureLevel  Corresponds to a level of exposure
-void setExposure(uint8_t exposureLevel){
+uint8_t setExposure(uint8_t exposureLevel){
 
-	sendCommand(commandByte8, exposureLevel);
-	getResponse();
+	if(exposureLevel == 0){
+		PRINTF("-- Setting the exposure to 0x%X (-2). --\n", exposureLevel);
+	} else if (exposureLevel == 1){
+		PRINTF("-- Setting the exposure to 0x%X (-1). --\n", exposureLevel);
+	} else if (exposureLevel == 2){
+		PRINTF("-- Setting the exposure to 0x%X (1). --\n", exposureLevel);
+	} else if (exposureLevel == 3){
+		PRINTF("-- Setting the exposure to 0x%X (2). --\n", exposureLevel);
+	} else { //Default
+		PRINTF("-- Setting the exposure to 0x%X (0). --\n", exposureLevel);
+	}
 
+	status_t sendStatus = sendCommand(commandByte8, exposureLevel); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte8 ||
+			recv_buffer[2] != exposureLevel) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte8, exposureLevel, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Exposure is now 0x%X. --\n", commandByte8, exposureLevel);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- setExposure complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send setExposure command to IMG --\n");
+		return FAILURE;
+	}
 }
 
 // Param setSleepTime Corresponds to a length of time
