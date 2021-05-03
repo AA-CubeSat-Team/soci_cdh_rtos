@@ -17,9 +17,8 @@ uint8_t commandByte6 = 6; // setContrast
 uint8_t commandByte7 = 7; // setBrightness
 uint8_t commandByte8 = 8; // setExposure
 uint8_t commandByte9 = 9; // setSleepTime
-const int MAX_RESPONSE_BYTES = 5;
 
-extern uint8_t recv_buffer[MAX_RESPONSE_BYTES]; // Receive 5 bytes
+extern uint8_t recv_buffer[5]; // Receive 5 bytes
 
 // To send commands to IMG
 // Param command  The main command to send
@@ -90,15 +89,11 @@ size_t getResponse(){
 // Returns the value of the error byte 
 uint8_t checkError(){
 
-	int loop; // Determines how many slots of the recv_buffer to print
-
 	//Check the first byte for <Response> 
 	if(recv_buffer[0] == 1){
 		PRINTF("Acknowledged."); // Previous command was successful
-		loop = 3;
 	} else if(recv_buffer[0] == 0){
 		PRINTF("Not Acknowledged."); // Previous command failed
-		loop = 4;
 		// Since the previous command failed, check the error specifier in byte 4
 		if(recv_buffer[3] == 0){
 			PRINTF("uCam-III is not responding.\r\n");
@@ -118,14 +113,24 @@ uint8_t checkError(){
 			PRINTF("Unrecognized error. Error byte is greater than 6.\r\n");
 		}
 	}
+	return recv_buffer[3]; // This will be padded with 0xAA (=170) if there's no error
+}
+
+void printResponse(uint8_t errorCheck){
+	int loop; // Determines how many slots of the recv_buffer to print
+
+	if(errorCheck == 0xAA){
+		loop = 3;
+	} else {
+		loop = 4;
+	}
 
 	//Print the recv_buffer (loop = 3 if no error, loop = 4 if error detected.)
 	PRINTF("Received : ");
 	for(int i = 0; i < loop; i++){
-		PRINTF("%x \n", recv_buffer[i]);
+		PRINTF("%x ", recv_buffer[i]);
 	}
-
-	return recv_buffer[3];
+	PRINTF(" \n");
 }
 
 // Checks the health of the components of the IMG system
@@ -143,14 +148,27 @@ void checkStatus(uint8_t device) {
 	}
 
 	status_t sendStatus = sendCommand(commandByte0, device); 
-	size_t bytesReceived = getResponse();
-	uint8_t errorCheck = checkError();
-
-	// Check Error in sending 
-	// Check Error in receiving 
-	// Check Error in execution <-- Are these three checks necessary in the individual command function?
-
-	PRINTF("-- checkStatus complete --\n");
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte0 ||
+			recv_buffer[2] != device) {
+				PRINTF("-- Not Acknowledged. You sent %x %x. Error %x occurred. --\n",  commandByte0, device, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent %x %x. Requested test passed. --\n", commandByte0, device);
+			}
+			printResponse(errorCheck); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- checkStatus complete --\n");
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+		}	
+	} else {
+		PRINTF("-- Failed to send checkStatus command to IMG --\n");
+	}
 }
 
 
