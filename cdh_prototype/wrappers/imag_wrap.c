@@ -19,6 +19,8 @@ uint8_t commandByte8 = 8; // setExposure
 uint8_t commandByte9 = 9; // setSleepTime
 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
+const uint8_t SUCCESS = 1;
+const uint8_t FAILURE = 0;
 
 // To send commands to IMG
 // Param command  The main command to send
@@ -116,19 +118,22 @@ uint8_t checkError(){
 	return recv_buffer[3]; // This will be padded with 0xAA (=170) if there's no error
 }
 
-void printResponse(uint8_t errorCheck){
+// Prints the recv_buffer without the padding bytes
+void printResponse(){
 	int loop; // Determines how many slots of the recv_buffer to print
 
-	if(errorCheck == 0xAA){
-		loop = 3;
+	if(recv_buffer[3] == 0xAA){
+		loop = 3; // Print 3 slots
+	} else if(recv_buffer[4] == 0xAA){
+		loop = 4; // Print 4 slots
 	} else {
-		loop = 4;
+		loop = 5; // Print 5 slots
 	}
 
-	//Print the recv_buffer (loop = 3 if no error, loop = 4 if error detected.)
+	//Print the recv_buffer 
 	PRINTF("Received : ");
 	for(int i = 0; i < loop; i++){
-		PRINTF("%x ", recv_buffer[i]);
+		PRINTF("0x%X ", recv_buffer[i]);
 	}
 	PRINTF(" \n");
 }
@@ -136,7 +141,7 @@ void printResponse(uint8_t errorCheck){
 // Checks the health of the components of the IMG system
 // device - Designates which device's status to check 
 // (0) All Systems (1) uCamIII (2) SD Breakout Board
-void checkStatus(uint8_t device) {
+uint8_t checkStatus(uint8_t device) {
 
 	if (device == 1) { 
 		PRINTF("-- Begin checking the health of the uCamIII --\n");
@@ -157,47 +162,119 @@ void checkStatus(uint8_t device) {
 			if(recv_buffer[0] != 1 ||
 			recv_buffer[1] != commandByte0 ||
 			recv_buffer[2] != device) {
-				PRINTF("-- Not Acknowledged. You sent %x %x. Error %x occurred. --\n",  commandByte0, device, errorCheck);
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte0, device, errorCheck);
 			} else {
-				PRINTF("-- Acknowledged. You sent %x %x. Requested test passed. --\n", commandByte0, device);
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Requested test passed. --\n", commandByte0, device);
 			}
-			printResponse(errorCheck); // Prints the recv_buffer without the padding bytes
+			printResponse(); // Prints the recv_buffer without the padding bytes
 			PRINTF("-- checkStatus complete --\n");
+			return SUCCESS;
 		} else {
 			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
 		}	
 	} else {
 		PRINTF("-- Failed to send checkStatus command to IMG --\n");
+		return FAILURE;
 	}
 }
 
 
 // Sends command to take a picture
 // Param slot  Indicates where in the microSD card to store the thumbnail
-void takePicture(uint8_t slot){
+uint8_t takePicture(uint8_t slot){
 
-	sendCommand(commandByte1, slot);
-	getResponse();
+PRINTF("-- Sending command to take a picture (with thumbnail stored at slot 0x%X) --\r\n", slot);
+
+	status_t sendStatus = sendCommand(commandByte1, slot); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte1 ||
+			recv_buffer[2] != slot) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte1, slot, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Image has been successfully stored at slot 0x%X. --\n", commandByte1, slot, slot);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- takePicture complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send takePicture command to IMG --\n");
+		return FAILURE;
+	}
 }
 
-
-
 // Param slot  Indicates where in the microSD card to find the thumbnail
-void getThumbnailSize(uint8_t slot){
+uint8_t getThumbnailSize(uint8_t slot){
 
-	sendCommand(commandByte2, slot);
-	getResponse;
+PRINTF("-- Fetching the size of thumbnail at slot 0x%X --\r\n", slot);
 
-
+	status_t sendStatus = sendCommand(commandByte2, slot); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte2 ||
+			recv_buffer[2] != slot) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte2, slot, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Thumbnail size is 0x%X 0x%X. --\n", commandByte2, slot, recv_buffer[3], recv_buffer[4]);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- getThumbnailSize complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send getThumbnailSize command to IMG --\n");
+		return FAILURE;
+	}
 }
 
 // Param slot  Indicates where in the microSD card to find the picture
 void getPictureSize(uint8_t slot){
 
-	sendCommand(commandByte3, slot);
-	getResponse;
+	PRINTF("-- Fetching the size of picture at slot 0x%X --\r\n", slot);
 
-
+	status_t sendStatus = sendCommand(commandByte3, slot); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte3 ||
+			recv_buffer[2] != slot) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte3, slot, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Picture size is 0x%X 0x%X. --\n", commandByte3, slot, recv_buffer[3], recv_buffer[4]);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- getPictureSize complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send getPictureSize command to IMG --\n");
+		return FAILURE;
+	}
 }
 
 // Param slot  Indicates where in the microSD card to find the thumbnail
