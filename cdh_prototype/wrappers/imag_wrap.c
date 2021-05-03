@@ -18,7 +18,7 @@ uint8_t commandByte7 = 7; // setBrightness
 uint8_t commandByte8 = 8; // setExposure
 uint8_t commandByte9 = 9; // setSleepTime
 
-static uint8_t recv_buffer[5]; // Receive 5 bytes
+extern uint8_t recv_buffer[5]; // Receive 5 bytes
 
 // To send commands to IMG
 // Param command  The main command to send
@@ -55,7 +55,7 @@ size_t getResponse(){
 	status_t status;
 	size_t responseSize = 0; // Default value, will update to number of bytes received ("5" expected)
 
-	PRINTF("Fetching response from the IMG system... \n");
+	PRINTF("Fetching response from IMG system... \n");
 
 	// Reset buffer memory before receiving
 	memset(recv_buffer, 0, sizeOf(recv_buffer));
@@ -70,14 +70,54 @@ size_t getResponse(){
 			return responseSize; 
 		} else if (status == kStatus_InvalidArgument){
 			PRINTF("Invalid argument. Response could not be fetched.\r\n");
-			return 7; // Arbitrary value for error checking
+			return responseSize;
 		} else if (status == kStatus_Fail) {
 			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
 		}
 	}	
-	return 8; // Arbitrary value for error checking
+	return responseSize; 
 }
 
+// Checks for errors returned in the recv_buffer.
+// Returns the value of the error byte 
+uint8_t checkError(){
+
+	int loop; // Determines how many slots of the recv_buffer to print
+
+	//Check the first byte for <Response> 
+	if(recv_buffer[0] == 1){
+		PRINTF("Acknowledged."); // Previous command was successful
+		loop = 3;
+	} else if(recv_buffer[0] == 0){
+		PRINTF("Not Acknowledged."); // Previous command failed
+		loop = 4;
+		// Since the previous command failed, check the error specifier in byte 4
+		if(recv_buffer[3] == 0){
+			PRINTF("uCam-III is not responding.\r\n");
+		} else if(recv_buffer[3] == 1){
+			PRINTF("SD Breakout Board is not responding.\r\n");
+		} else if(recv_buffer[3] == 2){ 
+			PRINTF("Command sent was not complete.\r\n");
+		} else if(recv_buffer[3] == 3){
+			PRINTF("Command sent was not recognized.\r\n");
+		} else if(recv_buffer[3] == 4){
+			PRINTF("Slot sent was not in range.\r\n");
+		} else if(recv_buffer[3] == 5){
+			PRINTF("Integer setting was not in range.\r\n");
+		} else if(recv_buffer[3] == 6){
+			PRINTF("Attempted to use a non-existent file.\r\n");
+		} else {
+			PRINTF("Unrecognized error. Error byte is greater than 6.\r\n");
+		}
+	}
+
+	//Print the recv_buffer (loop = 3 if no error, loop = 4 if error detected.)
+	for(int i = 0; i < loop; i++){
+		PRINTF("%x \n", recv_buffer[i]);
+	}
+
+	return recv_buffer[3];
+}
 
 // Checks the health of the components of the IMG system
 // device - Designates which device's status to check 
@@ -92,12 +132,10 @@ void checkStatus(uint8_t device) {
 		//Default status check operation
 		PRINTF("-- Begin checking the health of All Components --");
 	}
-	sendCommand(commandByte0, device); 
-	getResponse();
 
-	//Error checking
-
-	PRINTF("\n-- Acknowledged. You sent 0x00 0x0%u. Requested test passed. -- \n", device);
+	status_t sendStatus = sendCommand(commandByte0, device); 
+	size_t bytesReceived = getResponse();
+	uint8_t errorCheck = checkError();
 }
 
 
