@@ -19,14 +19,16 @@ uint8_t commandByte8 = 8; // setExposure
 uint8_t commandByte9 = 9; // setSleepTime
 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
-extern uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes
-extern uint8_t imageBuffer[200] // FIX THIS -- How large and what type of buffer for receiving images? 
+extern uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes or less
+extern uint8_t image_storage[256] // FIX THIS -- How large and what type of buffer for receiving images? 
+const uint8_t EXTERNAL_PACKAGE_SIZE = 32; // External packages should be 32 bytes (receiving image files)
 const uint8_t SUCCESS = 1;
 const uint8_t FAILURE = 0;
 
 // To send commands to IMG
 // Param command  The main command to send
 // Param param    Specifies a sub command 
+// Returns 		  UART Send status
 status_t sendCommand(uint8_t command, uint8_t param){
 
 	status_t status; 
@@ -56,6 +58,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 }
 
 // To fetch response from IMG
+// Returns the number of bytes received
 size_t getResponse(){
 
 	//Response format: <Response> <Command> <Command specifier> <Error> <Padding> *Padding is sometimes significant
@@ -65,7 +68,7 @@ size_t getResponse(){
 	PRINTF("Fetching response from IMG system... \n");
 
 	// Reset buffer memory before receiving
-	memset(recv_buffer, 0, sizeOf(recv_buffer));
+	memset(package_buffer, 0, sizeOf(recv_buffer));
 
 	// fetch response from IMG, store in recv_buffer (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
@@ -89,45 +92,71 @@ size_t getResponse(){
 	return responseSize; 
 }
 
-
-
-
-
-
-
-
-
 // To fetch image files from IMG ()
-uint8_t getImage(param low byte size, param big byte size)){
+// Param sizeHighByte  The high size byte of the image file (recv_buffer[3] if get<image>Size is called)
+// Param sizeLowByte   The low size byte of the image file (recv_buffer[4] if get<image>Size is called
+// Returns 			   Total image bytes received
+size_t getImage(uint8_t sizeHighByte, uint8_t sizeLowByte){
 
 	status_t status;
-	size_t responseSize = 0; // Default value, will update to number of bytes received ("5" expected)
+	size_t image_bytes_received = 0; // To track total image bytes received
+	size_t packageSize; // To check whether a full package (32 bytes) was received 
+	uint8_t NAK = 0;
+	uint8_t ACK = 1;
+	uint8_t padding = 0xAA;
+	uint8_t imageSize = sizeHighByte << 8 | sizeLowByte; 
+	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; // Max value of 8 currently (Due to image_storage have size 256)
+	uint8_t remainingBytes = imageSize % EXTERNAL_PACKAGE_SIZE;
 
-	PRINTF("Fetching response from IMG system... \n");
+	PRINTF("Fetching image from IMG system... \n");
 
-	// Reset buffer memory before receiving
-	memset(recv_buffer, 0, sizeOf(recv_buffer));
+	// Reset storage memory before storing the new image file
+	memset(image_storage, 0, sizeOf(image_storage));
 
-	// fetch response from IMG, store in recv_buffer (Max. 3 attempts)
-	for (int attempt = 1; attempt <= 3; attempt++){
+	//Receive all packages followed by the remaining bytes
+	for(int i = 0; i <= fullPackages; i++){
+
+		PRINTF("Fetching package %d from IMG...\r\n", i);
+
+		// Reset package_buffer before receiving each new package
+		memset(package_buffer, 0, sizeOf(packageBuffer));
+
+		// Request package by sending ACK (= 0x01)
+		status_t sendStatus = sendCommand(ACK, padding); // Will this get confused with sending takePicture command?
 		
-		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeOf(recv_buffer), &responseSize);
+		// (ADD) Error checking for sending ACK and NAK ? 
 
-		if(status == kStatus_Success){
-			PRINTF("Fetching response succeeded!\r\n");
-			return responseSize; 
-		} else if (status == kStatus_InvalidArgument){
-			PRINTF("Invalid argument. Response could not be fetched.\r\n");
-			return responseSize;
-		} else if (status == kStatus_Fail) {
-			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
-			if(attempt == 3){
-				PRINTF("Failed to fetch response.\n");
+		// Receive package in package_buffer (Send NAK to retry up to 3 times)
+		for (int attempt = 1; attempt <= 3; attempt++){
+
+			status = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize);
+
+			if(status == kStatus_Success){
+				PRINTF("Fetching package %d succeeded!\r\n", i);
+				attempt = 4; // Stop 
+			} else if (status == kStatus_InvalidArgument){
+				PRINTF("Invalid argument. Package %d could not be fetched.\r\n", i);
+				return image_bytes_received;
+			} else if (status == kStatus_Fail) {
+				PRINTF("Attempt %d failed to fetch package %d. Retrying...\r\n", attempt, i);
+				status_t sendStatus = sendCommand(NAK, padding); // Will this get confused with sending checkStatus command?
+																 // Should an independant UART "send" be done instead?
+				if(attempt == 3){
+					PRINTF("Failed to fetch package %d.\n", i);
+					return image_bytes_received; 
+				}
 			}
 		}
-	}	
-
-	return responseSize; 
+		int imageStorageSlot; // Slot in image_storage to store new bytes
+		//Copy package_buffer to image_storage
+		for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
+			imageStorageSlot = (i * EXTERNAL_PACKAGE_SIZE + j);
+			image_storage[imageStorageSlot] = package_buffer[j];
+		}
+		image_bytes_received += packageSize;	
+	}
+	PRINTF("Fetching image succeeded!");	
+	return image_bytes_received; 
 }
 
 
