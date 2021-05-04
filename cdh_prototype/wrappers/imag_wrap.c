@@ -19,6 +19,8 @@ uint8_t commandByte8 = 8; // setExposure
 uint8_t commandByte9 = 9; // setSleepTime
 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
+extern uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes
+extern uint8_t imageBuffer[200] // FIX THIS -- How large and what type of buffer for receiving images? 
 const uint8_t SUCCESS = 1;
 const uint8_t FAILURE = 0;
 
@@ -79,13 +81,75 @@ size_t getResponse(){
 		} else if (status == kStatus_Fail) {
 			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
 			if(attempt == 3){
-				PRINTF("Failed to fetch response.");
+				PRINTF("Failed to fetch response.\n");
 			}
 		}
 	}	
 
 	return responseSize; 
 }
+
+
+
+
+
+
+
+
+
+// To fetch image files from IMG ()
+uint8_t getImage(param low byte size, param big byte size)){
+
+	status_t status;
+	size_t responseSize = 0; // Default value, will update to number of bytes received ("5" expected)
+
+	PRINTF("Fetching response from IMG system... \n");
+
+	// Reset buffer memory before receiving
+	memset(recv_buffer, 0, sizeOf(recv_buffer));
+
+	// fetch response from IMG, store in recv_buffer (Max. 3 attempts)
+	for (int attempt = 1; attempt <= 3; attempt++){
+		
+		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeOf(recv_buffer), &responseSize);
+
+		if(status == kStatus_Success){
+			PRINTF("Fetching response succeeded!\r\n");
+			return responseSize; 
+		} else if (status == kStatus_InvalidArgument){
+			PRINTF("Invalid argument. Response could not be fetched.\r\n");
+			return responseSize;
+		} else if (status == kStatus_Fail) {
+			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
+			if(attempt == 3){
+				PRINTF("Failed to fetch response.\n");
+			}
+		}
+	}	
+
+	return responseSize; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Checks for errors returned in the recv_buffer.
 // Returns the value of the error byte 
@@ -446,9 +510,36 @@ uint8_t setExposure(uint8_t exposureLevel){
 
 // Param setSleepTime Corresponds to a length of time
 void setSleepTime(uint8_t seconds){
-
-	sendCommand(commandByte9, seconds);
-	getResponse();
+	if(seconds == 0){
+		PRINTF("-- Setting the sleep time to 0x%X seconds. (infinite, will not sleep) --\n", seconds);
+	} else {
+		PRINTF("-- Setting the sleep time to 0x%X or %u seconds. --\n", seconds, seconds);
+	} 
+	status_t sendStatus = sendCommand(commandByte9, seconds); 
+	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
+		size_t bytesReceived = getResponse();
+		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
+			
+			uint8_t errorCheck = checkError();
+			// Check that the output is as expected
+			if(recv_buffer[0] != 1 ||
+			recv_buffer[1] != commandByte9 ||
+			recv_buffer[2] != seconds) {
+				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  commandByte9, seconds, errorCheck);
+			} else {
+				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Sleep time is now 0x%X or %u seconds. --\n", commandByte9, seconds, seconds);
+			}
+			printResponse(); // Prints the recv_buffer without the padding bytes
+			PRINTF("-- setSleepTime complete --\n");
+			return SUCCESS;
+		} else {
+			PRINT("-- Failed to get response from IMG --\n");
+			return FAILURE;
+		}	
+	} else {
+		PRINTF("-- Failed to send setSleepTime command to IMG --\n");
+		return FAILURE;
+	}
 }
 
 
