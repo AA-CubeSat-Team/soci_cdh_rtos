@@ -18,6 +18,7 @@ static const uint8_t SET_CONTRAST       = 0x06;
 static const uint8_t SET_BRIGHTNESS     = 0x07;
 static const uint8_t SET_EXPOSURE       = 0x08;
 static const uint8_t SET_SLEEP_TIME     = 0x09;
+static const uint8_t PADDING            = 0xAA;
 
 void testCheckStatus(char parameter);
 

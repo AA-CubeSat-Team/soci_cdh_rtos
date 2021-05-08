@@ -80,96 +80,68 @@ size_t getResponse(){
 	return responseSize; 
 }
 
-// Gets individual packages and stores them in image_storage
-// Returns NAK if package could not be retrieved, packageSize if successful
-uint8_t getPackage(){
-	// Receive package in package_buffer (Send NAK to retry up to 3 times)
-	int attempt = 1;
+// Gets packages and stores them in image_storage -- When to send NAK?
+// Returns imageBytesReceived  The number of image bytes received 
+int getPackages(){
+	int imageBytesReceived = 0;
+	status_t sendStatus; 
 	uint8_t packageSize;
-	PRINTF("-- Requesting Package from IMG --");
-	status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize);
-	while (receiveStatus != kStatus_Success && attempt <= 3){
-			
-		if (status == kStatus_InvalidArgument){
-			PRINTF("Invalid argument. Package could not be fetched.\r\n", i);
-			return NAK;
-		} else if (status == kStatus_Fail) {
-			PRINTF("Attempt %d failed to fetch package. Retrying...\r\n", attempt);
-		}
-		if(attempt == 3){
-			PRINTF("Failed to fetch package after 3 attemps.\n", i);
-			return NAK; 
-		}
-		attempt++;
-		receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize); // Retry Receiving
-	}
-
-	PRINTF("Fetching package succeeded!\r\n");
-	
-	int imageStorageSlot; // Position in image_storage to store new bytes
-	//Copy package_buffer to image_storage
-	for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
-		imageStorageSlot = (i * EXTERNAL_PACKAGE_SIZE + j);
-		image_storage[imageStorageSlot] = package_buffer[j];
-	}	
-	return packageSize;
-}
-
-
-
-// To fetch image files from IMG ()
-// Param sizeHighByte  The high size byte of the image file (recv_buffer[3] if get<image>Size is called)
-// Param sizeLowByte   The low size byte of the image file (recv_buffer[4] if get<image>Size is called
-// Returns 			   Total image bytes received
-size_t getImage(uint8_t sizeHighByte, uint8_t sizeLowByte){ // Long function --> Split up?
-
-	status_t sendStatus;
-	size_t image_bytes_received = 0; // To track total image bytes received
-	size_t packageSize; // To check whether a full package (32 bytes) was received 
-	uint8_t padding = 0xAA;
-	uint8_t imageSize = sizeHighByte << 8 | sizeLowByte; 
-	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; // Max value of 8 currently (Due to image_storage have size 256)?
+	uint8_t imageSize = recv_buffer[3] << 8 | recv_buffer[4]; 
+	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; // Max value of 8 currently (Since image_storage has size 256)
 	uint8_t remainingBytes = imageSize % EXTERNAL_PACKAGE_SIZE;
-
-	PRINTF("Fetching image from IMG system... \n");
 
 	// Reset storage memory before storing the new image file
 	memset(image_storage, 0, sizeOf(image_storage));
 
-	//Receive all packages followed by the remaining bytes 
-	//May need to change this to a while loop
 	for(int i = 0; i <= fullPackages; i++){
-
-		PRINTF("Requesting package %d from IMG...\r\n", i);
+		PRINTF("-- Requesting Package from IMG. --\r\n");
+		status_t sendStatus = sendCommand(ACK, PADDING); // Will this get confused with sending takePicture command? When to send NAK?
+		if(sendStatus == kStatus_Success){
+			PRINTF("-- Package %d requested from IMG. --\r\n", i);
+		} else {
+			PRINTF("-- Package %d request failed. Image cannot be retrieved. --\r\n");
+			return imageBytesReceived;
+		}
 
 		// Reset package_buffer before receiving each new package
 		memset(package_buffer, 0, sizeOf(package_buffer));
 
-		// Request package by sending ACK (= 0x01)
-		sendStatus = sendCommand(ACK, padding); // Will this get confused with sending takePicture command?
-		if(sendStatus == kStatus_Success){
-			PRINTF("Package %d requested from IMG\r\n", i);
-			packageSize = getPackage();
-			if(packageSize == NAK){
-				PRINT("Failed to receive package %d. Retrying...\r\n", i);
-				sendCommand(NAK, padding); // Will this get confused with sending checkStatus command?
-				packageSize = getPackage(); // Retry receiving the package - Might need to swap for while loop
+		PRINTF("-- Receiving package from IMG. --\r\n");
+		status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize);
+		//Try receiving 3 times 
+		int attempt = 1;
+		while (receiveStatus != kStatus_Success && attempt <= 3){
+			if (receiveStatus == kStatus_InvalidArgument){
+				PRINTF("-- Invalid argument. Package could not be fetched. --\r\n");
+				return imageBytesReceived;
+			} else if (receiveStatus == kStatus_Fail) {
+				PRINTF("-- Attempt %d failed to fetch package. Retrying... --\r\n", attempt);
 			}
-		} else if {
-			PRINTF("Package %d request failed. Image cannot be retrieved.\r\n");
-			return image_bytes_received;
+			if(attempt == 3){
+				PRINTF("-- Failed to fetch package after 3 attempts. --\n");
+				return imageBytesReceived; 
+			}
+			attempt++;
+			receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize); // Retry Receiving
 		}
-		image_bytes_received += packageSize;
+		//Copy package_buffer to image_storage
+		int imageStorageSlot; // Position in image_storage to store new bytes
+		for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
+			imageStorageSlot = (i * EXTERNAL_PACKAGE_SIZE + j);
+			image_storage[imageStorageSlot] = package_buffer[j];
+		}
+		imageBytesReceived += packageSize;
 	}
-	// Confirm that the last byte was received 
-	sendStatus = sendCommand(ACK, padding); // Will this get confused with sending takePicture command?
+	sendStatus = sendCommand(ACK, PADDING); // Confirmation of all packages received
 	if(sendStatus == kStatus_Success){
-			PRINTF("Fetching image succeeded!"); // Image bytes successfully stored in image_storage
-		} else if {
-			PRINTF("Error: Could not notify IMG of last byte being received.\r\n"); 
-		}
-	return image_bytes_received; 
-}
+		PRINTF("-- IMG notified of all packages being received --\r\n");
+	} else {
+		PRINTF("-- Failed to notify IMG of all packages being received --\r\n");
+		return imageBytesReceived;
+	}
+	PRINTF("-- Fetched all packages successfully! --\r\n");
+	return imageBytesReceived;
+}	
 
 // Checks for errors returned in the recv_buffer.
 // Returns the value of the error byte 
@@ -358,7 +330,6 @@ uint8_t getPictureSize(uint8_t slot){
 	}
 }
 
-// NEEDS WORK ?
 // Param slot  Indicates where in the microSD card to find the thumbnail
 uint8_t getThumbnail(uint8_t slot){
 
@@ -372,28 +343,18 @@ uint8_t getThumbnail(uint8_t slot){
 		PRINTF("-- Failed to fetch thumbnail size. --");
 		return NAK;
 	}
-
+	int imageBytesExpected = recv_buffer[3] << 8 | recv_buffer[4];
 	status_t sendStatus = sendCommand(GET_THUMBNAIL, slot); // What does this do? Initialize the data stream? 
-	size_t imageBytesReceived = getImage(recv_buffer[3], recv_buffer[4]);
 
-	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
-		size_t bytesReceived = getResponse();
-		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
-			
-			uint8_t errorCheck = checkError();
-			// Check that the output is as expected
-			if(recv_buffer[0] != 1 ||
-			recv_buffer[1] != GET_THUMBNAIL ||
-			recv_buffer[2] != slot) {
-				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  GET_THUMBNAIL, slot, errorCheck);
-			} else {
-				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Thumbnail  0x%X 0x%X. --\n", GET_THUMBNAIL, slot, recv_buffer[3], recv_buffer[4]);
-			}
-			printResponse(); // Prints the recv_buffer without the padding bytes
+	if(sendStatus == kStatus_Success){ 	// Only try receiving packages if sending the command was successful
+		int imageBytesReceived = getPackages();
+		if(imageBytesReceived == imageBytesExpected){ // Receiving the packages was successful 
+			// Is checking the error bytes in recv_buffer necessary?
+			PRINTF("-- Thumbnail received successfully and stored in image_storage. --\n");
 			PRINTF("-- getThumbnail complete --\n");
 			return ACK;
 		} else {
-			PRINTF("-- Failed to get response from IMG --\n");
+			PRINTF("-- Failed to get thumbnail from IMG --\n");
 			return NAK;
 		}	
 	} else {
@@ -402,33 +363,37 @@ uint8_t getThumbnail(uint8_t slot){
 	}
 }
 
-//NEEDS WORK (Same idea as getThumbnail)
+
 // Param slot  Indicates where in the microSD card to find the picture
-size_t getPicture(uint8_t slot){
-	size_t imageBytesReceived = 0;
-	PRINTF("-- Running getPicture command. --");
-	PRINTF("-- Fetching picture size at slot 0x%X --\r\n", slot);
-	uint8_t sendStatus = getPictureSize(slot);
-	if(sendStatus == ACK){
+uint8_t getPicture(uint8_t slot){
+	PRINTF("-- Fetching the picture at slot 0x%X --\r\n", slot);
+	PRINTF("-- Fetching the picture size --");
+	uint8_t sizeStatus = getPictureSize(slot);
+
+	if(sizeStatus == ACK){
 		PRINTF("-- Picture size fetched successfully --");
 	} else {
-		PRINTF("-- Failed to fetch thumbnail size. --");
+		PRINTF("-- Failed to fetch picture size. --");
 		return NAK;
 	}
-	PRINTF("-- Fetching picture at slot 0x%X --\r\n", slot);
-	sendStatus = sendCommand(GET_PICTURE, slot); //Initialize data stream
-	if(sendStatus == kStatus_Success){ 	// Only try receiving image if sending the command was successful
-			imageBytesReceived = getImage(recv_buffer[3], recv_buffer[4]); 
+	int imageBytesExpected = recv_buffer[3] << 8 | recv_buffer[4];
+	status_t sendStatus = sendCommand(GET_PICTURE, slot); // What does this do? Initialize the data stream? 
+
+	if(sendStatus == kStatus_Success){ 	// Only try receiving packages if sending the command was successful
+		int imageBytesReceived = getPackages();
+		if(imageBytesReceived == imageBytesExpected){ // Receiving the packages was successful 
+			// Is checking the error bytes in recv_buffer necessary?
+			PRINTF("-- Picture received successfully and stored in image_storage. --\n");
+			PRINTF("-- getPicture complete --\n");
+			return ACK;
+		} else {
+			PRINTF("-- Failed to get picture from IMG --\n");
+			return NAK;
+		}	
 	} else {
-		PRINTF("-- Failed to fetch picture size from IMG --");
-		return imageBytesReceived;
+		PRINTF("-- Failed to send getPicture command to IMG --\n");
+		return NAK;
 	}
-
-
-	//Add error checking
-
-
-	return imageBytesReceived;
 }
 
 
