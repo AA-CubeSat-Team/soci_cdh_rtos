@@ -11,7 +11,9 @@ EPS:
 #include <stdbool.h>
 
 
-bool eps_healthcheck();
+uint32_t* eps_healthcheck();
+
+bool eps_initialization()
 
 double i2c_eps_getBatteryLevel();
 

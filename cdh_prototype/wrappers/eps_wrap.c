@@ -78,11 +78,15 @@ uint32_t* eps_healthcheck() {
 	//	TickType_t xLastWakeTime = xTaskGetTickCount();
 	//	vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( 10 ));
 	//	PRINTF("Finish delay\r\n");
+
 	uint32_t* arrayOfFlags[4] 
+
+	// will print statements if there is error or flags
 	arrayOfFlags[0] = i2c_eps_powerModuleStatus();
 	arrayOfFlags[1] = i2c_eps_batteryModuleStatus();
 	arrayOfFlags[2] = i2c_eps_getTelemetryGroup(0x01); // gets solar pannel temp
 	arrayOfFlags[3] = i2c_eps_FDIRflag();
+
 	return arrayOfFlags;
 }
 
@@ -214,43 +218,43 @@ uint32_t i2c_eps_powerModuleStatus()
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
 
-
-	if (adc_count & (1 << 0))
+	if (adc_count && (1 << 0))
 	{
 		PRINTF("3V3 output error\n");
 	}
-	if (adc_count & (1 << 1))
+	if (adc_count && (1 << 1))
 	{
 		PRINTF("5V output error\n");
 	}
-	if (adc_count & (1 << 2))
+	if (adc_count && (1 << 2))
 	{
 		PRINTF("12V output error\n");
 	}
-	if (adc_count & (1 << 8))
+	if (adc_count && (1 << 8))
 	{
 		PRINTF("PDM1 error\n");
 	}
-	if (adc_count & (1 << 9))
+	if (adc_count && (1 << 9))
 	{
 		PRINTF("PDM2 error\n");
 	}
-	if (adc_count & (1 << 10))
+	if (adc_count && (1 << 10))
 	{
 		PRINTF("PDM3 error\n");
 	}
-	if (adc_count & (1 << 11))
+	if (adc_count && (1 << 11))
 	{
 		PRINTF("PDM4 error\n");
 	}
-	if (adc_count & (1 << 12))
+	if (adc_count && (1 << 12))
 	{
 		PRINTF("PDM5 error\n");
 	}
-	if (adc_count & (1 << 13))
+	if (adc_count && (1 << 13))
 	{
 		PRINTF("PDM6 error\n");
 	}
+
 	return adc_count;
 }
 
@@ -556,7 +560,7 @@ uint32_t* i2c_eps_getTelemetryGroup(uint16_t families)
 
 	// for calculations on which family
 
-	uint32_t* ptr;
+	uint32_t ptr;
 
 	if (families == 0x00)
 	{
@@ -583,7 +587,7 @@ uint32_t* i2c_eps_getTelemetryGroup(uint16_t families)
 		ptr = telemetry_systemData(returnArray);
 	}
 
-	return ptr;
+	return;
 }
 
 uint32_t* telemetry_bcrs(uint32_t * data)
@@ -614,8 +618,8 @@ uint32_t* telemetry_bcrs(uint32_t * data)
 	PRINTF("BCR3W Output Voltage = %d V \n", tm11);
 	PRINTF("BCR3W Output Current = %d mA \n", tm12);
 
-	uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
-	return tmList;
+	//uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
+	return data;
 }
 
 // twos comp done here
@@ -633,8 +637,8 @@ uint32_t* telemetry_solarPanelSensors(uint32_t * data)
 	PRINTF("M_SP Temperature Y- = %d C \n", tm4);
 	PRINTF("M_SP Temperature Z+ = %d C \n", tm5);
 
-	uint32_t tmList[5] = {tm1, tm2, tm3, tm4, tm5};
-	return tmList;
+	//uint32_t tmList[5] = {tm1, tm2, tm3, tm4, tm5};
+	return data;
 }
 
 uint32_t* telemetry_powerBuses(uint32_t * data)
@@ -664,8 +668,9 @@ uint32_t* telemetry_powerBuses(uint32_t * data)
 	PRINTF("Vbat Power Bus Current = %d A \n", tm10);
 	PRINTF("12V Power Bus Voltage = %d V \n", tm11);
 	PRINTF("12V Power Bus Current = %d A \n", tm12);
-	uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
-	return tmList;
+
+	//uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
+	return data;
 }
 
 uint32_t* telemetry_switchablePowerBuses(uint32_t * data)
@@ -696,8 +701,8 @@ uint32_t* telemetry_switchablePowerBuses(uint32_t * data)
 	PRINTF("SW6_V = %d V \n", tm11);
 	PRINTF("SW6_C = %d A \n", tm12);
 
-	uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
-	return tmList;
+	//uint32_t tmList[12] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12};
+	return data;
 }
 
 // twos comp done here on 3,4,5
@@ -721,8 +726,8 @@ uint32_t* telemetry_batteryModule(uint32_t * data)
 	PRINTF("Remaining Capacity = %d %% \n", tm7);
 	PRINTF("Accumulated Battery Current = %d mAh \n", tm8);
 
-	uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8};
-	return tmList;
+	//uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8};
+	return data;
 }
 
 uint32_t* telemetry_systemData(uint32_t * data)
@@ -747,8 +752,8 @@ uint32_t* telemetry_systemData(uint32_t * data)
 	}
 	PRINTF("Safety hazard environment = %d \n", tm6);
 
-	uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6};
-	return tmList;
+	//uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6};
+	return data;
 }
 
 
