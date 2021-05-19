@@ -93,10 +93,10 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B0_08_LPI2C3_SCL,        /* GPIO_AD_B0_08 is configured as LPI2C3_SCL */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B0_09_LPI2C3_SDA,        /* GPIO_AD_B0_09 is configured as LPI2C3_SDA */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B0_10_LPSPI1_SCK,        /* GPIO_AD_B0_10 is configured as LPSPI1_SCK */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
@@ -126,10 +126,10 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B1_08_LPI2C2_SCL,        /* GPIO_AD_B1_08 is configured as LPI2C2_SCL */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B1_09_LPI2C2_SDA,        /* GPIO_AD_B1_09 is configured as LPI2C2_SDA */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B1_10_LPUART4_TX,        /* GPIO_AD_B1_10 is configured as LPUART4_TX */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
@@ -138,10 +138,10 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B1_14_LPI2C1_SCL,        /* GPIO_AD_B1_14 is configured as LPI2C1_SCL */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_B1_15_LPI2C1_SDA,        /* GPIO_AD_B1_15 is configured as LPI2C1_SDA */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinConfig(
       IOMUXC_GPIO_AD_B0_06_LPUART1_TX,        /* GPIO_AD_B0_06 PAD functional properties : */
       0x10B0U);                               /* Slew Rate Field: Slow Slew Rate

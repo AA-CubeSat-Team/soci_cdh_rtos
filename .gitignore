@@ -52,3 +52,10 @@ Mkfile.old
 dkms.conf
 
 */Debug/*
+/.metadata/
+
+cdh_prototype/.settings/language.settings.xml
+
+.mcuxpressoide_packages_support/
+
+FreeRTOS_TAD_logs/

@@ -89,27 +89,33 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
-        pdPASS)
-    {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-            ;
-    }
-    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
-		pdPASS)
-	{
-		PRINTF("Task creation failed!.\r\n");
-		while (1)
-			;
-	}
-    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
-		pdPASS)
-	{
-		PRINTF("Task creation failed!.\r\n");
-		while (1)
-			;
-	}
+    // Not sure why is this deleted
+    CLOCK_SetMux(kCLOCK_Lpi2cMux, BOARD_ACCEL_I2C_CLOCK_SOURCE_SELECT);
+    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, BOARD_ACCEL_I2C_CLOCK_SOURCE_DIVIDER);
+    /* Set IRQ priority for freertos_lpi2c */
+    NVIC_SetPriority(LPI2C1_IRQn, 3);
+
+//    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
+//        pdPASS)
+//    {
+//        PRINTF("Task creation failed!.\r\n");
+//        while (1)
+//            ;
+//    }
+//    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
+//		pdPASS)
+//	{
+//		PRINTF("Task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
+//    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
+//		pdPASS)
+//	{
+//		PRINTF("Task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
     if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
 		pdPASS)
 	{

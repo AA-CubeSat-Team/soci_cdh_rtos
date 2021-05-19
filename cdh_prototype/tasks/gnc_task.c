@@ -1,4 +1,7 @@
-#include "wrappers/gyro_wrapper/gyro_wrap.h"
+#define GYRO_WRAP_TEST	1
+
+#include "wrappers/sensor_wrap/gyro_wrap_test.h"
+#include "wrappers/sensor_wrap/gyro_wrap.h"
 #include "gnc_task.h"
 //#include "FSW_Lib_types.h"
 #include "act_wrap.h"
@@ -14,6 +17,9 @@ extern bool g_sunSensActive, g_magSensActive, g_phdSensActive, g_mtqSensActive, 
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
 {
+#if GYRO_WRAP_TEST
+	gyro_wrap_test_setup();
+#else
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 #if GNC_ENABLE
@@ -21,8 +27,13 @@ void gnc_task(void *pvParameters)
 	/* gnc, sens, act initialization */
 //	startGyro(Gyro, gyroHandle, transfer);
 //	 FSW_Lib_initialize(); //GNC board initialization
+#endif
+#endif
 
 	for (;;) {
+#if GYRO_WRAP_TEST
+		gyro_wrap_test_loop();
+#else
 		xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\nGNC TASK START.\r\n");
 
@@ -58,9 +69,9 @@ void gnc_task(void *pvParameters)
 		// rt_OneStep();
 		gnc_sendCommand();
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
-
+#endif
 	}
-#else
+#if !GYRO_WRAP_TEST
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 #endif
 }
