@@ -28,29 +28,49 @@ Sun Sensor:
 #include <stdbool.h>
 #include "peripherals.h"
 
-extern gyro_t * Gyro;
-
+/* sensor data */ //where are they defined?
+//extern gyro_t * Gyro;
+//extern lpi2c_rtos_handle_t *gyroHandle;
+//extern sun_t * Sun;
+//extern mag_t * Mag;
+//extern diodes_t Diodes;
 
 bool sens_healthcheck(){
 	PRINTF("checking sensors health\r\n");
+//	health(); //phd health
+
 	return true;
 }
+
+void sens_init() {
+//	initADC(); //phd init
+//	initMag(Mag); //mag init
+//	startMag(Mag); //mag init - 2
+//	initGyro(Gyro, gyroHandle); //gyro init
+//	startGyro(Gyro); //gyro init - 2 //TODO: there's a reset function to use for gyro. how and when should we use them?
+
+
+}
+
 //do each sensor separately
 void sens_readSun(){
 	PRINTF("reading sun sensors\r\n");
+//	getSunAngles(Sun); //TODO: are we gonna use this function to read from the sun sensor?
 }
 
 void sens_readMag(){
 	PRINTF("reading magnetometer sensors\r\n");
+//	readMagData(Mag);
 }
 
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors\r\n");
+//	getVoltage(Diodes); //TODO: is this the function that we should use?
 }
 
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
-	readTempData(Gyro);
-	readGyroData(Gyro);
+//	readTempData(Gyro);
+//	readGyroData(Gyro);
 
 }

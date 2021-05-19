@@ -1,25 +1,38 @@
 #include <stdbool.h>
 #include "idle_task.h"
 #include "eps_wrap.h"
+#include <stdint.h>
 
 /*******************************************************************************
  * Flags
  ******************************************************************************/
 //flags for checking if it's turned on or not
-bool g_sunSensActive;
-bool g_rwaSensActive;
-bool g_magSensActive;
-bool g_mtqSensActive;
-bool g_phdSensActive;
+bool g_mtqActive;
+bool g_rwaActive;
+bool g_senActive;
+
 //flags for checking if they're healthy
-bool g_epsHealthy;
 bool g_obcHealthy;
+bool g_epsHealthy;
 bool g_comHealthy;
 bool g_senHealthy;
 bool g_gncHealthy;
 bool g_mtqHealthy;
 bool g_rwaHealthy;
 bool g_imgHealthy;
+//uint8_t healthFlags; //bit flags: [img|rwa|mtq|gnc|sen|com|eps|obc]
+
+/*******************************************************************************
+ * Function declarations
+ ******************************************************************************/
+
+static bool obc_healthcheck();
+static void obc_reset();
+static void idle_phase1();
+static void setMCUPowerMode();
+static void UpdateFlags();
+static void idle_phase2();
+static void idle_phase3();
 
 
 TaskHandle_t TaskHandler_idle;
@@ -59,7 +72,7 @@ static void idle_phase1() {
 			//i2c_eps_manualReset();
 		}
 		if (!g_obcHealthy){
-			//obc_reset();
+			obc_reset();
 		}
 	}
 
@@ -88,27 +101,21 @@ static void setMCUPowerMode() {
 static void UpdateFlags() {
 	switch(operatingMode){
 		case CRIT_LOW_POWER:
-			g_sunSensActive = false;
-			g_rwaSensActive = false;
-			g_mtqSensActive = false;
-			g_magSensActive = false;
-			g_phdSensActive = false;
+			g_mtqActive = false;
+			g_rwaActive = false;
+			g_senActive = false;
 			break;
 
 		case LOW_POWER:
-			g_sunSensActive = true;
-			g_rwaSensActive = true;
-			g_mtqSensActive = true;
-			g_magSensActive = true;
-			g_phdSensActive = true;
+			g_mtqActive = false;
+			g_rwaActive = true;
+			g_senActive = true;
 			break;
 
 		case NOMINAL_POWER:
-			g_sunSensActive = true;
-			g_rwaSensActive = true;
-			g_mtqSensActive = true;
-			g_magSensActive = true;
-			g_phdSensActive = true;
+			g_mtqActive = true;
+			g_rwaActive = true;
+			g_senActive = true;
 			break;
 		default:
 			break;

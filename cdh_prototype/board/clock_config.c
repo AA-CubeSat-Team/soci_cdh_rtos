@@ -226,11 +226,12 @@ void BOARD_BootClockRUN(void)
     /* Disable Semc clock gate. */
     CLOCK_DisableClock(kCLOCK_Semc);
     /* Set SEMC_PODF. */
-    CLOCK_SetDiv(kCLOCK_SemcDiv, 7);
+    CLOCK_SetDiv(kCLOCK_SemcDiv, 1); //was 7
     /* Set Semc alt clock source. */
     CLOCK_SetMux(kCLOCK_SemcAltMux, 0);
     /* Set Semc clock source. */
-    CLOCK_SetMux(kCLOCK_SemcMux, 0);
+    CLOCK_SetMux(kCLOCK_SemcMux, 1); //was 0
+
 #endif
     /* In SDK projects, external flash (configured by FLEXSPI) will be initialized by dcd.
      * With this macro XIP_EXTERNAL_FLASH, usb1 pll (selected to be FLEXSPI clock source in SDK projects) will be left unchanged.
@@ -289,7 +290,7 @@ void BOARD_BootClockRUN(void)
     /* Set LPI2C_CLK_PODF. */
     CLOCK_SetDiv(kCLOCK_Lpi2cDiv, 0);
     /* Set Lpi2c clock source. */
-    CLOCK_SetMux(kCLOCK_Lpi2cMux, 0);
+    CLOCK_SetMux(kCLOCK_Lpi2cMux, 5U); //was 0
     /* Disable CAN clock gate. */
     CLOCK_DisableClock(kCLOCK_Can1);
     CLOCK_DisableClock(kCLOCK_Can2);
@@ -344,7 +345,7 @@ void BOARD_BootClockRUN(void)
     /* Init System pfd1. */
     CLOCK_InitSysPfd(kCLOCK_Pfd1, 16);
     /* Init System pfd2. */
-    CLOCK_InitSysPfd(kCLOCK_Pfd2, 18);
+    CLOCK_InitSysPfd(kCLOCK_Pfd2, 29); //TODO: was 18
     /* Init System pfd3. */
     CLOCK_InitSysPfd(kCLOCK_Pfd3, 18);
 #endif

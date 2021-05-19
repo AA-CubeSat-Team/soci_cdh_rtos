@@ -21,6 +21,7 @@
 #include "clock_config.h"
 #include "peripherals.h"
 #include "lpm.h"
+#include "semc_sdram.h"
 
 #include "idle_task.h"
 #include "imag_task.h"
@@ -80,6 +81,10 @@ void resumeTask (TaskHandle_t handler) {
 	}
 }
 
+uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
+uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
+uint8_t *sdram_copy  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; //SD ram
+
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
@@ -88,6 +93,36 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
+
+    if (BOARD_InitSEMC() != kStatus_Success)
+	{
+		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
+	}
+    PRINTF("write \"hello world\" to sdram \r\n");
+    char message[] = "hello world";
+    PRINTF("Expected:\r\n");
+    for (uint8_t i = 0; i < strlen(message); i++) {
+    	sdram_writeBuffer_copy[i] = message[i];
+    	PRINTF("%c", sdram_writeBuffer_copy[i]);
+    }
+    //TODO: maybe we need to reset the whole ram when powering up
+//    SEMC_SDRAM_Write(100, strlen(message), 1); //write chars of the size of message starting at 10th byte
+//    for (int i = 0; i < 10000000; i++) {
+//    	PRINTF("");
+//    }
+    PRINTF("\r\nREAD:\r\n");
+    SEMC_SDRAM_Read(102, strlen(message), 1); //read the four uint8_t into readbuffer
+    for (uint8_t i = 0; i< strlen(message); i++) {
+		PRINTF("%c", sdram_readBuffer_copy[i]);
+	}
+
+
+//    /* 32Bit data read and write. */
+//	SEMC_SDRAMReadWrite32Bit();
+//	/* 16Bit data read and write. */
+//	SEMC_SDRAMReadWrite16Bit();
+//	/* 8Bit data read and write. */
+//	SEMC_SDRAMReadWrite8Bit();
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)

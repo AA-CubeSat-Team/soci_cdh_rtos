@@ -1,4 +1,4 @@
-#define COM_ENABLE	1
+#define COM_ENABLE	0
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"

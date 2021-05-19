@@ -363,7 +363,7 @@ static void LPI2C3_init(void) {
 	 */
 	LPI2C_MasterGetDefaultConfig(&i2c3_master_config); //defined in fsl_lpi2c.c
 	i2c3_master_config.baudRate_Hz = I2C_BAUDRATE;
-	if(kStatus_Success != LPI2C_RTOS_Init(&i2c1_m_rtos_handle, (LPI2C_Type *)LPI2C3_BASE, &i2c3_master_config, LPI2C_CLOCK_FREQUENCY))
+	if(kStatus_Success != LPI2C_RTOS_Init(&i2c3_m_rtos_handle, (LPI2C_Type *)LPI2C3_BASE, &i2c3_master_config, LPI2C_CLOCK_FREQUENCY))
     {
 		PRINTF("I2C1 Master initialization failed! \r\n");
     }

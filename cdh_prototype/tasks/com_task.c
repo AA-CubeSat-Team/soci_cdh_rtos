@@ -25,14 +25,14 @@ void com_task(void *pvParameters)
 
 	/***deploy antenna****/
 	//TODO: should we make this whole sequence of deployment into a function?
-//	com_deployAntenna_algorithmOne(); //TODO: uncomment this line when incorporating the newer com wrapper
+	com_deployAntenna_algorithmOne(); //TODO: uncomment this line when incorporating the newer com wrapper
 	//TODO: should we wait for 15 min and check if we need to try, if we do vTaskDelay, then we were able to switch to other tasks in the meantime
 //	i2c_com_antennaDeployed = com_i2c_checkDeploy(); //it might be easier to just update the global flag in the checkDeploy //TODO: uncomment this line when incorporating the newer com wrapper
 	if (!i2c_com_antennaDeployed) {
-//		com_deployAntenna_algorithmTwo(); //TODO: uncomment this line when incorporating the newer com wrapper
+		com_deployAntenna_algorithmTwo(); //TODO: uncomment this line when incorporating the newer com wrapper
 	}
 	//TODO: should we wait for 15 min and check if we need to try
-//	i2c_com_antennaDeployed = com_i2c_checkDeploy(); //TODO: uncomment this line when incorporating the newer com wrapper
+	i2c_com_antennaDeployed = com_i2c_checkDeploy(); //TODO: uncomment this line when incorporating the newer com wrapper
 	if (!i2c_com_antennaDeployed) {
 		com_set_burn_wire1();
 	}

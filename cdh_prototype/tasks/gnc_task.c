@@ -3,13 +3,14 @@
 //#include "FSW_Lib_types.h"
 #include "act_wrap.h"
 #include "sen_wrap.h"
+#include "idle_task.h"
 
 
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
 
 
-extern bool g_sunSensActive, g_magSensActive, g_phdSensActive, g_mtqSensActive, g_rwaActive;
+extern bool senActive, rwaActive, mtqActive;
 
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
@@ -19,44 +20,36 @@ void gnc_task(void *pvParameters)
 #if GNC_ENABLE
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
-//	startGyro(Gyro, gyroHandle, transfer);
-//	 FSW_Lib_initialize(); //GNC board initialization
+	sens_init();
+	FSW_Lib_initialize(); //GNC initialization
 
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\nGNC TASK START.\r\n");
 
 		/* read sensors and actuator measurements to sensor_bus */
-		if(g_sunSensActive){
+		if (senActive) {
 			sens_readSun();
-		}
-		else{
-			PRINTF("sun sensor not active\r\n");
-		}
-
-		if(g_magSensActive){
 			sens_readMag();
-		}
-		else{
-			PRINTF("magnetometer not active\r\n");
-		}
-
-		if(g_phdSensActive){
 			sens_readPhd();
+			sens_readGyr();
 		}
-		else{
-			PRINTF("photodiode not active\r\n");
+		if (rwaActive) {
+			readRWA();
 		}
-		sens_readSun();
-		sens_readMag();
-		sens_readPhd();
-//		sens_readGyr();
-		readActMeas();
+		if (mtqActive) {
+			readMTQ();
+		}
 
 		/* call GNC rt_OneStep() */
-		// TODO: enable rt_OneStep(); after include
-		// rt_OneStep();
-		gnc_sendCommand();
+		 rt_OneStep(); // TODO: enable rt_OneStep() after include
+		/* write to actuators */
+		if (rwaActive) {
+			writeRWA();
+		}
+		if (mtqActive) {
+			writeMTQ();
+		}
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
 	}
