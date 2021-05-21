@@ -1,4 +1,4 @@
-#define SPOOF	0
+#define SPOOF	1
 #include "gyro_wrap_test.h"
 #include "fsl_debug_console.h"
 void test_initGyro() {
