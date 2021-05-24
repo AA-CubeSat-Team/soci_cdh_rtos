@@ -85,6 +85,7 @@ size_t getResponse(){
 int getPackages(){
 	int imageBytesReceived = 0;
 	status_t sendStatus; 
+	bool retryPackage = false; // Default (True if the received package has an incorrect veri. byte and must be retried)
 	uint8_t packageSize;
 	uint8_t imageSize = recv_buffer[3] << 8 | recv_buffer[4]; 
 	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; // Max value of 8 currently (Since image_storage has size 256)
@@ -95,7 +96,13 @@ int getPackages(){
 
 	for(int i = 0; i <= fullPackages; i++){
 		PRINTF("-- Requesting Package from IMG. --\r\n");
-		status_t sendStatus = sendCommand(ACK, PADDING); // Will this get confused with sending takePicture command? When to send NAK?
+		if(retryPackage == false){
+			status_t sendStatus = sendCommand(ACK, PADDING); // Will this get confused with sending takePicture command?
+		} else if(retryPackage == true){
+			// If the last package's verification byte was wrong, request the same package
+			status_t sendStatus = sendCommand(NAK, PADDING); // Will this get confused with sending checkStatus command?
+		}
+
 		if(sendStatus == kStatus_Success){
 			PRINTF("-- Package %d requested from IMG. --\r\n", i);
 		} else {
@@ -107,6 +114,7 @@ int getPackages(){
 		memset(package_buffer, 0, sizeOf(package_buffer));
 
 		PRINTF("-- Receiving package from IMG. --\r\n");
+
 		status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize);
 		//Try receiving 3 times 
 		int attempt = 1;
@@ -124,13 +132,23 @@ int getPackages(){
 			attempt++;
 			receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize); // Retry Receiving
 		}
-		//Copy package_buffer to image_storage
-		int imageStorageSlot; // Position in image_storage to store new bytes
-		for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
-			imageStorageSlot = (i * EXTERNAL_PACKAGE_SIZE + j);
-			image_storage[imageStorageSlot] = package_buffer[j];
+		// Check verification byte
+		if(package_buffer[31] == 0xFF){
+			// Package received correctly
+			// Copy package_buffer to image_storage
+			int imageStorageSlot; // Position in image_storage to store new bytes
+			for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
+				imageStorageSlot = (i * EXTERNAL_PACKAGE_SIZE + j);
+				image_storage[imageStorageSlot] = package_buffer[j];
+			}
+			imageBytesReceived += packageSize;
+			retryPackage = false;
+		} else {
+			// Package not received correctly (Retry current package)
+			PRINTF("-- Package verification byte is incorrect (not 0xFF), retrying... --\r\n");
+			retryPackage = true;
+			i--; // To ensure the loop is ran one more time for the same package
 		}
-		imageBytesReceived += packageSize;
 	}
 	sendStatus = sendCommand(ACK, PADDING); // Confirmation of all packages received
 	if(sendStatus == kStatus_Success){
@@ -302,13 +320,13 @@ uint8_t getPictureSize(uint8_t slot){
 // Param slot  Indicates where in the microSD card to find the picture
 uint8_t getPicture(uint8_t slot){
 	PRINTF("-- Fetching the picture at slot 0x%X --\r\n", slot);
-	PRINTF("-- Fetching the picture size --");
+	PRINTF("-- Fetching the picture size --\r\n");
 	uint8_t sizeStatus = getPictureSize(slot);
 
 	if(sizeStatus == ACK){
-		PRINTF("-- Picture size fetched successfully --");
+		PRINTF("-- Picture size fetched successfully --\r\n");
 	} else {
-		PRINTF("-- Failed to fetch picture size. --");
+		PRINTF("-- Failed to fetch picture size. --\r\n");
 		return NAK;
 	}
 	int imageBytesExpected = recv_buffer[3] << 8 | recv_buffer[4];
