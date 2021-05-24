@@ -267,37 +267,6 @@ uint8_t takePicture(uint8_t slot){
 	}
 }
 
-// Param slot  Indicates where in the microSD card to find the thumbnail
-uint8_t getThumbnailSize(uint8_t slot){
-
-	PRINTF("-- Fetching the size of thumbnail at slot 0x%X --\r\n", slot);
-	status_t sendStatus = sendCommand(GET_THUMBNAIL_SIZE, slot); 
-	if(sendStatus == kStatus_Success){ 	// Only check response if sending the command was successful
-		size_t bytesReceived = getResponse();
-		if(bytesReceived == 5){ // Only check errors if receiving the response was successful 
-			
-			uint8_t errorCheck = checkError();
-			// Check that the output is as expected
-			if(recv_buffer[0] != 1 ||
-			recv_buffer[1] != GET_THUMBNAIL_SIZE ||
-			recv_buffer[2] != slot) {
-				PRINTF("-- Not Acknowledged. You sent 0x%X 0x%X. Error 0x%X occurred. --\n",  GET_THUMBNAIL_SIZE, slot, errorCheck);
-			} else {
-				PRINTF("-- Acknowledged. You sent 0x%X 0x%X. Thumbnail size is 0x%X 0x%X. --\n", GET_THUMBNAIL_SIZE, slot, recv_buffer[3], recv_buffer[4]);
-			}
-			printResponse(); // Prints the recv_buffer without the padding bytes
-			PRINTF("-- getThumbnailSize complete --\n");
-			return ACK;
-		} else {
-			PRINTF("-- Failed to get response from IMG --\n");
-			return NAK;
-		}	
-	} else {
-		PRINTF("-- Failed to send getThumbnailSize command to IMG --\n");
-		return NAK;
-	}
-}
-
 // Param slot  Indicates where in the microSD card to find the picture
 // Returns ACK (1) if successful or NAK (0) if unsuccessful
 uint8_t getPictureSize(uint8_t slot){
@@ -329,40 +298,6 @@ uint8_t getPictureSize(uint8_t slot){
 		return NAK;
 	}
 }
-
-// Param slot  Indicates where in the microSD card to find the thumbnail
-uint8_t getThumbnail(uint8_t slot){
-
-	PRINTF("-- Fetching the thumbnail at slot 0x%X --\r\n", slot);
-	PRINTF("-- Fetching the thumbnail size --");
-	uint8_t sizeStatus = getThumbnailSize(slot);
-
-	if(sizeStatus == ACK){
-		PRINTF("-- Thumbnail size fetched successfully --");
-	} else {
-		PRINTF("-- Failed to fetch thumbnail size. --");
-		return NAK;
-	}
-	int imageBytesExpected = recv_buffer[3] << 8 | recv_buffer[4];
-	status_t sendStatus = sendCommand(GET_THUMBNAIL, slot); // What does this do? Initialize the data stream? 
-
-	if(sendStatus == kStatus_Success){ 	// Only try receiving packages if sending the command was successful
-		int imageBytesReceived = getPackages();
-		if(imageBytesReceived == imageBytesExpected){ // Receiving the packages was successful 
-			// Is checking the error bytes in recv_buffer necessary?
-			PRINTF("-- Thumbnail received successfully and stored in image_storage. --\n");
-			PRINTF("-- getThumbnail complete --\n");
-			return ACK;
-		} else {
-			PRINTF("-- Failed to get thumbnail from IMG --\n");
-			return NAK;
-		}	
-	} else {
-		PRINTF("-- Failed to send getThumbnail command to IMG --\n");
-		return NAK;
-	}
-}
-
 
 // Param slot  Indicates where in the microSD card to find the picture
 uint8_t getPicture(uint8_t slot){
