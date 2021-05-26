@@ -116,10 +116,10 @@ void readMagData(mag_t * Mag)
     // Note high before low (different than accel)
     uint8_t xhi = raw[0];
     uint8_t xlo = raw[1];
-    uint8_t yhi = raw[2];
-    uint8_t ylo = raw[3];
-    uint8_t zhi = raw[4];
-    uint8_t zlo = raw[5];
+    uint8_t zhi = raw[2];
+    uint8_t zlo = raw[3];
+    uint8_t yhi = raw[4];
+    uint8_t ylo = raw[5];
 
     // Shift values to create properly formed integer (low uint8_t first)
     int16_t raw_x = (int16_t)((int16_t)xlo | ((int16_t)xhi << 8));
