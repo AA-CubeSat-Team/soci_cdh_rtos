@@ -240,12 +240,13 @@ static void LPSPI1_RWA3_init(void) {
 	}
 }
 
-void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize)
+//og SPI transfer
+/*void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize)
 {
 	lpspi_transfer_t masterXfer;
 	status_t status;
 
-	/*Start master transfer*/
+	Start master transfer
 	masterXfer.txData      = txBuffer;
 	masterXfer.rxData      = rxBuffer;
 	masterXfer.dataSize    = transferSize;
@@ -259,6 +260,79 @@ void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * r
 	else
 	{
 		PRINTF("LPSPI master transfer completed with error.\r\n");
+	}
+}*/
+
+void SPI_send(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, size_t transferSize)
+{
+	lpspi_transfer_t masterXfer;
+	status_t status;
+
+	/*Start master transfer*/
+	uint8_t rxBuffer[transferSize];
+	masterXfer.txData      = txBuffer;
+	masterXfer.rxData      = rxBuffer;
+	masterXfer.dataSize    = transferSize;
+	masterXfer.configFlags = LPSPI_MASTER_PCS_FOR_TRANSFER | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
+
+	status = LPSPI_RTOS_Transfer(handler, &masterXfer);
+	//sanity check
+	PRINTF("SPI SEND");
+	PRINTF("Send Buffer: ");
+	for(int i = 0; i < sizeof(txBuffer); i++) {
+		PRINTF("%d ", txBuffer[i]);
+	}
+	PRINTF("\n");
+	PRINTF("Receive Buffer: ");
+	for(int i = 0; i < sizeof(rxBuffer); i++) {
+		PRINTF("%d ", rxBuffer[i]);
+	}
+	PRINTF("\n");
+	memset(rxBuffer, 0, sizeof(rxBuffer));
+	if (status == kStatus_Success)
+	{
+		PRINTF("LPSPI master send completed successfully.\r\n");
+	}
+	else
+	{
+		PRINTF("LPSPI master send completed with error.\r\n");
+	}
+}
+
+void SPI_request(lpspi_rtos_handle_t * handler, uint8_t * rxBuffer, size_t transferSize)
+{
+	lpspi_transfer_t masterXfer;
+	status_t status;
+	uint8_t txBuffer[transferSize];
+	memset(txBuffer, 0xFF, transferSize);
+	/*Start master transfer*/
+	masterXfer.txData      = txBuffer;
+	masterXfer.rxData      = rxBuffer;
+	masterXfer.dataSize    = transferSize;
+	masterXfer.configFlags = LPSPI_MASTER_PCS_FOR_TRANSFER | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
+
+	status = LPSPI_RTOS_Transfer(handler, &masterXfer);
+
+	//sanity check
+	PRINTF("SPI SEND");
+	PRINTF("Send Buffer: ");
+	for(int i = 0; i < sizeof(txBuffer); i++) {
+		PRINTF("%d ", txBuffer[i]);
+	}
+	PRINTF("\n");
+	PRINTF("Receive Buffer: ");
+	for(int i = 0; i < sizeof(rxBuffer); i++) {
+		PRINTF("%d ", rxBuffer[i]);
+	}
+	PRINTF("\n");
+
+	if (status == kStatus_Success)
+	{
+		PRINTF("LPSPI master request completed successfully.\r\n");
+	}
+	else
+	{
+		PRINTF("LPSPI master request completed with error.\r\n");
 	}
 }
 

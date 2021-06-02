@@ -7,7 +7,8 @@
 <booleanAttribute key="com.crt.ctrlcenter.crtInit" value="true"/>
 <stringAttribute key="com.crt.ctrlcenter.currentWireType" value="SWD"/>
 <booleanAttribute key="com.crt.ctrlcenter.mainBreakIsHardware" value="true"/>
-<stringAttribute key="com.crt.ctrlcenter.serialNumber" value="LinkServerARMCMSIS-DAP0226000047784e4500189003d9170010e561000097969900"/>
+<booleanAttribute key="com.crt.ctrlcenter.saveState" value="true"/>
+<stringAttribute key="com.crt.ctrlcenter.serialNumber" value="LinkServerARMDAPLink CMSIS-DAP0226000047784e4500589003d917001ce561000097969900"/>
 <mapAttribute key="com.crt.ctrlcenter.symbolsGroupSettings"/>
 <intAttribute key="com.crt.ctrlcenter.version" value="6"/>
 <stringAttribute key="com.nxp.mcuxpresso.flash.base.address" value="0x60000000"/>
@@ -18,7 +19,7 @@
 <stringAttribute key="com.nxp.mcuxpresso.flash.program.action" value="Program"/>
 <booleanAttribute key="com.nxp.mcuxpresso.flash.reset.target" value="true"/>
 <stringAttribute key="com.nxp.mcuxpresso.ide.probe.manufacturer" value="ARM"/>
-<stringAttribute key="com.nxp.mcuxpresso.ide.probe.name" value="CMSIS-DAP"/>
+<stringAttribute key="com.nxp.mcuxpresso.ide.probe.name" value="DAPLink CMSIS-DAP"/>
 <stringAttribute key="com.nxp.mcuxpresso.ide.probe.type" value="LinkServer"/>
 <stringAttribute key="debug.level" value="2"/>
 <stringAttribute key="emu.speed" value=""/>

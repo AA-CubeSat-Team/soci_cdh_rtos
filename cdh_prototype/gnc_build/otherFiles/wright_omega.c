@@ -1,5 +1,7 @@
 #include "wright_omega.h"
 
+#define M_PI 3.14159265358979323846
+
 /**
  * Santiago Akle
  * ICME Stanford University 2014
@@ -27,7 +29,7 @@ pfloat wrightOmega(pfloat z)
     
 	if(z<0.0) return -1; /* Fail if the input is not supported */
 	
-	if(z<1.0+M_PI)      /* If z is between 0 and 1+pi */
+	if(z<1.0+ M_PI)      /* If z is between 0 and 1+pi */
     {
         q = z-1;
         r = q;

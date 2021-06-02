@@ -16,7 +16,9 @@ void callecos(int n, int m, int p, int l, int ncones, double *c, int *Gjc, int *
 	// Save exitflag
 	y[N] = exitflag;
 	// Save solution time
-	y[N+1] = mywork->info->tsetup + mywork->info->tsolve;
+	// UPDATE May 25 2021:
+	// 	Removing timer.h from everything because it cannot be included in the OBC build
+	// y[N+1] = mywork->info->tsetup + mywork->info->tsolve;
 	// Clean up memory
 	ECOS_cleanup(mywork, 0);
 }
