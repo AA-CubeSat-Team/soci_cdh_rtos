@@ -90,7 +90,14 @@ void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * r
 void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
 void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
 
-
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+/* Definitions for BOARD_InitPeripherals functional group */
+/* Definition of peripheral ID */
+#define DEMO_GPT_PERIPHERAL GPT2
+/* Definition of the clock source frequency */
+#define DEMO_GPT_CLOCK_SOURCE 32768UL
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/

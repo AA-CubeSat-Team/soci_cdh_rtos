@@ -8,6 +8,7 @@
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "board.h"
+#include "fsl_gpt.h"
 
 #include "pin_mux.h"
 #include "clock_config.h"
@@ -518,6 +519,62 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 	}
 }
 /***********************************************************************************************************************
+ * GPT initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'GPT'
+- type: 'gpt'
+- mode: 'general'
+- type_id: 'gpt_e92a0cbd07e389b82a1d19b05eb9fdda'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'GPT2'
+- config_sets:
+  - fsl_gpt:
+    - gpt_config:
+      - clockSource: 'kGPT_ClockSource_LowFreq'
+      - clockSourceFreq: 'BOARD_BootClockRUN'
+      - oscDivider: '1'
+      - divider: '1'
+      - enableFreeRun: 'false'
+      - enableRunInWait: 'true'
+      - enableRunInStop: 'true'
+      - enableRunInDoze: 'true'
+      - enableRunInDbg: 'false'
+      - enableMode: 'true'
+    - input_capture_channels: []
+    - output_compare_channels: []
+    - interrupt_requests: ''
+    - isInterruptEnabled: 'false'
+    - interrupt:
+      - IRQn: 'GPT2_IRQn'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+    - EnableTimerInInit: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const gpt_config_t DEMO_GPT_config = {.clockSource     = kGPT_ClockSource_LowFreq,
+                                      .divider         = 1,
+                                      .enableFreeRun   = false,
+                                      .enableRunInWait = true,
+                                      .enableRunInStop = true,
+                                      .enableRunInDoze = true,
+                                      .enableRunInDbg  = false,
+                                      .enableMode      = true};
+
+void DEMO_GPT_init(void)
+{
+    /* GPT device and channels initialization */
+    GPT_Init(DEMO_GPT_PERIPHERAL, &DEMO_GPT_config);
+    GPT_SetOscClockDivider(DEMO_GPT_PERIPHERAL, 1);
+    /* Enable GPT interrupt sources */
+    GPT_EnableInterrupts(DEMO_GPT_PERIPHERAL, 0);
+}
+
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
@@ -534,5 +591,6 @@ void BOARD_InitPeripherals(void)
   LPI2C1_init();
   LPI2C2_init();
   LPI2C3_init();
+  DEMO_GPT_init();
 }
 

@@ -10,7 +10,7 @@
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
 
 
-extern bool senActive, rwaActive, mtqActive;
+extern bool g_senActive, g_rwaActive, g_mtqActive;
 
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
@@ -20,35 +20,35 @@ void gnc_task(void *pvParameters)
 #if GNC_ENABLE
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
-	sens_init();
-	FSW_Lib_initialize(); //GNC initialization
+//	sens_init();
+//	FSW_Lib_initialize(); //GNC initialization
 
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\nGNC TASK START.\r\n");
 
 		/* read sensors and actuator measurements to sensor_bus */
-		if (senActive) {
-			sens_readSun();
-			sens_readMag();
-			sens_readPhd();
-			sens_readGyr();
+		if (g_senActive) {
+//			sens_readSun();
+//			sens_readMag();
+//			sens_readPhd();
+//			sens_readGyr();
 		}
-		if (rwaActive) {
-			readRWA();
+		if (g_rwaActive) {
+//			readRWA();
 		}
-		if (mtqActive) {
-			readMTQ();
+		if (g_mtqActive) {
+//			readMTQ();
 		}
 
 		/* call GNC rt_OneStep() */
-		 rt_OneStep(); // TODO: enable rt_OneStep() after include
+//		 rt_OneStep(); // TODO: enable rt_OneStep() after include
 		/* write to actuators */
-		if (rwaActive) {
-			writeRWA();
+		if (g_rwaActive) {
+//			writeRWA();
 		}
-		if (mtqActive) {
-			writeMTQ();
+		if (g_mtqActive) {
+//			writeMTQ();
 		}
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 
