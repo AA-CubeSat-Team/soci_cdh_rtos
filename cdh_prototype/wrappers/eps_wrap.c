@@ -232,7 +232,7 @@ uint32_t i2c_eps_powerModuleStatus()
 	// thought: regardless if all bytes are moved, it should still return the same adc_count
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
-
+	
 	if (adc_count && (1 << 0))
 	{
 		PRINTF("3V3 output error\n");
@@ -286,31 +286,31 @@ uint32_t i2c_eps_batteryModuleStatus()
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
 
-	if (adc_count & (1 << 0))
+	if (adc_count && (1 << 0))
 	{
 		PRINTF("CC, Charge Control Flag. Set if battery charge is disabled.\n");
 	}
-	if (adc_count & (1 << 1))
+	if (adc_count && (1 << 1))
 	{
 		PRINTF("DC, Discharge Control Flag. Set if battery discharge is disabled.\n");
 	}
-	if (adc_count & (1 << 2))
+	if (adc_count && (1 << 2))
 	{
 		PRINTF(" CHGTF, Charge-Termination Flag. Set if battery is fully charged.\n");
 	}
-	if (adc_count & (1 << 4))
+	if (adc_count && (1 << 4))
 	{
 		PRINTF("SEF, Standby-Empty Flag. Set if capacity is below 10%%, unset if above 15 %%.\n");
 	}
-	if (adc_count & (1 << 8))
+	if (adc_count && (1 << 8))
 	{
 		PRINTF("Set if heater is active.\n");
 	}
-	if (adc_count & (1 << 12))
+	if (adc_count && (1 << 12))
 	{
 		PRINTF("Set if battery balancing is happening from top cell to bottom cell.\n");
 	}
-	if (adc_count & (1 << 13))
+	if (adc_count && (1 << 13))
 	{
 		PRINTF("Set if battery balancing is happening from bottom cell to top cell.\n");
 	}
@@ -330,47 +330,47 @@ uint32_t i2c_eps_FDIRflag()
 	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	i2c_read_write_helper(buffer, 4, &adc_count, 5000);
 
-	if (adc_count & (1 << 0))
+	if (adc_count && (1 << 0))
 	{
 		PRINTF("0 Set if last was command unknown\n");
 	}
-	if (adc_count & (1 << 1))
+	if (adc_count && (1 << 1))
 	{
 		PRINTF("Set if last command parameter was invalid.\n");
 	}
-	if (adc_count & (1 << 2))
+	if (adc_count && (1 << 2))
 	{
 		PRINTF("Set if watchdog was triggered.\n");
 	}
-	if (adc_count & (1 << 3))
+	if (adc_count && (1 << 3))
 	{
 		PRINTF("Set if BOR was triggered.\n");
 	}
-	if (adc_count & (1 << 5))
+	if (adc_count && (1 << 5))
 	{
 		PRINTF("Set if battery manager is unavailable.\n");
 	}
-	if (adc_count & (1 << 6))
+	if (adc_count && (1 << 6))
 	{
 		PRINTF("Set if VBAT1_ADC is out of range.\n");
 	}
-	if (adc_count & (1 << 7))
+	if (adc_count && (1 << 7))
 	{
 		PRINTF("Set if VBAT2_ADC is out of range.\n");
 	}
-	if (adc_count & (1 << 8))
+	if (adc_count && (1 << 8))
 	{
 		PRINTF("Set if IBAT_BM is out of range.\n");
 	}
-	if (adc_count & (1 << 9))
+	if (adc_count && (1 << 9))
 	{
 		PRINTF("Set if TEMP_BM is out of range.\n");
 	}
-	if (adc_count & (1 << 10))
+	if (adc_count && (1 << 10))
 	{
 		PRINTF("Set if TEMP_MB is out of range.\n");
 	}
-	if (adc_count & (1 << 11))
+	if (adc_count && (1 << 11))
 	{
 		PRINTF("Set if TEMP_DB1 is out of range.\n");
 	}
@@ -607,18 +607,18 @@ uint32_t* i2c_eps_getTelemetryGroup(uint16_t families)
 
 uint32_t* telemetry_bcrs(uint32_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 0.008;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 2;
-	int tm3 = (data[1] & BYTE16CAST) * 0.008;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 2;
-	int tm5 = (data[2] & BYTE16CAST) * 0.008;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 2;
-	int tm7 = (data[3] & BYTE16CAST) * 0.008;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 2;
-	int tm9 = (data[4] & BYTE16CAST) * 0.008;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 5;
-	int tm11 = (data[5] & BYTE16CAST) * 0.008;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 2;
+	double tm1 = (data[0] & BYTE16CAST) * 0.008;
+	double tm2 = ((data[0] >> 16) & BYTE16CAST) * 2;
+	double tm3 = (data[1] & BYTE16CAST) * 0.008;
+	double tm4 = ((data[1] >> 16) & BYTE16CAST) * 2;
+	double tm5 = (data[2] & BYTE16CAST) * 0.008;
+	double tm6 = ((data[2] >> 16) & BYTE16CAST) * 2;
+	double tm7 = (data[3] & BYTE16CAST) * 0.008;
+	double tm8 = ((data[3] >> 16) & BYTE16CAST) * 2;
+	double tm9 = (data[4] & BYTE16CAST) * 0.008;
+	double tm10 = ((data[4] >> 16) & BYTE16CAST) * 5;
+	double tm11 = (data[5] & BYTE16CAST) * 0.008;
+	double tm12 = ((data[5] >> 16) & BYTE16CAST) * 2;
 
 	PRINTF("BCR8W_1 Input Voltage = %d V \n", tm1);
 	PRINTF("BCR8W_1 Input Current = %d mA \n", tm2);
@@ -640,11 +640,11 @@ uint32_t* telemetry_bcrs(uint32_t * data)
 // twos comp done here
 uint32_t* telemetry_solarPanelSensors(uint32_t * data)
 {
-	int tm1 = (~(data[0] & BYTE16CAST) + 1) * 0.5;
-	int tm2 = (~((data[0] >> 16) & BYTE16CAST) + 1) * 0.5;
-	int tm3 = (~(data[1] & BYTE16CAST) + 1) * 0.5;
-	int tm4 = (~((data[1] >> 16) & BYTE16CAST) + 1) * 0.5;
-	int tm5 = (~(data[2] & BYTE16CAST) + 1) * 0.5;
+	double tm1 = (~(data[0] & BYTE16CAST) + 1) * 0.5;
+	double tm2 = (~((data[0] >> 16) & BYTE16CAST) + 1) * 0.5;
+	double tm3 = (~(data[1] & BYTE16CAST) + 1) * 0.5;
+	double tm4 = (~((data[1] >> 16) & BYTE16CAST) + 1) * 0.5;
+	double tm5 = (~(data[2] & BYTE16CAST) + 1) * 0.5;
 
 	PRINTF("M_SP Temperature X+ = %d C \n", tm1);
 	PRINTF("M_SP Temperature X- = %d C \n", tm2);
@@ -666,18 +666,18 @@ uint32_t* telemetry_solarPanelSensors(uint32_t * data)
 
 uint32_t* telemetry_powerBuses(uint32_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm3 = (data[1] & BYTE16CAST) * 0.0030945;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm5 = (data[2] & BYTE16CAST) * 0.0030945;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm7 = (data[3] & BYTE16CAST) * 0.0030945;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm9 = (data[4] & BYTE16CAST) * 0.0030945;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm11 = (data[5] & BYTE16CAST) * 0.0030945;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0020676;
+	double tm1 = (data[0] & BYTE16CAST) * 0.0030945;
+	double tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0020676;
+	double tm3 = (data[1] & BYTE16CAST) * 0.0030945;
+	double tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0020676;
+	double tm5 = (data[2] & BYTE16CAST) * 0.0030945;
+	double tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0020676;
+	double tm7 = (data[3] & BYTE16CAST) * 0.0030945;
+	double tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0020676;
+	double tm9 = (data[4] & BYTE16CAST) * 0.0030945;
+	double tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0020676;
+	double tm11 = (data[5] & BYTE16CAST) * 0.0030945;
+	double tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0020676;
 
 	PRINTF("BCR Output Voltage = %d V \n", tm1);
 	PRINTF("BCR Output Current = %d A \n", tm2);
@@ -698,18 +698,18 @@ uint32_t* telemetry_powerBuses(uint32_t * data)
 
 uint32_t* telemetry_switchablePowerBuses(uint32_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
-	int tm3 = (data[1] & BYTE16CAST) * 0.0030945;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
-	int tm5 = (data[2] & BYTE16CAST) * 0.0030945;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
-	int tm7 = (data[3] & BYTE16CAST) * 0.0030945;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
-	int tm9 = (data[4] & BYTE16CAST) * 0.0030945;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
-	int tm11 = (data[5] & BYTE16CAST) * 0.0030945;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	double tm1 = (data[0] & BYTE16CAST) * 0.0030945;
+	double tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	double tm3 = (data[1] & BYTE16CAST) * 0.0030945;
+	double tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	double tm5 = (data[2] & BYTE16CAST) * 0.0030945;
+	double tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	double tm7 = (data[3] & BYTE16CAST) * 0.0030945;
+	double tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	double tm9 = (data[4] & BYTE16CAST) * 0.0030945;
+	double tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
+	double tm11 = (data[5] & BYTE16CAST) * 0.0030945;
+	double tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0008336 − 0.010;
 
 	PRINTF("SW1_V = %d V \n", tm1);
 	PRINTF("SW1_C = %d A \n", tm2);
@@ -731,14 +731,14 @@ uint32_t* telemetry_switchablePowerBuses(uint32_t * data)
 // twos comp done here on 3,4,5
 uint32_t* telemetry_batteryModule(uint32_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 4.883;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 4.883;
-	int tm3 = (~(data[1] & BYTE16CAST) + 1) * 0.26;
-	int tm4 = (~((data[1] >> 16) & BYTE16CAST) + 1) * 0.1;
-	int tm5 = (~(data[2] & BYTE16CAST) + 1) * 0.125;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 1.6;
-	int tm7 = (data[3] & BYTE16CAST);
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 1.042;
+	double tm1 = (data[0] & BYTE16CAST) * 4.883;
+	double tm2 = ((data[0] >> 16) & BYTE16CAST) * 4.883;
+	double tm3 = (~(data[1] & BYTE16CAST) + 1) * 0.26;
+	double tm4 = (~((data[1] >> 16) & BYTE16CAST) + 1) * 0.1;
+	double tm5 = (~(data[2] & BYTE16CAST) + 1) * 0.125;
+	double tm6 = ((data[2] >> 16) & BYTE16CAST) * 1.6;
+	double tm7 = (data[3] & BYTE16CAST);
+	double tm8 = ((data[3] >> 16) & BYTE16CAST) * 1.042;
 
 	PRINTF("VBAT_1 = %d mV \n", tm1);
 	PRINTF("VBAT_2 = %d mV \n", tm2);
@@ -757,12 +757,12 @@ uint32_t* telemetry_batteryModule(uint32_t * data)
 
 uint32_t* telemetry_systemData(uint32_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST);
-	int tm2 = ((data[0] >> 16) & BYTE16CAST);
-	int tm3 = (data[1] & BYTE16CAST);
-	int tm4 = ((data[1] >> 16) & BYTE16CAST);
-	int tm5 = (data[2] & BYTE16CAST);
-	int tm6 = ((data[2] >> 16) & BYTE16CAST);
+	double tm1 = (data[0] & BYTE16CAST);
+	double tm2 = ((data[0] >> 16) & BYTE16CAST);
+	double tm3 = (data[1] & BYTE16CAST);
+	double tm4 = ((data[1] >> 16) & BYTE16CAST);
+	double tm5 = (data[2] & BYTE16CAST);
+	double tm6 = ((data[2] >> 16) & BYTE16CAST);
 
 	PRINTF("Watchdog period = %d \n", tm1);
 	PRINTF("PDMs Initial State = %d \n", tm2);
