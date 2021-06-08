@@ -66,12 +66,19 @@ EPS:
 #define VERIFIED_COM_MASK 0x67D6
 #define NO_RETURN 9999
 
+//lowest allowable temp and highest
+#define TEMPLOW -20
+#define TEMPHIGH 40
+
 
 #define EPS_SLAVE_ADDR 0 //change
 #define I2C_DATA_LENGTH 4 //?
 
 uint8_t buffer[I2C_DATA_LENGTH];
 static uint32_t adc_count;
+
+// Bitmasking flags here
+#define 
 
 uint32_t* eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
@@ -86,6 +93,14 @@ uint32_t* eps_healthcheck() {
 	arrayOfFlags[1] = i2c_eps_batteryModuleStatus();
 	arrayOfFlags[2] = i2c_eps_getTelemetryGroup(0x01); // gets solar pannel temp
 	arrayOfFlags[3] = i2c_eps_FDIRflag();
+
+	// to get battery and pcb temp will just print the two values but not save the values
+	uint32_t PCB_Battery_Temperatures = i2c_eps_getTelemetryGroup(0x04);
+	int batteryTemp = (~((PCB_Battery_Temperatures[1] >> 16) & BYTE16CAST) + 1) * 0.1;
+	int PCBTemp = (~(PCB_Battery_Temperatures[2] & BYTE16CAST) + 1) * 0.125;
+	PRINTF("BAT_TEMP = %d C \n", tm4);
+	PRINTF("PCB_TEMP = %d C \n", tm5);
+
 
 	return arrayOfFlags;
 }
@@ -587,7 +602,7 @@ uint32_t* i2c_eps_getTelemetryGroup(uint16_t families)
 		ptr = telemetry_systemData(returnArray);
 	}
 
-	return;
+	return ptr;
 }
 
 uint32_t* telemetry_bcrs(uint32_t * data)
@@ -637,6 +652,14 @@ uint32_t* telemetry_solarPanelSensors(uint32_t * data)
 	PRINTF("M_SP Temperature Y- = %d C \n", tm4);
 	PRINTF("M_SP Temperature Z+ = %d C \n", tm5);
 
+	if ((TEMPLOW < tm1 < TEMPHIGH) && (TEMPLOW < tm2 < TEMPHIGH) && (TEMPLOW < tm3 < TEMPHIGH) &&
+		(TEMPLOW < tm4 < TEMPHIGH) && (TEMPLOW < tm5 < TEMPHIGH))
+	{
+		PRINTF("ALL TEMPERATURES ARE WITHIN ACCEPTABLE TEMP RANGE")
+	}
+	else {
+		PRINTF("TEMPERATURE IS UNSTABLE FOR AT LEAST ONE SOLAR PANEL")
+	}
 	//uint32_t tmList[5] = {tm1, tm2, tm3, tm4, tm5};
 	return data;
 }
@@ -726,6 +749,8 @@ uint32_t* telemetry_batteryModule(uint32_t * data)
 	PRINTF("Remaining Capacity = %d %% \n", tm7);
 	PRINTF("Accumulated Battery Current = %d mAh \n", tm8);
 
+	recentBattTemp = tm4;
+	recentPCBTemp = tm5;
 	//uint32_t tmList[8] = {tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8};
 	return data;
 }
