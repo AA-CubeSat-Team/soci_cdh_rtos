@@ -3,6 +3,8 @@
 #include "wrappers/sensor_wrap/gyro_wrap_test.h"
 #include "wrappers/sensor_wrap/gyro_wrap.h"
 #include "wrappers/sensor_wrap/mag_wrap.h"
+#include "wrappers/sensor_wrap/sun_wrap.h"
+#include "wrappers/sensor_wrap/phd_wrap.h"
 #include "gnc_task.h"
 //#include "FSW_Lib_types.h"
 #include "act_wrap.h"
@@ -28,8 +30,9 @@ void gnc_task(void *pvParameters)
 	/* gnc, sens, act initialization */
 //	startGyro(Gyro, gyroHandle, transfer);
 //	 FSW_Lib_initialize(); //GNC board initialization
-	quickStartGyro(&Gyro1, &i2c1_m_rtos_handle);
-	quickStartMag(&Mag1, &i2c1_m_rtos_handle);
+//	quickStartGyro(&Gyro1, &i2c1_m_rtos_handle);
+//	quickStartMag(&Mag1, &i2c1_m_rtos_handle);
+	quickStartPhd(&Phd1, &i2c1_m_rtos_handle);
 #endif
 #endif
 
@@ -63,24 +66,30 @@ void gnc_task(void *pvParameters)
 //		}
 //		sens_readSun();
 //		sens_readMag();
-//		sens_readPhd();
+		readPhdData(&Phd1);
 //		sens_readGyr();
 //		readActMeas();
-		readGyroData(&Gyro1);
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
-		readMagData(&Mag1);
+//		readGyroData(&Gyro1);
+//		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+//		readMagData(&Mag1);
 		/* call GNC rt_OneStep() */
 		// TODO: enable rt_OneStep(); after include
 		// rt_OneStep();
 //		gnc_sendCommand();
-		PRINTF("GYRO:   ");
-		for (int i = 0; i < 3; i++) {
-			print_float(Gyro1.gyroXYZ[i]);
-		}
+//		PRINTF("GYRO:   ");
+//		for (int i = 0; i < 3; i++) {
+//			print_float(Gyro1.gyroXYZ[i]);
+//		}
+//		PRINTF("\n");
+//		PRINTF("MAG:   ");
+//		for (int i = 0; i < 3; i++) {
+//			print_float(Mag1.magXYZ[i]);
+//		}
+//		PRINTF("\n");
 		PRINTF("\n");
-		PRINTF("MAG:   ");
-		for (int i = 0; i < 3; i++) {
-			print_float(Mag1.magXYZ[i]);
+		PRINTF("Phd:   ");
+		for (int i = 0; i < 5; i++) {
+			print_float(Phd1.current[i]);
 		}
 		PRINTF("\n");
 #endif

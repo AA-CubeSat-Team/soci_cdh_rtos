@@ -20,7 +20,7 @@
 
 #define COUNT_ZERO_OFFSET     0
 #define COUNT_TEMP_BIAS       0     // if the code count temperature influence on output
-#define MULTI_GYROS         1   // if there are multiple gyroscopes(three)
+#define MULTI_GYROS         0   // if there are multiple gyroscopes(three)
 #define DIFF_TEMP_BIAS_COE      0   // if the gyroscopes have different temperature bias and sensitivity coefficients.
 
 
@@ -76,7 +76,7 @@ extern gyro_t Gyro3;
  * @return void
  *
  */
-void readRegsGyro(uint8_t reg, uint8_t *value, uint8_t valueSize, gyro_t * Gyro);
+void readRegs(uint8_t reg, uint8_t *value, uint8_t valueSize, gyro_t * Gyro);
 
 /*!
  * @brief write a value to the registers of a gyroscope.
@@ -89,7 +89,7 @@ void readRegsGyro(uint8_t reg, uint8_t *value, uint8_t valueSize, gyro_t * Gyro)
  * @return void
  *
  */
-void writeRegGyro(uint8_t reg, uint8_t value, gyro_t * Gyro);
+void writeReg(uint8_t reg, uint8_t value, gyro_t * Gyro);
 
 
 #if ARDUINO_CODE

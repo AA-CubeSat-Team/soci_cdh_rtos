@@ -395,11 +395,7 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t suba
 	masterXfer.slaveAddress   = slave_address;
 	masterXfer.direction      = kLPI2C_Write;
 	masterXfer.subaddress     = ((uint32_t)subaddress);
-	if (!subaddress) {
-		masterXfer.subaddressSize = 0;
-	} else {
-		masterXfer.subaddressSize = 1;
-	}
+	masterXfer.subaddressSize = 1;
 	masterXfer.data           = tx_buffer;
 	masterXfer.dataSize       = tx_size;
 	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
