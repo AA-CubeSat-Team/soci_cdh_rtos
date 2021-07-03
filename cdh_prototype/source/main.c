@@ -29,7 +29,7 @@
 #include "idle_task.h"
 #include "imag_task.h"
 #include "gnc_task.h"
-#include "eps_wrap.h"
+//#include "eps_wrap.h"
 
 
 // TODO: add includes for uart, spi, i2c, sdram, etc.
