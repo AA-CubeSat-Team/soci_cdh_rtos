@@ -5,6 +5,7 @@
 
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
+#define SPI_TEST 1
 
 /***********************************************************************************************************************
  * Included files
@@ -80,12 +81,21 @@ extern lpspi_rtos_handle_t spi_m_rwa1_handle;
 extern lpspi_rtos_handle_t spi_m_rwa2_handle;
 extern lpspi_rtos_handle_t spi_m_rwa3_handle;
 
+extern lpspi_master_config_t spi_master_rwa1_config;
+extern lpspi_master_config_t spi_master_rwa2_config;
+extern lpspi_master_config_t spi_master_rwa3_config;
+
+
+extern uint8_t masterReceiveBuffer[];
+extern uint8_t masterSendBuffer[];
+extern uint8_t slaveSendBuffer[];
+
 extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
 
 
-void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
+void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
 
 void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
 void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
