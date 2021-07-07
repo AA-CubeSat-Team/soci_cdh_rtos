@@ -32,11 +32,12 @@ void gnc_task(void *pvParameters)
 //	 FSW_Lib_initialize(); //GNC board initialization
 //	quickStartGyro(&Gyro1, &i2c1_m_rtos_handle);
 //	quickStartMag(&Mag1, &i2c1_m_rtos_handle);
-	quickStartPhd(&Phd1, &i2c1_m_rtos_handle);
+//	quickStartPhd(&Phd1, &i2c1_m_rtos_handle);
 #endif
 #endif
 
 	for (;;) {
+		PRINTF("start loop");
 #if GYRO_WRAP_TEST
 		gyro_wrap_test_loop();
 #else
@@ -64,9 +65,9 @@ void gnc_task(void *pvParameters)
 //		else{
 //			PRINTF("photodiode not active\r\n");
 //		}
-//		sens_readSun();
+		getSunAngles(&Sun1);
 //		sens_readMag();
-		readPhdData(&Phd1);
+//		readPhdData(&Phd1);
 //		sens_readGyr();
 //		readActMeas();
 //		readGyroData(&Gyro1);
@@ -86,10 +87,16 @@ void gnc_task(void *pvParameters)
 //			print_float(Mag1.magXYZ[i]);
 //		}
 //		PRINTF("\n");
+//		PRINTF("\n");
+//		PRINTF("Phd:   ");
+//		for (int i = 0; i < 5; i++) {
+//			print_float(Phd1.current[i]);
+//		}
+//		PRINTF("\n");
 		PRINTF("\n");
-		PRINTF("Phd:   ");
-		for (int i = 0; i < 5; i++) {
-			print_float(Phd1.current[i]);
+		PRINTF("Sun:   ");
+		for (int i = 0; i < 2; i++) {
+			print_float(Sun1.angles[i]);
 		}
 		PRINTF("\n");
 #endif

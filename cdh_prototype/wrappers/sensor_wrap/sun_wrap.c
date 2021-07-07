@@ -205,6 +205,7 @@ void getFiltVolts(sun_t * Sun){
 /* similar to getUnfiltVolts() */
 void getSunAngles(sun_t * Sun){
    /* issue command */
+	printf("start get angles");
    #if ARDUINO_CODE
       for(int i = 0; i < 4; i++){
          Serial1.write(anglesComm[i]);
@@ -212,6 +213,7 @@ void getSunAngles(sun_t * Sun){
       delay(7);
    #else
       error = LPUART_RTOS_Send(&uart3_handle, anglesComm, 4);
+      printf("finish sent");
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;
@@ -219,7 +221,7 @@ void getSunAngles(sun_t * Sun){
          *(Sun->angles + 3) = -2000.0;
          return;
       }
-      vTaskDelay(xDelay7ms);
+//      vTaskDelay(xDelay7ms);
    #endif
    /* read response */
    #if ARDUINO_CODE
@@ -228,7 +230,13 @@ void getSunAngles(sun_t * Sun){
       }
    #else
       size_t numRecvBytes = 0;
-      error = LPUART_RTOS_Receive(&uart3_handle, sun_recv_buffer, angleRespLength, &numRecvBytes);
+      printf("begin receive");
+      error = LPUART_RTOS_Receive(&uart3_handle, sun_recv_buffer, 4, &numRecvBytes);
+      printf("finish receive");
+      printf("%d", sun_recv_buffer[0]);
+      printf("%d", sun_recv_buffer[1]);
+      printf("%d", sun_recv_buffer[2]);
+      printf("%d", sun_recv_buffer[3]);
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;
@@ -256,7 +264,7 @@ void sunSenUARTInit(){
       /* do nothing */
 #else
       /* initialize LPUART instance */
-//      LPUART3_init();
+//      LPuart4_init();
 #endif
    return;
 }

@@ -83,17 +83,18 @@ void resumeTask (TaskHandle_t handler) {
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
-`    BOARD_ConfigMPU();
+	BOARD_ConfigMPU();
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
     // Not sure why is this deleted
-    CLOCK_SetMux(kCLOCK_Lpi2cMux, BOARD_ACCEL_I2C_CLOCK_SOURCE_SELECT);
-    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, BOARD_ACCEL_I2C_CLOCK_SOURCE_DIVIDER);
-    /* Set IRQ priority for freertos_lpi2c */
-    NVIC_SetPriority(LPI2C1_IRQn, 3);
+//    CLOCK_SetMux(kCLOCK_Lpi2cMux, BOARD_ACCEL_I2C_CLOCK_SOURCE_SELECT);
+//    CLOCK_SetDiv(kCLOCK_Lpi2cDiv, BOARD_ACCEL_I2C_CLOCK_SOURCE_DIVIDER);
+//    /* Set IRQ priority for freertos_lpi2c */
+//    NVIC_SetPriority(LPI2C1_IRQn, 3);
+    NVIC_SetPriority(LPUART3_IRQn, 3);
 
 //    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
 //        pdPASS)
