@@ -27,7 +27,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 	// Send command to IMG (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 		
-		status = LPUART_RTOS_Send(&uart4_handle, toSend, sizeOf(toSend));
+		status = LPUART_RTOS_Send(&uart4_handle, toSend, sizeof(toSend));
 
 		if(status == kStatus_Success){
 			PRINTF("Sending command succeeded!\r\n");
@@ -56,12 +56,12 @@ size_t getResponse(){
 	PRINTF("Fetching response from IMG system... \n");
 
 	// Reset buffer memory before receiving
-	memset(recv_buffer, 0, sizeOf(recv_buffer));
+	memset(recv_buffer, 0, sizeof(recv_buffer));
 
 	// fetch response from IMG, store in recv_buffer (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 		
-		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeOf(recv_buffer), &responseSize);
+		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeof(recv_buffer), &responseSize);
 
 		if(status == kStatus_Success){
 			PRINTF("Fetching response succeeded!\r\n");
@@ -92,7 +92,7 @@ int getPackages(){
 	uint8_t remainingBytes = imageSize % EXTERNAL_PACKAGE_SIZE;
 
 	// Reset storage memory before storing the new image file
-	memset(image_storage, 0, sizeOf(image_storage));
+	memset(image_storage, 0, sizeof(image_storage));
 
 	for(int i = 0; i <= fullPackages; i++){
 		PRINTF("-- Requesting Package from IMG. --\r\n");
@@ -111,11 +111,11 @@ int getPackages(){
 		}
 
 		// Reset package_buffer before receiving each new package
-		memset(package_buffer, 0, sizeOf(package_buffer));
+		memset(package_buffer, 0, sizeof(package_buffer));
 
 		PRINTF("-- Receiving package from IMG. --\r\n");
 
-		status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize);
+		status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeof(package_buffer), &packageSize);
 		//Try receiving 3 times 
 		int attempt = 1;
 		while (receiveStatus != kStatus_Success && attempt <= 3){
@@ -130,7 +130,7 @@ int getPackages(){
 				return imageBytesReceived; 
 			}
 			attempt++;
-			receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeOf(package_buffer), &packageSize); // Retry Receiving
+			receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeof(package_buffer), &packageSize); // Retry Receiving
 		}
 		// Check verification byte
 		if(package_buffer[31] == 0xFF){
