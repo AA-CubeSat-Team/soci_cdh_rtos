@@ -78,7 +78,7 @@ void imag_task(void *pvParameters)
     LPUART_EnableInterrupts(LPUART_4, kLPUART_RxDataRegFullInterruptEnable);
     EnableIRQ(UART4_IRQn);
 
-    /*UART 1 initialisation done */
+    /*UART 4 initialisation done */
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
