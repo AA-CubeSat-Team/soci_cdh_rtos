@@ -6,7 +6,6 @@
 #include "idle_task.h"
 #include "peripherals.h"
 
-
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
 
@@ -52,54 +51,10 @@ void gnc_task(void *pvParameters)
 		if (g_mtqActive) {
 //			writeMTQ();
 		}
-
-#if SPI_TEST
-		SPI_transfer(&spi_m_rwa1_handle, &spi_master_rwa1_config, masterSendBuffer, masterReceiveBuffer, 16); //RWA1
-	    uint32_t errorCount;
-	    uint32_t i;
-
-	    PRINTF("EXPECTED: \n");
-	    for (i = 0; i < 16; i++)
-	    	{
-	    		/* Print 16 numbers in a line */
-	    		if ((i % 0x08U) == 0U)
-	    		{
-	    			PRINTF("\r\n");
-	    		}
-	    		PRINTF(" %02X", slaveSendBuffer[i]);
-	    	}
-	    	PRINTF("\r\n");
-
-	        PRINTF("RECEIVED: \n");
-
-	    for (i = 0; i < 16; i++)
-		{
-			/* Print 16 numbers in a line */
-			if ((i % 0x08U) == 0U)
-			{
-				PRINTF("\r\n");
-			}
-			PRINTF(" %02X", masterReceiveBuffer[i]);
-		}
-		PRINTF("\r\n");
-
-	    errorCount = 0;
-	    for (i = 0; i < 16; i++)
-	    {
-	        if (slaveSendBuffer[i] != masterReceiveBuffer[i])
-	        {
-	            errorCount++;
-	        }
-	    }
-
-	    if (errorCount == 0)
-	    {
-	        PRINTF("LPSPI transfer all data matched !\r\n");
-	    }
-	    else
-	    {
-	        PRINTF("Error occurred in LPSPI transfer !\r\n");
-	    }
+#if DEV_BOARD
+		SPI_transfer(&spi_m_rwa1_handle, &spi_master_rwa1_config, masterSendBuffer, masterReceiveBuffer, 16, PcsPin0);
+#elif SPI_TEST
+		SPI_transfer(&spi_m_rwa1_handle, &spi_master_rwa1_config, masterSendBuffer, masterReceiveBuffer, 16);
 #endif
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}

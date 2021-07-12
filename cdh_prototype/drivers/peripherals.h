@@ -5,7 +5,16 @@
 
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
+
 #define SPI_TEST 1
+#define DEV_BOARD 1
+
+#if DEV_BOARD
+#define PcsPin0 9U  //AD_B0_09
+#define PcsPin1 23U //AD_B1_07
+#define PcsPin2 5U  //AD_B0_05
+#define PcsPin3 29U //AD_B1_13
+#endif
 
 /***********************************************************************************************************************
  * Included files
@@ -94,8 +103,11 @@ extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
 
-
+#if DEV_BOARD
+void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin);
+#else
 void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
+#endif
 
 void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
 void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);

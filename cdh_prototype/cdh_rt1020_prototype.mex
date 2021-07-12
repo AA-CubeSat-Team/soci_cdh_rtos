@@ -34,11 +34,6 @@
                   <enableClock>true</enableClock>
                </options>
                <dependencies>
-                  <dependency resourceType="Peripheral" resourceId="JTAG" description="Peripheral JTAG is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="LPUART3" description="Peripheral LPUART3 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
@@ -59,11 +54,6 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="LPI2C3" description="Peripheral LPI2C3 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="SEMC" description="Peripheral SEMC is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
@@ -75,6 +65,11 @@
                      </feature>
                   </dependency>
                   <dependency resourceType="Peripheral" resourceId="LPUART1" description="Peripheral LPUART1 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="Peripheral" resourceId="ARM" description="Peripheral ARM is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -91,11 +86,6 @@
                   </dependency>
                </dependencies>
                <pins>
-                  <pin peripheral="JTAG" signal="TCK" pin_num="110" pin_signal="GPIO_AD_B0_01"/>
-                  <pin peripheral="JTAG" signal="TDI" pin_num="108" pin_signal="GPIO_AD_B0_03"/>
-                  <pin peripheral="JTAG" signal="TDO" pin_num="107" pin_signal="GPIO_AD_B0_04"/>
-                  <pin peripheral="JTAG" signal="TMS" pin_num="111" pin_signal="GPIO_AD_B0_00"/>
-                  <pin peripheral="JTAG" signal="TRSTB" pin_num="106" pin_signal="GPIO_AD_B0_05"/>
                   <pin peripheral="LPUART3" signal="RX" pin_num="93" pin_signal="GPIO_AD_B0_15"/>
                   <pin peripheral="LPUART3" signal="TX" pin_num="94" pin_signal="GPIO_AD_B0_14"/>
                   <pin peripheral="LPUART4" signal="RX" pin_num="79" pin_signal="GPIO_AD_B1_11"/>
@@ -104,8 +94,6 @@
                   <pin peripheral="LPI2C1" signal="SDA" pin_num="74" pin_signal="GPIO_AD_B1_15"/>
                   <pin peripheral="LPI2C2" signal="SCL" pin_num="82" pin_signal="GPIO_AD_B1_08"/>
                   <pin peripheral="LPI2C2" signal="SDA" pin_num="81" pin_signal="GPIO_AD_B1_09"/>
-                  <pin peripheral="LPI2C3" signal="SCL" pin_num="100" pin_signal="GPIO_AD_B0_08"/>
-                  <pin peripheral="LPI2C3" signal="SDA" pin_num="99" pin_signal="GPIO_AD_B0_09"/>
                   <pin peripheral="GPIO1" signal="gpio_io, 23" pin_num="83" pin_signal="GPIO_AD_B1_07"/>
                   <pin peripheral="SEMC" signal="ADDR, 00" pin_num="142" pin_signal="GPIO_EMC_16"/>
                   <pin peripheral="SEMC" signal="ADDR, 01" pin_num="141" pin_signal="GPIO_EMC_17"/>
@@ -155,8 +143,18 @@
                   <pin peripheral="LPSPI1" signal="SDO" pin_num="96" pin_signal="GPIO_AD_B0_12"/>
                   <pin peripheral="LPUART1" signal="RX" pin_num="101" pin_signal="GPIO_AD_B0_07"/>
                   <pin peripheral="LPUART1" signal="TX" pin_num="105" pin_signal="GPIO_AD_B0_06"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 09" pin_num="99" pin_signal="GPIO_AD_B0_09"/>
                   <pin peripheral="LPSPI1" signal="PCS3" pin_num="84" pin_signal="GPIO_AD_B1_06"/>
-                  <pin peripheral="LPSPI1" signal="PCS0" pin_num="97" pin_signal="GPIO_AD_B0_11"/>
+                  <pin peripheral="LPSPI1" signal="PCS2" pin_num="87" pin_signal="GPIO_AD_B1_05"/>
+                  <pin peripheral="LPSPI1" signal="PCS1" pin_num="88" pin_signal="GPIO_AD_B1_04"/>
+                  <pin peripheral="LPSPI1" signal="PCS0" pin_num="45" pin_signal="GPIO_SD_B0_03"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 29" pin_num="76" pin_signal="GPIO_AD_B1_13"/>
+                  <pin peripheral="ARM" signal="arm_trace_swo" pin_num="97" pin_signal="GPIO_AD_B0_11">
+                     <pin_features>
+                        <pin_feature name="identifier" value=""/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIO1" signal="gpio_io, 05" pin_num="106" pin_signal="GPIO_AD_B0_05"/>
                </pins>
             </function>
          </functions_list>

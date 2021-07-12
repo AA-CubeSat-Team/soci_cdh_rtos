@@ -178,7 +178,7 @@ static void LPSPI1_RWA1_init(void) {
 	spi_master_rwa1_config.pcsToSckDelayInNanoSec        = 1000U;
 	spi_master_rwa1_config.lastSckToPcsDelayInNanoSec    = 1000U;
 	spi_master_rwa1_config.betweenTransferDelayInNanoSec = 1000U;
-#if SPI_TEST
+#if DEV_BOARD
 	spi_master_rwa1_config.whichPcs                      = kLPSPI_Pcs3;
 #else
 	spi_master_rwa1_config.whichPcs                      = kLPSPI_Pcs0;
@@ -195,9 +195,7 @@ static void LPSPI1_RWA1_init(void) {
 	}
 }
 
-#if SPI_TEST
-	//TO DO: SPI Transfer function update based on Multiplexer.
-#else
+#if !DEV_BOARD
 static void LPSPI1_RWA2_init(void) {
 
 	LPSPI_MasterGetDefaultConfig(&spi_master_rwa2_config);
@@ -250,7 +248,11 @@ static void LPSPI1_RWA3_init(void) {
 #endif
 
 //SPI transfer lpspi_master_config_t config
+#if DEV_BOARD
+void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin)
+#else
 void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize)
+#endif
 {
 	lpspi_transfer_t masterXfer;
 	status_t status;
@@ -259,10 +261,15 @@ void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config,
 	masterXfer.txData      = txBuffer;
 	masterXfer.rxData      = rxBuffer;
 	masterXfer.dataSize    = transferSize;
-	//masterXfer.configFlags = config.whichPcs << LPSPI_MASTER_PCS_SHIFT | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
+#if DEV_BOARD
+	GPIO_PortToggle(GPIO1, 1U << pcsPin);
+#else
 	masterXfer.configFlags = config->whichPcs << LPSPI_MASTER_PCS_SHIFT | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
-
+#endif
 	status = LPSPI_RTOS_Transfer(handler, &masterXfer);
+#if DEV_BOARD
+	GPIO_PortToggle(GPIO1, 1U << pcsPin);
+#endif
 	if (status == kStatus_Success)
 	{
 		PRINTF("LPSPI master transfer completed successfully.\r\n");
@@ -271,6 +278,54 @@ void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config,
 	{
 		PRINTF("LPSPI master transfer completed with error.\r\n");
 	}
+
+#if SPI_TEST
+	uint32_t errorCount;
+	uint32_t i;
+
+	PRINTF("EXPECTED: \n");
+	for (i = 0; i < 16; i++)
+		{
+			/* Print 16 numbers in a line */
+			if ((i % 0x08U) == 0U)
+			{
+				PRINTF("\r\n");
+			}
+			PRINTF(" %02X", slaveSendBuffer[i]);
+		}
+		PRINTF("\r\n");
+
+		PRINTF("RECEIVED: \n");
+
+	for (i = 0; i < 16; i++)
+	{
+		/* Print 16 numbers in a line */
+		if ((i % 0x08U) == 0U)
+		{
+			PRINTF("\r\n");
+		}
+		PRINTF(" %02X", masterReceiveBuffer[i]);
+	}
+	PRINTF("\r\n");
+
+	errorCount = 0;
+	for (i = 0; i < 15; i++)
+	{
+		if (slaveSendBuffer[i] != masterReceiveBuffer[i+1])
+		{
+			errorCount++;
+		}
+	}
+
+	if (errorCount == 0)
+	{
+		PRINTF("LPSPI transfer all data matched !\r\n");
+	}
+	else
+	{
+		PRINTF("Error occurred in LPSPI transfer !\r\n");
+	}
+#endif
 }
 
 
@@ -522,27 +577,24 @@ void BOARD_InitPeripherals(void)
 
 	NVIC_SetPriority(LPSPI1_IRQn, 3);
 
+#if DEV_BOARD
+    /* Define the init structure for the output pin */
+    gpio_pin_config_t pcs_config = {kGPIO_DigitalOutput, 1, kGPIO_NoIntmode};
+    /* Init input switch GPIO. */
+    GPIO_PinInit(GPIO1, PcsPin0, &pcs_config);
+    GPIO_PinInit(GPIO1, PcsPin1, &pcs_config);
+    GPIO_PinInit(GPIO1, PcsPin2, &pcs_config);
+    GPIO_PinInit(GPIO1, PcsPin3, &pcs_config);
+#endif
+
 #if SPI_TEST
-    PRINTF("FreeRTOS LPSPI master example starts.\r\n");
+	/* Initialize data in transfer buffers */
+	for (int i = 0; i < TRANSFER_SIZE; i++)
+	{
+		masterSendBuffer[i]    = i % 256;
 
-    PRINTF("This example uses two boards to connect with one as master and another as slave.\r\n");
-
-    PRINTF("Master and slave are both use interrupt way.\r\n");
-    PRINTF("Please make sure you make the correct line connection. Basically, the connection is:\r\n");
-    PRINTF("LPSPI_master -- LPSPI_slave\r\n");
-    PRINTF("    CLK      --    CLK\r\n");
-    PRINTF("    PCS      --    PCS\r\n");
-    PRINTF("    SOUT     --    SIN\r\n");
-    PRINTF("    SIN      --    SOUT\r\n");
-    PRINTF("\r\n");
-
-    /* Initialize data in transfer buffers */
-    for (int i = 0; i < TRANSFER_SIZE; i++)
-    {
-        masterSendBuffer[i]    = i % 256;
-
-        slaveSendBuffer[i] = ~masterSendBuffer[i];//checks match with slave response
-    }
+		slaveSendBuffer[i] = ~masterSendBuffer[i];//checks match with slave response
+	}
 #endif
 
 	/* Initialize components */
@@ -551,8 +603,10 @@ void BOARD_InitPeripherals(void)
 	LPUART4_init();
 
 	LPSPI1_RWA1_init();
-	//LPSPI1_RWA2_init();
-	//LPSPI1_RWA3_init();
+#if !DEV_BOARD
+	LPSPI1_RWA2_init();
+	LPSPI1_RWA3_init();
+#endif
 
 	LPI2C1_init();
 	LPI2C2_init();

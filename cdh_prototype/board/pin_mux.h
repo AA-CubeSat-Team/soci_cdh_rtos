@@ -37,11 +37,6 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
-/* GPIO_AD_B0_04 (number 107), JTAG_TDO/J16[13]/ENET_RST/U11[32] */
-/* Routed pin properties */
-#define BOARD_INITPINS_ENET_RST_PERIPHERAL                                  JTAG   /*!< Peripheral name */
-#define BOARD_INITPINS_ENET_RST_SIGNAL                                       TDO   /*!< Signal name */
-
 /* GPIO_AD_B0_15 (number 93), ENET_TXD1/U11[25]/J19[2] */
 /* Routed pin properties */
 #define BOARD_INITPINS_ENET_TXD1_PERIPHERAL                              LPUART3   /*!< Peripheral name */
@@ -51,16 +46,6 @@ void BOARD_InitBootPins(void);
 /* Routed pin properties */
 #define BOARD_INITPINS_ENET_TXD0_PERIPHERAL                              LPUART3   /*!< Peripheral name */
 #define BOARD_INITPINS_ENET_TXD0_SIGNAL                                       TX   /*!< Signal name */
-
-/* GPIO_AD_B0_08 (number 100), ENET_TX_CLK/U11[9] */
-/* Routed pin properties */
-#define BOARD_INITPINS_ENET_TX_CLK_PERIPHERAL                             LPI2C3   /*!< Peripheral name */
-#define BOARD_INITPINS_ENET_TX_CLK_SIGNAL                                    SCL   /*!< Signal name */
-
-/* GPIO_AD_B0_09 (number 99), ENET_RXD1/U11[15]/J17[3] */
-/* Routed pin properties */
-#define BOARD_INITPINS_ENET_RXD1_PERIPHERAL                               LPI2C3   /*!< Peripheral name */
-#define BOARD_INITPINS_ENET_RXD1_SIGNAL                                      SDA   /*!< Signal name */
 
 /* GPIO_EMC_16 (number 142), SEMC_A0/U14[23]/BOOT_MODE[0] */
 /* Routed pin properties */
@@ -321,15 +306,43 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_UART1_TXD_PERIPHERAL                              LPUART1   /*!< Peripheral name */
 #define BOARD_INITPINS_UART1_TXD_SIGNAL                                       TX   /*!< Signal name */
 
+/* GPIO_AD_B0_09 (number 99), ENET_RXD1/U11[15]/J17[3] */
+/* Routed pin properties */
+#define BOARD_INITPINS_ENET_RXD1_PERIPHERAL                                GPIO1   /*!< Peripheral name */
+#define BOARD_INITPINS_ENET_RXD1_SIGNAL                                  gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_ENET_RXD1_CHANNEL                                      9U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_ENET_RXD1_GPIO                                      GPIO1   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_ENET_RXD1_GPIO_PIN                                     9U   /*!< GPIO pin number */
+#define BOARD_INITPINS_ENET_RXD1_GPIO_PIN_MASK                        (1U << 9U)   /*!< GPIO pin mask */
+#define BOARD_INITPINS_ENET_RXD1_PORT                                      GPIO1   /*!< PORT peripheral base pointer */
+#define BOARD_INITPINS_ENET_RXD1_PIN                                          9U   /*!< PORT pin number */
+#define BOARD_INITPINS_ENET_RXD1_PIN_MASK                             (1U << 9U)   /*!< PORT pin mask */
+
 /* GPIO_AD_B1_06 (number 84), ENET_INT/U11[21]/J17[8] */
 /* Routed pin properties */
 #define BOARD_INITPINS_ENET_INT_PERIPHERAL                                LPSPI1   /*!< Peripheral name */
 #define BOARD_INITPINS_ENET_INT_SIGNAL                                      PCS3   /*!< Signal name */
 
-/* GPIO_AD_B0_11 (number 97), ENET_CRS_DV/U11[18]/J19[3] */
+/* GPIO_SD_B0_03 (number 45), SD1_CLK/J15[5] */
 /* Routed pin properties */
-#define BOARD_INITPINS_ENET_CRS_DV_PERIPHERAL                             LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_ENET_CRS_DV_SIGNAL                                   PCS0   /*!< Signal name */
+#define BOARD_INITPINS_SD1_CLK_PERIPHERAL                                 LPSPI1   /*!< Peripheral name */
+#define BOARD_INITPINS_SD1_CLK_SIGNAL                                       PCS0   /*!< Signal name */
+
+/* GPIO_AD_B1_13 (number 76), CAN_STBY/J18[4] */
+/* Routed pin properties */
+#define BOARD_INITPINS_CAN_STBY_PERIPHERAL                                 GPIO1   /*!< Peripheral name */
+#define BOARD_INITPINS_CAN_STBY_SIGNAL                                   gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_CAN_STBY_CHANNEL                                      29U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_CAN_STBY_GPIO                                       GPIO1   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_CAN_STBY_GPIO_PIN                                     29U   /*!< GPIO pin number */
+#define BOARD_INITPINS_CAN_STBY_GPIO_PIN_MASK                        (1U << 29U)   /*!< GPIO pin mask */
+#define BOARD_INITPINS_CAN_STBY_PORT                                       GPIO1   /*!< PORT peripheral base pointer */
+#define BOARD_INITPINS_CAN_STBY_PIN                                          29U   /*!< PORT pin number */
+#define BOARD_INITPINS_CAN_STBY_PIN_MASK                             (1U << 29U)   /*!< PORT pin mask */
 
 
 /*!
