@@ -9,6 +9,8 @@ COM:
 
 #include <stdbool.h>
 
+// TODO: Modify code to include interrupt-based receiving/sending functions as Harshal talked about
+
 /* TODO: We are using this method of communication called EOT (end of transmit) where we
  * just transmit packets for a while and then have a small pause/silence. I'm not completely
  * sure if I have the timing right (what I was talking about above yesterday). In the manual
@@ -31,7 +33,8 @@ bool com_i2c_checkDeploy(); /* TODO: Test by replacing I2C request with pre-prog
                                program slave Arduino via I2C to send fake antenna response (7/1/21)*/
 
 // Rithu edit: adding this to  check if sendConfigCommand works
-// void com_exitCommandMode();
+void com_exitCommandMode();
+void com_enterCommandMode();
 
 void com_deployAntenna_algorithmOne(); // TODO: (NOT SURE) How will we test (do I need to test) ?
 void com_deployAntenna_algorithmTwo(); // TODO: (NOT SURE) How will we test (do I need to test) ?

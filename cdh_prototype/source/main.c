@@ -45,8 +45,6 @@
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 
-
-
 /*******************************************************************************
  * Flags
  ******************************************************************************/
@@ -99,6 +97,8 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
+    // Rithu: The below line makes sure LPUART_RTOS_Send doesn't get stuck while testing individual wrappers!
+    NVIC_SetPriority(LPUART3_IRQn, 5);
 //    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
 //        pdPASS)
 //    {
