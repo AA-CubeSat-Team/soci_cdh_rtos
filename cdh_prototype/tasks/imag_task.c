@@ -7,7 +7,7 @@
 #include "fsl_lpuart.h"
 #include "fsl_debug_console.h"
 
-static uint8_t recv_buffer[5]; // Buffer for receiving commands TODO: is 5 bytes enough/too much? 
+static uint8_t recv_buffer[5]; // Buffer for receiving commands 	TODO: is 5 bytes enough/too much? 
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
 
 TaskHandle_t TaskHandler_img;
@@ -27,8 +27,9 @@ void imag_task(void *pvParameters)
 		/* sending commands to IMG */
 		//use the commands from the MCC (retrieve from a queue of commands)
 		//determine what functions we want to call,
-		//send the commands and params to the functionl
-		//Assumption: Command and param are send to queue as {command, param}
+		//send the commands and params to the function
+
+		//Assumption: Command and param are sent to queue as {command, param}
 		scanCommands(); // Retrieve commands from MCC and store in recv_buffer 
 		IMG_command = recv_buffer[0];
 		IMG_param = recv_buffer[1];
@@ -44,6 +45,7 @@ void imag_task(void *pvParameters)
 				break;
 			case GET_PICTURE:
 				getPicture(IMG_param);
+				// TODO: Add functionality for storing image in sdram, then retrieving and sending to MCC
 				break;
 			case SET_CONTRAST:
 				setContrast(IMG_param);
