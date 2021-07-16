@@ -1,9 +1,13 @@
-#include "img_wrap.h"
+#include "imag_wrap.h"
 #include "imag_task.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "peripherals.h"
+#include "fsl_lpuart_freertos.h"
+#include "fsl_lpuart.h"
+#include "fsl_debug_console.h"
 
-static uint8_t recv_buffer[5]; // Receive 5 bytes
-//TODO: tell Lachlan to extern the recv_buff in wrapper.
-//TODO:
+static uint8_t recv_buffer[5]; // Buffer for receiving commands 	TODO: is 5 bytes enough/too much? 
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
 
 TaskHandle_t TaskHandler_img;
@@ -17,13 +21,18 @@ void imag_task(void *pvParameters)
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
-//	imag_init();
+    imag_init(); //  Where is this defined? Does this initialize the imaging boards?
 	for (;;) {
-		PRINTF("\nimag work\r\n");
+		PRINTF("\nImaging work\r\n");
 		/* sending commands to IMG */
 		//use the commands from the MCC (retrieve from a queue of commands)
 		//determine what functions we want to call,
 		//send the commands and params to the function
+
+		//Assumption: Command and param are sent to queue as {command, param}
+		scanCommands(); // Retrieve commands from MCC and store in recv_buffer 
+		IMG_command = recv_buffer[0];
+		IMG_param = recv_buffer[1];
 		switch (IMG_command) {
 			case CHECK_STATUS:
 				checkStatus(IMG_param);
@@ -31,17 +40,12 @@ void imag_task(void *pvParameters)
 			case TAKE_PICTURE:
 				takePicture(IMG_param);
 				break;
-			case GET_THUMBNAIL_SIZE:
-				getThumbnailSize(IMG_param);
-				break;
 			case GET_PICTURE_SIZE:
 				getPictureSize(IMG_param);
 				break;
-			case GET_THUMBNAIL:
-				getThumbnail(IMG_param);
-				break;
 			case GET_PICTURE:
 				getPicture(IMG_param);
+				// TODO: Add functionality for storing image in sdram, then retrieving and sending to MCC
 				break;
 			case SET_CONTRAST:
 				setContrast(IMG_param);
@@ -65,3 +69,17 @@ void imag_task(void *pvParameters)
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 #endif
 }
+
+// Retrieve the command(s) from MCC/GNC from a global queue 
+void scanCommands(){
+	PRINTF("Fetching command from queue...\r\n");
+	// Reset buffer memory before receiving
+	memset(recv_buffer, 0, sizeof(recv_buffer));
+	if(xQueueReceive(/*Handle of command queue*/, &recv_buffer, 100)){ // 100 ticks is arbitrary TODO: How long to wait for queue?
+		PRINTF("Fetching command succeeded! \r\n");
+	} else {
+		PRINTF("Failed to fetch command from queue.\r\n");
+	}
+}	
+
+// Correct Version

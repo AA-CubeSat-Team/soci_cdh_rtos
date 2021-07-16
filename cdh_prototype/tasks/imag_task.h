@@ -1,4 +1,5 @@
-#define IMAG_ENABLE	0
+#define IMAG_ENABLE	1
+#include <stdint.h>
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
