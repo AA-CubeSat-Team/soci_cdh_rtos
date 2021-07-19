@@ -8,7 +8,6 @@
 
 
 /* FreeRTOS kernel includes. */
-#include <com_task.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -18,19 +17,27 @@
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "board.h"
-
 #include "pin_mux.h"
 #include "clock_config.h"
-
 #include "peripherals.h"
-
 #include <stdbool.h>
+
+#include "semc_sdram.h"
+
+/* powermode includes */
+#include "lpm.h"
+#include "power_mode_switch.h"
 
 #include "idle_task.h"
 #include "imag_task.h"
 #include "gnc_task.h"
-//#include "eps_wrap.h"
+#include "com_task.h"
 
+#include "eps_wrap.h"
+#include "act_wrap.h"
+#include "sen_wrap.h"
+#include "img_wrap.h"
+#include "com_wrap.h"
 
 // TODO: add includes for uart, spi, i2c, sdram, etc.
 
@@ -45,29 +52,6 @@
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 
-/*******************************************************************************
- * Flags
- ******************************************************************************/
-//flags for checking if it's turned on or not
-bool g_imgActive;
-bool g_comActive;
-bool g_sunSensActive;
-bool g_rwaSensActive;
-bool g_magSensActive;
-bool g_mtqSensActive;
-bool g_phdSensActive;
-//flags for checking if they're healthy
-bool g_epsHealthy;
-bool g_obcHealthy;
-bool g_comHealthy;
-bool g_senHealthy;
-bool g_gncHealthy;
-bool g_mtqHealthy;
-bool g_rwaHealthy;
-bool g_imgHealthy;
-
-int g_operatingMode;
-
 
 /*******************************************************************************
  * Code
@@ -76,17 +60,16 @@ int g_operatingMode;
  * @brief Application entry point.
  */
 
+// Task handlers declared in each task files in tasks folder.
+extern TaskHandle_t TaskHandler_idle;
+extern TaskHandle_t TaskHandler_com;
+extern TaskHandle_t TaskHandler_img;
 
-TaskHandle_t TaskHandler_idle;
-TaskHandle_t TaskHandler_img;
+uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
+uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
+uint8_t *sdram_copy  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; //SD ram
 
-/*
- * Test for auto-reloaded single-shot task
-static void vTimerReadGyro(TimerHandle_t xTimerGryo)
-{
-	PRINTF("Reading Gyro!\r\n");
-}
- */
+extern SemaphoreHandle_t s_wakeupSig;
 
 int main(void)
 {
@@ -98,35 +81,66 @@ int main(void)
     BOARD_InitPeripherals();
 
     // Rithu: The below line makes sure LPUART_RTOS_Send doesn't get stuck while testing individual wrappers!
-    NVIC_SetPriority(LPUART3_IRQn, 10);
-//    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
-//        pdPASS)
-//    {
-//        PRINTF("Task creation failed!.\r\n");
-//        while (1)
-//            ;
-//    }
-//    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
-//		pdPASS)
-//	{
-//		PRINTF("Task creation failed!.\r\n");
-//		while (1)
-//			;
-//	}
-    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, NULL) !=
+    // NVIC_SetPriority(LPUART3_IRQn, 10);
+
+    /* When wakeup from suspend, peripheral's doze & stop requests won't be cleared, need to clear them manually */
+   IOMUXC_GPR->GPR4  = 0x00000000;
+   IOMUXC_GPR->GPR7  = 0x00000000;
+   IOMUXC_GPR->GPR8  = 0x00000000;
+   IOMUXC_GPR->GPR12 = 0x00000000;
+
+    if (BOARD_InitSEMC() != kStatus_Success)
+	{
+		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
+	}
+    /*powermode init*/
+    if (true != LPM_Init(s_curRunMode))
+	{
+		PRINTF("LPM Init Failed!\r\n");
+	}
+    s_wakeupSig = xSemaphoreCreateBinary();
+	/* Make current resource count 0 for signal purpose */
+	if (xSemaphoreTake(s_wakeupSig, 0) == pdTRUE)
+	{
+		assert(0);
+	}
+	/****/
+
+    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
+        pdPASS)
+    {
+        PRINTF("Task creation failed!.\r\n");
+        while (1)
+            ;
+    }
+    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
 		pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");
 		while (1)
 			;
 	}
-//    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-//		pdPASS)
-//	{
-//		PRINTF("Task creation failed!.\r\n");
-//		while (1)
-//			;
-//	}
+    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
+		pdPASS)
+	{
+		PRINTF("Task creation failed!.\r\n");
+		while (1)
+			;
+	}
+    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+		pdPASS)
+	{
+		PRINTF("Task creation failed!.\r\n");
+		while (1)
+			;
+	}
+
+    vTaskStartScheduler();
+    for (;;)
+        ;
+}
+
+/////////////////////////////////////////////////
 
     /*Testing a auto-reloaded task for potential use for gyro*/
 //    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(250), pdTRUE, (void*)0, vTimerReadGyro);
@@ -139,13 +153,3 @@ int main(void)
 //    	for(;;); /* failure!?! */
 //    }
 //    /************************************************************/
-
-    vTaskStartScheduler();
-    for (;;)
-        ;
-}
-
-
-
-
-
