@@ -108,6 +108,7 @@ static bool setTxFreq();
 static bool setChannel();
 static void exitCommandMode();
 
+// TODO: Why isn't uart1 working?
 
 // commands data: what type? how big?
 // payload data: what type? how big?
@@ -207,13 +208,32 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 	//memset(tx_buffer, '0', sizeof(tx_buffer));
     for (int i = 0; i < sizeofTx; i++) {
     	tx_buffer[i] = data[i];
+    	PRINTF("tx_buffer");
     }
     // Sends data to radio via UART, if the response is not correct it retries sending the command
     int size_t = 0;
     while (try < DEFAULT_RETRIES) {
-        LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
-        LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
+    	PRINTF("Trying to send ...\n");
+    	int returnVal = LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
+    	if (returnVal == kStatus_Success){
+    		PRINTF("SUCCESS SENDING\n");
+    	}
+    	else {
+    		PRINTF("ERROR SENDING\n");;
+    	}
+        PRINTF("Trying to receive ...\n");
+        int returnVal2 = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
+    	if (returnVal == kStatus_Success){
+    		PRINTF("SUCCESS RECEIVING\n");
+    	}
+    	else {
+    		PRINTF("ERROR RECEIVING\n");;
+    	}
+        for (int i = 0; i < 4; i++) {
+        	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
+        }
         bool sentCommand = checkConfigCommand(*rx_buffer, *expectedResponse, sizeExpectedResponse);
+        memset(rx_buffer, 0, sizeof(rx_buffer));
         if (sentCommand) {
         	try = 5;
         	//clear buffers here
@@ -223,7 +243,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 
         }
         try++;
-        delay(0.1);
+        delay(0.05);
     }
     PRINTF("unexpected response\n");
 	//clear buffers here
@@ -363,6 +383,7 @@ void com_deployAntenna()
 
 void com_deployAntenna_algorithmTwo()
 {
+	//TODO: Uncomment this! Comment below statement if testing i2c
 	I2C_send(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, algorithmTwo, sizeof(algorithmTwo));
 	delay(30); //longest time possible to deploy is 30 seconds
 }
@@ -534,24 +555,40 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 bool com_i2c_checkDeploy() //returns a true if doors are deployed
 {
 	clock_t current_time = clock();
+	//TODO: Uncomment this! Comment below if statement if testing w/o antenna setup
 	if ((current_time-deploy_initiated)/CLOCKS_PER_SECOND < 900) {
 		PRINTF("Not enough time has elapsed for the antenna to deploy\r\n");
 		return false;
 	}
 	memset(rcv_buffer, 0, sizeof(*rcv_buffer));
+    //TODO: Uncomment this! Comment below if statement if testing I2C
 	I2C_request(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, rcv_buffer, sizeof(rcv_buffer));
 	//Receive 4 bytes back with status of antenna
 	//First byte of rx_buffer is:
 	//MSB LSB D4 D3 D2 D1 0 M S2 S1
+	// Testing correct rcv_buffer
+    //	for (int i = 0; i < 4; i++){
+    //		rcv_buffer[i] = 0xFF;
+    //	}
 	uint8_t rcv_byteZero = rcv_buffer[0];
-	//iterate through first byte to find if all rods are deployed
-	uint8_t byteZero = byteZero << 2;
+
+	//iterate through first four bits of first byte to find if all rods are deployed
+	int what_bit_i_am_testing = 0;
 	bool allDeployed = true;
-	for (int i = 0; i < 4; i++) {
-		unsigned checkBit = rcv_byteZero << 1;
-		if (!(checkBit & 1)) { //check if the bit is 0
-			allDeployed = false;
+
+	while (what_bit_i_am_testing < 8) {
+		if(what_bit_i_am_testing > 3) {
+			if (rcv_byteZero & 0x01) {
+				PRINTF("bit %d is 1\n", what_bit_i_am_testing);
+	        }
+	        else {
+	        	printf("bit %d is 0\n", what_bit_i_am_testing);
+	        	allDeployed = false;
+	        }
 		}
+
+	what_bit_i_am_testing++;
+	rcv_byteZero = rcv_byteZero >> 1;
 	}
 
     if (allDeployed) {

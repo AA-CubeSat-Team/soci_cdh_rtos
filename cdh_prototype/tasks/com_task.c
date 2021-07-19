@@ -26,7 +26,7 @@ bool command_request = false;
 bool payload_check = false;
 bool image_check = false;
 bool beacon_check = false;
-bool com_wrap_debug = true;
+bool com_wrap_debug = false; // Turn this true if you want to test individual functions
 
 extern TaskHandle_t TaskHandler_img;
 extern bool g_comActive;
@@ -198,23 +198,23 @@ void com_task(void *pvParameters)
 	////// uart 1 initialization START //////
 	/////////////////////////////////////////
 	/*initiate UART 1*/
-    lpuart_config_t config;
-    uint16_t tmprxIndex = rxIndex_1;
-    uint16_t tmptxIndex = txIndex_1;
-
-    LPUART_GetDefaultConfig(&config);
-    config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
-    config.enableTx     = true;
-    config.enableRx     = true;
-
-    LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
-
-    /* Send g_tipString out. */
-    LPUART_WriteBlocking(LPUART_1, UART_1, sizeof(UART_1) / sizeof(UART_1[0]));
-
-    /* Enable RX interrupt. */
-    LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
-    EnableIRQ(UART1_IRQn);
+//    lpuart_config_t config;
+//    uint16_t tmprxIndex = rxIndex_1;
+//    uint16_t tmptxIndex = txIndex_1;
+//
+//    LPUART_GetDefaultConfig(&config);
+//    config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
+//    config.enableTx     = true;
+//    config.enableRx     = true;
+//
+//    LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
+//
+//    /* Send g_tipString out. */
+//    LPUART_WriteBlocking(LPUART_1, UART_1, sizeof(UART_1) / sizeof(UART_1[0]));
+//
+//    /* Enable RX interrupt. */
+//    LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
+//    EnableIRQ(UART1_IRQn);
 
     /*UART 1 initialisation done */
 
@@ -224,11 +224,11 @@ void com_task(void *pvParameters)
 
 	if(com_wrap_debug){
 		// Delay to test "soft-break" into command mode via com_init function
-		delay(1);
-
-		PRINTF("Testing enterCommandMode function:\n");
-		com_enterCommandMode();
-		PRINTF("\n");
+//		delay(1);
+//
+		//PRINTF("Testing enterCommandMode function:\n");
+		//com_enterCommandMode();
+		//PRINTF("\n");
 
 		// Testing if sending a command to the radio (non delay dependent) works
 		//PRINTF("Testing exitCommandMode function:\n");;
@@ -250,6 +250,10 @@ void com_task(void *pvParameters)
 		//PRINTF("Testing com_set_burn_wire2()\n");
 		//com_set_burn_wire2();
 		//PRINTF("\n");
+
+		PRINTF("Testing com_set_burn_wire2()\n");
+		com_i2c_checkDeploy();
+		PRINTF("\n");
 
 	}
 	else {
