@@ -51,10 +51,18 @@ void gnc_task(void *pvParameters)
 		if (g_mtqActive) {
 //			writeMTQ();
 		}
-#if DEV_BOARD
+#if SPI_TEST
+		/* Initialize data in transfer buffers */
+		for (int i = 0; i < 16; i++)
+		{
+			masterSendBuffer[i]    = i;
+
+			slaveSendBuffer[i] = masterSendBuffer[i];//checks match with slave response
+		}
 		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
-#elif SPI_TEST
-		SPI_transfer(&spi_m_rwa1_handle, &spi_master_rwa1_config, masterSendBuffer, masterReceiveBuffer, 16);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA1);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA2);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA3);
 #endif
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
