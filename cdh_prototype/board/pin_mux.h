@@ -344,6 +344,11 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_CAN_STBY_PIN                                          29U   /*!< PORT pin number */
 #define BOARD_INITPINS_CAN_STBY_PIN_MASK                             (1U << 29U)   /*!< PORT pin mask */
 
+/* GPIO_AD_B0_04 (number 107), JTAG_TDO/J16[13]/ENET_RST/U11[32] */
+/* Routed pin properties */
+#define BOARD_INITPINS_ENET_RST_PERIPHERAL                                  JTAG   /*!< Peripheral name */
+#define BOARD_INITPINS_ENET_RST_SIGNAL                                       TDO   /*!< Signal name */
+
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

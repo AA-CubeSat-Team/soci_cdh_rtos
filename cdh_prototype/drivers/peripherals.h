@@ -10,10 +10,10 @@
 #define DEV_BOARD 1
 
 #if DEV_BOARD
-#define PcsPin0 9U  //AD_B0_09
-#define PcsPin1 23U //AD_B1_07
-#define PcsPin2 5U  //AD_B0_05
-#define PcsPin3 29U //AD_B1_13
+#define RWA0 9U  //PcsPin0 AD_B0_09
+#define RWA1 23U //PcsPin1 AD_B1_07
+#define RWA2 28U //PcsPin2 AD_B1_12
+#define RWA3 29U //PcsPin3 AD_B1_13
 #endif
 
 /***********************************************************************************************************************
@@ -86,6 +86,7 @@ extern lpuart_rtos_handle_t uart1_handle;
 extern lpuart_rtos_handle_t uart3_handle;
 extern lpuart_rtos_handle_t uart4_handle;
 
+#if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
 extern lpspi_rtos_handle_t spi_m_rwa2_handle;
 extern lpspi_rtos_handle_t spi_m_rwa3_handle;
@@ -93,18 +94,20 @@ extern lpspi_rtos_handle_t spi_m_rwa3_handle;
 extern lpspi_master_config_t spi_master_rwa1_config;
 extern lpspi_master_config_t spi_master_rwa2_config;
 extern lpspi_master_config_t spi_master_rwa3_config;
+#endif
 
-
+#if SPI_TEST
 extern uint8_t masterReceiveBuffer[];
 extern uint8_t masterSendBuffer[];
 extern uint8_t slaveSendBuffer[];
+#endif
 
 extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
 
 #if DEV_BOARD
-void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin);
+void SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin);
 #else
 void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
 #endif

@@ -52,7 +52,7 @@ void gnc_task(void *pvParameters)
 //			writeMTQ();
 		}
 #if DEV_BOARD
-		SPI_transfer(&spi_m_rwa1_handle, &spi_master_rwa1_config, masterSendBuffer, masterReceiveBuffer, 16, PcsPin0);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
 #elif SPI_TEST
 		SPI_transfer(&spi_m_rwa1_handle, &spi_master_rwa1_config, masterSendBuffer, masterReceiveBuffer, 16);
 #endif
