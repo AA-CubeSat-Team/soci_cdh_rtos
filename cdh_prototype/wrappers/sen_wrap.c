@@ -19,6 +19,7 @@ Sun Sensor:
 
  */
 #include <sensor_wrap/gyro_wrap.h>
+
 #include <sen_wrap.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
