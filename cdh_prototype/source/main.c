@@ -46,11 +46,11 @@
  ******************************************************************************/
 
 /* Task priorities. */
-#define idle_task_PRIORITY	 			0
-#define imag_task_PRIORITY 				1
-#define com_task_PRIORITY				2
+#define idle_task_PRIORITY	 			3
+#define imag_task_PRIORITY 				3
+#define com_task_PRIORITY				3
 #define gnc_task_PRIORITY 				3
-#define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
+#define max_PRIORITY 	   				3 //(configMAX_PRIORITIES - 1)
 
 
 /*******************************************************************************

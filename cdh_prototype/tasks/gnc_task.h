@@ -1,4 +1,4 @@
-#define GNC_ENABLE	1
+#define GNC_ENABLE	0
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"

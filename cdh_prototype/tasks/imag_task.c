@@ -21,7 +21,7 @@ uint8_t UART4RingBuffer[UART4_RING_BUFFER_SIZE];
 volatile uint16_t txIndex_4; /* Index of the data to send out. */
 volatile uint16_t rxIndex_4; /* Index of the memory to save new arrived data. */
 uint8_t UART_4[] =
-    "UART 4 initialised \r\n";
+    "UART 4 initialized \r\n";
 
 void UART4_IRQHandler(void)
 {
@@ -44,10 +44,6 @@ void UART4_IRQHandler(void)
     }
     SDK_ISR_EXIT_BARRIER;
 }
-
-
-
-
 
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
@@ -72,7 +68,11 @@ void imag_task(void *pvParameters)
     LPUART_Init(LPUART_4, &config, LPUART4_CLK_FREQ);
 
     /* Send g_tipString out. */
-    LPUART_WriteBlocking(LPUART_4, UART_4, sizeof(UART_4) / sizeof(UART_4[0]));
+    if(pdPASS == LPUART_WriteBlocking(LPUART_4, UART_4, sizeof(UART_4) / sizeof(UART_4[0]))) {
+    	PRINTF("SUCCESSFULL!!!\r\n");
+    } else {
+    	PRINTF(":((\r\n");
+    }
 
     /* Enable RX interrupt. */
     LPUART_EnableInterrupts(LPUART_4, kLPUART_RxDataRegFullInterruptEnable);
