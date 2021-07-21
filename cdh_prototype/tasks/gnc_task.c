@@ -4,6 +4,7 @@
 #include "act_wrap.h"
 #include "sen_wrap.h"
 #include "idle_task.h"
+#include "peripherals.h"
 
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
@@ -79,7 +80,8 @@ void gnc_task(void *pvParameters)
 #if GNC_ENABLE
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
-//	sens_init(); //want to make sure you initialize the UART3
+//	sens_init();
+//  act_init();
 //	FSW_Lib_initialize(); //GNC initialization
 #endif
 	for (;;) {
@@ -111,8 +113,20 @@ void gnc_task(void *pvParameters)
 		if (g_mtqActive) {
 //			writeMTQ();
 		}
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+#if SPI_TEST
+		/* Initialize data in transfer buffers */
+		for (int i = 0; i < 16; i++)
+		{
+			masterSendBuffer[i]    = i;
 
+			slaveSendBuffer[i] = masterSendBuffer[i];//checks match with slave response
+		}
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA1);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA2);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA3);
+#endif
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
