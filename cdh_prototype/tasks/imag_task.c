@@ -57,9 +57,6 @@ void imag_task(void *pvParameters)
     uint16_t tmprxIndex = rxIndex_4;
     uint16_t tmptxIndex = txIndex_4;
 
-    BOARD_ConfigMPU();
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
     LPUART_GetDefaultConfig(&config);
     config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
     config.enableTx     = true;
@@ -68,11 +65,11 @@ void imag_task(void *pvParameters)
     LPUART_Init(LPUART_4, &config, LPUART4_CLK_FREQ);
 
     /* Send g_tipString out. */
-    if(pdPASS == LPUART_WriteBlocking(LPUART_4, UART_4, sizeof(UART_4) / sizeof(UART_4[0]))) {
-    	PRINTF("SUCCESSFULL!!!\r\n");
-    } else {
-    	PRINTF(":((\r\n");
-    }
+    if(kStatus_Success == LPUART_WriteBlocking(LPUART_4, UART_4, sizeof(UART_4) / sizeof(UART_4[0]))) {
+    	PRINTF("UART4 succeed write blocking\r\n");
+	} else {
+		PRINTF("UART4 failed write blocking\r\n");
+	}
 
     /* Enable RX interrupt. */
     LPUART_EnableInterrupts(LPUART_4, kLPUART_RxDataRegFullInterruptEnable);
@@ -82,7 +79,10 @@ void imag_task(void *pvParameters)
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
+#endif
 	for (;;) {
+		xLastWakeTime = xTaskGetTickCount();
+#if IMAG_ENABLE
 		PRINTF("\nimag work\r\n");
 		/* sending commands to IMG */
 		//use the commands from the MCC (retrieve from a queue of commands)
@@ -126,6 +126,7 @@ void imag_task(void *pvParameters)
 		vTaskSuspend( NULL );
 	}
 #else
-	vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	}
 #endif
 }

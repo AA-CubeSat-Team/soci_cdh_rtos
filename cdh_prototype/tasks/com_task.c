@@ -61,9 +61,6 @@ void com_task(void *pvParameters)
     uint16_t tmprxIndex = rxIndex;
     uint16_t tmptxIndex = txIndex;
 
-    BOARD_ConfigMPU();
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
     LPUART_GetDefaultConfig(&config);
     config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
     config.enableTx     = true;
@@ -72,7 +69,11 @@ void com_task(void *pvParameters)
     LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
 
     /* Send g_tipString out. */
-    LPUART_WriteBlocking(LPUART_1, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]));
+    if(kStatus_Success == LPUART_WriteBlocking(LPUART_1, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]))) {
+    	PRINTF("UART1 succeed write blocking\r\n");
+	} else {
+		PRINTF("UART1 failed write blocking\r\n");
+	}
 
     /* Enable RX interrupt. */
     LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
@@ -103,9 +104,10 @@ void com_task(void *pvParameters)
 		com_set_burn_wire2();
 	}
 	/****end of deployment of antenna****/
-
+#endif
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
+#if COM_ENABLE
 		com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
 		if (command_request){
 			//sending data based on priority
@@ -124,7 +126,8 @@ void com_task(void *pvParameters)
 		}
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
-//#else
-//	vTaskDelayUntil(&xLastWakeTime, xDelayms);
+#else
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	}
 #endif
 }
