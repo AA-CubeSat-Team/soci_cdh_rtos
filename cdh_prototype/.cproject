@@ -715,7 +715,6 @@
 					<sourceEntries>
 						<entry excluding="powerMode|gnc_build|Debug|CMSIS|board|component|device|drivers|freertos|source|startup|tasks|utilities|wrappers|xip" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Debug"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>

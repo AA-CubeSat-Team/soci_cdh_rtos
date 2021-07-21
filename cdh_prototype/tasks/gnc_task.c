@@ -77,6 +77,20 @@ void gnc_task(void *pvParameters)
 
     /*UART 3 initialization done */
 
+#if SPI_TEST
+		/* Initialize data in transfer buffers */
+		for (int i = 0; i < 16; i++)
+		{
+			masterSendBuffer[i]    = i;
+
+			slaveSendBuffer[i] = masterSendBuffer[i];//checks match with slave response
+		}
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA1);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA2);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA3);
+#endif
+
 #if GNC_ENABLE
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
@@ -113,19 +127,6 @@ void gnc_task(void *pvParameters)
 		if (g_mtqActive) {
 //			writeMTQ();
 		}
-#if SPI_TEST
-		/* Initialize data in transfer buffers */
-		for (int i = 0; i < 16; i++)
-		{
-			masterSendBuffer[i]    = i;
-
-			slaveSendBuffer[i] = masterSendBuffer[i];//checks match with slave response
-		}
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA1);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA2);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA3);
-#endif
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else

@@ -320,16 +320,6 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_ENET_RXD1_PIN                                          9U   /*!< PORT pin number */
 #define BOARD_INITPINS_ENET_RXD1_PIN_MASK                             (1U << 9U)   /*!< PORT pin mask */
 
-/* GPIO_AD_B1_06 (number 84), ENET_INT/U11[21]/J17[8] */
-/* Routed pin properties */
-#define BOARD_INITPINS_ENET_INT_PERIPHERAL                                LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_ENET_INT_SIGNAL                                      PCS3   /*!< Signal name */
-
-/* GPIO_SD_B0_03 (number 45), SD1_CLK/J15[5] */
-/* Routed pin properties */
-#define BOARD_INITPINS_SD1_CLK_PERIPHERAL                                 LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_SD1_CLK_SIGNAL                                       PCS0   /*!< Signal name */
-
 /* GPIO_AD_B1_13 (number 76), CAN_STBY/J18[4] */
 /* Routed pin properties */
 #define BOARD_INITPINS_CAN_STBY_PERIPHERAL                                 GPIO1   /*!< Peripheral name */

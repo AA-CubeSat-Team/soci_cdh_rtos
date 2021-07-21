@@ -92,10 +92,6 @@ BOARD_InitPins:
   - {pin_num: '101', peripheral: LPUART1, signal: RX, pin_signal: GPIO_AD_B0_07}
   - {pin_num: '105', peripheral: LPUART1, signal: TX, pin_signal: GPIO_AD_B0_06}
   - {pin_num: '99', peripheral: GPIO1, signal: 'gpio_io, 09', pin_signal: GPIO_AD_B0_09}
-  - {pin_num: '84', peripheral: LPSPI1, signal: PCS3, pin_signal: GPIO_AD_B1_06}
-  - {pin_num: '87', peripheral: LPSPI1, signal: PCS2, pin_signal: GPIO_AD_B1_05}
-  - {pin_num: '88', peripheral: LPSPI1, signal: PCS1, pin_signal: GPIO_AD_B1_04}
-  - {pin_num: '45', peripheral: LPSPI1, signal: PCS0, pin_signal: GPIO_SD_B0_03}
   - {pin_num: '76', peripheral: GPIO1, signal: 'gpio_io, 29', pin_signal: GPIO_AD_B1_13}
   - {pin_num: '97', peripheral: ARM, signal: arm_trace_swo, pin_signal: GPIO_AD_B0_11, identifier: ''}
   - {pin_num: '106', peripheral: JTAG, signal: TRSTB, pin_signal: GPIO_AD_B0_05}
@@ -104,6 +100,8 @@ BOARD_InitPins:
   - {pin_num: '108', peripheral: JTAG, signal: TDI, pin_signal: GPIO_AD_B0_03}
   - {pin_num: '110', peripheral: JTAG, signal: TCK, pin_signal: GPIO_AD_B0_01}
   - {pin_num: '78', peripheral: GPIO1, signal: 'gpio_io, 28', pin_signal: GPIO_AD_B1_12}
+  - {pin_num: '30', peripheral: LPI2C4, signal: SCL, pin_signal: GPIO_SD_B1_02}
+  - {pin_num: '28', peripheral: LPI2C4, signal: SDA, pin_signal: GPIO_SD_B1_03}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -182,6 +180,8 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(IOMUXC_GPIO_EMC_37_SEMC_DATA13, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_EMC_38_SEMC_DATA14, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_EMC_39_SEMC_DATA15, 0U); 
+  IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B1_02_LPI2C4_SCL, 0U); 
+  IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B1_03_LPI2C4_SDA, 0U); 
   IOMUXC_SetPinMux(IOMUXC_SNVS_WAKEUP_GPIO5_IO00, 0U); 
 }
 
