@@ -5,13 +5,13 @@
 #include "fsl_debug_console.h"
 #include <stdbool.h>
 #include "peripherals.h"
+#include "semc_sdram.h"
 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
 static uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes or less
 static uint8_t image_storage[256]; // FIX THIS -- How large and what type of buffer for receiving images? 
 const uint8_t EXTERNAL_PACKAGE_SIZE = 32; // External packages should be 32 bytes (receiving image files)
-const uint8_t ACK = 1;
-const uint8_t NAK = 0;
+
 
 // To send commands to IMG
 // Param command  The main command to send

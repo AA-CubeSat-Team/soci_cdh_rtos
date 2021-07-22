@@ -20,6 +20,8 @@
 #define SET_EXPOSURE     0x08
 #define SET_SLEEP_TIME   0x09
 #define PADDING          0xAA
+#define ACK                 1
+#define NAK                 0
 
 void testCheckStatus(char parameter);
 
