@@ -11,7 +11,7 @@
 #include "board.h"
 #include "powermode/lpm.h"
 
-#define IDLE_ENABLE	0
+#define IDLE_ENABLE	1
 
 /*******************************************************************************
  * Variable Declarations

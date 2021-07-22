@@ -189,30 +189,32 @@ static void idle_phase2() {
 	/* Battery Voltage Check */
 	PRINTF("idle: Get Voltage from EPS\r\n");
 	// TODO: Create a task to get the voltage from EPS system through I2C Communication
-	double voltage = i2c_eps_getBatteryLevel();
-	if (voltage <= 7.4 ) // CRITICALLY LOW POWER
+	double voltage = 5;//i2c_eps_getBatteryLevel();
+	if (voltage <= 7.4  && operatingMode != CRIT_LOW_POWER) // CRITICALLY LOW POWER
 	{
 		operatingMode = CRIT_LOW_POWER;
-//		setMCUPowerMode();
+		setMCUPowerMode();
 //		i2c_eps_switchOnOffPdms(PDM_OBC);
 		/*task control*/
 		suspendTask(TaskHandler_com);
 		suspendTask(TaskHandler_img);
+		voltage = 7.8;
 	}
 	else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
 	{
 		operatingMode = LOW_POWER;
-//		setMCUPowerMode();
-		i2c_eps_switchOnOffPdms(PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
+		setMCUPowerMode();
+//		i2c_eps_switchOnOffPdms(PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
 		/*task control*/
 		suspendTask(TaskHandler_img);
 		resumeTask(TaskHandler_com);
+		voltage = 8;
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
 		operatingMode = NOMINAL_POWER;
-//		setMCUPowerMode();
-		i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
+		setMCUPowerMode();
+//		i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
 		resumeTask(TaskHandler_com);
 		resumeTask(TaskHandler_img);
 		//GNC task will always be active
@@ -256,8 +258,8 @@ void idle_task(void *pvParameters) {
 
 	/*initial boot-up operations, IDLE remains the highest priority*/
 	operatingMode = CRIT_LOW_POWER;
-//	setMCUPowerMode();
-	i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
+	//setMCUPowerMode();
+	//i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
 	idle_phase1();
 	PRINTF("enters critically low power operatingMode\r\n");
 	//no subsystem healthcheck in CLPM
