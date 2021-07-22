@@ -135,12 +135,12 @@ int getPackages(){
 		// Check verification byte
 		if(package_buffer[31] == 0xFF){
 			// Package received correctly
-			// Copy package_buffer to image_storage
-			int imageStorageSlot; // Position in image_storage to store new bytes
+			// Copy package_buffer to sdram 
+			uint8_t SDRAMStorageSlot = i * EXTERNAL_PACKAGE_SIZE; // Position in SDRAM to store new bytes
 			for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
-				imageStorageSlot = (i * EXTERNAL_PACKAGE_SIZE + j);
-				image_storage[imageStorageSlot] = package_buffer[j];
+				sdram_writeBuffer_copy[j] = package_buffer[j];
 			}
+			SEMC_SDRAM_Write(SDRAMStorageSlot, EXTERNAL_PACKAGE_SIZE, 1); 
 			imageBytesReceived += packageSize;
 			retryPackage = false;
 		} else {
@@ -158,6 +158,10 @@ int getPackages(){
 		return imageBytesReceived;
 	}
 	PRINTF("-- Fetched all packages successfully! --\r\n");
+	PRINTF("-- Reading image from SDRAM --\r\n");
+
+	// Read SDRAM (to sdram_readBuffer_copy) and task will send the buffer to MCC through a FreeRTOS queue
+	SEMC_SDRAM_Read(0, imageBytesReceived, 1);
 	return imageBytesReceived;
 }	
 
