@@ -6,6 +6,7 @@
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_debug_console.h"
+#include "semc_sdram.h"
 
 static uint8_t recv_buffer[5]; // Buffer for receiving commands 	TODO: is 5 bytes enough/too much? 
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
@@ -20,7 +21,7 @@ void imag_task(void *pvParameters)
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 #if IMAG_ENABLE
-	PRINTF("\ninitialize imag.\r\n");
+	PRINTF("\n Initialize imag.\r\n");
     imag_init(); //  Where is this defined? Does this initialize the imaging boards?
 	for (;;) {
 		PRINTF("\nImaging work\r\n");
@@ -45,7 +46,13 @@ void imag_task(void *pvParameters)
 				break;
 			case GET_PICTURE:
 				getPicture(IMG_param);
-				// TODO: Add functionality for storing image in sdram, then retrieving and sending to MCC
+				//getPicture will store the image in sdram and then read it to the readbuffer
+				if(getPicture == ACK){
+					PRINTF("sending sdram read buffer to queue");
+					xQueueSend(/*Handle of image transfer queue*/, &sdram_readBuffer_copy, 100);
+				} else {
+					PRINTF("getPicture failed.\r\n");
+				}
 				break;
 			case SET_CONTRAST:
 				setContrast(IMG_param);
