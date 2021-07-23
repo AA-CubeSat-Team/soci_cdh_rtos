@@ -21,7 +21,6 @@ COM:
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 
-<<<<<<< HEAD
 #define I2C_COM_RX_SIZE 4
 #define I2C_COM_ANTENNA_SLAVE_ADDRESS 0x33   //should this be 16bit?
 #define CLOCKS_PER_SECOND 1000000 //i believe this should be different depending on each CPU
@@ -75,7 +74,6 @@ const char *to_send               = "FreeRTOSFreeRTOS";
 const char *send_ring_overrun     = "\r\nRing buffer overrun!FreeRTOS\r\n";
 const char *send_hardware_overrun = "\r\nHardware buffer overrun!FreeRTOS\r\n";
 uint8_t background_buffer[500];
-uint8_t recv_buffer[100];
 
 static char tx_buffer[3] = {};
 static char rx_buffer[3] = {};
@@ -99,7 +97,7 @@ static bool setTxFreq();
 static bool setChannel();
 static void exitCommandMode();
 
-bool i2c_com_antennaDeployed;
+static bool i2c_com_antennaDeployed;
 uint8_t recv_buffer[4];
 
 // TODO: Why isn't uart1 working?
@@ -179,7 +177,7 @@ static bool enterCommandMode()
 //Sends a command to the radia via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
-    int sizeofTx = sizeof(data); //Rithu edit: passing in data size instead
+
 	//clear buffers here
 	memset(rx_buffer, 0, sizeof(rx_buffer));
 	memset(tx_buffer, 0, sizeof(tx_buffer));
@@ -213,7 +211,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
         bool sentCommand = checkConfigCommand(*rx_buffer, *expectedResponse, sizeExpectedResponse);
         memset(rx_buffer, 0, sizeof(rx_buffer));
         if (sentCommand) {
-        	PRINTF("Radio response to command is correct! \n")
+        	PRINTF("Radio response to command is correct! \n");
         	try = 5;
         	//clear buffers here
         	memset(rx_buffer, 0, sizeof(rx_buffer));

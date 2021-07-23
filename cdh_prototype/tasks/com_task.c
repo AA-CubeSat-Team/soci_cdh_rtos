@@ -175,4 +175,5 @@ void com_task(void *pvParameters)
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 	#endif
+  }
 }
