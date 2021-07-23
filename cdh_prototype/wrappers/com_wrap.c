@@ -21,6 +21,7 @@ COM:
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 
+<<<<<<< HEAD
 #define I2C_COM_RX_SIZE 4
 #define I2C_COM_ANTENNA_SLAVE_ADDRESS 0x33   //should this be 16bit?
 #define CLOCKS_PER_SECOND 1000000 //i believe this should be different depending on each CPU
@@ -73,18 +74,8 @@ static char set_led_rx_response[] = {0x01, 0x00, 0xFF, 0x01};
 const char *to_send               = "FreeRTOSFreeRTOS";
 const char *send_ring_overrun     = "\r\nRing buffer overrun!FreeRTOS\r\n";
 const char *send_hardware_overrun = "\r\nHardware buffer overrun!FreeRTOS\r\n";
-//lpuart_rtos_handle_t handle;
-//struct _lpuart_handle t_handle;
 uint8_t background_buffer[500];
 uint8_t recv_buffer[100];
-//lpuart_rtos_config_t lpuart_config = {
-//    .baudrate    = 74880,
-//    .parity      = kLPUART_ParityDisabled,
-//    .stopbits    = kLPUART_OneStopBit,
-//    .buffer      = background_buffer,
-//    .buffer_size = sizeof(background_buffer),
-//	.base        = LPUART2,
-//};
 
 static char tx_buffer[3] = {};
 static char rx_buffer[3] = {};
@@ -108,8 +99,10 @@ static bool setTxFreq();
 static bool setChannel();
 static void exitCommandMode();
 
-// TODO: Why isn't uart1 working?
+bool i2c_com_antennaDeployed;
+uint8_t recv_buffer[4];
 
+// TODO: Why isn't uart1 working?
 // commands data: what type? how big?
 // payload data: what type? how big?
 // image data: what type? how big?
@@ -131,6 +124,7 @@ void delay(int seconds)
         now = clock();
 }
 
+// Temporary uart_send function before IRS UART driver change
 static int uart_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length){
 	for (int i = 0; i < length; i++){
 		if (kStatus_Success != LPUART_RTOS_Send(handle, &buffer[i], 1))
@@ -151,43 +145,28 @@ static int uart_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t len
 // returns true if properly set to command mode & dealer off
 static bool enterCommandMode()
  {
-	const char *to_send               = "FreeRTOSFreeRTOS";
 	PRINTF("Setting to Command Mode\n");
 	delay(4); // More than 100 milliseconds silence
 
-	//may need to clear buffer at this point
-
-	// Rithu Note: Should be tx_buffer instead of rx_buffer?
-	memset(tx_buffer, '\0', sizeof(tx_buffer));
+	//clear buffer TODO: Check is 0 is best default val for clearing
+	memset(tx_buffer, 0, sizeof(tx_buffer));
 
 	tx_buffer[0] = '+';
 	tx_buffer[1] = '+';
 	tx_buffer[2] = '+';
+
+	// Some testing lines
 	//PRINTF("%s\nWhat's sending for enterCommandMode() test:", tx_buffer);
 	//PRINTF("%d\n", strlen(rx_buffer));
+
 	size_t n = 0;
-
 	int returnVal = LPUART_RTOS_Send(&uart1_handle, (uint8_t *)tx_buffer, 3);
-
-//    }
     PRINTF("message sent\n");
 
-	/*
-	 * Rithu: Needs to be another delay of 100 msec after this
-	 * for the radio to go into command mode
-	 */
+	//Another delay of 100 msec so radio can go into command mode
 	delay(0.1);
 
-	if(0 > returnVal){
-		PRINTF("TASK SUSPENDED!");
-		vTaskSuspend(NULL);
-	}
-
-	//send +++ over uart
-	/* Rithu edit: Added below statements so enterCommandMode has return value
-	   I'm not sure if there's a better way to check if the radio is indeed
-	   in command mode?
-	 */
+	// Checking that sending of '+++' is successful
 	if (returnVal == kStatus_Success){
 		return 1;
 	}
@@ -197,15 +176,13 @@ static bool enterCommandMode()
 
 }
 
-
-// changed to uint8_t data[] instead of char but idk if its supposed to be unsigned
 //Sends a command to the radia via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
-    //int sizeofTx = sizeof(data); //Rithu edit: passing in data size instead
+    int sizeofTx = sizeof(data); //Rithu edit: passing in data size instead
 	//clear buffers here
-	//memset(rx_buffer, '0', sizeof(rx_buffer));
-	//memset(tx_buffer, '0', sizeof(tx_buffer));
+	memset(rx_buffer, 0, sizeof(rx_buffer));
+	memset(tx_buffer, 0, sizeof(tx_buffer));
     for (int i = 0; i < sizeofTx; i++) {
     	tx_buffer[i] = data[i];
     	PRINTF("tx_buffer");
@@ -214,31 +191,33 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     int size_t = 0;
     while (try < DEFAULT_RETRIES) {
     	PRINTF("Trying to send ...\n");
-    	int returnVal = LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
-    	if (returnVal == kStatus_Success){
+    	int sendReturnVal = LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
+    	if (sendReturnVal == kStatus_Success){
     		PRINTF("SUCCESS SENDING\n");
     	}
     	else {
     		PRINTF("ERROR SENDING\n");;
     	}
         PRINTF("Trying to receive ...\n");
-        int returnVal2 = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
-    	if (returnVal == kStatus_Success){
+        int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
+    	if (recReturnVal == kStatus_Success){
     		PRINTF("SUCCESS RECEIVING\n");
     	}
     	else {
-    		PRINTF("ERROR RECEIVING\n");;
+    		PRINTF("ERROR RECEIVING\n");
     	}
+    	PRINTF("Value of rx_buffer: \n");
         for (int i = 0; i < 4; i++) {
         	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
         }
         bool sentCommand = checkConfigCommand(*rx_buffer, *expectedResponse, sizeExpectedResponse);
         memset(rx_buffer, 0, sizeof(rx_buffer));
         if (sentCommand) {
+        	PRINTF("Radio response to command is correct! \n")
         	try = 5;
         	//clear buffers here
-        	//memset(rx_buffer, '0', sizeof(rx_buffer));
-        	//memset(tx_buffer, '0', sizeof(tx_buffer));
+        	memset(rx_buffer, 0, sizeof(rx_buffer));
+        	memset(tx_buffer, 0, sizeof(tx_buffer));
             return true;
 
         }
@@ -247,12 +226,11 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     }
     PRINTF("unexpected response\n");
 	//clear buffers here
-    //memset(rx_buffer, '0', sizeof(rx_buffer));
-	//memset(tx_buffer, '0', sizeof(tx_buffer));
+    memset(rx_buffer, 0, sizeof(rx_buffer));
+	memset(tx_buffer, 0, sizeof(tx_buffer));
     return false;
 }
 
-// changed to uint8_t data[] instead of char but idk if its supposed to be unsigned
 //checks if radio response to command is correct
 static bool checkConfigCommand(uint8_t actualResponse[], uint8_t expectedResponse[], int lengthOfResponse) {
 	for (int j = 0; j < lengthOfResponse; j++) {
@@ -335,7 +313,7 @@ void com_getCommands() //highest priority
 
 	char * to_send = "com: give me commands";
 
-	memset(rcv_buffer, 0, sizeof(*rcv_buffer)); //necessary?
+	memset(rcv_buffer, 0, sizeof(*rcv_buffer)); //TODO: necessary?
 	// void * memset ( void * ptr, int value, size_t num );
 
 	// void * memcpy ( void * destination, const void * source, size_t num );

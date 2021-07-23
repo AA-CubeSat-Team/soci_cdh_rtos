@@ -6,6 +6,16 @@
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
 
+#define SPI_TEST 1
+#define DEV_BOARD 1
+
+#if DEV_BOARD
+#define RWA0 9U  //PcsPin0 AD_B0_09
+#define RWA1 23U //PcsPin1 AD_B1_07
+#define RWA2 28U //PcsPin2 AD_B1_12
+#define RWA3 29U //PcsPin3 AD_B1_13
+#endif
+
 /***********************************************************************************************************************
  * Included files
  **********************************************************************************************************************/
@@ -71,53 +81,48 @@ extern "C" {
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
-//extern lpuart_rtos_config_t lpuart1_config;
-//extern lpuart_rtos_config_t lpuart3_config;
-//extern lpuart_rtos_config_t lpuart4_config;
-//
-//extern lpspi_master_config_t spi_master_config;
-//
-//extern lpi2c_master_config_t i2c1Master_config;
-//extern lpi2c_master_config_t i2c2Master_config;
-//extern lpi2c_master_config_t i2c3Master_config;
-
-
 
 extern lpuart_rtos_handle_t uart1_handle;
 extern lpuart_rtos_handle_t uart3_handle;
 extern lpuart_rtos_handle_t uart4_handle;
 
-extern lpspi_rtos_handle_t spi_m_rtos_handle;
+#if !DEV_BOARD
+extern lpspi_rtos_handle_t spi_m_rwa1_handle;
+extern lpspi_rtos_handle_t spi_m_rwa2_handle;
+extern lpspi_rtos_handle_t spi_m_rwa3_handle;
+
+extern lpspi_master_config_t spi_master_rwa1_config;
+extern lpspi_master_config_t spi_master_rwa2_config;
+extern lpspi_master_config_t spi_master_rwa3_config;
+#endif
+
+#if SPI_TEST
+extern uint8_t masterReceiveBuffer[];
+extern uint8_t masterSendBuffer[];
+extern uint8_t slaveSendBuffer[];
+#endif
 
 extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
 
+#if DEV_BOARD
+void SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin);
+#else
+void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
+#endif
 
+void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
+void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
 
-//
-//
-//extern const lpi2c_master_config_t LPI2C2_masterConfig;
-//extern lpi2c_master_transfer_t LPI2C2_masterTransfer;
-//extern uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
-//extern lpi2c_master_handle_t LPI2C2_masterHandle;
-//extern const lpi2c_master_config_t LPI2C1_masterConfig;
-//extern lpi2c_master_transfer_t LPI2C1_masterTransfer;
-//extern uint8_t LPI2C1_masterBuffer[LPI2C1_MASTER_BUFFER_SIZE];
-//extern lpi2c_master_handle_t LPI2C1_masterHandle;
-//extern const lpspi_master_config_t LPSPI1_config;
-//extern const lpi2c_master_config_t LPI2C3_masterConfig;
-//extern lpi2c_master_transfer_t LPI2C3_masterTransfer;
-//extern uint8_t LPI2C3_masterBuffer[LPI2C3_MASTER_BUFFER_SIZE];
-//extern lpi2c_master_handle_t LPI2C3_masterHandle;
-
-
-void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer);
-
-void LPI2C1_send_receive(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t sendDataSize, uint32_t * masterRecvBuffer, size_t * recvDataSize);
-void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize);
-void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize);
-
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+/* Definitions for BOARD_InitPeripherals functional group */
+/* Definition of peripheral ID */
+#define DEMO_GPT_PERIPHERAL GPT2
+/* Definition of the clock source frequency */
+#define DEMO_GPT_CLOCK_SOURCE 32768UL
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/

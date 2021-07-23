@@ -19,7 +19,6 @@ Sun Sensor:
 
  */
 #include <gyro_wrapper/gyro_wrap.h>
-#include "dummy_type.h"
 #include <sen_wrap.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
@@ -29,34 +28,49 @@ Sun Sensor:
 #include <stdbool.h>
 #include "peripherals.h"
 
-extern sensor_bus sens_var;
-extern gyro_t * Gyro;
-
+/* sensor data */ //where are they defined?
+//extern gyro_t * Gyro;
+//extern lpi2c_rtos_handle_t *gyroHandle;
+//extern sun_t * Sun;
+//extern mag_t * Mag;
+//extern diodes_t Diodes;
 
 bool sens_healthcheck(){
 	PRINTF("checking sensors health\r\n");
+//	health(); //phd health
+
 	return true;
 }
+
+void sens_init() {
+//	initADC(); //phd init
+//	initMag(Mag); //mag init
+//	startMag(Mag); //mag init - 2
+//	initGyro(Gyro, gyroHandle); //gyro init
+//	startGyro(Gyro); //gyro init - 2 //TODO: there's a reset function to use for gyro. how and when should we use them?
+
+
+}
+
 //do each sensor separately
 void sens_readSun(){
 	PRINTF("reading sun sensors\r\n");
-	sens_var.sun_meas_ss_deg[0] = 180;
+//	getSunAngles(Sun); //TODO: are we gonna use this function to read from the sun sensor?
 }
 
 void sens_readMag(){
 	PRINTF("reading magnetometer sensors\r\n");
-	sens_var.mag_body_T[0] = 111;
+//	readMagData(Mag);
 }
 
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors\r\n");
-	sens_var.photodiodes_A[0] = 222;
+//	getVoltage(Diodes); //TODO: is this the function that we should use?
 }
 
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
-	sens_var.gyro_body_radps[0] = 333;
-	readTempData(Gyro);
-	readGyroData(Gyro);
+//	readTempData(Gyro);
+//	readGyroData(Gyro);
 
 }

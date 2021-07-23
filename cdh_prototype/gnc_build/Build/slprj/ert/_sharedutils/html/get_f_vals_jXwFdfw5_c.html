@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="./js/coder_app.js"></script>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="./rtwreport_utils.js"></script>
+<script type="text/javascript" src="./rtwannotate.js"></script>
+<link rel="stylesheet" type="text/css" href="./css/coder_app.css"/>
+</head>
+<body onload="srcFileOnload();">
+<pre id="code">
+<table class="code" id="codeTbl">
+<tr name="1" id="1">
+<td><a id="l1" class='ln'>1</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="2" id="2">
+<td><a id="l2" class='ln'>2</a></td><td><span class="ct"> * Academic License - for use in teaching, academic research, and meeting</span></td></tr>
+<tr name="3" id="3">
+<td><a id="l3" class='ln'>3</a></td><td><span class="ct"> * course requirements at degree granting institutions only.  Not for</span></td></tr>
+<tr name="4" id="4">
+<td><a id="l4" class='ln'>4</a></td><td><span class="ct"> * government, commercial, or other organizational use.</span></td></tr>
+<tr name="5" id="5">
+<td><a id="l5" class='ln'>5</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="6" id="6">
+<td><a id="l6" class='ln'>6</a></td><td><span class="ct"> * File: get_f_vals_jXwFdfw5.c</span></td></tr>
+<tr name="7" id="7">
+<td><a id="l7" class='ln'>7</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="8" id="8">
+<td><a id="l8" class='ln'>8</a></td><td><span class="ct"> * Code generated for Simulink model 'FSW_Lib0'.</span></td></tr>
+<tr name="9" id="9">
+<td><a id="l9" class='ln'>9</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="10" id="10">
+<td><a id="l10" class='ln'>10</a></td><td><span class="ct"> * Model version                  : 1.337</span></td></tr>
+<tr name="11" id="11">
+<td><a id="l11" class='ln'>11</a></td><td><span class="ct"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span></td></tr>
+<tr name="12" id="12">
+<td><a id="l12" class='ln'>12</a></td><td><span class="ct"> * C/C++ source code generated on : Sat Apr 17 16:27:21 2021</span></td></tr>
+<tr name="13" id="13">
+<td><a id="l13" class='ln'>13</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="14" id="14">
+<td><a id="l14" class='ln'>14</a></td><td></td></tr>
+<tr name="15" id="15">
+<td><a id="l15" class='ln'>15</a></td><td><span class="pp">#include "rtwtypes.h"</span></td></tr>
+<tr name="16" id="16">
+<td><a id="l16" class='ln'>16</a></td><td><span class="pp">#include "Q_linearize_4x0wWNNK.h"</span></td></tr>
+<tr name="17" id="17">
+<td><a id="l17" class='ln'>17</a></td><td><span class="pp">#include "get_f_vals_jXwFdfw5.h"</span></td></tr>
+<tr name="18" id="18">
+<td><a id="l18" class='ln'>18</a></td><td></td></tr>
+<tr name="19" id="19">
+<td><a id="l19" class='ln'>19</a></td><td><span class="ct">/* Function for MATLAB Function: '<a class="ct blk" blk_line="19">&lt;S412&gt;/SOLVE</a>' */</span></td></tr>
+<tr name="20" id="20">
+<td><a id="l20" class='ln'>20</a></td><td><span class="kw">void</span> <a id="20c6" class="tk">get_f_vals_jXwFdfw5</a>(<a id="20c26" class="tk">real_T</a> <a id="20c33" class="tk">t</a>, <span class="kw">const</span> <a id="20c42" class="tk">real_T</a> <a id="20c49" class="tk">x</a>[10], <span class="kw">const</span> <a id="20c62" class="tk">real_T</a> <a id="20c69" class="tk">u</a>[6], <span class="kw">const</span></td></tr>
+<tr name="21" id="21">
+<td><a id="l21" class='ln'>21</a></td><td>  <a id="21c3" class="tk">real_T</a> <a id="21c10" class="tk">tspan</a>[10], <span class="kw">const</span> <a id="21c27" class="tk">real_T</a> <a id="21c34" class="tk">J</a>[9], <a id="21c40" class="tk">real_T</a> <a id="21c47" class="tk">f</a>[10], <a id="21c54" class="tk">real_T</a> <a id="21c61" class="tk">A</a>[100], <a id="21c69" class="tk">real_T</a> <a id="21c76" class="tk">Bp</a>[30],</td></tr>
+<tr name="22" id="22">
+<td><a id="l22" class='ln'>22</a></td><td>  <a id="22c3" class="tk">real_T</a> <a id="22c10" class="tk">Bm</a>[30], <a id="22c18" class="tk">real_T</a> <a id="22c25" class="tk">Z</a>[10])</td></tr>
+<tr name="23" id="23">
+<td><a id="l23" class='ln'>23</a></td><td><span class="br">{</span></td></tr>
+<tr name="24" id="24">
+<td><a id="l24" class='ln'>24</a></td><td>  <a id="24c3" class="tk">real_T</a> <a id="24c10" class="tk">lam_km</a>;</td></tr>
+<tr name="25" id="25">
+<td><a id="l25" class='ln'>25</a></td><td>  <a id="25c3" class="tk">real_T</a> <a id="25c10" class="tk">lam_kp</a>;</td></tr>
+<tr name="26" id="26">
+<td><a id="l26" class='ln'>26</a></td><td>  <a id="26c3" class="tk">real_T</a> <a id="26c10" class="tk">u_tau</a>[3];</td></tr>
+<tr name="27" id="27">
+<td><a id="l27" class='ln'>27</a></td><td>  <span class="kw">static</span> <span class="kw">const</span> <a id="27c16" class="tk">int8_T</a> <a id="27c23" class="tk">b</a>[30] = <span class="br">{</span> 0, 0, 0, 0, <a id="27c45" class="tk">-</a>1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, <a id="27c79" class="tk">-</a>1,</td></tr>
+<tr name="28" id="28">
+<td><a id="l28" class='ln'>28</a></td><td>    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, <a id="28c35" class="tk">-</a>1, 0, 0, 1 <span class="br">}</span>;</td></tr>
+<tr name="29" id="29">
+<td><a id="l29" class='ln'>29</a></td><td></td></tr>
+<tr name="30" id="30">
+<td><a id="l30" class='ln'>30</a></td><td>  <a id="30c3" class="tk">int8_T</a> <a id="30c10" class="tk">Bp_tmp</a>[30];</td></tr>
+<tr name="31" id="31">
+<td><a id="l31" class='ln'>31</a></td><td>  <a id="31c3" class="tk">real_T</a> <a id="31c10" class="tk">A_0</a>[100];</td></tr>
+<tr name="32" id="32">
+<td><a id="l32" class='ln'>32</a></td><td>  <a id="32c3" class="tk">real_T</a> <a id="32c10" class="tk">A_1</a>[10];</td></tr>
+<tr name="33" id="33">
+<td><a id="l33" class='ln'>33</a></td><td>  <a id="33c3" class="tk">int32_T</a> <a id="33c11" class="tk">i</a>;</td></tr>
+<tr name="34" id="34">
+<td><a id="l34" class='ln'>34</a></td><td>  <a id="34c3" class="tk">int32_T</a> <a id="34c11" class="tk">i_0</a>;</td></tr>
+<tr name="35" id="35">
+<td><a id="l35" class='ln'>35</a></td><td>  <a id="35c3" class="tk">lam_kp</a> = <a id="35c12" class="tk">tspan</a>[9] <a id="35c21" class="tk">-</a> <a id="35c23" class="tk">tspan</a>[0];</td></tr>
+<tr name="36" id="36">
+<td><a id="l36" class='ln'>36</a></td><td>  <a id="36c3" class="tk">lam_km</a> = (<a id="36c13" class="tk">tspan</a>[9] <a id="36c22" class="tk">-</a> <a id="36c24" class="tk">t</a>) <a id="36c27" class="tk">/</a> <a id="36c29" class="tk">lam_kp</a>;</td></tr>
+<tr name="37" id="37">
+<td><a id="l37" class='ln'>37</a></td><td>  <a id="37c3" class="tk">lam_kp</a> = (<a id="37c13" class="tk">t</a> <a id="37c15" class="tk">-</a> <a id="37c17" class="tk">tspan</a>[0]) <a id="37c27" class="tk">/</a> <a id="37c29" class="tk">lam_kp</a>;</td></tr>
+<tr name="38" id="38">
+<td><a id="l38" class='ln'>38</a></td><td>  <a id="38c3" class="tk">u_tau</a>[0] = <a id="38c14" class="tk">lam_km</a> <a id="38c21" class="tk">*</a> <a id="38c23" class="tk">u</a>[0] <a id="38c28" class="tk">+</a> <a id="38c30" class="tk">lam_kp</a> <a id="38c37" class="tk">*</a> <a id="38c39" class="tk">u</a>[3];</td></tr>
+<tr name="39" id="39">
+<td><a id="l39" class='ln'>39</a></td><td>  <a id="39c3" class="tk">u_tau</a>[1] = <a id="39c14" class="tk">lam_km</a> <a id="39c21" class="tk">*</a> <a id="39c23" class="tk">u</a>[1] <a id="39c28" class="tk">+</a> <a id="39c30" class="tk">lam_kp</a> <a id="39c37" class="tk">*</a> <a id="39c39" class="tk">u</a>[4];</td></tr>
+<tr name="40" id="40">
+<td><a id="l40" class='ln'>40</a></td><td>  <a id="40c3" class="tk">u_tau</a>[2] = <a id="40c14" class="tk">lam_km</a> <a id="40c21" class="tk">*</a> <a id="40c23" class="tk">u</a>[2] <a id="40c28" class="tk">+</a> <a id="40c30" class="tk">lam_kp</a> <a id="40c37" class="tk">*</a> <a id="40c39" class="tk">u</a>[5];</td></tr>
+<tr name="41" id="41">
+<td><a id="l41" class='ln'>41</a></td><td>  <a id="41c3" class="tk">Q_linearize_4x0wWNNK</a>(<a id="41c24" class="tk">x</a>, <a id="41c27" class="tk">u_tau</a>, <a id="41c34" class="tk">J</a>, <a id="41c37" class="tk">A</a>, <a id="41c40" class="tk">f</a>);</td></tr>
+<tr name="42" id="42">
+<td><a id="l42" class='ln'>42</a></td><td>  <span class="kw">for</span> (<a id="42c8" class="tk">i</a> = 0; <a id="42c15" class="tk">i</a> <a id="42c17" class="tk">&lt;</a> 30; <a id="42c23" class="tk">i</a><a id="42c24" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="43" id="43">
+<td><a id="l43" class='ln'>43</a></td><td>    <a id="43c5" class="tk">Bp</a>[<a id="43c8" class="tk">i</a>] = <a id="43c13" class="tk">lam_kp</a> <a id="43c20" class="tk">*</a> (<a id="43c23" class="tk">real_T</a>)<a id="43c30" class="tk">b</a>[<a id="43c32" class="tk">i</a>];</td></tr>
+<tr name="44" id="44">
+<td><a id="l44" class='ln'>44</a></td><td>    <a id="44c5" class="tk">Bm</a>[<a id="44c8" class="tk">i</a>] = <a id="44c13" class="tk">lam_km</a> <a id="44c20" class="tk">*</a> (<a id="44c23" class="tk">real_T</a>)<a id="44c30" class="tk">b</a>[<a id="44c32" class="tk">i</a>];</td></tr>
+<tr name="45" id="45">
+<td><a id="l45" class='ln'>45</a></td><td>    <a id="45c5" class="tk">Bp_tmp</a>[<a id="45c12" class="tk">i</a>] = <a id="45c17" class="tk">b</a>[<a id="45c19" class="tk">i</a>];</td></tr>
+<tr name="46" id="46">
+<td><a id="l46" class='ln'>46</a></td><td>  <span class="br">}</span></td></tr>
+<tr name="47" id="47">
+<td><a id="l47" class='ln'>47</a></td><td></td></tr>
+<tr name="48" id="48">
+<td><a id="l48" class='ln'>48</a></td><td>  <span class="kw">for</span> (<a id="48c8" class="tk">i</a> = 0; <a id="48c15" class="tk">i</a> <a id="48c17" class="tk">&lt;</a> 100; <a id="48c24" class="tk">i</a><a id="48c25" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="49" id="49">
+<td><a id="l49" class='ln'>49</a></td><td>    <a id="49c5" class="tk">A_0</a>[<a id="49c9" class="tk">i</a>] = <a id="49c14" class="tk">-</a><a id="49c15" class="tk">A</a>[<a id="49c17" class="tk">i</a>];</td></tr>
+<tr name="50" id="50">
+<td><a id="l50" class='ln'>50</a></td><td>  <span class="br">}</span></td></tr>
+<tr name="51" id="51">
+<td><a id="l51" class='ln'>51</a></td><td></td></tr>
+<tr name="52" id="52">
+<td><a id="l52" class='ln'>52</a></td><td>  <span class="kw">for</span> (<a id="52c8" class="tk">i</a> = 0; <a id="52c15" class="tk">i</a> <a id="52c17" class="tk">&lt;</a> 10; <a id="52c23" class="tk">i</a><a id="52c24" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="53" id="53">
+<td><a id="l53" class='ln'>53</a></td><td>    <a id="53c5" class="tk">A_1</a>[<a id="53c9" class="tk">i</a>] = 0.0;</td></tr>
+<tr name="54" id="54">
+<td><a id="l54" class='ln'>54</a></td><td>    <span class="kw">for</span> (<a id="54c10" class="tk">i_0</a> = 0; <a id="54c19" class="tk">i_0</a> <a id="54c23" class="tk">&lt;</a> 10; <a id="54c29" class="tk">i_0</a><a id="54c32" class="tk">++</a>) <span class="br">{</span></td></tr>
+<tr name="55" id="55">
+<td><a id="l55" class='ln'>55</a></td><td>      <a id="55c7" class="tk">A_1</a>[<a id="55c11" class="tk">i</a>] <a id="55c14" class="tk">+=</a> <a id="55c17" class="tk">A_0</a>[10 <a id="55c24" class="tk">*</a> <a id="55c26" class="tk">i_0</a> <a id="55c30" class="tk">+</a> <a id="55c32" class="tk">i</a>] <a id="55c35" class="tk">*</a> <a id="55c37" class="tk">x</a>[<a id="55c39" class="tk">i_0</a>];</td></tr>
+<tr name="56" id="56">
+<td><a id="l56" class='ln'>56</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="57" id="57">
+<td><a id="l57" class='ln'>57</a></td><td></td></tr>
+<tr name="58" id="58">
+<td><a id="l58" class='ln'>58</a></td><td>    <a id="58c5" class="tk">Z</a>[<a id="58c7" class="tk">i</a>] = <a id="58c12" class="tk">A_1</a>[<a id="58c16" class="tk">i</a>] <a id="58c19" class="tk">-</a> ((<a id="58c23" class="tk">real_T</a>)<a id="58c30" class="tk">Bp_tmp</a>[<a id="58c37" class="tk">i</a> <a id="58c39" class="tk">+</a> 20] <a id="58c45" class="tk">*</a> <a id="58c47" class="tk">u_tau</a>[2] <a id="58c56" class="tk">+</a> ((<a id="58c60" class="tk">real_T</a>)<a id="58c67" class="tk">Bp_tmp</a>[<a id="58c74" class="tk">i</a> <a id="58c76" class="tk">+</a> 10]</td></tr>
+<tr name="59" id="59">
+<td><a id="l59" class='ln'>59</a></td><td>      <a id="59c7" class="tk">*</a> <a id="59c9" class="tk">u_tau</a>[1] <a id="59c18" class="tk">+</a> (<a id="59c21" class="tk">real_T</a>)<a id="59c28" class="tk">Bp_tmp</a>[<a id="59c35" class="tk">i</a>] <a id="59c38" class="tk">*</a> <a id="59c40" class="tk">u_tau</a>[0]));</td></tr>
+<tr name="60" id="60">
+<td><a id="l60" class='ln'>60</a></td><td>  <span class="br">}</span></td></tr>
+<tr name="61" id="61">
+<td><a id="l61" class='ln'>61</a></td><td><span class="br">}</span></td></tr>
+<tr name="62" id="62">
+<td><a id="l62" class='ln'>62</a></td><td></td></tr>
+<tr name="63" id="63">
+<td><a id="l63" class='ln'>63</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="64" id="64">
+<td><a id="l64" class='ln'>64</a></td><td><span class="ct"> * File trailer for generated code.</span></td></tr>
+<tr name="65" id="65">
+<td><a id="l65" class='ln'>65</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="66" id="66">
+<td><a id="l66" class='ln'>66</a></td><td><span class="ct"> * [EOF]</span></td></tr>
+<tr name="67" id="67">
+<td><a id="l67" class='ln'>67</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="68" id="68">
+<td><a id="l68" class='ln'>68</a></td><td></td></tr>
+</table>
+</pre>
+</body>
+</html>

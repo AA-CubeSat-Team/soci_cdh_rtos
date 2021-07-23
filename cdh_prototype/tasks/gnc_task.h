@@ -1,35 +1,39 @@
-//#include <wrappers/FSW_Lib_types.h>
-//#ifndef STRUCTS
-//#define STRUCTS
-//struct {
-//  real_T solar_panel_power_W[6];
-//  real_T photodiodes_A[6];
-//  real_T mag_body_T[9];
-//  boolean_T mag_meas_valid[3];
-//  real_T sun_meas_ss_deg[2];
-//  boolean_T sun_meas_valid;
-//  real_T gyro_body_radps[9];
-//  boolean_T gyro_meas_valid[3];
-//} sensor_bus;
-//
-//struct {
-//  boolean_T mtq_valid[5];
-//  boolean_T rwa_valid[4];
-//  real_T rwa_power;
-//  real_T mtq_power;
-//  real_T rwa_rpm[4];
-//} actuator_meas;
-//
-//struct {
-//  real_T rwa_cmd_rpm[4];
-//  real_T mtq_cmd_Am2[5];
-//  real_T gnc_telemetry[6];
-//} fsw_out;
-//
-//extern sensor_bus sens_var;
-//extern actuator_meas actu_var;
-//extern fsw_out fsw_var;
-//#endif
+#define GNC_ENABLE	0
 
+/* FreeRTOS kernel includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
 
+/* Freescale includes. */
+#include "fsl_device_registers.h"
+#include "fsl_debug_console.h"
+#include "board.h"
+#include "clock_config.h"
+
+/*UART includes*/
+#include "pin_mux.h"
+#include "clock_config.h"
+#include "fsl_lpuart.h"
+
+/*******************************************************************************
+ * Variable Declarations
+ ******************************************************************************/
+
+/*******************************************************************************
+ * Definitions for UART 3
+ ******************************************************************************/
+#define LPUART_3           	LPUART3
+#define LPUART3_CLK_FREQ   	BOARD_DebugConsoleSrcFreq()
+#define UART3_IRQn       	LPUART3_IRQn
+#define UART3_IRQHandler 	LPUART3_IRQHandler
+
+/*! @brief Ring buffer size for UART 3 (Unit: Byte). */
+#define UART3_RING_BUFFER_SIZE 16
+
+/*******************************************************************************
+ * Function declarations
+ ******************************************************************************/
+void UART3_IRQHandler(void);
 void gnc_task(void *pvParameters);

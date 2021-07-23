@@ -46,11 +46,11 @@
  ******************************************************************************/
 
 /* Task priorities. */
-#define idle_task_PRIORITY	 			0
-#define imag_task_PRIORITY 				1
-#define com_task_PRIORITY				2
+#define idle_task_PRIORITY	 			3
+#define imag_task_PRIORITY 				3
+#define com_task_PRIORITY				3
 #define gnc_task_PRIORITY 				3
-#define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
+#define max_PRIORITY 	   				3 //(configMAX_PRIORITIES - 1)
 
 
 /*******************************************************************************
@@ -106,7 +106,7 @@ int main(void)
 	}
 	/****/
 
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
+    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");
@@ -139,17 +139,3 @@ int main(void)
     for (;;)
         ;
 }
-
-/////////////////////////////////////////////////
-
-    /*Testing a auto-reloaded task for potential use for gyro*/
-//    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(250), pdTRUE, (void*)0, vTimerReadGyro);
-//    if (xTimerGryo==NULL)
-//    {
-//    	PRINTF("Creating auto-reload task failed. \r\n");
-//    	for(;;); /* failure! */
-//    }
-//    if (xTimerStart(xTimerGryo, 0)!=pdPASS) {
-//    	for(;;); /* failure!?! */
-//    }
-//    /************************************************************/
