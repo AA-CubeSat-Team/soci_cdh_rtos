@@ -106,57 +106,58 @@ extern const char *s_modeNames[];
 /* Set the OBC run mode - clock frequency etc. */
 static void setMCUPowerMode() {
 	switch(operatingMode){
-		case CRIT_LOW_POWER:
-			s_targetPowerMode = LPM_PowerModeLowPowerRun;
-			break;
+			case CRIT_LOW_POWER:
+				s_targetPowerMode = LPM_PowerModeLowPowerRun;
+				break;
 
-		case LOW_POWER:
-			s_targetPowerMode = LPM_PowerModeLowPowerRun;
-			break;
+			case LOW_POWER:
+				s_targetPowerMode = LPM_PowerModeLowPowerRun;
+				break;
 
-		case NOMINAL_POWER:
-			s_targetPowerMode = LPM_PowerModeOverRun;
-			break;
-		default:
-			break;
-	}
-	if (s_targetPowerMode <= LPM_PowerModeEnd)
-	{
-		/* If could not set the target power mode, loop continue. */
-		if (!APP_CheckPowerMode(s_curRunMode, s_targetPowerMode))
-		{
-			PRINTF("cannot set power mode %s \r\n", s_modeNames[s_targetPowerMode]);
+			case NOMINAL_POWER:
+				s_targetPowerMode = LPM_PowerModeOverRun;
+				break;
+			default:
+				break;
 		}
-
-		if (!LPM_SetPowerMode(s_targetPowerMode))
+		if (s_targetPowerMode <= LPM_PowerModeEnd)
 		{
-			PRINTF("Some task doesn't allow to enter mode %s\r\n", s_modeNames[s_targetPowerMode]);
-		}
-		else
-		{
-			if (s_targetPowerMode <= LPM_PowerModeRunEnd)
+			/* If could not set the target power mode, loop continue. */
+			if (!APP_CheckPowerMode(s_curRunMode, s_targetPowerMode))
 			{
-				switch (s_targetPowerMode)
-				{
-					case LPM_PowerModeOverRun:
-						LPM_OverDriveRun();
-						break;
-					case LPM_PowerModeFullRun:
-						LPM_FullSpeedRun();
-						break;
-					case LPM_PowerModeLowSpeedRun:
-						LPM_LowSpeedRun();
-						break;
-					case LPM_PowerModeLowPowerRun:
-						LPM_LowPowerRun();
-						break;
-					default:
-						break;
-				}
-				APP_SetRunMode(s_targetPowerMode);
+				PRINTF("cannot set power mode %s \r\n", s_modeNames[s_targetPowerMode]);
 			}
+
+			if (!LPM_SetPowerMode(s_targetPowerMode))
+			{
+				PRINTF("Some task doesn't allow to enter mode %s\r\n", s_modeNames[s_targetPowerMode]);
+			}
+			else
+			{
+				if (s_targetPowerMode <= LPM_PowerModeRunEnd)
+				{
+					switch (s_targetPowerMode)
+					{
+						case LPM_PowerModeOverRun:
+							LPM_OverDriveRun();
+							break;
+						case LPM_PowerModeFullRun:
+							LPM_FullSpeedRun();
+							break;
+						case LPM_PowerModeLowSpeedRun:
+							LPM_LowSpeedRun();
+							break;
+						case LPM_PowerModeLowPowerRun:
+							LPM_LowPowerRun();
+							break;
+						default:
+							break;
+					}
+					APP_SetRunMode(s_targetPowerMode);
+				}
+			}
+			LPM_SetPowerMode(s_curRunMode);
 		}
-	}
 }
 
 /* Update the flags for the peripherals in GNC */
@@ -189,11 +190,10 @@ static void idle_phase2() {
 	/* Battery Voltage Check */
 	PRINTF("idle: Get Voltage from EPS\r\n");
 	// TODO: Create a task to get the voltage from EPS system through I2C Communication
-	double voltage = 5;//i2c_eps_getBatteryLevel();
-	if (voltage <= 7.4  && operatingMode != CRIT_LOW_POWER) // CRITICALLY LOW POWER
+	double voltage = 8;//i2c_eps_getBatteryLevel();
+	if (voltage <= 7.4) // CRITICALLY LOW POWER
 	{
 		operatingMode = CRIT_LOW_POWER;
-		setMCUPowerMode();
 //		i2c_eps_switchOnOffPdms(PDM_OBC);
 		/*task control*/
 		suspendTask(TaskHandler_com);
@@ -203,7 +203,6 @@ static void idle_phase2() {
 	else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
 	{
 		operatingMode = LOW_POWER;
-		setMCUPowerMode();
 //		i2c_eps_switchOnOffPdms(PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
 		/*task control*/
 		suspendTask(TaskHandler_img);
@@ -213,13 +212,14 @@ static void idle_phase2() {
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
 		operatingMode = NOMINAL_POWER;
-		setMCUPowerMode();
 //		i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
 		resumeTask(TaskHandler_com);
 		resumeTask(TaskHandler_img);
+		voltage = 5;
 		//GNC task will always be active
 	}
 	UpdateFlags();
+	setMCUPowerMode();
 }
 
 /* Health checks subsystems */
@@ -246,6 +246,7 @@ static void idle_phase3() {
 
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
+	//APP_ShowPowerMode(s_curRunMode);
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 #if IDLE_ENABLE
@@ -258,7 +259,7 @@ void idle_task(void *pvParameters) {
 
 	/*initial boot-up operations, IDLE remains the highest priority*/
 	operatingMode = CRIT_LOW_POWER;
-	//setMCUPowerMode();
+	setMCUPowerMode();
 	//i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
 	idle_phase1();
 	PRINTF("enters critically low power operatingMode\r\n");

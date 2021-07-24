@@ -536,9 +536,11 @@ bool LPM_Init(lpm_power_mode_t run_mode)
 
     s_listenerHead = s_listenerTail = NULL;
 
+/*
 #if (configUSE_TICKLESS_IDLE == 1)
     LPM_InitTicklessTimer();
 #endif
+*/
 #endif
 
     if (run_mode > LPM_PowerModeRunEnd)
