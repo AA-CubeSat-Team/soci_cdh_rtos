@@ -6,7 +6,7 @@
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
 
-#define SPI_TEST 1
+#define SPI_TEST 0
 #define DEV_BOARD 1
 
 #if DEV_BOARD

@@ -1,5 +1,6 @@
 #include "img_wrap.h"
 #include "imag_task.h"
+#include "semc_sdram.h"
 
 static uint8_t recv_buffer[5]; // Receive 5 bytes
 //TODO: tell Lachlan to extern the recv_buff in wrapper.
@@ -76,6 +77,18 @@ void imag_task(void *pvParameters)
     EnableIRQ(UART4_IRQn);
 
     /*UART 4 initialisation done */
+
+    /* sdram example */
+    memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
+    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
+    SEMC_SDRAM_Read(0, 10, 1);
+    memset(sdram_writeBuffer, 1, sizeof(sdram_writeBuffer));
+    SEMC_SDRAM_Write(0, 10, 1);
+    SEMC_SDRAM_Read(0, 10, 1);
+	for (int i = 0; i < 10; i++) {
+		//read into the readBuffer to access later
+		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
+	}
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
