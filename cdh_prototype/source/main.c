@@ -22,11 +22,11 @@
 #include "peripherals.h"
 #include <stdbool.h>
 
-#include "semc_sdram.h"
+//#include "semc_sdram.h"
 
 /* powermode includes */
-#include "lpm.h"
-#include "power_mode_switch.h"
+//#include "lpm.h"
+//#include "power_mode_switch.h"
 
 #include "idle_task.h"
 #include "imag_task.h"
@@ -65,9 +65,9 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
-uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
-uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
-uint8_t *sdram_copy  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; //SD ram
+//uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
+//uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
+//uint8_t *sdram_copy  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; //SD ram
 
 extern SemaphoreHandle_t s_wakeupSig;
 
@@ -89,22 +89,22 @@ int main(void)
    IOMUXC_GPR->GPR8  = 0x00000000;
    IOMUXC_GPR->GPR12 = 0x00000000;
 
-    if (BOARD_InitSEMC() != kStatus_Success)
-	{
-		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
-	}
-    /*powermode init*/
-    if (true != LPM_Init(s_curRunMode))
-	{
-		PRINTF("LPM Init Failed!\r\n");
-	}
-    s_wakeupSig = xSemaphoreCreateBinary();
-	/* Make current resource count 0 for signal purpose */
-	if (xSemaphoreTake(s_wakeupSig, 0) == pdTRUE)
-	{
-		assert(0);
-	}
-	/****/
+//    if (BOARD_InitSEMC() != kStatus_Success)
+//	{
+//		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
+//	}
+//    /*powermode init*/
+//    if (true != LPM_Init(s_curRunMode))
+//	{
+//		PRINTF("LPM Init Failed!\r\n");
+//	}
+//    s_wakeupSig = xSemaphoreCreateBinary();
+//	/* Make current resource count 0 for signal purpose */
+//	if (xSemaphoreTake(s_wakeupSig, 0) == pdTRUE)
+//	{
+//		assert(0);
+//	}
+//	/****/
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)

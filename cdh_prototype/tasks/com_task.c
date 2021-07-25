@@ -192,6 +192,18 @@ void UART1_IRQHandler(void)
 }
 /////////////////////////////////////////
 
+
+
+/*
+ * States for COM_task
+ * INIT: initialization of the GPIO and radio, stay in this state until satellite is in orbit
+ * NORMAL: send health beacon every 60s, health check
+ * PASSING: while passing, start uplinking and downlinking.
+ *
+ */
+enum com_state{INIT, NORMAL, PASSING};
+enum com_state com_current_state = INIT;
+
 void com_task(void *pvParameters)
 {
 	/////////////////////////////////////////
@@ -255,48 +267,75 @@ void com_task(void *pvParameters)
 		com_i2c_checkDeploy();
 		PRINTF("\n");
 
-	}
-	else {
+	} else {
 		const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-		PRINTF("\ninitialize comm.\r\n");
-		com_init();
-		com_set_burn_wire1();
-		com_set_burn_wire2();
-		int count = 0;
-		for (;;) {
-			TickType_t xLastWakeTime = xTaskGetTickCount();
-			PRINTF("\ncomm work.\r\n");
-			if(g_comActive == true){
-	//			com_getCommands();
-			}
-			count++;
-			PRINTF("count = %d\n", count);
-			if (count >= 5){ //later: receive a command to take a pic
-				vTaskResume(TaskHandler_img);
-				count = 0;
-				PRINTF("resuming img task\r\n");
-			}
 
-	//		if(g_comActive == true){
-	//			//checking if getting a command request
-	//			if (command_request){
-	//				//sending data based on priority
-	//				if (payload_check) {
-	//					com_sendPayloads();
-	//				} else if (image_check && g_imgActive) {
-	//					com_sendImages();
-	//				} else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
-	//					com_sendBeacons();
-	//				}
-	//			}
-	//
-	//		}
-	//		else{
-	//
-	//		}
+		while(1) {
+			switch (com_current_state){
+				case INIT:
+					PRINTF("\ninitialize comm.\r\n");
+					com_init();
+					com_set_burn_wire1();
+					com_set_burn_wire2();
 
-			vTaskDelayUntil(&xLastWakeTime, xDelayms);
+					// TODO wait for detumble, 15min
+					vTaskDelay(pdMS_TO_TICKS( 15*1000 ));
+
+					com_current_state = NORMAL;
+					break;
+
+				case NORMAL:
+
+					com_current_state = PASSING;
+					break;
+
+				case PASSING:
+
+
+					com_current_state = NORMAL;
+					break;
+			}
 
 		}
+
+
+		// TODO: com_healthcheck everyday, if false, config_radio
+
+//		int count = 0;
+//		for (;;) {
+//			TickType_t xLastWakeTime = xTaskGetTickCount();
+//			PRINTF("\ncomm work.\r\n");
+//			if(g_comActive == true){
+//	//			com_getCommands();
+//			}
+//			count++;
+//			PRINTF("count = %d\n", count);
+//			if (count >= 5){ //later: receive a command to take a pic
+//				vTaskResume(TaskHandler_img);
+//				count = 0;
+//				PRINTF("resuming img task\r\n");
+//			}
+//
+//			if(g_comActive == true){
+//				//checking if getting a command request
+//				if (command_request){
+//					//sending data based on priority
+//					if (payload_check) {
+//						com_sendPayloads();
+//					} else if (image_check && g_imgActive) {
+//						com_sendImages();
+//					} else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
+//						com_sendBeacons();
+//					}
+//				}
+//
+//			}
+//			else{
+//
+//			}
+
+			//vTaskDelayUntil(&xLastWakeTime, xDelayms);
+
+//		}
 	}
 }

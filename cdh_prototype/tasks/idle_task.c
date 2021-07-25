@@ -2,7 +2,7 @@
 #include "idle_task.h"
 #include "eps_wrap.h"
 #include <stdint.h>
-#include "power_mode_switch.h"
+//#include "power_mode_switch.h"
 
 /*******************************************************************************
  * Flags
@@ -98,6 +98,8 @@ static void idle_phase1() {
 	}
 
 }
+
+#if IDLE_ENABLE
 
 extern lpm_power_mode_t s_targetPowerMode;
 extern lpm_power_mode_t s_curRunMode;
@@ -241,6 +243,8 @@ static void idle_phase3() {
 		g_comHealthy = com_healthcheck();
 	}
 }
+#endif
+
 
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
