@@ -21,6 +21,9 @@ COM:
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 
+// Rithu: Including com_task.h file here so I can use LPUART1 TODO: Check if this is the right way to include LPUART1
+#include "com_task.h"
+
 #define I2C_COM_RX_SIZE 4
 #define I2C_COM_ANTENNA_SLAVE_ADDRESS 0x33   //should this be 16bit?
 #define CLOCKS_PER_SECOND 1000000 //i believe this should be different depending on each CPU
@@ -158,7 +161,7 @@ static bool enterCommandMode()
 	//PRINTF("%d\n", strlen(rx_buffer));
 
 	size_t n = 0;
-	int returnVal = LPUART_RTOS_Send(&uart1_handle, (uint8_t *)tx_buffer, 3);
+	int returnVal =  LPUART_WriteBlocking(LPUART_1, (uint8_t *)tx_buffer, 3); //LPUART_RTOS_Send(&uart1_handle, (uint8_t *)tx_buffer, 3);
     PRINTF("message sent\n");
 
 	//Another delay of 100 msec so radio can go into command mode
@@ -189,7 +192,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     int size_t = 0;
     while (try < DEFAULT_RETRIES) {
     	PRINTF("Trying to send ...\n");
-    	int sendReturnVal = LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
+    	int sendReturnVal = LPUART_WriteBlocking(LPUART_1, (uint8_t *)tx_buffer, sizeofTx); //LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
     	if (sendReturnVal == kStatus_Success){
     		PRINTF("SUCCESS SENDING\n");
     	}

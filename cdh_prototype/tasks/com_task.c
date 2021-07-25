@@ -58,23 +58,55 @@ void UART1_IRQHandler(void)
             rxIndex %= UART1_RING_BUFFER_SIZE;
         }
     }
+
     SDK_ISR_EXIT_BARRIER;
+
+    // Printing out received data:
+     PRINTF("Printing out received data:");
+     for (int i = 0; i < UART1_RING_BUFFER_SIZE; i++){
+     	PRINTF("UART RING BUFFER ITEM: %u\n:", UART1RingBuffer[i]);
+     }
 }
 
 void com_task(void *pvParameters)
 {
+	/*initiate UART 1*/
+	lpuart_config_t config;
+	uint16_t tmprxIndex = rxIndex;
+	uint16_t tmptxIndex = txIndex;
+
+	LPUART_GetDefaultConfig(&config);
+	config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
+	config.enableTx     = true;
+	config.enableRx     = true;
+
+	LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
+
+	/* Send g_tipString out. */
+	if(kStatus_Success == LPUART_WriteBlocking(LPUART_1, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]))) {
+		PRINTF("UART1 succeed write blocking\r\n");
+	} else {
+		PRINTF("UART1 failed write blocking\r\n");
+	}
+
+	/* Enable RX interrupt. */
+	LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
+	EnableIRQ(UART1_IRQn);
+
+	/*UART 1 initialization done */
+
 	if(com_wrap_debug){
 		// Delay to test "soft-break" into command mode via com_init function
         // delay(1);
 
-		//PRINTF("Testing enterCommandMode function:\n");
-		//com_enterCommandMode();
-		//PRINTF("\n");
+		PRINTF("Testing enterCommandMode function:\n");
+		com_enterCommandMode();
+		PRINTF("\n");
 
-		// Testing if sending a command to the radio (non delay dependent) works
-		//PRINTF("Testing exitCommandMode function:\n");;
-		//com_exitCommandMode();
-		//PRINTF("\n");
+		//Testing if sending a command to the radio (non delay dependent) works
+		PRINTF("Testing exitCommandMode function:\n");;
+		com_exitCommandMode();
+		PRINTF("\n");
 
 		//PRINTF("Testing com_init() function:\n");
 		//com_init();
@@ -92,39 +124,16 @@ void com_task(void *pvParameters)
 		//com_set_burn_wire2();
 		//PRINTF("\n");
 
-		PRINTF("Testing com_set_burn_wire2()\n");
-		com_i2c_checkDeploy();
-		PRINTF("\n");
+		//PRINTF("Testing checkDeploy()\n");
+		//com_i2c_checkDeploy();
+		//PRINTF("\n");
 
 	}
 	else {
 		const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
-		/*initiate UART 1*/
-		lpuart_config_t config;
-		uint16_t tmprxIndex = rxIndex;
-		uint16_t tmptxIndex = txIndex;
-
-		LPUART_GetDefaultConfig(&config);
-		config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
-		config.enableTx     = true;
-		config.enableRx     = true;
-
-		LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
-
-		/* Send g_tipString out. */
-		if(kStatus_Success == LPUART_WriteBlocking(LPUART_1, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]))) {
-			PRINTF("UART1 succeed write blocking\r\n");
-		} else {
-			PRINTF("UART1 failed write blocking\r\n");
-		}
-
-		/* Enable RX interrupt. */
-		LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
-		EnableIRQ(UART1_IRQn);
-
-		/*UART 1 initialisation done */
+    // Moved uart initialization up so both if/else statements can use
 
 	#if COM_ENABLE
 		PRINTF("\ninitialize comm.\r\n");
