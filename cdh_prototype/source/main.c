@@ -78,6 +78,9 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
+    // Rithu: The below line makes sure LPUART_RTOS_Send doesn't get stuck while testing individual wrappers!
+    // NVIC_SetPriority(LPUART3_IRQn, 10);
+
     /* When wakeup from suspend, peripheral's doze & stop requests won't be cleared, need to clear them manually */
    IOMUXC_GPR->GPR4  = 0x00000000;
    IOMUXC_GPR->GPR7  = 0x00000000;
@@ -130,8 +133,3 @@ int main(void)
     for (;;)
         ;
 }
-
-
-
-
-
