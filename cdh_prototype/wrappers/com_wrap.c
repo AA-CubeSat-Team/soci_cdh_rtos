@@ -128,7 +128,7 @@ void delay(int seconds)
 // Temporary uart_send function before IRS UART driver change
 static int uart_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length){
 	for (int i = 0; i < length; i++){
-		if (kStatus_Success != LPUART_RTOS_Send(handle, &buffer[i], 1))
+		if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, &buffer[i], 1))//LPUART_RTOS_Send(handle, &buffer[i], 1))
 		{
 			PRINTF("Trying to send: %c\n", &buffer[i]);
 			PRINTF("failed to send the %dth byte, terminating \r\n", i);
@@ -197,7 +197,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("SUCCESS SENDING\n");
     	}
     	else {
-    		PRINTF("ERROR SENDING\n");;
+    		PRINTF("ERROR SENDING\n");
     	}
         PRINTF("Trying to receive ...\n");
         int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
@@ -319,7 +319,7 @@ void com_getCommands() //highest priority
 
 	// void * memcpy ( void * destination, const void * source, size_t num );
 
-	if (kStatus_Success != LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
+	if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
 	{
 		PRINTF("could not send!!!\r\n\r\n");
 		return;
@@ -339,7 +339,7 @@ void com_getCommands() //highest priority
 	if (n > 0)
 	{
 		/* send back the received data */
-		if (kStatus_Success != LPUART_RTOS_Send(&uart1_handle, (uint8_t *)rcv_buffer, n))
+		if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)rcv_buffer, n))
 		{
 			vTaskSuspend(NULL);
 		}
