@@ -15,9 +15,6 @@ void SEMC_SDRAM_Write(int startByte, int datalen, size_t byteSize);
 #define SEMC_EXAMPLE_DATALEN    (0x1000U)
 #define SEMC_EXAMPLE_WRITETIMES (1000U)
 
-extern uint32_t sdram_writeBuffer[SEMC_EXAMPLE_DATALEN];
-extern uint32_t sdram_readBuffer[SEMC_EXAMPLE_DATALEN];
-
-extern uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
-extern uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
-extern uint8_t *sdram_copy; //SD ram
+extern uint8_t sdram_writeBuffer[SEMC_EXAMPLE_DATALEN];
+extern uint8_t sdram_readBuffer[SEMC_EXAMPLE_DATALEN];
+extern uint8_t *sdram; /* SDRAM start address. */

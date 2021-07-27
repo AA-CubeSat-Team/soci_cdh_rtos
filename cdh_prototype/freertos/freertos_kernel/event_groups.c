@@ -322,6 +322,7 @@ BaseType_t xTimeoutOccurred = pdFALSE;
 	configASSERT( uxBitsToWaitFor != 0 );
 	#if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
 	{
+		//printf("%dxTaskGetSchedulerState()", xTaskGetSchedulerState());
 		configASSERT( !( ( xTaskGetSchedulerState() == taskSCHEDULER_SUSPENDED ) && ( xTicksToWait != 0 ) ) );
 	}
 	#endif
