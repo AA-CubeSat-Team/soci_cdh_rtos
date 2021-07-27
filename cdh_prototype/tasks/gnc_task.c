@@ -24,6 +24,8 @@ volatile uint16_t rxIndex_3; /* Index of the memory to save new arrived data. */
 uint8_t UART_3[] =
     "UART 3 initialized \r\n";
 
+uint8_t UART_3_R[100];
+
 void UART3_IRQHandler(void)
 {
     uint8_t data;
@@ -64,12 +66,7 @@ void gnc_task(void *pvParameters)
 
 	LPUART_Init(LPUART_3, &config, LPUART3_CLK_FREQ);
 
-	/* Send g_tipString out. */
-	if(kStatus_Success == LPUART_WriteBlocking(LPUART_3, UART_3, sizeof(UART_3) / sizeof(UART_3[0]))) {
-		PRINTF("UART3 succeed write blocking\r\n");
-	} else {
-		PRINTF("UART3 failed write blocking\r\n");
-	}
+
 
 	/* Enable RX interrupt. */
 	LPUART_EnableInterrupts(LPUART_3, kLPUART_RxDataRegFullInterruptEnable);
@@ -100,6 +97,16 @@ void gnc_task(void *pvParameters)
 #endif
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
+
+		/* Send g_tipString out. */
+		if(kStatus_Success == LPUART_WriteBlocking(LPUART_3, UART_3, sizeof(UART_3) / sizeof(UART_3[0]))) {
+			PRINTF("UART3 succeed write blocking\r\n");
+		} else {
+			PRINTF("UART3 failed write blocking\r\n");
+		}
+
+		LPUART_ReadBlocking(LPUART_3, UART_3_R, sizeof(UART_3) / sizeof(UART_3[0]));
+		PRINTF("%s\r\n", UART_3_R);
 #if GNC_ENABLE
 		xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\nGNC TASK START.\r\n");
