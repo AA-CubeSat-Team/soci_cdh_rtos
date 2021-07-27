@@ -1,4 +1,4 @@
-﻿/* This is a source file for testing the I2C commands required for the flight computer to
+/* This is a source file for testing the I2C commands required for the flight computer to
  * communicate with the EPS board and the battery
  *
  * As of 6/23/2020, everything in this file is being written without any access to hardware, and is completely untested.
@@ -8,9 +8,7 @@
  * Ryan Park, 2/27/2021
  *
 MCU Pinouts:
-
 EPS:
-
 75	GPIO_AD_B1_14	I2C1_SCL	EPS, MAG1, GYRO1
 74	GPIO_AD_B1_15	I2C1_SDA	EPS, MAG1, GYRO1
  */

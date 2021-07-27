@@ -15,6 +15,10 @@
 #include "fsl_lpspi.h"
 #include "fsl_lpi2c.h"
 
+/* powermode includes */
+#include "lpm.h"
+#include "power_mode_switch.h"
+
 //#define uart_task_PRIORITY (configMAX_PRIORITIES - 1)
 
 /*
@@ -526,12 +530,14 @@ void BOARD_InitPeripherals(void)
 	LPUART1_init();
 	LPUART3_init();
 	LPUART4_init();
-
 	LPSPI_RWA_init();
-
 	LPI2C1_init();
 	LPI2C2_init();
 	LPI2C3_init();
 	DEMO_GPT_init();
+    if (BOARD_InitSEMC() != kStatus_Success)
+	{
+		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
+	}
 }
 

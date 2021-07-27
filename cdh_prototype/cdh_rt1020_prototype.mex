@@ -459,6 +459,8 @@
          </dcdx_configurations>
       </dcdx>
       <periphs name="Peripherals" version="9.0" enabled="true" update_project_code="true">
+<<<<<<< HEAD
+=======
          <dependencies>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi" description="LPSPI Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
@@ -491,6 +493,7 @@
                </feature>
             </dependency>
          </dependencies>
+>>>>>>> dev
          <generated_project_files>
             <file path="board/RTE_Device.h" update_enabled="true"/>
             <file path="drivers/peripherals.c" update_enabled="false"/>
@@ -503,6 +506,16 @@
             <functional_group name="BOARD_InitPeripherals" uuid="755da8e9-6062-4ed4-83be-5220a9975dae" called_from_default_init="true" id_prefix="" core="core0">
                <description></description>
                <options/>
+<<<<<<< HEAD
+               <dependencies/>
+               <instances>
+                  <instance name="NVIC" uuid="ab29cbe9-9f40-4e43-b200-98a3a66478b7" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="nvic">
+                        <array name="interrupt_table"/>
+                        <array name="interrupts"/>
+                     </config_set>
+                  </instance>
+=======
                <dependencies>
                   <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPSPI1.lpspi_sck" description="Signal serial clock of the peripheral LPSPI1 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="routed" evaluation="">
@@ -633,6 +646,7 @@
                         </struct>
                      </config_set>
                   </instance>
+>>>>>>> dev
                </instances>
             </functional_group>
          </functional_groups>

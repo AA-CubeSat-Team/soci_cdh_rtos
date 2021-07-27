@@ -17,9 +17,9 @@
  * Variables
  ******************************************************************************/
 
-uint32_t sdram_writeBuffer[SEMC_EXAMPLE_DATALEN];
-uint32_t sdram_readBuffer[SEMC_EXAMPLE_DATALEN];
-
+uint8_t sdram_writeBuffer[SEMC_EXAMPLE_DATALEN];
+uint8_t sdram_readBuffer[SEMC_EXAMPLE_DATALEN];
+uint8_t *sdram  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; /* SDRAM start address. */
 
 /*******************************************************************************
  * Code
@@ -71,13 +71,13 @@ status_t BOARD_InitSEMC(void)
  * byteSize: size of each read block (32bit (4bytes), 16bit (2bytes), 8bit (1byte))
  */
 void SEMC_SDRAM_Read(int startByte, int datalen, size_t byteSize) {
-	uint8_t * sdramReadStart = sdram_copy + startByte;//pointer arithmetics
+	uint8_t * sdramReadStart = sdram + startByte;//pointer arithmetics
 	int bytelen = datalen*byteSize;
 
 	for (int i = 0; i < bytelen; i++) {
 		//read into the readBuffer to access later
-		PRINTF("reading 0x%2x from sdram at %ith byte, 0x%8x\r\n", sdramReadStart[i], startByte+i, &sdramReadStart[i]);
-		sdram_readBuffer_copy[i] = sdramReadStart[i];
+		//PRINTF("reading 0x%2x from sdram at %ith byte, 0x%8x\r\n", sdramReadStart[i], startByte+i, &sdramReadStart[i]);
+		sdram_readBuffer[i] = sdramReadStart[i];
 	}
 }
 
@@ -90,13 +90,13 @@ void SEMC_SDRAM_Read(int startByte, int datalen, size_t byteSize) {
  * byteSize: size of each read block (32bit (4bytes), 16bit (2bytes), 8bit (1byte))
  */
 void SEMC_SDRAM_Write(int startByte, int datalen, size_t byteSize) {
-	uint8_t * sdramWriteStart = sdram_copy + startByte;//pointer arithmetics
+	uint8_t * sdramWriteStart = sdram + startByte;//pointer arithmetics
 	int bytelen = datalen*byteSize;
 
 	for (int i = 0; i < bytelen; i++) {
 		//write to the sdram
-		PRINTF("\r\nwriting 0x%2x to sdram at %ith byte, 0x%8x", sdram_writeBuffer_copy[i], startByte+i, &sdramWriteStart[i]);
-		sdramWriteStart[i] = sdram_writeBuffer_copy[i];
+		//PRINTF("\r\nwriting 0x%2x to sdram at %ith byte, 0x%8x", sdram_writeBuffer[i], startByte+i, &sdramWriteStart[i]);
+		sdramWriteStart[i] = sdram_writeBuffer[i];
 //		PRINTF("\r\nwriting 0x%2x to sdram at %ith byte, 0x%8x", sdramWriteStart[i], startByte+i, &sdramWriteStart[i]);
 	}
 }
@@ -105,7 +105,6 @@ void SEMC_SDRAMReadWrite32Bit(void)
 {
     uint32_t index;
     uint32_t datalen = SEMC_EXAMPLE_DATALEN;
-    uint32_t *sdram  = (uint32_t *)EXAMPLE_SEMC_START_ADDRESS; /* SDRAM start address. */
     bool result      = true;
 
     PRINTF("\r\n SEMC SDRAM Memory 32 bit Write Start, Start Address 0x%x, Data Length %d !\r\n", sdram, datalen);
@@ -148,7 +147,6 @@ void SEMC_SDRAMReadWrite16Bit(void)
 {
     uint32_t index;
     uint32_t datalen = SEMC_EXAMPLE_DATALEN;
-    uint16_t *sdram  = (uint16_t *)EXAMPLE_SEMC_START_ADDRESS; /* SDRAM start address. */
     bool result      = true;
 
     PRINTF("\r\n SEMC SDRAM Memory 16 bit Write Start, Start Address 0x%x, Data Length %d !\r\n", sdram, datalen);
@@ -195,7 +193,6 @@ void SEMC_SDRAMReadWrite8Bit(void)
 {
     uint32_t index;
     uint32_t datalen = SEMC_EXAMPLE_DATALEN;
-    uint8_t *sdram   = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; /* SDRAM start address. */
     bool result      = true;
 
     PRINTF("\r\n SEMC SDRAM Memory 8 bit Write Start, Start Address 0x%x, Data Length %d !\r\n", sdram, datalen);
