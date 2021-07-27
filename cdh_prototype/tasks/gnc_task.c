@@ -24,7 +24,7 @@ volatile uint16_t rxIndex_3; /* Index of the memory to save new arrived data. */
 uint8_t UART_3[] =
     "UART 3 initialized \r\n";
 
-uint8_t UART_3_R[100];
+uint8_t UART_3_R[1];
 
 void UART3_IRQHandler(void)
 {
