@@ -3,6 +3,7 @@
 #include "com_task.h"
 #include "clock_config.h"
 #include "timers.h"
+#include "peripherals.h"
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
@@ -30,6 +31,7 @@ uint8_t g_tipString[] =
 
 void UART1_IRQHandler(void)
 {
+	BaseType_t xHigherPriorityTaskWoken;
     uint8_t data;
     uint16_t tmprxIndex = rxIndex;
     uint16_t tmptxIndex = txIndex;
@@ -43,6 +45,7 @@ void UART1_IRQHandler(void)
         if (((tmprxIndex + 1) % UART1_RING_BUFFER_SIZE) != tmptxIndex)
         {
         	UART1RingBuffer[rxIndex] = data;
+        	xQueueSendToBackFromISR(com_task_queue_handle, &data, &xHigherPriorityTaskWoken );
             rxIndex++;
             rxIndex %= UART1_RING_BUFFER_SIZE;
         }

@@ -15,6 +15,10 @@
 #include "fsl_lpspi.h"
 #include "fsl_lpi2c.h"
 
+QueueHandle_t com_task_queue_handle;
+QueueHandle_t gnc_task_queue_handle;
+QueueHandle_t imag_task_queue_handle;
+
 //#define uart_task_PRIORITY (configMAX_PRIORITIES - 1)
 
 /*
@@ -25,6 +29,37 @@
 
 // TODO: Implement queues for each peripheral (for UART only?) !
 // Timer -> check all peripherals and update corresponding queues (
+void vCreateQueues( void )
+{
+   /* Create the queue that will be used to store pointer to data for each task. */
+	com_task_queue_handle = xQueueCreate(
+                         /* The number of items the queue can hold. */
+                         10,
+                         /* Size of each item is big enough to hold only a
+                         pointer. */
+                         sizeof(int*) );
+	gnc_task_queue_handle = xQueueCreate(
+                         /* The number of items the queue can hold. */
+                         10,
+                         /* Size of each item is big enough to hold only a
+                         pointer. */
+                         sizeof(int*) );
+	imag_task_queue_handle = xQueueCreate(
+                         /* The number of items the queue can hold. */
+                         10,
+                         /* Size of each item is big enough to hold only a
+                         pointer. */
+                         sizeof(int*) );
+
+   if( ( com_task_queue_handle == NULL ) || ( gnc_task_queue_handle == NULL ) || (imag_task_queue_handle == NULL))
+   {
+      /* One or more queues were not created successfully as there was not enough
+      heap memory available.  Handle the error here.  Queues can also be created
+      statically. */
+	   PRINTF("ONE OR MORE QUEUES NOT CREATED SUCCESFULY");
+   }
+}
+
 
 lpuart_rtos_handle_t uart1_handle;
 struct _lpuart_handle t_handle1;
@@ -39,7 +74,6 @@ lpuart_rtos_config_t lpuart1_config = { // TODO: should we make these const?
     .buffer_size = sizeof(background_buffer1),
 	.base        = LPUART1,
 };
-
 
 static void LPUART1_init(void) {
 	//NVIC_SetPriority(LPUART1_IRQn, 5);
@@ -533,5 +567,8 @@ void BOARD_InitPeripherals(void)
 	LPI2C2_init();
 	LPI2C3_init();
 	DEMO_GPT_init();
+
+   // Create message queues for each task
+    vCreateQueues();
 }
 

@@ -86,6 +86,11 @@ extern lpuart_rtos_handle_t uart1_handle;
 extern lpuart_rtos_handle_t uart3_handle;
 extern lpuart_rtos_handle_t uart4_handle;
 
+// Handles for message queue
+extern QueueHandle_t com_task_queue_handle;
+extern QueueHandle_t gnc_task_queue_handle;
+extern QueueHandle_t imag_task_queue_handle;
+
 #if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
 extern lpspi_rtos_handle_t spi_m_rwa2_handle;

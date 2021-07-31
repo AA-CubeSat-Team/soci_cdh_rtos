@@ -26,6 +26,7 @@ uint8_t UART_3[] =
 
 void UART3_IRQHandler(void)
 {
+	BaseType_t xHigherPriorityTaskWoken;
     uint8_t data;
     uint16_t tmprxIndex = rxIndex_3;
     uint16_t tmptxIndex = txIndex_3;
@@ -39,6 +40,7 @@ void UART3_IRQHandler(void)
         if (((tmprxIndex + 1) % UART3_RING_BUFFER_SIZE) != tmptxIndex)
         {
         	UART3RingBuffer[rxIndex_3] = data;
+        	xQueueSendToBackFromISR(gnc_task_queue_handle, &data, &xHigherPriorityTaskWoken );
             rxIndex_3++;
             rxIndex_3 %= UART3_RING_BUFFER_SIZE;
         }

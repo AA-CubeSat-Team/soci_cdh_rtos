@@ -1,5 +1,6 @@
 #include "img_wrap.h"
 #include "imag_task.h"
+#include "peripherals.h"
 
 static uint8_t recv_buffer[5]; // Receive 5 bytes
 //TODO: tell Lachlan to extern the recv_buff in wrapper.
@@ -25,6 +26,7 @@ uint8_t UART_4[] =
 
 void UART4_IRQHandler(void)
 {
+	BaseType_t xHigherPriorityTaskWoken;
     uint8_t data;
     uint16_t tmprxIndex = rxIndex_4;
     uint16_t tmptxIndex = txIndex_4;
@@ -38,6 +40,7 @@ void UART4_IRQHandler(void)
         if (((tmprxIndex + 1) % UART4_RING_BUFFER_SIZE) != tmptxIndex)
         {
         	UART4RingBuffer[rxIndex_4] = data;
+        	xQueueSendToBackFromISR(imag_task_queue_handle, &data, &xHigherPriorityTaskWoken );
             rxIndex_4++;
             rxIndex_4 %= UART4_RING_BUFFER_SIZE;
         }

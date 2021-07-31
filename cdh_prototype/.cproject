@@ -1103,16 +1103,16 @@
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.1969936188;com.crt.advproject.config.exe.release.1969936188.;com.crt.advproject.gas.exe.release.99329302;com.crt.advproject.assembler.input.95282341">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.1969936188;com.crt.advproject.config.exe.release.1969936188.;com.crt.advproject.gcc.exe.release.1467525258;com.crt.advproject.compiler.input.2120703932">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.1348090042;com.crt.advproject.config.exe.debug.1348090042.;com.crt.advproject.gcc.exe.debug.991697825;com.crt.advproject.compiler.input.650476977">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.1969936188;com.crt.advproject.config.exe.release.1969936188.;com.crt.advproject.gas.exe.release.99329302;com.crt.advproject.assembler.input.95282341">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.1348090042;com.crt.advproject.config.exe.debug.1348090042.;com.crt.advproject.gas.exe.debug.389704873;com.crt.advproject.assembler.input.642423657">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.1969936188;com.crt.advproject.config.exe.release.1969936188.;com.crt.advproject.gcc.exe.release.1467525258;com.crt.advproject.compiler.input.2120703932">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
