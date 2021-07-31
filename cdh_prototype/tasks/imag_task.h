@@ -17,6 +17,7 @@
  * Variable Declarations
  ******************************************************************************/
 extern TaskHandle_t TaskHandler_img;
+extern QueueHandle_t QueueHandler_imag1; 
 
 /*******************************************************************************
  * Function declarations

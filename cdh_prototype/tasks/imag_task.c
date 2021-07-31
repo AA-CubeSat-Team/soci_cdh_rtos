@@ -48,8 +48,9 @@ void imag_task(void *pvParameters)
 				getPicture(IMG_param);
 				//getPicture will store the image in sdram and then read it to the readbuffer
 				if(getPicture == ACK){
-					PRINTF("sending sdram read buffer to queue");
-					xQueueSend(/*Handle of image transfer queue*/, &sdram_readBuffer_copy, 100);
+					QueueHandler_imag1 = xQueueCreate(10, sizeof(uint8_t));
+					// PRINTF("Sending sdram read buffer to queue");
+					// xQueueSend(/*Handle of image transfer queue*/, &sdram_readBuffer, 100); 
 				} else {
 					PRINTF("getPicture failed.\r\n");
 				}
