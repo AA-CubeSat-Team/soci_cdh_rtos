@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <imag_wrap.h>
+#include <imag_task.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_debug_console.h"
@@ -9,8 +10,8 @@
 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
 static uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes or less
-static uint8_t image_storage[256]; // FIX THIS -- How large and what type of buffer for receiving images? 
 const uint8_t EXTERNAL_PACKAGE_SIZE = 32; // External packages should be 32 bytes (receiving image files)
+uint8_t imageBytesReceived;
 
 
 // To send commands to IMG
@@ -27,7 +28,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 	// Send command to IMG (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 		
-		status = LPUART_RTOS_Send(&uart4_handle, toSend, sizeof(toSend));
+		status = LPUART_Writeblocking(LPUART_4, toSend, sizeof(toSend)/sizeof(toSend[0]));
 
 		if(status == kStatus_Success){
 			PRINTF("Sending command succeeded!\r\n");
@@ -35,7 +36,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 		} else if (status == kStatus_InvalidArgument){
 			PRINTF("Invalid argument. Command cannot be sent.\r\n");
 			return status;
-		} else if (status == kStatus_Fail) {
+		} else if (status == kStatus_LPUART_Timeout) {
 			PRINTF("Attempt %d failed to send. Retrying...\r\n", attempt);
 			if(attempt == 3){
 				PRINTF("All attempts failed. Command not sent.");
@@ -52,6 +53,7 @@ size_t getResponse(){
 	//Response format: <Response> <Command> <Command specifier> <Error> <Padding> *Padding is sometimes significant
 	status_t status;
 	size_t responseSize = 0; // Default value, will update to number of bytes received ("5" expected)
+	
 
 	PRINTF("Fetching response from IMG system... \n");
 
@@ -61,7 +63,7 @@ size_t getResponse(){
 	// fetch response from IMG, store in recv_buffer (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 		
-		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeof(recv_buffer), &responseSize);
+		status = LPUART_RTOS_Receive(&uart4_handle, recv_buffer, sizeof(recv_buffer), &responseSize); // TODO: Needs to be updated
 
 		if(status == kStatus_Success){
 			PRINTF("Fetching response succeeded!\r\n");
@@ -69,8 +71,8 @@ size_t getResponse(){
 		} else if (status == kStatus_InvalidArgument){
 			PRINTF("Invalid argument. Response could not be fetched.\r\n");
 			return responseSize;
-		} else if (status == kStatus_Fail) {
-			PRINTF("Attempt %d failed to fetch response. Retrying...\r\n", attempt);
+		} else if (status == kStatus_LPUART_Timeout) {
+			PRINTF("Attempt %d timed out. Retrying...\r\n", attempt);
 			if(attempt == 3){
 				PRINTF("Failed to fetch response.\n");
 			}
@@ -82,17 +84,17 @@ size_t getResponse(){
 
 // Gets packages and stores them in image_storage -- When to send NAK?
 // Returns imageBytesReceived  The number of image bytes received 
-int getPackages(){
-	int imageBytesReceived = 0;
+uint8_t getPackages(){
 	status_t sendStatus; 
 	bool retryPackage = false; // Default (True if the received package has an incorrect veri. byte and must be retried)
 	uint8_t packageSize;
 	uint8_t imageSize = recv_buffer[3] << 8 | recv_buffer[4]; 
-	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; // Max value of 8 currently (Since image_storage has size 256)
+	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; 
 	uint8_t remainingBytes = imageSize % EXTERNAL_PACKAGE_SIZE;
+	imageBytesReceived = 0;
 
-	// Reset storage memory before storing the new image file
-	memset(image_storage, 0, sizeof(image_storage));
+	// Calculate next available slot in SDRAM
+	uint8_t SDRAM_Image_Index = 0; // TODO: Zero is placeholder
 
 	for(int i = 0; i <= fullPackages; i++){
 		PRINTF("-- Requesting Package from IMG. --\r\n");
@@ -115,14 +117,14 @@ int getPackages(){
 
 		PRINTF("-- Receiving package from IMG. --\r\n");
 
-		status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeof(package_buffer), &packageSize);
+		status_t receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeof(package_buffer), &packageSize); //TODO: Needs to be updated
 		//Try receiving 3 times 
 		int attempt = 1;
 		while (receiveStatus != kStatus_Success && attempt <= 3){
 			if (receiveStatus == kStatus_InvalidArgument){
 				PRINTF("-- Invalid argument. Package could not be fetched. --\r\n");
 				return imageBytesReceived;
-			} else if (receiveStatus == kStatus_Fail) {
+			} else if (receiveStatus == kStatus_LPUART_Timeout) {
 				PRINTF("-- Attempt %d failed to fetch package. Retrying... --\r\n", attempt);
 			}
 			if(attempt == 3){
@@ -130,17 +132,20 @@ int getPackages(){
 				return imageBytesReceived; 
 			}
 			attempt++;
-			receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeof(package_buffer), &packageSize); // Retry Receiving
+			receiveStatus = LPUART_RTOS_Receive(&uart4_handle, package_buffer, sizeof(package_buffer), &packageSize); // Retry Receiving TODO: Needs to be updated
 		}
 		// Check verification byte
 		if(package_buffer[31] == 0xFF){
 			// Package received correctly
+
 			// Copy package_buffer to sdram 
-			uint8_t SDRAMStorageSlot = i * EXTERNAL_PACKAGE_SIZE; // Position in SDRAM to store new bytes
+			uint8_t SDRAMStorageSlot = SDRAM_Image_Index + i * EXTERNAL_PACKAGE_SIZE; // Position in SDRAM to store new bytes
 			for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
-				sdram_writeBuffer_copy[j] = package_buffer[j];
+			sdram_writeBuffer[j] = package_buffer[j];
 			}
+
 			SEMC_SDRAM_Write(SDRAMStorageSlot, EXTERNAL_PACKAGE_SIZE, 1); 
+
 			imageBytesReceived += packageSize;
 			retryPackage = false;
 		} else {
@@ -150,6 +155,11 @@ int getPackages(){
 			i--; // To ensure the loop is ran one more time for the same package
 		}
 	}
+	// Send image storage info to queue
+	PRINTF("Sending image info to queue\r\n");
+	uint8_t imageInfo[] = {SDRAM_Image_Index, imageBytesReceived};
+	xQueueSend(QueueHandler_imag1, &imageInfo, 100);
+
 	sendStatus = sendCommand(ACK, PADDING); // Confirmation of all packages received
 	if(sendStatus == kStatus_Success){
 		PRINTF("-- IMG notified of all packages being received --\r\n");
@@ -160,8 +170,9 @@ int getPackages(){
 	PRINTF("-- Fetched all packages successfully! --\r\n");
 	PRINTF("-- Reading image from SDRAM --\r\n");
 
-	// Read SDRAM (to sdram_readBuffer_copy) and task will send the buffer to MCC through a FreeRTOS queue
-	SEMC_SDRAM_Read(0, imageBytesReceived, 1);
+	// Read SDRAM (to sdram_readBuffer) and task will send the buffer to MCC through a FreeRTOS queue
+	// SEMC_SDRAM_Read(0, imageBytesReceived, 1); COM will retrieve image?
+
 	return imageBytesReceived;
 }	
 
