@@ -28,10 +28,19 @@ bool image_check = false;
 bool beacon_check = false;
 bool com_wrap_debug = false; // Turn this true if you want to test individual functions
 
+TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
+
+#define COM_TASK_DEBUG 1
+
+#if COM_TASK_DEBUG
+bool g_comActive = false;
+bool g_imgActive = false;
+
+#else
 extern bool g_comActive;
 extern bool g_imgActive;
-
+#endif
 ////////////////////////////////////////// Testing interrupt handling
 /*UART 1
   Ring buffer for data input and output, input data are saved
@@ -202,7 +211,32 @@ void UART1_IRQHandler(void)
  *
  */
 enum com_state{INIT, NORMAL, PASSING};
-enum com_state com_current_state = INIT;
+enum com_state comCurrentState = INIT;
+
+bool GNC_DetumbleFlag = false; //TODO: verify with GNC
+bool GNC_PassingFlag = false; //TODO: verify with GNC
+
+void vBeaconTimerCallback( TimerHandle_t xTimer ) {
+    /* Optionally do something if the pxTimer parameter is NULL. */
+    configASSERT( xTimer );
+
+    PRINTF("Sending Beacon\n");
+    //com_sendBeacons();
+}
+
+void vHealthCheckTimerCallback( TimerHandle_t xTimer ) {
+    /* Optionally do something if the pxTimer parameter is NULL. */
+    configASSERT( xTimer );
+
+#if !COM_TASK_DEBUG
+    if(!com_healthcheck()) {
+    	PRINTF("Health check failed, resetting radio\n");
+    	//com_radio_init();
+    }
+#endif
+    PRINTF("Health check normal\n");
+
+}
 
 void com_task(void *pvParameters)
 {
@@ -268,74 +302,132 @@ void com_task(void *pvParameters)
 		PRINTF("\n");
 
 	} else {
-		const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+
+		const TickType_t minute_delay = pdMS_TO_TICKS( 60 * 1000 );
+
+		TimerHandle_t beaconTimer = xTimerCreate(
+                 /* Just a text name, not used by the RTOS
+                  kernel. */
+                  "Beacon Timer",
+                  /* The timer period in ticks, must be
+                  greater than 0. 60s interval */
+				  minute_delay,
+                  /* The timers will auto-reload themselves
+                  when they expire. */
+                  pdTRUE,
+                  /* The ID is used to store a count of the
+                  number of times the timer has expired, which
+                  is initialised to 0. */
+                  ( void * ) 0,
+                  /* Each timer calls the same callback when
+                  it expires. */
+				  vBeaconTimerCallback
+                );
+
+
+		TimerHandle_t healthCheckTimer = xTimerCreate(
+                 /* Just a text name, not used by the RTOS
+                  kernel. */
+                  "Health Check Timer",
+                  /* The timer period in ticks, must be
+                  greater than 0. 24hr interval */
+				  24 * 60 * minute_delay,
+                  /* The timers will auto-reload themselves
+                  when they expire. */
+                  pdTRUE,
+                  /* The ID is used to store a count of the
+                  number of times the timer has expired, which
+                  is initialised to 0. */
+                  ( void * ) 0,
+                  /* Each timer calls the same callback when
+                  it expires. */
+				  vHealthCheckTimerCallback
+                );
+
+// 24 * 60 * 60 * 1000
+		if (pdPASS != xTimerStart(beaconTimer, 0)) {
+			PRINTF("BEACON timer failed to start");
+		}
+		if (pdPASS != xTimerStart(healthCheckTimer, 0)) {
+			PRINTF("BEACON timer failed to start");
+		}
+
 
 		while(1) {
-			switch (com_current_state){
+			TickType_t xLastWakeTime = xTaskGetTickCount();
+			const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+			int count = 0;
+
+			if (true == GNC_DetumbleFlag) {
+				comCurrentState = NORMAL;
+			}
+			if (true == GNC_PassingFlag) {
+				comCurrentState = PASSING;
+			}
+
+			switch (comCurrentState){
 				case INIT:
 					PRINTF("\ninitialize comm.\r\n");
-					com_init();
-					com_set_burn_wire1();
-					com_set_burn_wire2();
+					//com_init();
+					//com_set_burn_wire1();
+					//com_set_burn_wire2();
 
-					// TODO wait for detumble, 15min
-					vTaskDelay(pdMS_TO_TICKS( 15*1000 ));
 
-					com_current_state = NORMAL;
+					PRINTF("Waiting to detumble\n");
+#if COM_TASK_DEBUG
+					vTaskDelay(pdMS_TO_TICKS( 1000 )); // TODO wait for detumble, 15min
+#else
+					vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
+#endif
+					PRINTF("Detumble time limit hit\n");
+
+					comCurrentState = NORMAL;
 					break;
 
 				case NORMAL:
 
-					com_current_state = PASSING;
+					//PRINTF("waiting for GNC\n");
+					vTaskDelayUntil(&xLastWakeTime, xDelayms);
 					break;
 
 				case PASSING:
 
+					PRINTF("\ncomm work.\r\n");
+					if(g_comActive == true){ 	//TODO: not sure what g_comActive means
+						PRINTF("com_getCommands\n");
+						//com_getCommands();
+					}
+					count++;
+					PRINTF("count = %d\n", count);
+					if (count >= 5){ //later: receive a command to take a pic
+						//vTaskResume(TaskHandler_img);  //TODO: remove comment
+						count = 0;
+						PRINTF("resuming img task\r\n");
+					}
 
-					com_current_state = NORMAL;
+					if(g_comActive == true){
+						//checking if getting a command request
+						if (command_request){
+							//sending data based on priority
+							if (payload_check) {
+								PRINTF("com_getCommands\n");
+								//com_sendPayloads();  //TODO: remove comment
+							} else if (image_check && g_imgActive) {
+								PRINTF("com_getCommands\n");
+								//com_sendImages();  //TODO: remove comment
+							}
+//							else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
+//								com_sendBeacons();
+//							}
+						}
+					}
+
+
+					comCurrentState = NORMAL;
 					break;
 			}
 
 		}
 
-
-		// TODO: com_healthcheck everyday, if false, config_radio
-
-//		int count = 0;
-//		for (;;) {
-//			TickType_t xLastWakeTime = xTaskGetTickCount();
-//			PRINTF("\ncomm work.\r\n");
-//			if(g_comActive == true){
-//	//			com_getCommands();
-//			}
-//			count++;
-//			PRINTF("count = %d\n", count);
-//			if (count >= 5){ //later: receive a command to take a pic
-//				vTaskResume(TaskHandler_img);
-//				count = 0;
-//				PRINTF("resuming img task\r\n");
-//			}
-//
-//			if(g_comActive == true){
-//				//checking if getting a command request
-//				if (command_request){
-//					//sending data based on priority
-//					if (payload_check) {
-//						com_sendPayloads();
-//					} else if (image_check && g_imgActive) {
-//						com_sendImages();
-//					} else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
-//						com_sendBeacons();
-//					}
-//				}
-//
-//			}
-//			else{
-//
-//			}
-
-			//vTaskDelayUntil(&xLastWakeTime, xDelayms);
-
-//		}
 	}
 }
