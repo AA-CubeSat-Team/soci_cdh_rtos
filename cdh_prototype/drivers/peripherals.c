@@ -60,7 +60,6 @@ void vCreateQueues( void )
    }
 }
 
-
 lpuart_rtos_handle_t uart1_handle;
 struct _lpuart_handle t_handle1;
 uint8_t background_buffer1[32];

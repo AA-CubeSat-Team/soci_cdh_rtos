@@ -29,12 +29,29 @@ volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
 uint8_t g_tipString[] =
     "UART 1 initialised \r\n";
 
+// TODO: Add a struct for messages between tasks. Try restructuring com code
+
+//Program the expected responses for each command
+static char set_dealer_response[] = {0x01, 0xC4, 0x00, 0x3B};
+static char set_power_response[] = {0x01, 0xF1, 0x00, 0x0F};
+static char get_power_response[] = {0x01, 0xF2, 0x01, 0x0D};
+static char set_tx_freq_response[] = {0x01, 0xB7, 0x00};
+static char set_rx_freq_response[] = {0x01, 0xB9, 0x00};
+static char set_channel_response[] = {0x01, 0x83, 0x00, 0x7C};
+static char set_bandwidth_response[] = {0x01, 0xF0, 0x00, 0x10};
+static char set_modulation_response[] = {0x01, 0xAB}; //TBD
+static char program_response[] = {0x01,0x9E, 0x00, 0x62};
+static char reset_response[] = {0x01, 0x9D, 0x00, 0x63};
+static char set_led_rx_response[] = {0x01, 0x00, 0xFF, 0x01};
+
 void UART1_IRQHandler(void)
 {
 	BaseType_t xHigherPriorityTaskWoken;
     uint8_t data;
     uint16_t tmprxIndex = rxIndex;
     uint16_t tmptxIndex = txIndex;
+
+    message_package new_message;
 
     /* If new data arrived. */
     if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(LPUART_1))
@@ -45,12 +62,36 @@ void UART1_IRQHandler(void)
         if (((tmprxIndex + 1) % UART1_RING_BUFFER_SIZE) != tmptxIndex)
         {
         	UART1RingBuffer[rxIndex] = data;
-        	xQueueSendToBackFromISR(com_task_queue_handle, &data, &xHigherPriorityTaskWoken );
+        	PRINT("data: %d", data);
             rxIndex++;
             rxIndex %= UART1_RING_BUFFER_SIZE;
         }
     }
+    new_message.message_source = FROM_COM;
+    //new_message.message_type = ; // TODO: How to tell command vs data?
+    //new_message.message_addr = ; // TODO: Make some kind of counter for this
+    new_message.message_data = data;
+    new_message.message_size = rxIndex + 1;
+    xQueueSendToBackFromISR(com_task_queue_handle, &data, &xHigherPriorityTaskWoken );
+    com_proccess_received_data();
     SDK_ISR_EXIT_BARRIER;
+}
+
+com_proccess_received_data(){
+	switch(expression) {
+
+	   case constant-expression  :
+	      statement(s);
+	      break; /* optional */
+
+	   case constant-expression  :
+	      statement(s);
+	      break; /* optional */
+
+	   /* you can have any number of case statements */
+	   default : /* Optional */
+	   statement(s);
+	}
 }
 
 

@@ -91,6 +91,29 @@ extern QueueHandle_t com_task_queue_handle;
 extern QueueHandle_t gnc_task_queue_handle;
 extern QueueHandle_t imag_task_queue_handle;
 
+/* structs/enums for message queues*/
+// enum for type of data
+typedef enum{
+	DATA,
+	COMMAND
+}data_type;
+
+// enum for message source
+typedef enum{
+	FROM_COM,
+	FROM_IMG,
+	FROM_GNC
+} from;
+
+// struct for message
+typedef struct {
+	from message_source;
+	data_type message_type;
+	char* message_addr;
+	uint8_t* message_data;
+	uint8_t message_size;
+}message_package;
+
 #if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
 extern lpspi_rtos_handle_t spi_m_rwa2_handle;
