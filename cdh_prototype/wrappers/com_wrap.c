@@ -210,7 +210,9 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
         	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
         }
         bool sentCommand = checkConfigCommand(*rx_buffer, *expectedResponse, sizeExpectedResponse);
+
         memset(rx_buffer, 0, sizeof(rx_buffer));
+
         if (sentCommand) {
         	PRINTF("Radio response to command is correct! \n");
         	try = 5;
@@ -231,7 +233,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 }
 
 //checks if radio response to command is correct
-static bool checkConfigCommand(uint8_t actualResponse[], uint8_t expectedResponse[], int lengthOfResponse) {
+static bool com_checkConfigCommand(uint8_t actualResponse[], uint8_t expectedResponse[], int lengthOfResponse) {
 	for (int j = 0; j < lengthOfResponse; j++) {
 		if (actualResponse[j] != expectedResponse[j]) {
 			return false;
@@ -611,9 +613,9 @@ static bool setDealerMode() {
 }
 
 
-static bool checkDealerMode(){
-
-}
+//static bool checkDealerMode(){
+//
+//}
 
 //Set to a default channel of 1
 static bool setChannel() {

@@ -14,6 +14,7 @@
 #include "fsl_lpuart.h"
 #include "fsl_lpspi.h"
 #include "fsl_lpi2c.h"
+#include "queue.h"
 
 QueueHandle_t com_task_queue_handle;
 QueueHandle_t gnc_task_queue_handle;
@@ -37,19 +38,19 @@ void vCreateQueues( void )
                          10,
                          /* Size of each item is big enough to hold only a
                          pointer. */
-                         sizeof(int*) );
+                         sizeof(message_package));
 	gnc_task_queue_handle = xQueueCreate(
                          /* The number of items the queue can hold. */
                          10,
                          /* Size of each item is big enough to hold only a
                          pointer. */
-                         sizeof(int*) );
+                         sizeof(message_package));
 	imag_task_queue_handle = xQueueCreate(
                          /* The number of items the queue can hold. */
                          10,
                          /* Size of each item is big enough to hold only a
                          pointer. */
-                         sizeof(int*) );
+                         sizeof(message_package));
 
    if( ( com_task_queue_handle == NULL ) || ( gnc_task_queue_handle == NULL ) || (imag_task_queue_handle == NULL))
    {

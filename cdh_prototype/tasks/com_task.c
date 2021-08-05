@@ -26,6 +26,7 @@ extern bool i2c_com_antennaDeployed;
 uint8_t UART1RingBuffer[UART1_RING_BUFFER_SIZE];
 volatile uint16_t txIndex; /* Index of the data to send out. */
 volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
+volatile uint16_t addr;
 uint8_t g_tipString[] =
     "UART 1 initialised \r\n";
 
@@ -54,7 +55,8 @@ void UART1_IRQHandler(void)
     message_package new_message;
 
     /* If new data arrived. */
-    if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(LPUART_1))
+    bool new_data_flag = (kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(LPUART_1);
+    if (new_data_flag)
     {
         data = LPUART_ReadByte(LPUART_1);
 
@@ -62,36 +64,66 @@ void UART1_IRQHandler(void)
         if (((tmprxIndex + 1) % UART1_RING_BUFFER_SIZE) != tmptxIndex)
         {
         	UART1RingBuffer[rxIndex] = data;
-        	PRINT("data: %d", data);
+        	PRINTF("data: %d", data);
             rxIndex++;
             rxIndex %= UART1_RING_BUFFER_SIZE;
         }
     }
     new_message.message_source = FROM_COM;
-    //new_message.message_type = ; // TODO: How to tell command vs data?
-    //new_message.message_addr = ; // TODO: Make some kind of counter for this
-    new_message.message_data = data;
-    new_message.message_size = rxIndex + 1;
-    xQueueSendToBackFromISR(com_task_queue_handle, &data, &xHigherPriorityTaskWoken );
-    com_proccess_received_data();
+    //new_message.message_type = ; // TODO: How to tell command vs data? Do I need ths var?
+    new_message.message_addr = addr; // TODO: Make sure counter addr for this actually works
+    new_message.message_data = &data;
+    new_message.message_size = rxIndex + 1; //TODO: Make sure this is getting actual size
+    xQueueSendToBackFromISR(com_task_queue_handle, &new_message, &xHigherPriorityTaskWoken );
     SDK_ISR_EXIT_BARRIER;
+    // TODO: Make sure it only gets here (after exit barrier) once entire data is received
+    // TODO: Make sure this interrupt handler isn't too long!! Is exit barrier .. exit the interrupt handler?
+
+    message_package rcv_msg;
+    if (xQueueReceiveFromISR(com_task_queue_handle, (void *)&rcv_msg, 0) == pdTRUE) {
+    	com_proccess_received_data(rcv_msg.message_data, rcv_msg.message_size);
+    }
 }
 
-com_proccess_received_data(){
-	switch(expression) {
-
-	   case constant-expression  :
-	      statement(s);
-	      break; /* optional */
-
-	   case constant-expression  :
-	      statement(s);
-	      break; /* optional */
-
-	   /* you can have any number of case statements */
-	   default : /* Optional */
-	   statement(s);
+/* TODO: Need to move this handling to wrapper function and implemenet some sort of
+    task suspend system from com_wrap and task notify from ISR. But we want to make sure
+    that we're not waiting too long. So it might be better to just have a
+    task notification function that resumes (but what would wrapper do in meantimr)*/
+com_proccess_received_data(uint8_t* p_data, int message_size){
+	addr++;
+	if(checkConfigCommand((*p_data), *set_dealer_response, message_size)) {
+		PRINTF("SET DEALER RESPONSE SUCCESFULLY SET");
+		//rec_return_val = 1;
 	}
+
+		/* TODO: Maybe make some global variable that's set here and affects whether something is successful,
+		         maybe just a boolean dealer_response_success that's set to true here */
+	}
+	else if(checkConfigCommand((*p_data), *set_power_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *set_tx_freq_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *set_rx_freq_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *set_channel_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *set_bandwidth_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *set_modulation_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *program_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *reset_response, message_size)){
+	}
+	else if(checkConfigCommand((*p_data), *set_led_rx_response, message_size)){
+	}
+    // TODO: What kind of ack are we expecting to receive before receiving uplinking commands?
+//	else if{
+//	}
+	else{
+		//TODO: Set "default_tries" in com_wrap to false or something so it tries sending prev message again?
+	}
+
 }
 
 
