@@ -199,7 +199,8 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     	}
         PRINTF("Trying to receive ...\n");
         int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
-    	if (recReturnVal == kStatus_Success){
+    	// new_data = uart_receive()
+        if (recReturnVal == kStatus_Success){
     		PRINTF("SUCCESS RECEIVING\n");
     	}
     	else {

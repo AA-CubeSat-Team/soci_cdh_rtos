@@ -114,6 +114,15 @@ typedef struct {
 	uint8_t message_size;
 }message_package;
 
+//TODO: Implement this
+//uart_receive(){
+//	// go to other tasks while waiting for interrupt to happen
+//	// read the queue (that new data is added to from IRQ)
+//	if (xQueueReceive(com_task_queue_handle, (void *)&rcv_msg, 0) == pdTRUE) {
+//	    	return &rcv_msg.data
+//	    }
+//}
+
 #if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
 extern lpspi_rtos_handle_t spi_m_rwa2_handle;
