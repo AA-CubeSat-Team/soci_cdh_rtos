@@ -20,9 +20,7 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "peripherals.h"
-#include "lpm.h"
 #include "semc_sdram.h"
-
 #include "idle_task.h"
 #include "imag_task.h"
 #include "gnc_task.h"
@@ -31,7 +29,7 @@
 #include "eps_wrap.h"
 #include "act_wrap.h"
 #include "sen_wrap.h"
-#include "img_wrap.h"
+#include "imag_wrap.h"
 #include "com_wrap.h"
 
 // TODO: add includes for uart, spi, i2c, sdram, etc.
@@ -60,6 +58,11 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
+// Queue handlers declared in queue folder
+extern QueueHandle_t QueueHandler_IndexSDRAM;
+extern QueueHandle_t QueueHandler_ImageInfo;
+extern QueueHandle_t QueueHandler_CommandIMG; 
+
 /* Reset the priority of the task */
 void resetPriority(TaskHandle_t handler) {
 	vTaskPrioritySet(handler, 0);
@@ -84,6 +87,8 @@ void resumeTask (TaskHandle_t handler) {
 uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
 uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
 uint8_t *sdram_copy  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; //SD ram
+
+
 
 int main(void)
 {
@@ -116,6 +121,10 @@ int main(void)
 		PRINTF("%c", sdram_readBuffer_copy[i]);
 	}
 
+	// Queue Folder
+	QueueHandle_t QueueHandler_IndexSDRAM = xQueueCreate(1, sizeof(uint8_t)); 	// Tracks available index in SDRAM for IMG & GNC
+	QueueHandle_t QueueHandler_ImageInfo = xQueueCreate(2, sizeof(uint8_t)); 	// Holds size & location of images written to SDRAM by IMG for COM/MCC
+	QueueHandle_t QueueHandler_CommandIMG = xQueueCreate(10, sizeof(uint8_t)); 	// Holds up to 5 command/param pairs for systems to command IMG
 
 //    /* 32Bit data read and write. */
 //	SEMC_SDRAMReadWrite32Bit();
