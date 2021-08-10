@@ -277,7 +277,7 @@ void Debug_SPI_function()
 #define LPI2C_CLOCK_SOURCE_DIVIDER (5U)
 /* Get frequency of lpi2c clock */
 #define LPI2C_CLOCK_FREQUENCY ((CLOCK_GetFreq(kCLOCK_Usb1PllClk) / 8) / (LPI2C_CLOCK_SOURCE_DIVIDER + 1U))
-//#define I2C_MASTER_SLAVE_ADDR_7BIT (0x7EU)
+#define I2C_MASTER_SLAVE_ADDR_7BIT (0x7EU)
 #define I2C_BAUDRATE (100000) /* 100K */
 #define I2C_DATA_LENGTH (32) /* MAX is 256 */
 
@@ -285,7 +285,6 @@ uint8_t i2c1_master_buff[I2C_DATA_LENGTH];
 
 lpi2c_master_config_t i2c1_master_config;
 lpi2c_rtos_handle_t i2c1_m_rtos_handle;
-
 
 static void LPI2C1_init(void) {
 
@@ -373,6 +372,7 @@ static void LPI2C3_init(void) {
     }
 }
 
+#define DEBUG_MODE 1
 
 void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size) {
 	lpi2c_master_transfer_t masterXfer;
@@ -387,7 +387,7 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 		{
 			PRINTF("\r\n");
 		}
-		PRINTF("0x%2x  ", tx_buffer[i]);
+		PRINTF("0x%2x  ", masterSendBuffer[i]);
 	}
 	PRINTF("\r\n\r\n");
 #endif
@@ -471,6 +471,14 @@ void BOARD_InitPeripherals(void)
 	LPUART3_init();
 	LPUART4_init();
 	LPSPI_RWA_init(); // all three SPI
+
+	/*Clock setting for LPI2C*/
+	CLOCK_SetMux(kCLOCK_Lpi2cMux, LPI2C_CLOCK_SOURCE_SELECT);
+	CLOCK_SetDiv(kCLOCK_Lpi2cDiv, LPI2C_CLOCK_SOURCE_DIVIDER);
+
+	/* Set IRQ priority for freertos_lpi2c */
+	NVIC_SetPriority(LPI2C1_IRQn, 3);
+
 	LPI2C1_init();
 	LPI2C2_init();
 	LPI2C3_init();

@@ -14,7 +14,6 @@ processor_version: 9.0.1
 board: MIMXRT1020-EVK
 pin_labels:
 - {pin_num: '52', pin_signal: WAKEUP, label: USER_BUTTON, identifier: USER_BUTTON}
-power_domains: {NVCC_GPIO: '3.3'}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 

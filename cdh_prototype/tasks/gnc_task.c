@@ -101,7 +101,7 @@ void gnc_task(void *pvParameters)
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
 #if GNC_ENABLE
-		xLastWakeTime = xTaskGetTickCount();
+//		xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\nGNC TASK START.\r\n");
 
 		/* read sensors and actuator measurements to sensor_bus */

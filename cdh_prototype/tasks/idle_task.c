@@ -12,6 +12,16 @@
 #include "power_mode_switch.h"
 #include "specific.h"
 
+#include "fsl_device_registers.h"
+#include "fsl_debug_console.h"
+#include "board.h"
+#include "pin_mux.h"
+#include "clock_config.h"
+#include "fsl_lpuart.h"
+#include "fsl_lpspi.h"
+#include "fsl_lpi2c.h"
+#include "semc_sdram.h"
+
 /*******************************************************************************
  * Flags
  ******************************************************************************/
@@ -223,7 +233,7 @@ static void idle_phase2() {
 		/*task control*/
 //		suspendTask(TaskHandler_img);
 //		resumeTask(TaskHandler_com);
-		voltage = 7.0;
+		voltage = 8;
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
@@ -231,7 +241,7 @@ static void idle_phase2() {
 		//i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
 //		resumeTask(TaskHandler_com);
 //		resumeTask(TaskHandler_img);
-		voltage = 7.5;
+		voltage = 8;
 		//GNC task will always be active
 	}
 	setMCUPowerMode();
@@ -262,6 +272,15 @@ static void idle_phase3() {
 	}*/
 }
 
+#define LPI2C_CLOCK_SOURCE_SELECT (0U)
+/* Clock divider for master lpi2c clock source */
+#define LPI2C_CLOCK_SOURCE_DIVIDER (5U)
+/* Get frequency of lpi2c clock */
+#define LPI2C_CLOCK_FREQUENCY ((CLOCK_GetFreq(kCLOCK_Usb1PllClk) / 8) / (LPI2C_CLOCK_SOURCE_DIVIDER + 1U))
+#define I2C_MASTER_SLAVE_ADDR_7BIT (0x7EU)
+#define I2C_BAUDRATE (100000) /* 100K */
+#define I2C_DATA_LENGTH (32) /* MAX is 256 */
+
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
@@ -275,22 +294,33 @@ void idle_task(void *pvParameters) {
 	//		(4) normal operation
 
 	/*initial boot-up operations, IDLE remains the highest priority*/
-	operatingMode = CRIT_LOW_POWER;
-    LPM_Init(s_curRunMode);
-	//i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
-	idle_phase1();
-	//no subsystem healthcheck in CLPM
-//	vTaskSuspend(TaskHandler_com); //suspend inactive tasks in CLPM mode
-//	vTaskSuspend(TaskHandler_img);
-	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
-	vTaskDelayUntil(&xLastWakeTime, xDelayms);
-	voltage = 8;
+//	operatingMode = CRIT_LOW_POWER;
+//    LPM_Init(s_curRunMode);
+//	//i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
+//	idle_phase1();
+//	//no subsystem healthcheck in CLPM
+////	vTaskSuspend(TaskHandler_com); //suspend inactive tasks in CLPM mode
+////	vTaskSuspend(TaskHandler_img);
+//	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
+//	vTaskDelayUntil(&xLastWakeTime, xDelayms);
+//	voltage = 8;
+
+	uint8_t i2c1_tx_buff[32];
+	uint8_t i2c1_rx_buff[32];
+
+	for (int i = 0; i < 32; i++)
+	{
+		i2c1_tx_buff[i] = i;
+	}
+
 	//at this point, GNC will take over and run init and do main task for once, come back to IDLE to run its main task (check voltages)
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-		idle_phase1(); //Commission Phase I Checks
-		idle_phase2(); //pdm decider
-		idle_phase3(); //health checks subsystem
+		I2C_send(&i2c1_m_rtos_handle, 0x7E, i2c1_tx_buff, 32);
+		I2C_request(&i2c1_m_rtos_handle, 0x7E, i2c1_rx_buff, 32);
+//		idle_phase1(); //Commission Phase I Checks
+//		idle_phase2(); //pdm decider
+//		idle_phase3(); //health checks subsystem
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
