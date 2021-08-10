@@ -7,11 +7,16 @@
 #include <stdbool.h>
 #include "peripherals.h"
 #include "semc_sdram.h"
+#include "projdefs.h"
 
+QueueHandle_t QueueHandler_IndexSDRAM;
+QueueHandle_t QueueHandler_ImageInfo; 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
 static uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes or less
 const uint8_t EXTERNAL_PACKAGE_SIZE = 32; // External packages should be 32 bytes (receiving image files)
-uint8_t imageBytesReceived;
+uint8_t imageBytesReceived; // Tracks the image bytes received in getPackages
+
+// TODO: 500 ticks was chosen arbitrarily for all FreeRTOS queue functions 
 
 
 // To send commands to IMG
@@ -28,7 +33,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 	// Send command to IMG (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 		
-		status = LPUART_Writeblocking(LPUART_4, toSend, sizeof(toSend)/sizeof(toSend[0]));
+		status = LPUART_WriteBlocking(LPUART_4, toSend, sizeof(toSend)/sizeof(toSend[0]));
 
 		if(status == kStatus_Success){
 			PRINTF("Sending command succeeded!\r\n");
@@ -39,7 +44,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 		} else if (status == kStatus_LPUART_Timeout) {
 			PRINTF("Attempt %d failed to send. Retrying...\r\n", attempt);
 			if(attempt == 3){
-				PRINTF("All attempts failed. Command not sent.");
+				PRINTF("All attempts failed. Command not sent.\r\n");
 			}
 		}
 	}	
@@ -53,7 +58,6 @@ size_t getResponse(){
 	//Response format: <Response> <Command> <Command specifier> <Error> <Padding> *Padding is sometimes significant
 	status_t status;
 	size_t responseSize = 0; // Default value, will update to number of bytes received ("5" expected)
-	
 
 	PRINTF("Fetching response from IMG system... \n");
 
@@ -82,7 +86,7 @@ size_t getResponse(){
 	return responseSize; 
 }
 
-// Gets packages and stores them in image_storage -- When to send NAK?
+// Gets packages and stores them in SDRAM
 // Returns imageBytesReceived  The number of image bytes received 
 uint8_t getPackages(){
 	status_t sendStatus; 
@@ -91,18 +95,22 @@ uint8_t getPackages(){
 	uint8_t imageSize = recv_buffer[3] << 8 | recv_buffer[4]; 
 	uint8_t fullPackages = imageSize / EXTERNAL_PACKAGE_SIZE; 
 	uint8_t remainingBytes = imageSize % EXTERNAL_PACKAGE_SIZE;
+	uint8_t indexSDRAM;
 	imageBytesReceived = 0;
 
-	// Calculate next available slot in SDRAM
-	uint8_t SDRAM_Image_Index = 0; // TODO: Zero is placeholder
+	// Get next available slot in SDRAM
+	// Defaults to index 0 if nothing can be retrieved
+	if(xQueueReceive(QueueHandler_IndexSDRAM, &indexSDRAM, 500) != pdTRUE){ 
+		indexSDRAM = 0; 
+	}
 
 	for(int i = 0; i <= fullPackages; i++){
 		PRINTF("-- Requesting Package from IMG. --\r\n");
 		if(retryPackage == false){
-			status_t sendStatus = sendCommand(ACK, PADDING); // Will this get confused with sending takePicture command?
+			status_t sendStatus = sendCommand(ACK, PADDING); // TODO: Will this get confused with sending takePicture command?
 		} else if(retryPackage == true){
 			// If the last package's verification byte was wrong, request the same package
-			status_t sendStatus = sendCommand(NAK, PADDING); // Will this get confused with sending checkStatus command?
+			status_t sendStatus = sendCommand(NAK, PADDING); // TODO: Will this get confused with sending checkStatus command?
 		}
 
 		if(sendStatus == kStatus_Success){
@@ -136,10 +144,8 @@ uint8_t getPackages(){
 		}
 		// Check verification byte
 		if(package_buffer[31] == 0xFF){
-			// Package received correctly
-
-			// Copy package_buffer to sdram 
-			uint8_t SDRAMStorageSlot = SDRAM_Image_Index + i * EXTERNAL_PACKAGE_SIZE; // Position in SDRAM to store new bytes
+			// Package received correctly (Copy package_buffer to sdram)
+			uint8_t SDRAMStorageSlot = indexSDRAM + i * EXTERNAL_PACKAGE_SIZE; // Position in SDRAM to store new bytes
 			for(int j = 0; j < EXTERNAL_PACKAGE_SIZE; j++){
 			sdram_writeBuffer[j] = package_buffer[j];
 			}
@@ -152,15 +158,26 @@ uint8_t getPackages(){
 			// Package not received correctly (Retry current package)
 			PRINTF("-- Package verification byte is incorrect (not 0xFF), retrying... --\r\n");
 			retryPackage = true;
-			i--; // To ensure the loop is ran one more time for the same package
+			i--; // Loop is run one more time for the same package
 		}
 	}
-	// Send image storage info to queue
-	PRINTF("Sending image info to queue\r\n");
-	uint8_t imageInfo[] = {SDRAM_Image_Index, imageBytesReceived};
-	xQueueSend(QueueHandler_imag1, &imageInfo, 100);
+	// Send image storage info to ImageInfo queue
+	PRINTF("Sending image details (index and size) to ImageInfo queue\r\n");
+	if(xQueueSendToBack(QueueHandler_ImageInfo, &indexSDRAM, 500) != pdTRUE) {
+		PRINTF(" Failed to send image index to ImageInfo Queue. \r\n");
+	}
+	if(xQueueSendToBack(QueueHandler_ImageInfo, &imageBytesReceived, 500) != pdTRUE) {
+		PRINTF(" Failed to send image size to ImageInfo Queue. \r\n");
+	}
 
-	sendStatus = sendCommand(ACK, PADDING); // Confirmation of all packages received
+	// Send updated available index in sdram to IndexSDRAM queue
+	uint8_t updatedIndexSDRAM = indexSDRAM + imageBytesReceived; 
+	if(xQueueSendToBack(QueueHandler_IndexSDRAM, &updatedIndexSDRAM, 500) != pdTRUE) {
+		PRINTF(" Failed to send updated SDRAM index to IndexSDRAM Queue. \r\n");
+	}
+
+ 	// Confirmation of all packages received
+	sendStatus = sendCommand(ACK, PADDING);
 	if(sendStatus == kStatus_Success){
 		PRINTF("-- IMG notified of all packages being received --\r\n");
 	} else {
@@ -168,11 +185,6 @@ uint8_t getPackages(){
 		return imageBytesReceived;
 	}
 	PRINTF("-- Fetched all packages successfully! --\r\n");
-	PRINTF("-- Reading image from SDRAM --\r\n");
-
-	// Read SDRAM (to sdram_readBuffer) and task will send the buffer to MCC through a FreeRTOS queue
-	// SEMC_SDRAM_Read(0, imageBytesReceived, 1); COM will retrieve image?
-
 	return imageBytesReceived;
 }	
 
@@ -204,7 +216,7 @@ uint8_t checkError(){
 			PRINTF("Unrecognized error. Error byte is greater than 6.\r\n");
 		}
 	}
-	return recv_buffer[3]; // This will be padded with 0xAA (=170) if there's no error
+	return recv_buffer[3]; // This will be padded with 0xAA if there's no error
 }
 
 // Prints the recv_buffer without the padding bytes
@@ -333,6 +345,7 @@ uint8_t getPictureSize(uint8_t slot){
 }
 
 // Param slot  Indicates where in the microSD card to find the picture
+// Returns ACK (1) if successful or NAK (0) if unsuccessful
 uint8_t getPicture(uint8_t slot){
 	PRINTF("-- Fetching the picture at slot 0x%X --\r\n", slot);
 	PRINTF("-- Fetching the picture size --\r\n");
