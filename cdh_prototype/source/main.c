@@ -123,8 +123,8 @@ int main(void)
 
 	// Queue Folder
 	QueueHandle_t QueueHandler_IndexSDRAM = xQueueCreate(1, sizeof(uint8_t)); 	// Tracks available index in SDRAM for IMG & GNC
-	QueueHandle_t QueueHandler_ImageInfo = xQueueCreate(2, sizeof(uint8_t)); 	// Holds size & location of images written to SDRAM by IMG for COM/MCC
-	QueueHandle_t QueueHandler_CommandIMG = xQueueCreate(10, sizeof(uint8_t)); 	// Holds up to 5 command/param pairs for systems to command IMG
+	QueueHandle_t QueueHandler_ImageInfo = xQueueCreate(20, sizeof(uint8_t)); 	// Holds up to 10 pairs of size & location of images written to SDRAM by IMG
+	QueueHandle_t QueueHandler_CommandIMG = xQueueCreate(20, sizeof(uint8_t)); 	// Holds up to 10 command/param pairs for systems to command IMG
 
 //    /* 32Bit data read and write. */
 //	SEMC_SDRAMReadWrite32Bit();
