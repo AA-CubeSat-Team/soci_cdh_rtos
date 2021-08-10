@@ -6,6 +6,7 @@
 #include "task.h"
 #include "queue.h"
 #include "timers.h"
+#include "projdefs.h"
 
 /* Freescale includes. */
 #include "fsl_device_registers.h"
@@ -17,7 +18,7 @@
  * Variable Declarations
  ******************************************************************************/
 extern TaskHandle_t TaskHandler_img;
-extern QueueHandle_t QueueHandler_imag1; 
+extern QueueHandle_t QueueHandler_CommandIMG; 
 
 /*******************************************************************************
  * Function declarations
