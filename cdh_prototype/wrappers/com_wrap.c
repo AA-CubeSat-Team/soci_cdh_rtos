@@ -5,8 +5,8 @@ COM:
 
 105	GPIO_AD_B0_06	UART1_TX	COM Board
 101	GPIO_AD_B0_07	UART1_RX	COM Board
-83	GPIO_AD_B1_07	ANT_BURN_WIRE1	Antenna Burn Wire 1
-78	GPIO_AD_B1_12	ANT_BURN_WIRE2	Antenna Burn Wire 2
+83	GPIO_AD_B1_03	ANT_BURN_WIRE1	Antenna Burn Wire 1
+78	GPIO_AD_B1_02	ANT_BURN_WIRE2	Antenna Burn Wire 2
  */
 #include "fsl_gpio.h"
 #include "com_wrap.h"
@@ -277,18 +277,18 @@ void com_init()
 			kGPIO_DigitalOutput, 0, kGPIO_NoIntmode
 	};
 	// Setting burn wire pins to 0 I think
-	GPIO_PinInit(GPIO1, 23, &gpioConfig); //GPIO_AD_B1_07
-	GPIO_PinInit(GPIO1, 28, &gpioConfig); //GPIO_AD_B1_12
+	GPIO_PinInit(GPIO1, 19, &gpioConfig); //GPIO_AD_B1_03
+	GPIO_PinInit(GPIO1, 18, &gpioConfig); //GPIO_AD_B1_02
 }
 
 void com_set_burn_wire1()
 {
-	GPIO_PinWrite(GPIO1, 23, 1); //GPIO_AD_B1_07, J19-1
+	GPIO_PinWrite(GPIO1, 19, 1); //GPIO_AD_B1_03, J19-9
 }
 
 void com_set_burn_wire2()
 {
-	GPIO_PinWrite(GPIO1, 28, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
+	GPIO_PinWrite(GPIO1, 18, 1); //GPIO_AD_B1_02, J19-10, (GND->J20-6 ????)
 }
 
 
