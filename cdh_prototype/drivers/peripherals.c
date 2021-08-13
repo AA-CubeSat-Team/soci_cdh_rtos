@@ -451,6 +451,95 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 		PRINTF("Failed receive!\r\n");
 	}
 }
+#define DEBUG_I2C_a		0
+#define DEBUG_I2C_b		0
+void I2C_send_1(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * tx_buffer, size_t tx_size)
+{
+	lpi2c_master_transfer_t masterXfer;
+	status_t status;
+
+#if DEBUG_I2C_a
+	PRINTF("Master will send data :");
+	int i=0;
+	for (i = 0; i < tx_size; i++)
+	{
+		if (i % 8 == 0)
+		{
+			PRINTF("\r\n");
+		}
+		PRINTF("0x%2x  ", tx_buffer[i]);
+	}
+	PRINTF("\r\n\r\n");
+#endif
+
+	memset(&masterXfer, 0, sizeof(masterXfer));
+	masterXfer.slaveAddress   = slave_address;
+	masterXfer.direction      = kLPI2C_Write;
+	masterXfer.subaddress     = ((uint32_t)subaddress);
+	masterXfer.subaddressSize = 1;
+	masterXfer.data           = tx_buffer;
+	masterXfer.dataSize       = tx_size;
+	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
+
+	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
+
+	if (status == kStatus_Success)
+	{
+#if DEBUG_I2C_b
+		PRINTF("I2C master transfer completed successfully.\r\n");
+#endif
+	}
+	else
+	{
+		PRINTF("I2C master transfer completed with ERROR!:      %d\r\n", status);
+
+	}
+}
+
+
+void I2C_request_1(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * rx_buffer, size_t rx_size)
+{
+	lpi2c_master_transfer_t masterXfer;
+	status_t status;
+#if DEBUG_I2C_a
+	PRINTF("Master will request data\r\n");
+#endif
+	memset(&masterXfer, 0, sizeof(masterXfer));
+	masterXfer.slaveAddress   = slave_address;
+	masterXfer.direction      = kLPI2C_Read;
+	masterXfer.subaddress     = ((uint32_t)subaddress);
+	if (!subaddress) {
+		masterXfer.subaddressSize = 0;
+	} else {
+		masterXfer.subaddressSize = 1;
+	}
+	masterXfer.data           = rx_buffer;
+	masterXfer.dataSize       = rx_size;
+	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
+
+	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
+
+	if (status == kStatus_Success)
+	{
+#if DEBUG_I2C_b
+		PRINTF("Received data :\r\n");
+		int i;
+		for (i = 0; i < rx_size; i++)
+		{
+			if (i % 8 == 0)
+			{
+				PRINTF("\r\n");
+			}
+			PRINTF("0x%2x  ", (rx_buffer)[i]);
+		}
+		PRINTF("\r\n\r\n");
+#endif
+	}
+	else {
+		PRINTF("Failed receive!:      %d\r\n", status);
+	}
+
+}
 /***********************************************************************************************************************
  * GPT initialization code
  **********************************************************************************************************************/
