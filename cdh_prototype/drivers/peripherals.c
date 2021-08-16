@@ -15,6 +15,11 @@
 #include "fsl_lpspi.h"
 #include "fsl_lpi2c.h"
 
+// for debugging I2C send function
+//#include <inttypes.h>
+#define DEBUG_MODE true
+static uint8_t tx_buffer[4] = {};
+
 //#define uart_task_PRIORITY (configMAX_PRIORITIES - 1)
 
 /*
@@ -397,11 +402,22 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 	masterXfer.direction      = kLPI2C_Write;
 	masterXfer.subaddress     = 0;
 	masterXfer.subaddressSize = 0;
-	masterXfer.data           = masterSendBuffer;
+	masterXfer.data           = &masterSendBuffer;
 	masterXfer.dataSize       = tx_size; //generally I2C_DATA_LENGTH used
 	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
 
+	PRINTF("trying to print masterSendBuffer:\n");
+	for (i = 0; i < sizeof(masterSendBuffer); i++)
+		{
+			if (i % 8 == 0)
+			{
+				PRINTF("\r\n");
+			}
+			PRINTF("0x%2x  ", masterSendBuffer[i]);
+		}
+
 	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
+	PRINTF("Here is the status: %d \n", status);
 	if (status == kStatus_Success)
 	{
 		PRINTF("I2C master transfer completed successfully.\r\n");

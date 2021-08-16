@@ -100,16 +100,18 @@ status_t LPI2C_RTOS_Deinit(lpi2c_rtos_handle_t *handle)
 status_t LPI2C_RTOS_Transfer(lpi2c_rtos_handle_t *handle, lpi2c_master_transfer_t *transfer)
 {
     status_t status;
-
+    printf("inside LPI2C_RTOS_Transfer");
     /* Lock resource mutex */
     if (xSemaphoreTake(handle->mutex, portMAX_DELAY) != pdTRUE)
     {
+    	printf("inside LPI2C_Busy statement");
         return kStatus_LPI2C_Busy;
     }
 
     status = LPI2C_MasterTransferNonBlocking(handle->base, &handle->drv_handle, transfer);
     if (status != kStatus_Success)
     {
+    	printf("I2C send was not successful within library function");
         xSemaphoreGive(handle->mutex);
         return status;
     }
@@ -121,5 +123,6 @@ status_t LPI2C_RTOS_Transfer(lpi2c_rtos_handle_t *handle, lpi2c_master_transfer_
     xSemaphoreGive(handle->mutex);
 
     /* Return status captured by callback function */
+    printf("status captured by callback function");
     return handle->async_status;
 }

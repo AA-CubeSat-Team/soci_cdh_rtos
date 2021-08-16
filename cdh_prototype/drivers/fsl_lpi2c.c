@@ -1274,6 +1274,7 @@ status_t LPI2C_MasterTransferNonBlocking(LPI2C_Type *base,
     /* Return busy if another transaction is in progress. */
     if (handle->state != (uint8_t)kIdleState)
     {
+    	printf("another transaction is in progress \n");
         return kStatus_LPI2C_Busy;
     }
 
@@ -1281,6 +1282,7 @@ status_t LPI2C_MasterTransferNonBlocking(LPI2C_Type *base,
     result = LPI2C_CheckForBusyBus(base);
     if (kStatus_Success != result)
     {
+    	printf("error - bus is already in use \n");
         return result;
     }
 

@@ -81,45 +81,45 @@ int main(void)
     BOARD_InitPeripherals();
 
     // Rithu: The below line makes sure LPUART_RTOS_Send doesn't get stuck while testing individual wrappers!
-    // NVIC_SetPriority(LPUART3_IRQn, 10);
+    NVIC_SetPriority(LPI2C1_IRQn, 10);
 
     /* When wakeup from suspend, peripheral's doze & stop requests won't be cleared, need to clear them manually */
-   IOMUXC_GPR->GPR4  = 0x00000000;
-   IOMUXC_GPR->GPR7  = 0x00000000;
-   IOMUXC_GPR->GPR8  = 0x00000000;
-   IOMUXC_GPR->GPR12 = 0x00000000;
-
-    if (BOARD_InitSEMC() != kStatus_Success)
-	{
-		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
-	}
-    /*powermode init*/
-    if (true != LPM_Init(s_curRunMode))
-	{
-		PRINTF("LPM Init Failed!\r\n");
-	}
-    s_wakeupSig = xSemaphoreCreateBinary();
-	/* Make current resource count 0 for signal purpose */
-	if (xSemaphoreTake(s_wakeupSig, 0) == pdTRUE)
-	{
-		assert(0);
-	}
+//   IOMUXC_GPR->GPR4  = 0x00000000;
+//   IOMUXC_GPR->GPR7  = 0x00000000;
+//   IOMUXC_GPR->GPR8  = 0x00000000;
+//   IOMUXC_GPR->GPR12 = 0x00000000;
+//
+//    if (BOARD_InitSEMC() != kStatus_Success)
+//	{
+//		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
+//	}
+//    /*powermode init*/
+//    if (true != LPM_Init(s_curRunMode))
+//	{
+//		PRINTF("LPM Init Failed!\r\n");
+//	}
+//    s_wakeupSig = xSemaphoreCreateBinary();
+//	/* Make current resource count 0 for signal purpose */
+//	if (xSemaphoreTake(s_wakeupSig, 0) == pdTRUE)
+//	{
+//		assert(0);
+//	}
 	/****/
 
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
-        pdPASS)
-    {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-            ;
-    }
-    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
-		pdPASS)
-	{
-		PRINTF("Task creation failed!.\r\n");
-		while (1)
-			;
-	}
+//    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
+//        pdPASS)
+//    {
+//        PRINTF("Task creation failed!.\r\n");
+//        while (1)
+//            ;
+//    }
+//    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
+//		pdPASS)
+//	{
+//		PRINTF("Task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
     if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
 		pdPASS)
 	{
@@ -127,13 +127,13 @@ int main(void)
 		while (1)
 			;
 	}
-    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-		pdPASS)
-	{
-		PRINTF("Task creation failed!.\r\n");
-		while (1)
-			;
-	}
+//    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+//		pdPASS)
+//	{
+//		PRINTF("Task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
 
     vTaskStartScheduler();
     for (;;)

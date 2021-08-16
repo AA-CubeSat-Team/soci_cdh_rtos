@@ -200,13 +200,13 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("ERROR SENDING\n");;
     	}
         PRINTF("Trying to receive ...\n");
-        int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
-    	if (recReturnVal == kStatus_Success){
-    		PRINTF("SUCCESS RECEIVING\n");
-    	}
-    	else {
-    		PRINTF("ERROR RECEIVING\n");
-    	}
+//        int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
+//    	if (recReturnVal == kStatus_Success){
+//    		PRINTF("SUCCESS RECEIVING\n");
+//    	}
+//    	else {
+//    		PRINTF("ERROR RECEIVING\n");
+//    	}
     	PRINTF("Value of rx_buffer: \n");
         for (int i = 0; i < 4; i++) {
         	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
@@ -355,7 +355,9 @@ void com_getCommands() //highest priority
 void com_deployAntenna()
 {
 	//using algorithm one as the default
+	PRINTF("initiating I2C send");
     I2C_send(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, algorithmOne, sizeof(algorithmOne));
+    PRINTF("I2C send complete");
 	deploy_initiated = clock();
     delay(15); //longest time possible to deploy is 15 seconds
 }

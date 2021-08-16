@@ -20,7 +20,7 @@ bool command_request = false;
 bool payload_check = false;
 bool image_check = false;
 bool beacon_check = false;
-bool com_wrap_debug = false; // Turn this true if you want to test individual functions
+bool com_wrap_debug = true; // Turn this true if you want to test individual functions
 
 TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
@@ -41,6 +41,7 @@ uint8_t g_tipString[] =
 
 void UART1_IRQHandler(void)
 {
+	PRINTF("In interrupt handler");
     uint8_t data;
     uint16_t tmprxIndex = rxIndex;
     uint16_t tmptxIndex = txIndex;
@@ -99,14 +100,19 @@ void com_task(void *pvParameters)
 		// Delay to test "soft-break" into command mode via com_init function
         // delay(1);
 
-		PRINTF("Testing enterCommandMode function:\n");
-		com_enterCommandMode();
-		PRINTF("\n");
+		PRINTF("Testing deployAntenna function:\n");
+		com_deployAntenna();
+		PRINTF("Done testing");
 
-		//Testing if sending a command to the radio (non delay dependent) works
-		PRINTF("Testing exitCommandMode function:\n");;
-		com_exitCommandMode();
-		PRINTF("\n");
+//		PRINTF("Testing enterCommandMode function:\n");
+//		com_enterCommandMode();
+//		PRINTF("\n");
+//
+//		//Testing if sending a command to the radio (non delay dependent) works
+//		PRINTF("Testing exitCommandMode function:\n");;
+//		com_exitCommandMode();
+//		PRINTF("\n");
+//		PRINTF("Done testing");
 
 		//PRINTF("Testing com_init() function:\n");
 		//com_init();
