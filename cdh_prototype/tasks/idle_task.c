@@ -1,3 +1,4 @@
+#include <imag_wrap.h>
 #include <stdbool.h>
 #include "idle_task.h"
 #include "eps_wrap.h"
@@ -6,7 +7,6 @@
 #include "peripherals.h"
 #include "semc_sdram.h"
 #include "fsl_semc.h"
-#include "img_wrap.h"
 #include "act_wrap.h"
 #include "lpm.h"
 #include "power_mode_switch.h"

@@ -1,4 +1,4 @@
-#define IMAG_ENABLE	0
+#define IMAG_ENABLE	1
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
@@ -26,7 +26,7 @@
 #define UART4_IRQHandler 	LPUART4_IRQHandler
 
 /*! @brief Ring buffer size for UART 4 (Unit: Byte). */
-#define UART4_RING_BUFFER_SIZE 16
+#define UART4_RING_BUFFER_SIZE 6
 
 /*******************************************************************************
  * Variable Declarations
