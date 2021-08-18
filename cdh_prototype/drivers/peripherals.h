@@ -6,6 +6,7 @@
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
 
+#define UART_TEST 0
 #define SPI_TEST 0
 #define DEV_BOARD 1
 
@@ -114,6 +115,9 @@ void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config,
 
 void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
 void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
+
+void I2C_send_1(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * tx_buffer, size_t tx_size);
+void I2C_request_1(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * rx_buffer, size_t rx_size);
 
 /***********************************************************************************************************************
  * Definitions

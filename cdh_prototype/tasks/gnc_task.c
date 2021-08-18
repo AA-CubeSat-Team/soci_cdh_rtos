@@ -1,4 +1,9 @@
+#define GYRO_WRAP_TEST 1
 #include "gyro_wrap.h"
+#include "mag_wrap.h"
+#include "sun_wrap.h"
+#include "phd_wrap.h"
+#include "gyro_wrap_test.h"
 #include "gnc_task.h"
 //#include "FSW_Lib_types.h"
 #include "act_wrap.h"
@@ -11,6 +16,7 @@
 
 extern bool g_senActive, g_rwaActive, g_mtqActive;
 
+#if UART_TEST
 /*UART 3
   Ring buffer for data input and output, input data are saved
   to ring buffer in IRQ handler. The main function polls the ring buffer status,
@@ -47,12 +53,15 @@ void UART3_IRQHandler(void)
     }
     SDK_ISR_EXIT_BARRIER;
 }
+#endif
 
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+#if UART_TEST
+
 
 	/*initiate UART 3*/
 	lpuart_config_t config;
@@ -73,6 +82,7 @@ void gnc_task(void *pvParameters)
 	EnableIRQ(UART3_IRQn);
 
     /*UART 3 initialization done */
+#endif
 
 #if SPI_TEST
 		/* Initialize data in transfer buffers */
@@ -95,7 +105,13 @@ void gnc_task(void *pvParameters)
 //  act_init();
 //	FSW_Lib_initialize(); //GNC initialization
 #endif
+
+#if GYRO_WRAP_TEST
+	gyro_wrap_test_setup();
+#endif
+
 	for (;;) {
+#if UART_TEST
 		xLastWakeTime = xTaskGetTickCount();
 
 		/* Send g_tipString out. */
@@ -107,6 +123,12 @@ void gnc_task(void *pvParameters)
 
 		LPUART_ReadBlocking(LPUART_3, UART_3_R, sizeof(UART_3) / sizeof(UART_3[0]));
 		PRINTF("%s\r\n", UART_3_R);
+#endif
+
+#if GYRO_WRAP_TEST
+		gyro_wrap_test_loop();
+#endif
+
 #if GNC_ENABLE
 		xLastWakeTime = xTaskGetTickCount();
 		PRINTF("\nGNC TASK START.\r\n");
