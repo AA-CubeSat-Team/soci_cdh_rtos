@@ -9,8 +9,8 @@
 
 TaskHandle_t TaskHandler_img;
 
-extern uint8_t IMG_command = 0; //hard coded test command
-extern uint8_t IMG_param = 2; //hard coded test param
+uint8_t IMG_command = 5; //hard coded test command
+uint8_t IMG_param = 0; //hard coded test param
 IMG_system_response responseStatus;
 
 //uint8_t UART4RingBuffer[UART4_RING_BUFFER_SIZE];
@@ -19,9 +19,12 @@ lpuart_handle_t lpuart4Handle;
 // UART send buffer
 volatile bool newCommandFlag = 1; // default should be 0, set to 1 for testing purpose
 
+extern volatile bool responseReceivedFlag = 0;
+
 void UART4_IRQHandler(void)
 {
 	getResponse();
+	responseReceivedFlag = 1;
     SDK_ISR_EXIT_BARRIER;
 }
 
@@ -48,17 +51,6 @@ void imag_task(void *pvParameters)
 	EnableIRQ(UART4_IRQn);
     /*UART 4 initialisation done */
 
-    // sdram example
-   /* memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
-    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
-    SEMC_SDRAM_Read(0, 10, 1);
-    memset(sdram_writeBuffer, 1, sizeof(sdram_writeBuffer));
-    SEMC_SDRAM_Write(0, 10, 1);
-    SEMC_SDRAM_Read(0, 10, 1);
-	for (int i = 0; i < 10; i++) {
-		//read into the readBuffer to access later
-		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
-	}*/
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
@@ -77,8 +69,14 @@ void imag_task(void *pvParameters)
 
 		if (newCommandFlag) {
 		 	PRINTF("Sending command\r\n");
-			sendCommand(IMG_command, IMG_param);
+		 	// Note: to get an image, system need to get its size first
+		 	//IMG_command = IMG_command == GET_PICTURE ? GET_PICTURE_SIZE : IMG_command;
+			sendCommand(IMG_command == GET_PICTURE ? GET_PICTURE_SIZE : IMG_command, IMG_param);
 			PRINTF("Waiting for response\r\n");
+			while(responseReceivedFlag == false) {
+				delay(1); // TODO: figure out why doesn't work without delay
+			}
+			responseReceivedFlag = true;
 			switch (IMG_command) {
 				case CHECK_STATUS:
 					responseStatus = checkStatus(IMG_param);
@@ -110,6 +108,7 @@ void imag_task(void *pvParameters)
 			}
 			PRINTF("Response from IMG system: %d\r\n", responseStatus);
 			newCommandFlag = 0;
+
 		}
 
 		vTaskSuspend( NULL );

@@ -14,16 +14,17 @@ IMG:
 #include <stdbool.h>
 
 /* uint8_ts per package */
-static const unsigned int EXTERNAL_PACKAGE_SIZE = 32;
+#define EXTERNAL_PACKAGE_SIZE 32
 
 /* Reset time for uCamIII in milliseconds */
 static const unsigned int HARDWARE_RESET_TIME = 5;
 
 /* Maximum number of images allowed */
-static const unsigned int IMAGES_COUNT = 5;
+//static const unsigned int IMAGES_COUNT = 5;
+#define IMAGES_COUNT 5
 
 /* Response length */
-static const uint8_t RESPONSE_LENGTH = 5;
+#define RESPONSE_LENGTH 5
 
 /* Commands that can be tested */
 /*static const uint8_t CHECK_STATUS       = 0x00;
@@ -37,12 +38,14 @@ static const uint8_t SET_SLEEP_TIME     = 0x07;*/
 
 #define CHECK_STATUS 		0
 #define TAKE_PICTURE 		1
-#define GET_PICTURE_SIZE 	2
-#define GET_PICTURE 		3
-#define SET_CONTRAST 		4
-#define SET_BRIGHTNESS 		5
-#define SET_EXPOSURE 		6
-#define SET_SLEEP_TIME 		7
+#define GET_THUMBNAIL_SIZE  2
+#define GET_PICTURE_SIZE 	3
+#define GET_THUMBNAIL		4
+#define GET_PICTURE 		5
+#define SET_CONTRAST 		6
+#define SET_BRIGHTNESS 		7
+#define SET_EXPOSURE 		8
+#define SET_SLEEP_TIME 		9
 
 /* Possible responses */
 static const uint8_t NAK = 0x00;
@@ -85,3 +88,5 @@ IMG_system_response setContrast(uint8_t IMG_param);
 IMG_system_response setBrightness(uint8_t IMG_param);
 IMG_system_response setExposure(uint8_t IMG_param);
 IMG_system_response setSleepTime(uint8_t IMG_param);
+
+void delay(int seconds);
