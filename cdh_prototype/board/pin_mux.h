@@ -339,6 +339,20 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_ENET_RST_PERIPHERAL                                  JTAG   /*!< Peripheral name */
 #define BOARD_INITPINS_ENET_RST_SIGNAL                                       TDO   /*!< Signal name */
 
+/* GPIO_AD_B1_06 (number 84), ENET_INT/U11[21]/J17[8] */
+/* Routed pin properties */
+#define BOARD_INITPINS_ENET_INT_PERIPHERAL                                 GPIO1   /*!< Peripheral name */
+#define BOARD_INITPINS_ENET_INT_SIGNAL                                   gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_ENET_INT_CHANNEL                                      22U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_ENET_INT_GPIO                                       GPIO1   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_ENET_INT_GPIO_PIN                                     22U   /*!< GPIO pin number */
+#define BOARD_INITPINS_ENET_INT_GPIO_PIN_MASK                        (1U << 22U)   /*!< GPIO pin mask */
+#define BOARD_INITPINS_ENET_INT_PORT                                       GPIO1   /*!< PORT peripheral base pointer */
+#define BOARD_INITPINS_ENET_INT_PIN                                          22U   /*!< PORT pin number */
+#define BOARD_INITPINS_ENET_INT_PIN_MASK                             (1U << 22U)   /*!< PORT pin mask */
+
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

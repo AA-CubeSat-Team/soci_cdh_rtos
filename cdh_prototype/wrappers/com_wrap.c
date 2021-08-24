@@ -5,8 +5,8 @@ COM:
 
 105	GPIO_AD_B0_06	UART1_TX	COM Board
 101	GPIO_AD_B0_07	UART1_RX	COM Board
-83	GPIO_AD_B1_07	ANT_BURN_WIRE1	Antenna Burn Wire 1
-78	GPIO_AD_B1_12	ANT_BURN_WIRE2	Antenna Burn Wire 2
+83	GPIO_AD_B1_03	ANT_BURN_WIRE1	Antenna Burn Wire 1
+78	GPIO_AD_B1_02	ANT_BURN_WIRE2	Antenna Burn Wire 2
  */
 #include "fsl_gpio.h"
 #include "com_wrap.h"
@@ -128,7 +128,7 @@ void delay(int seconds)
 // Temporary uart_send function before IRS UART driver change
 static int uart_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length){
 	for (int i = 0; i < length; i++){
-		if (kStatus_Success != LPUART_RTOS_Send(handle, &buffer[i], 1))
+		if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, &buffer[i], 1))//LPUART_RTOS_Send(handle, &buffer[i], 1))
 		{
 			PRINTF("Trying to send: %c\n", &buffer[i]);
 			PRINTF("failed to send the %dth byte, terminating \r\n", i);
@@ -197,7 +197,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("SUCCESS SENDING\n");
     	}
     	else {
-    		PRINTF("ERROR SENDING\n");;
+    		PRINTF("ERROR SENDING\n");
     	}
         PRINTF("Trying to receive ...\n");
 //        int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
@@ -277,18 +277,18 @@ void com_init()
 			kGPIO_DigitalOutput, 0, kGPIO_NoIntmode
 	};
 	// Setting burn wire pins to 0 I think
-	GPIO_PinInit(GPIO1, 23, &gpioConfig); //GPIO_AD_B1_07
-	GPIO_PinInit(GPIO1, 28, &gpioConfig); //GPIO_AD_B1_12
+	GPIO_PinInit(GPIO1, 19, &gpioConfig); //GPIO_AD_B1_03
+	GPIO_PinInit(GPIO1, 18, &gpioConfig); //GPIO_AD_B1_02
 }
 
 void com_set_burn_wire1()
 {
-	GPIO_PinWrite(GPIO1, 23, 1); //GPIO_AD_B1_07, J19-1
+	GPIO_PinWrite(GPIO1, 19, 1); //GPIO_AD_B1_03, J19-9
 }
 
 void com_set_burn_wire2()
 {
-	GPIO_PinWrite(GPIO1, 28, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
+	GPIO_PinWrite(GPIO1, 18, 1); //GPIO_AD_B1_02, J19-10, (GND->J20-6 ????)
 }
 
 
@@ -319,7 +319,7 @@ void com_getCommands() //highest priority
 
 	// void * memcpy ( void * destination, const void * source, size_t num );
 
-	if (kStatus_Success != LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
+	if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
 	{
 		PRINTF("could not send!!!\r\n\r\n");
 		return;
@@ -339,7 +339,7 @@ void com_getCommands() //highest priority
 	if (n > 0)
 	{
 		/* send back the received data */
-		if (kStatus_Success != LPUART_RTOS_Send(&uart1_handle, (uint8_t *)rcv_buffer, n))
+		if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)rcv_buffer, n))
 		{
 			vTaskSuspend(NULL);
 		}
