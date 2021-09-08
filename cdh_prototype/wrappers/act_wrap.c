@@ -26,7 +26,7 @@ Reaction wheel:
 90	GPIO_AD_B1_02	SPI1_EN2	Enable - RXN Wheel 3
 89	GPIO_AD_B1_03	SPI1_EN3	Enable - RXN Wheel 4
  */
-#include "act_wrap.h"
+#include <act_wrap.h>
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
 #include "fsl_lpspi_freertos.h"

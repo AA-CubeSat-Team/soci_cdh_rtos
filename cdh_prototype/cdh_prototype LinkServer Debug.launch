@@ -8,7 +8,7 @@
 <stringAttribute key="com.crt.ctrlcenter.currentWireType" value="SWD"/>
 <booleanAttribute key="com.crt.ctrlcenter.mainBreakIsHardware" value="true"/>
 <booleanAttribute key="com.crt.ctrlcenter.saveState" value="true"/>
-<stringAttribute key="com.crt.ctrlcenter.serialNumber" value="LinkServerARMDAPLink CMSIS-DAP0226000047784e4500299003d917000fe561000097969900"/>
+<stringAttribute key="com.crt.ctrlcenter.serialNumber" value="LinkServerARMCMSIS-DAP0226000047784e4500599003d9170019e561000097969900"/>
 <mapAttribute key="com.crt.ctrlcenter.symbolsGroupSettings"/>
 <intAttribute key="com.crt.ctrlcenter.version" value="6"/>
 <stringAttribute key="com.nxp.mcuxpresso.flash.base.address" value="0x60000000"/>
@@ -19,7 +19,7 @@
 <stringAttribute key="com.nxp.mcuxpresso.flash.program.action" value="Program"/>
 <booleanAttribute key="com.nxp.mcuxpresso.flash.reset.target" value="true"/>
 <stringAttribute key="com.nxp.mcuxpresso.ide.probe.manufacturer" value="ARM"/>
-<stringAttribute key="com.nxp.mcuxpresso.ide.probe.name" value="DAPLink CMSIS-DAP"/>
+<stringAttribute key="com.nxp.mcuxpresso.ide.probe.name" value="CMSIS-DAP"/>
 <stringAttribute key="com.nxp.mcuxpresso.ide.probe.type" value="LinkServer"/>
 <stringAttribute key="debug.level" value="2"/>
 <stringAttribute key="emu.speed" value=""/>
@@ -72,13 +72,13 @@
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_ID" value="gdb"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="remote"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug\cdh_prototype_powermode.axf"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="cdh_prototype_powermode"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug\cdh_prototype.axf"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="cdh_prototype"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="com.crt.advproject.config.exe.debug.1646402769"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="com.crt.advproject.config.exe.debug.1348090042"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="false"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/cdh_prototype_powermode"/>
+<listEntry value="/cdh_prototype"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>

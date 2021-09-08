@@ -115,6 +115,12 @@ bool LPM_Init(lpm_power_mode_t run_mode);
 /* Deinitialize the Low Power Management */
 void LPM_Deinit(void);
 
+/* Enable wakeup source in low power mode */
+void LPM_EnableWakeupSource(uint32_t irq);
+
+/* Disable wakeup source in low power mode */
+void LPM_DisableWakeupSource(uint32_t irq);
+
 /* Set power mode, all registered listeners will be notified.
  * Return true if all the registered listeners return true.
  */

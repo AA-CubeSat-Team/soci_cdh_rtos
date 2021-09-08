@@ -1,4 +1,4 @@
-/* This is a source file for testing the I2C commands required for the flight computer to
+﻿/* This is a source file for testing the I2C commands required for the flight computer to
  * communicate with the EPS board and the battery
  *
  * As of 6/23/2020, everything in this file is being written without any access to hardware, and is completely untested.
@@ -8,7 +8,9 @@
  * Ryan Park, 2/27/2021
  *
 MCU Pinouts:
+
 EPS:
+
 75	GPIO_AD_B1_14	I2C1_SCL	EPS, MAG1, GYRO1
 74	GPIO_AD_B1_15	I2C1_SDA	EPS, MAG1, GYRO1
  */
@@ -99,11 +101,11 @@ static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint
 	size_t n;
 	// TODO: send the delay as well?
 
-	I2C_send(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, i2c_send_buffer, tx_size);
+	I2C_send(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, 0, i2c_send_buffer, tx_size);
 
 	if (d != NO_RETURN) {
 		//delay(d);
-		I2C_request(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, i2c_recv_buffer, rx_size);
+		I2C_request(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, 0, i2c_recv_buffer, rx_size);
 	}
 
 

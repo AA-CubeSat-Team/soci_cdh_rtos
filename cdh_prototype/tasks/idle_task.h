@@ -17,19 +17,20 @@
  * Variable Declarations
  ******************************************************************************/
 //flags for checking if it's turned on or not
-extern bool mtqActive;
-extern bool rwaActive;
-extern bool senActive;
-
+extern bool g_sunSensActive;
+extern bool g_rwaSensActive;
+extern bool g_magSensActive;
+extern bool g_mtqSensActive;
+extern bool g_phdSensActive;
 //flags for checking if they're healthy
-extern bool obcHealthy;
-extern bool epsHealthy;
-extern bool comHealthy;
-extern bool senHealthy;
-extern bool gncHealthy;
-extern bool mtqHealthy;
-extern bool rwaHealthy;
-extern bool imgHealthy;
+extern bool g_epsHealthy;
+extern bool g_obcHealthy;
+extern bool g_comHealthy;
+extern bool g_senHealthy;
+extern bool g_gncHealthy;
+extern bool g_mtqHealthy;
+extern bool g_rwaHealthy;
+extern bool g_imgHealthy;
 
 extern int operatingMode;
 extern TaskHandle_t TaskHandler_idle;
@@ -54,5 +55,16 @@ enum PLLCommand {
 	ON = 1
 };
 
+/*******************************************************************************
+ * Function declarations
+ ******************************************************************************/
 
+static bool obc_healthcheck();
+static void obc_reset();
+static void idle_phase1();
+static void setMCUPowerMode();
+static void UpdateFlags();
+static void idle_phase2();
+static void idle_phase3();
 void idle_task(void *pvParameters);
+

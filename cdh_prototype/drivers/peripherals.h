@@ -6,16 +6,6 @@
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
 
-#define SPI_TEST 0
-#define DEV_BOARD 1
-
-#if DEV_BOARD
-#define RWA0 9U  //PcsPin0 AD_B0_09
-#define RWA1 23U //PcsPin1 AD_B1_07
-#define RWA2 28U //PcsPin2 AD_B1_12
-#define RWA3 29U //PcsPin3 AD_B1_13
-#endif
-
 /***********************************************************************************************************************
  * Included files
  **********************************************************************************************************************/
@@ -86,43 +76,21 @@ extern lpuart_rtos_handle_t uart1_handle;
 extern lpuart_rtos_handle_t uart3_handle;
 extern lpuart_rtos_handle_t uart4_handle;
 
-#if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
 extern lpspi_rtos_handle_t spi_m_rwa2_handle;
 extern lpspi_rtos_handle_t spi_m_rwa3_handle;
-
-extern lpspi_master_config_t spi_master_rwa1_config;
-extern lpspi_master_config_t spi_master_rwa2_config;
-extern lpspi_master_config_t spi_master_rwa3_config;
-#endif
-
-#if SPI_TEST
-extern uint8_t masterReceiveBuffer[];
-extern uint8_t masterSendBuffer[];
-extern uint8_t slaveSendBuffer[];
-#endif
 
 extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
 
-#if DEV_BOARD
-void SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin);
-#else
-void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
-#endif
 
-void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
-void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
+void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
 
-/***********************************************************************************************************************
- * Definitions
- **********************************************************************************************************************/
-/* Definitions for BOARD_InitPeripherals functional group */
-/* Definition of peripheral ID */
-#define DEMO_GPT_PERIPHERAL GPT2
-/* Definition of the clock source frequency */
-#define DEMO_GPT_CLOCK_SOURCE 32768UL
+void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * tx_buffer, size_t tx_size);
+void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * rx_buffer, size_t rx_size);
+
+
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/

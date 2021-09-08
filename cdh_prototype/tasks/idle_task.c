@@ -1,56 +1,31 @@
 #include <stdbool.h>
 #include "idle_task.h"
 #include "eps_wrap.h"
-#include "sen_wrap.h"
-#include <stdint.h>
-#include "peripherals.h"
-#include "semc_sdram.h"
-#include "fsl_semc.h"
-#include "img_wrap.h"
-#include "act_wrap.h"
-#include "lpm.h"
-#include "power_mode_switch.h"
-#include "specific.h"
 
 /*******************************************************************************
  * Flags
  ******************************************************************************/
 //flags for checking if it's turned on or not
-bool g_mtqActive;
-bool g_rwaActive;
-bool g_senActive;
-
+bool g_sunSensActive;
+bool g_rwaSensActive;
+bool g_magSensActive;
+bool g_mtqSensActive;
+bool g_phdSensActive;
+bool g_gyrSensActive;
 //flags for checking if they're healthy
-bool g_obcHealthy;
 bool g_epsHealthy;
+bool g_obcHealthy;
 bool g_comHealthy;
 bool g_senHealthy;
 bool g_gncHealthy;
 bool g_mtqHealthy;
 bool g_rwaHealthy;
 bool g_imgHealthy;
-//uint8_t healthFlags; //bit flags: [img|rwa|mtq|gnc|sen|com|eps|obc]
-
-/*******************************************************************************
- * Function declarations
- ******************************************************************************/
-
-static bool obc_healthcheck();
-static void obc_reset();
-static void idle_phase1();
-static void setMCUPowerMode();
-static void UpdateFlags();
-static void idle_phase2();
-static void idle_phase3();
 
 
 TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_img;
 extern TaskHandle_t TaskHandler_com;
-
-//
-double voltage;
-//
 
 int operatingMode;
 
@@ -74,105 +49,39 @@ static void obc_reset(){
 	PRINTF("Hard resetting obc\r\n");
 }
 
-/* Reset the priority of the task */
-void resetPriority(TaskHandle_t handler) {
-	vTaskPrioritySet(handler, 0);
-}
-
-/* Check if the task is suspended or not, if not, suspend it. */
-void suspendTask (TaskHandle_t handler) {
-	if (eTaskGetState(handler) != eSuspended) {
-		vTaskSuspend(handler);
-	}
-}
-
-/* Check if the task is suspended or not, if so, resume it. */
-void resumeTask (TaskHandle_t handler) {
-	if (eTaskGetState(handler) == eSuspended) {
-		//TODO: check if we actually need to check the current state of the tasks
-		//Also, might need to add other edge cases (ex. eRunning, eReady, eBlocked...)
-		vTaskResume(handler);
-	}
-}
 
 /* Step 1. Commission Phase I Checks */
 static void idle_phase1() {
 	PRINTF("idle: Commission Phase 1 Checks\r\n");
 	while (!g_epsHealthy || !g_obcHealthy){
-		g_epsHealthy = true; //eps_healthcheck(); //TODO: replace with whatever function eps is using to healthcheck
+//		g_epsHealthy = eps_healthcheck(); //TODO: replace with whatever function eps is using to healthcheck
 		g_obcHealthy = obc_healthcheck();
 		if (!g_epsHealthy){
 			//i2c_eps_manualReset();
 		}
 		if (!g_obcHealthy){
-			obc_reset();
+			//obc_reset();
 		}
 	}
 
 }
 
-//extern lpm_power_mode_t s_targetPowerMode;
-//extern lpm_power_mode_t s_curRunMode = LPM_PowerModeOverRun;
-//
-//extern const char *s_modeNames[] = {"Over RUN",    "Full Run",       "Low Speed Run", "Low Power Run",
-//                                    "System Idle", "Low Power Idle", "Suspend"};
-
 /* Set the OBC run mode - clock frequency etc. */
 static void setMCUPowerMode() {
 	switch(operatingMode){
 		case CRIT_LOW_POWER:
-			s_targetPowerMode = LPM_PowerModeLowPowerRun;
+			LPM_LowPowerRun();
 			break;
 
 		case LOW_POWER:
-			s_targetPowerMode = LPM_PowerModeLowSpeedRun;
+			LPM_LowPowerRun();
 			break;
 
 		case NOMINAL_POWER:
-			s_targetPowerMode = LPM_PowerModeOverRun;
+			LPM_OverDriveRun();
 			break;
 		default:
 			break;
-	}
-	if (s_targetPowerMode <= LPM_PowerModeEnd)
-	{
-		//If could not set the target power mode, loop continue.
-		if (!APP_CheckPowerMode(s_curRunMode, s_targetPowerMode))
-		{
-			PRINTF("cannot set power mode %s \r\n", s_modeNames[s_targetPowerMode]);
-		}
-
-		if (!LPM_SetPowerMode(s_targetPowerMode))
-		{
-			PRINTF("Some task doesn't allow to enter mode %s\r\n", s_modeNames[s_targetPowerMode]);
-		}
-		else
-		{
-			if (s_targetPowerMode <= LPM_PowerModeRunEnd)
-			{
-				switch (s_targetPowerMode)
-				{
-					case LPM_PowerModeOverRun:
-						PRINTF("Entering PowerModeOverRun MODE \n");
-						LPM_OverDriveRun();
-						break;
-					case LPM_PowerModeFullRun:
-						LPM_FullSpeedRun();
-						break;
-					case LPM_PowerModeLowSpeedRun:
-						PRINTF("Entering PowerModeLowSpeedRun MODE \n");
-						LPM_LowSpeedRun();
-						break;
-					case LPM_PowerModeLowPowerRun:
-						PRINTF("Entering PowerModeLowPowerRun MODE \n");
-						LPM_LowPowerRun();
-						break;
-					default:
-						break;
-				}
-				APP_SetRunMode(s_targetPowerMode);
-			}
-		}
 	}
 }
 
@@ -180,21 +89,30 @@ static void setMCUPowerMode() {
 static void UpdateFlags() {
 	switch(operatingMode){
 		case CRIT_LOW_POWER:
-			g_mtqActive = false;
-			g_rwaActive = false;
-			g_senActive = false;
+			g_sunSensActive = false;
+			g_rwaSensActive = false;
+			g_mtqSensActive = false;
+			g_magSensActive = false;
+			g_phdSensActive = false;
+			g_gyrSensActive = false;
 			break;
 
 		case LOW_POWER:
-			g_mtqActive = false;
-			g_rwaActive = true;
-			g_senActive = true;
+			g_sunSensActive = true;
+			g_rwaSensActive = true;
+			g_mtqSensActive = true;
+			g_magSensActive = true;
+			g_phdSensActive = true;
+			g_gyrSensActive = true;
 			break;
 
 		case NOMINAL_POWER:
-			g_mtqActive = true;
-			g_rwaActive = true;
-			g_senActive = true;
+			g_sunSensActive = true;
+			g_rwaSensActive = true;
+			g_mtqSensActive = true;
+			g_magSensActive = true;
+			g_phdSensActive = true;
+			g_gyrSensActive = true;
 			break;
 		default:
 			break;
@@ -206,42 +124,40 @@ static void idle_phase2() {
 	/* Battery Voltage Check */
 	PRINTF("idle: Get Voltage from EPS\r\n");
 	// TODO: Create a task to get the voltage from EPS system through I2C Communication
-	//double voltage = i2c_eps_getBatteryLevel();
+	double voltage = i2c_eps_getBatteryLevel();
 	if (voltage <= 7.4 ) // CRITICALLY LOW POWER
 	{
 		operatingMode = CRIT_LOW_POWER;
-//		i2c_eps_switchOnOffPdms(PDM_OBC);
+		PRINTF("enters critically low power operatingMode\r\n");
+		setMCUPowerMode();
+		i2c_eps_switchOnOffPdms(PDM_OBC);
 		/*task control*/
-//		suspendTask(TaskHandler_com);
-//		suspendTask(TaskHandler_img);
-		voltage = 8.0;
+		suspendTask(TaskHandler_com);
+		suspendTask(TaskHandler_img);
 	}
 	else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
 	{
 		operatingMode = LOW_POWER;
-		//i2c_eps_switchOnOffPdms(PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
+		setMCUPowerMode();
+		i2c_eps_switchOnOffPdms(PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
 		/*task control*/
-//		suspendTask(TaskHandler_img);
-//		resumeTask(TaskHandler_com);
-		voltage = 7.0;
+		suspendTask(TaskHandler_img);
+		resumeTask(TaskHandler_com);
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
 		operatingMode = NOMINAL_POWER;
-		//i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
-//		resumeTask(TaskHandler_com);
-//		resumeTask(TaskHandler_img);
-		voltage = 7.5;
+		setMCUPowerMode();
+		i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
+		resumeTask(TaskHandler_com);
+		resumeTask(TaskHandler_img);
 		//GNC task will always be active
 	}
-	setMCUPowerMode();
-	APP_PrintRunFrequency(0);
 	UpdateFlags();
 }
 
 /* Health checks subsystems */
 static void idle_phase3() {
-	/*
 	if (operatingMode == NOMINAL_POWER)
 	{
 		g_comHealthy = com_healthcheck();
@@ -259,7 +175,7 @@ static void idle_phase3() {
 	}
 	else { //operatingMode == CRIT_LOW_POWER
 		g_comHealthy = com_healthcheck();
-	}*/
+	}
 }
 
 /* The main operation of the idle task: */
@@ -276,15 +192,15 @@ void idle_task(void *pvParameters) {
 
 	/*initial boot-up operations, IDLE remains the highest priority*/
 	operatingMode = CRIT_LOW_POWER;
-    LPM_Init(s_curRunMode);
-	//i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
+	setMCUPowerMode();
+	i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
 	idle_phase1();
+	PRINTF("enters critically low power operatingMode\r\n");
 	//no subsystem healthcheck in CLPM
-//	vTaskSuspend(TaskHandler_com); //suspend inactive tasks in CLPM mode
-//	vTaskSuspend(TaskHandler_img);
+	vTaskSuspend(TaskHandler_com); //suspend inactive tasks in CLPM mode
+	vTaskSuspend(TaskHandler_img);
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
-	voltage = 8;
 	//at this point, GNC will take over and run init and do main task for once, come back to IDLE to run its main task (check voltages)
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time

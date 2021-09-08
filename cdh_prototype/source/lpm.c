@@ -16,7 +16,6 @@
 #include "fsl_gpc.h"
 #include "fsl_dcdc.h"
 #include "fsl_gpt.h"
-#include "power_mode_switch.h"
 #include "specific.h"
 
 /*******************************************************************************
@@ -752,6 +751,9 @@ IRQn_Type vPortGetGptIrqn(void)
 
 void vPortPRE_SLEEP_PROCESSING(unsigned long timeoutMilliSec)
 {
+    APP_PowerPreSwitchHook(APP_GetLPMPowerMode());
+    LPM_EnableWakeupSource(vPortGetGptIrqn());
+
     switch (APP_GetLPMPowerMode())
     {
         case LPM_PowerModeOverRun:
@@ -796,6 +798,8 @@ void vPortPOST_SLEEP_PROCESSING(unsigned long timeoutMilliSec)
             break;
     }
 
+    LPM_DisableWakeupSource(vPortGetGptIrqn());
+    APP_PowerPostSwitchHook(APP_GetLPMPowerMode());
 }
 #endif /* configUSE_TICKLESS_IDLE */
 #endif

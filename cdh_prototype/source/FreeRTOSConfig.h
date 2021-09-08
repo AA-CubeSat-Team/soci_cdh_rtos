@@ -1,6 +1,6 @@
 /*
- * FreeRTOS Kernel V10.0.1
- * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS Kernel V10.2.0
+ * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -19,8 +19,10 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * http://aws.amazon.com/freertos
  * http://www.FreeRTOS.org
+ * http://aws.amazon.com/freertos
+ *
+ * 1 tab == 4 spaces!
  */
 
 #ifndef FREERTOS_CONFIG_H
@@ -39,11 +41,11 @@
  *----------------------------------------------------------*/
 
 #define configUSE_PREEMPTION                    1
-#define configUSE_TICKLESS_IDLE                 1
+#define configUSE_TICKLESS_IDLE                 1 //was 0
 #define configCPU_CLOCK_HZ                      (SystemCoreClock)
-#define configTICK_RATE_HZ                      ((TickType_t)1000)
-#define configMAX_PRIORITIES                    5
-#define configMINIMAL_STACK_SIZE                ((unsigned short)100)
+#define configTICK_RATE_HZ                      ((TickType_t)200) //maybe change to 1000
+#define configMAX_PRIORITIES                    10
+#define configMINIMAL_STACK_SIZE                ((unsigned short)90)
 #define configMAX_TASK_NAME_LEN                 20
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -59,16 +61,19 @@
 #define configENABLE_BACKWARD_COMPATIBILITY     0
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 5
 
+/****************************/
 /* Use systick 100K clock source */
 #define configSYSTICK_CLOCK_HZ                  (100000U)
+/* Low power Tickless idle. Low power timer (GPT) is initialized in application code. */
+#define configGPT_CLOCK_HZ                    (32768U)
+#define configGPTick_RATE_HZ                  ((TickType_t)1024)
+
+
+/****************************/
 /* Used memory allocation (heap_x.c) */
 #define configFRTOS_MEMORY_SCHEME               4
 /* Tasks.c additions (e.g. Thread Aware Debug capability) */
 #define configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H 1
-
-/* Low power Tickless idle. Low power timer (GPT) is initialized in application code. */
-#define configGPT_CLOCK_HZ                    (32768U)
-#define configGPTick_RATE_HZ                  ((TickType_t)1024)
 
 /* Memory allocation related definitions. */
 #define configSUPPORT_STATIC_ALLOCATION         0
@@ -97,7 +102,7 @@
 
 /* Software timer related definitions. */
 #define configUSE_TIMERS                        1
-#define configTIMER_TASK_PRIORITY               2
+#define configTIMER_TASK_PRIORITY               (configMAX_PRIORITIES - 1)
 #define configTIMER_QUEUE_LENGTH                10
 #define configTIMER_TASK_STACK_DEPTH            (configMINIMAL_STACK_SIZE * 2)
 
@@ -109,7 +114,6 @@
 #define INCLUDE_uxTaskPriorityGet               1
 #define INCLUDE_vTaskDelete                     1
 #define INCLUDE_vTaskSuspend                    1
-#define INCLUDE_xResumeFromISR                  1
 #define INCLUDE_vTaskDelayUntil                 1
 #define INCLUDE_vTaskDelay                      1
 #define INCLUDE_xTaskGetSchedulerState          1
@@ -117,20 +121,10 @@
 #define INCLUDE_uxTaskGetStackHighWaterMark     0
 #define INCLUDE_xTaskGetIdleTaskHandle          0
 #define INCLUDE_eTaskGetState                   0
-#define INCLUDE_xEventGroupSetBitFromISR        1
 #define INCLUDE_xTimerPendFunctionCall          1
 #define INCLUDE_xTaskAbortDelay                 0
 #define INCLUDE_xTaskGetHandle                  0
 #define INCLUDE_xTaskResumeFromISR              1
-
-#ifndef __IASMARM__
-
-  void vPortPRE_SLEEP_PROCESSING( unsigned long xExpectedIdleTime );
-  void vPortPOST_SLEEP_PROCESSING( unsigned long xExpectedIdleTime );
-  #define configPRE_SLEEP_PROCESSING( xExpectedIdleTime )      vPortPRE_SLEEP_PROCESSING( xExpectedIdleTime );
-  #define configPOST_SLEEP_PROCESSING( xExpectedIdleTime )     vPortPOST_SLEEP_PROCESSING( xExpectedIdleTime );
-
-#endif /* __IASMARM__ */
 
 
 
@@ -150,7 +144,7 @@
 
 /* The lowest interrupt priority that can be used in a call to a "set priority"
 function. */
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY ((1U << (configPRIO_BITS)) - 1)
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY ((1U << (configPRIO_BITS)) - 1) //1111
 
 /* The highest interrupt priority that can be used by any interrupt service
 routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL

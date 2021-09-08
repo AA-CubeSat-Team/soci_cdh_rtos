@@ -8,12 +8,13 @@
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "board.h"
+
 #include "pin_mux.h"
 #include "clock_config.h"
+
 #include "fsl_lpuart.h"
 #include "fsl_lpspi.h"
 #include "fsl_lpi2c.h"
-#include "semc_sdram.h"
 
 //#define uart_task_PRIORITY (configMAX_PRIORITIES - 1)
 
@@ -146,61 +147,111 @@ static void LPUART4_init(void) {
 
 
 #define TRANSFER_SIZE     (512U)    /*! Transfer dataSize.*/
-#define TRANSFER_BAUDRATE (500000UL) /*! Transfer baudrate - 500k */
-#define LPSPI_CLOCK_SOURCE_SELECT (1U)
+#define TRANSFER_BAUDRATE (500000U) /*! Transfer baudrate - 500k */
 #define LPSPI_CLOCK_SOURCE_DIVIDER (7U)
 #define LPSPI_CLOCK_FREQ (CLOCK_GetFreq(kCLOCK_Usb1PllPfd0Clk) / (LPSPI_CLOCK_SOURCE_DIVIDER + 1U))
 
-//#define LPSPI_MASTER_PCS_FOR_INIT     (kLPSPI_Pcs3)
-//#define LPSPI_MASTER_PCS_FOR_TRANSFER (kLPSPI_MasterPcs3)
+#define LPSPI_MASTER_PCS_FOR_INIT     (kLPSPI_Pcs0)
+#define LPSPI_MASTER_PCS_FOR_TRANSFER (kLPSPI_MasterPcs0)
 
 uint8_t masterReceiveBuffer[TRANSFER_SIZE] = {0};
 uint8_t masterSendBuffer[TRANSFER_SIZE]    = {0};
-uint8_t slaveSendBuffer[TRANSFER_SIZE] = {0};
 
-lpspi_rtos_handle_t spi_m_rwa_handle;
-lpspi_master_config_t spi_master_rwa_config;
+lpspi_rtos_handle_t spi_m_rwa1_handle;
+lpspi_rtos_handle_t spi_m_rwa2_handle;
+lpspi_rtos_handle_t spi_m_rwa3_handle;
 
-static void LPSPI_RWA_init(void) {
+lpspi_master_config_t spi_master_rwa1_config;
+lpspi_master_config_t spi_master_rwa2_config;
+lpspi_master_config_t spi_master_rwa3_config;
 
-	LPSPI_MasterGetDefaultConfig(&spi_master_rwa_config);
+static void LPSPI1_RWA1_init(void) {
 
-	spi_master_rwa_config.baudRate                      = TRANSFER_BAUDRATE;
-	spi_master_rwa_config.bitsPerFrame                  = 8U;
-	spi_master_rwa_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
-	spi_master_rwa_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
-	spi_master_rwa_config.direction                     = kLPSPI_MsbFirst;
-	spi_master_rwa_config.pcsToSckDelayInNanoSec        = 1000U;
-	spi_master_rwa_config.lastSckToPcsDelayInNanoSec    = 1000U;
-	spi_master_rwa_config.betweenTransferDelayInNanoSec = 1000U;
-	spi_master_rwa_config.whichPcs                      = kLPSPI_Pcs3;
-	spi_master_rwa_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
-	spi_master_rwa_config.pinCfg                        = kLPSPI_SdiInSdoOut;
-	spi_master_rwa_config.dataOutConfig                 = kLpspiDataOutRetained;
+	LPSPI_MasterGetDefaultConfig(&spi_master_rwa1_config);
+
+	spi_master_rwa1_config.baudRate                      = TRANSFER_BAUDRATE;
+	spi_master_rwa1_config.bitsPerFrame                  = 8 * TRANSFER_SIZE;
+	spi_master_rwa1_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
+	spi_master_rwa1_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
+	spi_master_rwa1_config.direction                     = kLPSPI_MsbFirst;
+	spi_master_rwa1_config.pcsToSckDelayInNanoSec        = 1000000000 / spi_master_rwa1_config.baudRate;
+	spi_master_rwa1_config.lastSckToPcsDelayInNanoSec    = 1000000000 / spi_master_rwa1_config.baudRate;
+	spi_master_rwa1_config.betweenTransferDelayInNanoSec = 1000000000 / spi_master_rwa1_config.baudRate;
+	spi_master_rwa1_config.whichPcs                      = 1; //TODO: Replace with RWA1 chip select!
+	spi_master_rwa1_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
+	spi_master_rwa1_config.pinCfg                        = kLPSPI_SdiInSdoOut;
+	spi_master_rwa1_config.dataOutConfig                 = kLpspiDataOutRetained;
 
 	uint32_t sourceClock;
 
 	sourceClock = LPSPI_CLOCK_FREQ;
-	if(kStatus_Success != LPSPI_RTOS_Init(&spi_m_rwa_handle, LPSPI1, &spi_master_rwa_config, sourceClock)) {
+	if(kStatus_Success != LPSPI_RTOS_Init(&spi_m_rwa1_handle, LPSPI1, &spi_master_rwa1_config, sourceClock)) {
 		PRINTF("SPI Master initialization failed! \r\n");
 	}
 }
 
-//SPI transfer lpspi_master_config_t config
-void SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin)
+static void LPSPI1_RWA2_init(void) {
+
+	LPSPI_MasterGetDefaultConfig(&spi_master_rwa2_config);
+
+	spi_master_rwa2_config.baudRate                      = TRANSFER_BAUDRATE;
+	spi_master_rwa2_config.bitsPerFrame                  = 8 * TRANSFER_SIZE;
+	spi_master_rwa2_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
+	spi_master_rwa2_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
+	spi_master_rwa2_config.direction                     = kLPSPI_MsbFirst;
+	spi_master_rwa2_config.pcsToSckDelayInNanoSec        = 1000000000 / spi_master_rwa2_config.baudRate;
+	spi_master_rwa2_config.lastSckToPcsDelayInNanoSec    = 1000000000 / spi_master_rwa2_config.baudRate;
+	spi_master_rwa2_config.betweenTransferDelayInNanoSec = 1000000000 / spi_master_rwa2_config.baudRate;
+	spi_master_rwa2_config.whichPcs                      = 2; //TODO: Replace with RWA2 chip select!
+	spi_master_rwa2_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
+	spi_master_rwa2_config.pinCfg                        = kLPSPI_SdiInSdoOut;
+	spi_master_rwa2_config.dataOutConfig                 = kLpspiDataOutRetained;
+
+	uint32_t sourceClock;
+
+	sourceClock = LPSPI_CLOCK_FREQ;
+	if(kStatus_Success != LPSPI_RTOS_Init(&spi_m_rwa2_handle, LPSPI1, &spi_master_rwa2_config, sourceClock)) {
+		PRINTF("SPI Master initialization failed! \r\n");
+	}
+}
+
+static void LPSPI1_RWA3_init(void) {
+
+	LPSPI_MasterGetDefaultConfig(&spi_master_rwa3_config);
+
+	spi_master_rwa3_config.baudRate                      = TRANSFER_BAUDRATE;
+	spi_master_rwa3_config.bitsPerFrame                  = 8 * TRANSFER_SIZE;
+	spi_master_rwa3_config.cpol                          = kLPSPI_ClockPolarityActiveHigh;
+	spi_master_rwa3_config.cpha                          = kLPSPI_ClockPhaseFirstEdge;
+	spi_master_rwa3_config.direction                     = kLPSPI_MsbFirst;
+	spi_master_rwa3_config.pcsToSckDelayInNanoSec        = 1000000000 / spi_master_rwa3_config.baudRate;
+	spi_master_rwa3_config.lastSckToPcsDelayInNanoSec    = 1000000000 / spi_master_rwa3_config.baudRate;
+	spi_master_rwa3_config.betweenTransferDelayInNanoSec = 1000000000 / spi_master_rwa3_config.baudRate;
+	spi_master_rwa3_config.whichPcs                      = 3; //TODO: Replace with RWA3 chip select!
+	spi_master_rwa3_config.pcsActiveHighOrLow            = kLPSPI_PcsActiveLow;
+	spi_master_rwa3_config.pinCfg                        = kLPSPI_SdiInSdoOut;
+	spi_master_rwa3_config.dataOutConfig                 = kLpspiDataOutRetained;
+
+	uint32_t sourceClock;
+
+	sourceClock = LPSPI_CLOCK_FREQ;
+	if(kStatus_Success != LPSPI_RTOS_Init(&spi_m_rwa3_handle, LPSPI1, &spi_master_rwa3_config, sourceClock)) {
+		PRINTF("SPI Master initialization failed! \r\n");
+	}
+}
+
+void SPI_transfer(lpspi_rtos_handle_t * handler, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize)
 {
 	lpspi_transfer_t masterXfer;
 	status_t status;
 
-	//Start master transfer
+	/*Start master transfer*/
 	masterXfer.txData      = txBuffer;
 	masterXfer.rxData      = rxBuffer;
 	masterXfer.dataSize    = transferSize;
+	masterXfer.configFlags = LPSPI_MASTER_PCS_FOR_TRANSFER | kLPSPI_MasterPcsContinuous | kLPSPI_SlaveByteSwap;
 
-	GPIO_PortToggle(GPIO1, 1U << pcsPin);
-	status = LPSPI_RTOS_Transfer(&spi_m_rwa_handle, &masterXfer);
-	GPIO_PortToggle(GPIO1, 1U << pcsPin);
-
+	status = LPSPI_RTOS_Transfer(handler, &masterXfer);
 	if (status == kStatus_Success)
 	{
 		PRINTF("LPSPI master transfer completed successfully.\r\n");
@@ -209,62 +260,7 @@ void SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
 	{
 		PRINTF("LPSPI master transfer completed with error.\r\n");
 	}
-#if SPI_TEST
-	Debug_SPI_function();
-#endif
 }
-
-#if SPI_TEST
-void Debug_SPI_function()
-{
-	uint32_t errorCount;
-	uint32_t i;
-
-	PRINTF("EXPECTED: \n");
-	for (i = 0; i < 16; i++)
-		{
-			/* Print 16 numbers in a line */
-			if ((i % 0x08U) == 0U)
-			{
-				PRINTF("\r\n");
-			}
-			PRINTF(" %02X", slaveSendBuffer[i]);
-		}
-		PRINTF("\r\n");
-
-		PRINTF("RECEIVED: \n");
-
-	for (i = 0; i < 16; i++)
-	{
-		/* Print 16 numbers in a line */
-		if ((i % 0x08U) == 0U)
-		{
-			PRINTF("\r\n");
-		}
-		PRINTF(" %02X", masterReceiveBuffer[i]);
-	}
-	PRINTF("\r\n");
-
-	errorCount = 0;
-	for (i = 0; i < 15; i++)
-	{
-		if (slaveSendBuffer[i] != masterReceiveBuffer[i+1])
-		{
-			errorCount++;
-		}
-	}
-
-	if (errorCount == 0)
-	{
-		PRINTF("LPSPI transfer all data matched !\r\n");
-	}
-	else
-	{
-		PRINTF("Error occurred in LPSPI transfer !\r\n");
-	}
-}
-#endif
-
 
 /*
  *
@@ -374,12 +370,15 @@ static void LPI2C3_init(void) {
 }
 
 
-void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size) {
+#define DEBUG_I2C_a		0
+#define DEBUG_I2C_b		0
+void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * tx_buffer, size_t tx_size)
+{
 	lpi2c_master_transfer_t masterXfer;
 	status_t status;
 
-#if DEBUG_MODE
-	PRINTF("I2C - master will send data :");
+#if DEBUG_I2C_a
+	PRINTF("Master will send data :");
 	int i=0;
 	for (i = 0; i < tx_size; i++)
 	{
@@ -393,44 +392,55 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 #endif
 
 	memset(&masterXfer, 0, sizeof(masterXfer));
-	masterXfer.slaveAddress   = slaveAddress;
+	masterXfer.slaveAddress   = slave_address;
 	masterXfer.direction      = kLPI2C_Write;
-	masterXfer.subaddress     = 0;
-	masterXfer.subaddressSize = 0;
-	masterXfer.data           = masterSendBuffer;
-	masterXfer.dataSize       = tx_size; //generally I2C_DATA_LENGTH used
+	masterXfer.subaddress     = ((uint32_t)subaddress);
+	masterXfer.subaddressSize = 1;
+	masterXfer.data           = tx_buffer;
+	masterXfer.dataSize       = tx_size;
 	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
 
 	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
+
 	if (status == kStatus_Success)
 	{
+#if DEBUG_I2C_b
 		PRINTF("I2C master transfer completed successfully.\r\n");
+#endif
 	}
 	else
 	{
-		PRINTF("I2C master transfer completed with error!\r\n");
+		PRINTF("I2C master transfer completed with ERROR!:      %d\r\n", status);
+
 	}
 }
 
 
-void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size) {
+void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slave_address, uint8_t subaddress, uint8_t * rx_buffer, size_t rx_size)
+{
 	lpi2c_master_transfer_t masterXfer;
 	status_t status;
-
+#if DEBUG_I2C_a
 	PRINTF("Master will request data\r\n");
-
+#endif
 	memset(&masterXfer, 0, sizeof(masterXfer));
-	masterXfer.slaveAddress   = slaveAddress;
+	masterXfer.slaveAddress   = slave_address;
 	masterXfer.direction      = kLPI2C_Read;
-	masterXfer.subaddress     = 0;
-	masterXfer.subaddressSize = 0;
+	masterXfer.subaddress     = ((uint32_t)subaddress);
+	if (!subaddress) {
+		masterXfer.subaddressSize = 0;
+	} else {
+		masterXfer.subaddressSize = 1;
+	}
 	masterXfer.data           = rx_buffer;
 	masterXfer.dataSize       = rx_size;
 	masterXfer.flags          = kLPI2C_TransferDefaultFlag;
 
 	status = LPI2C_RTOS_Transfer(handle, &masterXfer);
+
 	if (status == kStatus_Success)
 	{
+#if DEBUG_I2C_b
 		PRINTF("Received data :\r\n");
 		int i;
 		for (i = 0; i < rx_size; i++)
@@ -439,40 +449,32 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 			{
 				PRINTF("\r\n");
 			}
-			PRINTF("0x%2x  ", rx_buffer[i]);
+			PRINTF("0x%2x  ", (rx_buffer)[i]);
 		}
 		PRINTF("\r\n\r\n");
+#endif
 	}
 	else {
-		PRINTF("Failed receive!\r\n");
+		PRINTF("Failed receive!:      %d\r\n", status);
 	}
-}
 
+}
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
 {
-	NVIC_SetPriority(LPSPI1_IRQn, 3);
-    NVIC_SetPriority(LPUART3_IRQn, 10);
+  /* Initialize components */
+  LPUART1_init();
+  LPUART3_init();
+  LPUART4_init();
 
-    /* Define the init structure for the output pin */
-    gpio_pin_config_t pcs_config = {kGPIO_DigitalOutput, 1, kGPIO_NoIntmode};
+  LPSPI1_RWA1_init();
+  LPSPI1_RWA2_init();
+  LPSPI1_RWA3_init();
 
-    /* Init input switch GPIO. */
-    GPIO_PinInit(GPIO1, RWA0, &pcs_config);
-    GPIO_PinInit(GPIO1, RWA1, &pcs_config);
-    GPIO_PinInit(GPIO1, RWA2, &pcs_config);
-    GPIO_PinInit(GPIO1, RWA3, &pcs_config);
-
-	/* Initialize components */
-    BOARD_InitSEMC(); //sdram
-	LPUART1_init();
-	LPUART3_init();
-	LPUART4_init();
-	LPSPI_RWA_init(); // all three SPI
-	LPI2C1_init();
-	LPI2C2_init();
-	LPI2C3_init();
+  LPI2C1_init();
+  LPI2C2_init();
+  LPI2C3_init();
 }
 

@@ -18,8 +18,10 @@ Sun Sensor:
 93	GPIO_AD_B0_15	UART3_RX	Sun Sensor
 
  */
-#include "gyro_wrapper/gyro_wrap.h"
-#include "sen_wrap.h"
+#include <sensor_wrap/gyro_wrap.h>
+#include <sen_wrap.h>
+#include <sensor_wrap/mag_wrap.h>
+#include <sensor_wrap/phd_wrap.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpi2c_freertos.h"
@@ -28,49 +30,52 @@ Sun Sensor:
 #include <stdbool.h>
 #include "peripherals.h"
 
-/* sensor data */ //where are they defined?
 //extern gyro_t * Gyro;
-//extern lpi2c_rtos_handle_t *gyroHandle;
-//extern sun_t * Sun;
+//extern phd_t * Phd;
 //extern mag_t * Mag;
-//extern diodes_t Diodes;
+//extern sun_t * Sun;
 
 bool sens_healthcheck(){
 	PRINTF("checking sensors health\r\n");
-//	health(); //phd health
-
 	return true;
 }
-
-void sens_init() {
-//	initADC(); //phd init
-//	initMag(Mag); //mag init
-//	startMag(Mag); //mag init - 2
-//	initGyro(Gyro, gyroHandle); //gyro init
-//	startGyro(Gyro); //gyro init - 2 //TODO: there's a reset function to use for gyro. how and when should we use them?
-
-
-}
-
 //do each sensor separately
 void sens_readSun(){
 	PRINTF("reading sun sensors\r\n");
-//	getSunAngles(Sun); //TODO: are we gonna use this function to read from the sun sensor?
+//	getUnfiltVolts(Sun);
+//	getFiltVolts(Sun);
+//	getSunAngles(Sun);
+
 }
 
 void sens_readMag(){
 	PRINTF("reading magnetometer sensors\r\n");
-//	readMagData(Mag);
+	//readMagTemp(&Mag1);
+	readMagData(&Mag1);
+
+//	readMagTemp(&Mag2);
+//	readMagData(&Mag2);
+//
+//	readMagTemp(&Mag3);
+//	readMagData(&Mag3);
+
 }
 
 void sens_readPhd(){
 	PRINTF("reading photodiode sensors\r\n");
-//	getVoltage(Diodes); //TODO: is this the function that we should use?
+	readPhdData(&Phd1);
+
 }
 
 void sens_readGyr(){
 	PRINTF("reading gyroscope sensors\r\n");
-//	readTempData(Gyro);
-//	readGyroData(Gyro);
+	readTempData(&Gyro1);
+	readGyroData(&Gyro1);
 
+//	readTempData(&Gyro2);
+//	readGyroData(&Gyro2);
+//
+//	readTempData(&Gyro3);
+//	readGyroData(&Gyro3);
 }
+
