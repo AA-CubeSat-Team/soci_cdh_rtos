@@ -425,7 +425,7 @@
                <options/>
                <dependencies/>
                <instances>
-                  <instance name="NVIC" uuid="ab29cbe9-9f40-4e43-b200-98a3a66478b7" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                  <instance name="NVIC" uuid="46254d91-4481-4343-80c2-2a9be58ba2b8" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="nvic">
                         <array name="interrupt_table"/>
                         <array name="interrupts"/>

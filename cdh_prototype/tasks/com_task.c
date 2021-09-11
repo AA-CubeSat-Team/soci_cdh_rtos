@@ -210,12 +210,16 @@ void UART1_IRQHandler(void)
  * PASSING: while passing, start uplinking and downlinking.
  *
  */
-enum com_state{INIT, NORMAL, PASSING};
-enum com_state comCurrentState = INIT;
+//enum com_state{INIT, NORMAL, PASSING};
+typedef enum {
+	INIT, NORMAL, PASSING
+} com_state;
+com_state comCurrentState = INIT;
 
 bool GNC_DetumbleFlag = false; //TODO: verify with GNC
 bool GNC_PassingFlag = false; //TODO: verify with GNC
 
+// TODO: not send if critically low power
 void vBeaconTimerCallback( TimerHandle_t xTimer ) {
     /* Optionally do something if the pxTimer parameter is NULL. */
     configASSERT( xTimer );
@@ -232,6 +236,7 @@ void vHealthCheckTimerCallback( TimerHandle_t xTimer ) {
     if(!com_healthcheck()) {
     	PRINTF("Health check failed, resetting radio\n");
     	//com_radio_init();
+    	//TODO: double check resetting radio won't cause antenna to disconnect/un-deploy
     }
 #endif
     PRINTF("Health check normal\n");
@@ -250,7 +255,6 @@ void com_task(void *pvParameters)
 //
 //    LPUART_GetDefaultConfig(&config);
 //    config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
-//    config.enableTx     = true;
 //    config.enableRx     = true;
 //
 //    LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
@@ -356,14 +360,14 @@ void com_task(void *pvParameters)
 		while(1) {
 			TickType_t xLastWakeTime = xTaskGetTickCount();
 			const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-			int count = 0;
 
-			if (true == GNC_DetumbleFlag) {
-				comCurrentState = NORMAL;
-			}
-			if (true == GNC_PassingFlag) {
-				comCurrentState = PASSING;
-			}
+//			int count = 0;
+//			if (true == GNC_DetumbleFlag) {
+//				comCurrentState = NORMAL;
+//			}
+//			if (true == GNC_PassingFlag) {
+//				comCurrentState = PASSING;
+//			}
 
 			switch (comCurrentState){
 				case INIT:
@@ -381,45 +385,41 @@ void com_task(void *pvParameters)
 #endif
 					PRINTF("Detumble time limit hit\n");
 
+
+					// Deploy Antenna
+					//com_deployAntenna(); //TODO: remove
+					//com_i2c_checkDeploy();
+					bool AntennaCheck = true;
+					if (AntennaCheck) {
+						PRINTF("Sucessfully deployed antenna\n");
+					}
 					comCurrentState = NORMAL;
 					break;
 
 				case NORMAL:
 
-					//PRINTF("waiting for GNC\n");
-					vTaskDelayUntil(&xLastWakeTime, xDelayms);
-					break;
+					PRINTF("Waiting for commands\n");
+					//com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
+					if (command_request) {
+						comCurrentState = PASSING;
+					} else {
+						vTaskDelayUntil(&xLastWakeTime, xDelayms);
+						break;
+					}
+
 
 				case PASSING:
+					// TODO: send beacon
+					// TODO: listen for response
 
-					PRINTF("\ncomm work.\r\n");
-					if(g_comActive == true){ 	//TODO: not sure what g_comActive means
-						PRINTF("com_getCommands\n");
-						//com_getCommands();
-					}
-					count++;
-					PRINTF("count = %d\n", count);
-					if (count >= 5){ //later: receive a command to take a pic
-						//vTaskResume(TaskHandler_img);  //TODO: remove comment
-						count = 0;
+
+					//sending data based on priority
+					if (payload_check) {
+						//com_sendPayloads();
+					} else if (image_check) {
 						PRINTF("resuming img task\r\n");
-					}
-
-					if(g_comActive == true){
-						//checking if getting a command request
-						if (command_request){
-							//sending data based on priority
-							if (payload_check) {
-								PRINTF("com_getCommands\n");
-								//com_sendPayloads();  //TODO: remove comment
-							} else if (image_check && g_imgActive) {
-								PRINTF("com_getCommands\n");
-								//com_sendImages();  //TODO: remove comment
-							}
-//							else if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
-//								com_sendBeacons();
-//							}
-						}
+						//vTaskResume(TaskHandler_img);
+						//com_sendImages();
 					}
 
 
@@ -428,6 +428,5 @@ void com_task(void *pvParameters)
 			}
 
 		}
-
 	}
 }
