@@ -101,7 +101,7 @@ static bool setChannel();
 static void exitCommandMode();
 
 static bool i2c_com_antennaDeployed;
-uint8_t recv_buffer[4];
+//uint8_t recv_buffer[4];
 
 // TODO: Why isn't uart1 working?
 // commands data: what type? how big?
@@ -140,7 +140,37 @@ static int uart_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t len
 	return kStatus_Success;
 }
 
+/*  Variables for getResponse() START */
+uint8_t package_buffer[EXTERNAL_RADIO_RESPONSE_SIZE]; // Packages sent from Radio are 32 bytes or less
+//extern uint8_t recv_buffer[RESPONSE_LENGTH]; // Receive 5 bytes TODO: Get error when extern, why did yijie make it that way?
+uint8_t recv_buffer[RESPONSE_LENGTH];
+volatile uint8_t receivePackageFlag = 0;
+/*  Variables for getResponse() END */
 
+status_t getResponse(){
+	status_t status;
+	if (receivePackageFlag) {
+		status = LPUART_ReadBlocking(LPUART_1, package_buffer, EXTERNAL_RADIO_RESPONSE_SIZE);
+		receivePackageFlag = 0; // TODO: Need last package flag? Or diff flag for diff length responses
+	} else {
+		status =  LPUART_ReadBlocking(LPUART_1, recv_buffer, RESPONSE_LENGTH); // reads 5 bytes
+	}
+	/*PRINTF("%d", recv_buffer[0]);
+	PRINTF("%d", recv_buffer[1]);
+	PRINTF("%d\n", recv_buffer[2]);*/
+
+	if(status == kStatus_Success){
+		PRINTF("Response received!\r\n");
+		return status;
+	} else if (status == kStatus_InvalidArgument){
+		PRINTF("Invalid argument. Response not received.\r\n");
+		return status;
+	} else if (status == kStatus_LPUART_Timeout) {
+		PRINTF("Timeout. Response not received.\r\n");
+		return status;
+	}
+	return status;
+}
 
 // set radio to command mode with dealer mode off
 // returns true if properly set to command mode & dealer off
@@ -177,7 +207,7 @@ static bool enterCommandMode()
 
 }
 
-//Sends a command to the radia via UART, retries several times if there is a failure.
+//Sends a command to the radio via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
 
@@ -200,19 +230,25 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("ERROR SENDING\n");
     	}
         PRINTF("Trying to receive ...\n");
-//        int recReturnVal = LPUART_RTOS_Receive(&uart1_handle, rx_buffer, sizeof(rx_buffer), size_t);
-//    	if (recReturnVal == kStatus_Success){
-//    		PRINTF("SUCCESS RECEIVING\n");
-//    	}
-//    	else {
-//    		PRINTF("ERROR RECEIVING\n");
-//    	}
-    	PRINTF("Value of rx_buffer: \n");
-        for (int i = 0; i < 4; i++) {
-        	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
-        }
-        bool sentCommand = checkConfigCommand(*rx_buffer, *expectedResponse, sizeExpectedResponse);
-        memset(rx_buffer, 0, sizeof(rx_buffer));
+
+        /* Receiving data from radio START */
+    	memset(package_buffer, 0, sizeof(package_buffer)); // clear buffer before receiving package
+    	receivePackageFlag = 1; // reset flag before sending ACK
+
+		// wait for package
+		while(receivePackageFlag == 1){delay(1);}
+
+		char tmp[3] = {0};
+		PRINTF("Data received from radio:\n");
+		for (int j = 0; j < EXTERNAL_RADIO_RESPONSE_SIZE; j++) {
+			sprintf(tmp, "%02X", (int)package_buffer[j]);
+			PRINTF("%s", tmp);
+		}
+		PRINTF("\n");
+        /* Receiving data from radio END */
+
+        bool sentCommand = checkConfigCommand(*package_buffer, *expectedResponse, sizeExpectedResponse);
+        memset(package_buffer, 0, sizeof(package_buffer));
         if (sentCommand) {
         	PRINTF("Radio response to command is correct! \n");
         	try = 5;
@@ -226,8 +262,8 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
         delay(0.05);
     }
     PRINTF("unexpected response\n");
-	//clear buffers here
-    memset(rx_buffer, 0, sizeof(rx_buffer));
+	//clear buffers here TODO: Should I use rx_buffer? Or did I just replace it with package_buffer
+    //memset(rx_buffer, 0, sizeof(rx_buffer));
 	memset(tx_buffer, 0, sizeof(tx_buffer));
     return false;
 }

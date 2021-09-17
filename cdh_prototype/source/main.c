@@ -82,6 +82,7 @@ int main(void)
 
     // Rithu: The below line makes sure LPUART_RTOS_Send doesn't get stuck while testing individual wrappers!
     NVIC_SetPriority(LPI2C1_IRQn, 10);
+    NVIC_SetPriority(LPUART1_IRQn, 5);
 
     /* When wakeup from suspend, peripheral's doze & stop requests won't be cleared, need to clear them manually */
 //   IOMUXC_GPR->GPR4  = 0x00000000;

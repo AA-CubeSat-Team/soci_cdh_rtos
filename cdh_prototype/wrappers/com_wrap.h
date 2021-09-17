@@ -9,6 +9,15 @@ COM:
 
 #include <stdbool.h>
 
+/*  Variables for getResponse() START */
+// TODO: Might be receiving variable length packages, make sure taking that into account
+/* uint8_ts per package */
+#define EXTERNAL_RADIO_RESPONSE_SIZE 5
+
+/* Response length */
+#define RESPONSE_LENGTH 5
+/*  Variables for getResponse() END */
+
 // TODO: Modify code to include interrupt-based receiving/sending functions as Harshal talked about
 
 // TODO: (NOT SURE) Figure out if way to test uplinking/downlinking functions (After fixing) w/o radios

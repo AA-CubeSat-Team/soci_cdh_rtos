@@ -38,35 +38,13 @@ volatile uint16_t txIndex; /* Index of the data to send out. */
 volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
 uint8_t g_tipString[] =
     "UART 1 initialized \r\n";
+extern volatile bool responseReceivedFlag = 0;
 
 void UART1_IRQHandler(void)
 {
-	PRINTF("In interrupt handler");
-    uint8_t data;
-    uint16_t tmprxIndex = rxIndex;
-    uint16_t tmptxIndex = txIndex;
-
-    /* If new data arrived. */
-    if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(LPUART_1))
-    {
-        data = LPUART_ReadByte(LPUART_1);
-
-        /* If ring buffer is not full, add data to ring buffer. */
-        if (((tmprxIndex + 1) % UART1_RING_BUFFER_SIZE) != tmptxIndex)
-        {
-        	UART1RingBuffer[rxIndex] = data;
-            rxIndex++;
-            rxIndex %= UART1_RING_BUFFER_SIZE;
-        }
-    }
-
+	getResponse();
+	responseReceivedFlag = 1;
     SDK_ISR_EXIT_BARRIER;
-
-    // Printing out received data:
-     PRINTF("Printing out received data:");
-     for (int i = 0; i < UART1_RING_BUFFER_SIZE; i++){
-     	PRINTF("UART RING BUFFER ITEM: %u\n:", UART1RingBuffer[i]);
-     }
 }
 
 void com_task(void *pvParameters)
@@ -100,19 +78,19 @@ void com_task(void *pvParameters)
 		// Delay to test "soft-break" into command mode via com_init function
         // delay(1);
 
-		PRINTF("Testing deployAntenna function:\n");
-		com_deployAntenna();
-		PRINTF("Done testing");
-
-//		PRINTF("Testing enterCommandMode function:\n");
-//		com_enterCommandMode();
-//		PRINTF("\n");
-//
-//		//Testing if sending a command to the radio (non delay dependent) works
-//		PRINTF("Testing exitCommandMode function:\n");;
-//		com_exitCommandMode();
-//		PRINTF("\n");
+//		PRINTF("Testing deployAntenna function:\n");
+//		com_deployAntenna();
 //		PRINTF("Done testing");
+
+		PRINTF("Testing enterCommandMode function:\n");
+		com_enterCommandMode();
+		PRINTF("\n");
+
+		//Testing if sending a command to the radio (non delay dependent) works
+		PRINTF("Testing exitCommandMode function:\n");;
+		com_exitCommandMode();
+		PRINTF("\n");
+		PRINTF("Done testing");
 
 		//PRINTF("Testing com_init() function:\n");
 		//com_init();
