@@ -21,8 +21,8 @@
 /******************************************************************************
  * Definitions for UART 1
  ******************************************************************************/
-#define LPUART_1           	LPUART1
-#define LPUART1_CLK_FREQ   	BOARD_DebugConsoleSrcFreq()
+#define LPUART_3           	LPUART3
+#define LPUART1_CLK_FREQ   	BOARD_DebugConsoleSrcFreq() // Tried changing this to 38400 but nada
 #define UART1_IRQn       	LPUART1_IRQn
 #define UART1_IRQHandler 	LPUART1_IRQHandler
 

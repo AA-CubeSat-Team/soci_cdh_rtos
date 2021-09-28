@@ -42,6 +42,7 @@ extern volatile bool responseReceivedFlag = 0;
 
 void UART1_IRQHandler(void)
 {
+	PRINTF("IN INTERRUPT HANDLER\n");
 	getResponse();
 	responseReceivedFlag = 1;
     SDK_ISR_EXIT_BARRIER;
@@ -59,17 +60,17 @@ void com_task(void *pvParameters)
 	config.enableTx     = true;
 	config.enableRx     = true;
 
-	LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
+	LPUART_Init(LPUART_3, &config, LPUART1_CLK_FREQ);
 
 	/* Send g_tipString out. */
-	if(kStatus_Success == LPUART_WriteBlocking(LPUART_1, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]))) {
-		PRINTF("UART1 succeed write blocking\r\n");
+	if(kStatus_Success == LPUART_WriteBlocking(LPUART_3, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]))) {
+		PRINTF("UART3 succeed write blocking\r\n");
 	} else {
-		PRINTF("UART1 failed write blocking\r\n");
+		PRINTF("UART3 failed write blocking\r\n");
 	}
 
 	/* Enable RX interrupt. */
-	LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
+	LPUART_EnableInterrupts(LPUART_3, kLPUART_RxDataRegFullInterruptEnable);
 	EnableIRQ(UART1_IRQn);
 
 	/*UART 1 initialization done */
@@ -82,15 +83,20 @@ void com_task(void *pvParameters)
 //		com_deployAntenna();
 //		PRINTF("Done testing");
 
-		PRINTF("Testing enterCommandMode function:\n");
-		com_enterCommandMode();
-		PRINTF("\n");
+//		PRINTF("Testing enterCommandMode function:\n");
+//
+//		com_enterCommandMode();
+//		PRINTF("\n");
 
 		//Testing if sending a command to the radio (non delay dependent) works
-		PRINTF("Testing exitCommandMode function:\n");;
-		com_exitCommandMode();
-		PRINTF("\n");
-		PRINTF("Done testing");
+//		PRINTF("Testing exitCommandMode function:\n");;
+//		com_exitCommandMode();
+//		PRINTF("\n");
+//		PRINTF("Done testing");
+
+
+		PRINTF("TESTING CONTINOUS SENDING\n");
+		testSending();
 
 		//PRINTF("Testing com_init() function:\n");
 		//com_init();

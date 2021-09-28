@@ -41,7 +41,7 @@ void com_enterCommandMode();
 
 void com_deployAntenna_algorithmOne(); // TODO: Test w/ COM_A once programmed
 void com_deployAntenna_algorithmTwo(); // TODO: Test w/ COM_A once programmed
-
+void testSending();
 /* TODO: There might be a few other methods in the XDL manual u might want to decide if we
  * should implement. Id say take a look through, and see if we would want to implement
  * (i think there's one about picking the satellite mode, diff power levels to set to) and

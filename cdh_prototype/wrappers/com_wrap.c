@@ -78,7 +78,7 @@ const char *send_ring_overrun     = "\r\nRing buffer overrun!FreeRTOS\r\n";
 const char *send_hardware_overrun = "\r\nHardware buffer overrun!FreeRTOS\r\n";
 uint8_t background_buffer[500];
 
-static char tx_buffer[3] = {};
+static char tx_buffer[1] = {};
 static char rx_buffer[3] = {};
 static char downlink_buffer[] = {};
 static int rx_size = 0;
@@ -128,7 +128,7 @@ void delay(int seconds)
 // Temporary uart_send function before IRS UART driver change
 static int uart_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length){
 	for (int i = 0; i < length; i++){
-		if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, &buffer[i], 1))//LPUART_RTOS_Send(handle, &buffer[i], 1))
+		if (kStatus_Success != LPUART_WriteBlocking(LPUART_3, &buffer[i], 1))//LPUART_RTOS_Send(handle, &buffer[i], 1))
 		{
 			PRINTF("Trying to send: %c\n", &buffer[i]);
 			PRINTF("failed to send the %dth byte, terminating \r\n", i);
@@ -148,12 +148,13 @@ volatile uint8_t receivePackageFlag = 0;
 /*  Variables for getResponse() END */
 
 status_t getResponse(){
+	PRINTF("In getResponse() method!");
 	status_t status;
-	if (receivePackageFlag) {
-		status = LPUART_ReadBlocking(LPUART_1, package_buffer, EXTERNAL_RADIO_RESPONSE_SIZE);
-		receivePackageFlag = 0; // TODO: Need last package flag? Or diff flag for diff length responses
+	if (receivePackageFlag) { //TODO:HUH?! RECEIVEPACKAGEFLAG
+		status = LPUART_ReadBlocking(LPUART_3, package_buffer, EXTERNAL_RADIO_RESPONSE_SIZE);
+		//receivePackageFlag = 0; // TODO: Need last package flag? Or diff flag for diff length responses
 	} else {
-		status =  LPUART_ReadBlocking(LPUART_1, recv_buffer, RESPONSE_LENGTH); // reads 5 bytes
+		status =  LPUART_ReadBlocking(LPUART_3, recv_buffer, RESPONSE_LENGTH); // reads 5 bytes
 	}
 	/*PRINTF("%d", recv_buffer[0]);
 	PRINTF("%d", recv_buffer[1]);
@@ -191,7 +192,7 @@ static bool enterCommandMode()
 	//PRINTF("%d\n", strlen(rx_buffer));
 
 	size_t n = 0;
-	int returnVal =  LPUART_WriteBlocking(LPUART_1, (uint8_t *)tx_buffer, 3); //LPUART_RTOS_Send(&uart1_handle, (uint8_t *)tx_buffer, 3);
+	int returnVal =  LPUART_WriteBlocking(LPUART_3, (uint8_t *)tx_buffer, 3); //LPUART_RTOS_Send(&uart1_handle, (uint8_t *)tx_buffer, 3);
     PRINTF("message sent\n");
 
 	//Another delay of 100 msec so radio can go into command mode
@@ -207,6 +208,16 @@ static bool enterCommandMode()
 
 }
 
+//static char tx_buffer[1] = {};
+void testSending(){
+	memset(tx_buffer, 0, sizeof(tx_buffer));
+
+	tx_buffer[0] = 'a';
+
+	LPUART_WriteBlocking(LPUART_3, (uint8_t *)tx_buffer, 1);
+	PRINTF("WRITE SUCCESS/n");
+}
+
 //Sends a command to the radio via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
@@ -214,15 +225,17 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 	//clear buffers here
 	memset(rx_buffer, 0, sizeof(rx_buffer));
 	memset(tx_buffer, 0, sizeof(tx_buffer));
-    for (int i = 0; i < sizeofTx; i++) {
-    	tx_buffer[i] = data[i];
-    	PRINTF("tx_buffer");
-    }
+
     // Sends data to radio via UART, if the response is not correct it retries sending the command
     int size_t = 0;
     while (try < DEFAULT_RETRIES) {
+    	PRINTF("\n");
     	PRINTF("Trying to send ...\n");
-    	int sendReturnVal = LPUART_WriteBlocking(LPUART_1, (uint8_t *)tx_buffer, sizeofTx); //LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
+        for (int i = 0; i < sizeofTx; i++) {
+        	tx_buffer[i] = data[i];
+        	PRINTF("tx_buffer[i]: %d\n", tx_buffer[i]);
+        }
+    	int sendReturnVal = LPUART_WriteBlocking(LPUART_3, (uint8_t *)tx_buffer, sizeofTx); //LPUART_RTOS_Send(&uart1_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
     	if (sendReturnVal == kStatus_Success){
     		PRINTF("SUCCESS SENDING\n");
     	}
@@ -230,13 +243,16 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("ERROR SENDING\n");
     	}
         PRINTF("Trying to receive ...\n");
-
+        PRINTF("VALUE of receivePackageFlag: %d\n", receivePackageFlag);
         /* Receiving data from radio START */
     	memset(package_buffer, 0, sizeof(package_buffer)); // clear buffer before receiving package
-    	receivePackageFlag = 1; // reset flag before sending ACK
+    	//receivePackageFlag = 1; // reset flag before sending ACK
 
 		// wait for package
-		while(receivePackageFlag == 1){delay(1);}
+    	PRINTF("BEFORE WHILE LOOP\n");
+		//while(receivePackageFlag == 0){delay(1);}
+    	delay(1);
+		PRINTF("AFTER WHILE LOOP\n");
 
 		char tmp[3] = {0};
 		PRINTF("Data received from radio:\n");
@@ -245,10 +261,12 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 			PRINTF("%s", tmp);
 		}
 		PRINTF("\n");
+		//receivePackageFlag = 1;
         /* Receiving data from radio END */
 
         bool sentCommand = checkConfigCommand(*package_buffer, *expectedResponse, sizeExpectedResponse);
         memset(package_buffer, 0, sizeof(package_buffer));
+        receivePackageFlag = 0;
         if (sentCommand) {
         	PRINTF("Radio response to command is correct! \n");
         	try = 5;
@@ -355,7 +373,7 @@ void com_getCommands() //highest priority
 
 	// void * memcpy ( void * destination, const void * source, size_t num );
 
-	if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
+	if (kStatus_Success != LPUART_WriteBlocking(LPUART_3, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
 	{
 		PRINTF("could not send!!!\r\n\r\n");
 		return;
@@ -375,7 +393,7 @@ void com_getCommands() //highest priority
 	if (n > 0)
 	{
 		/* send back the received data */
-		if (kStatus_Success != LPUART_WriteBlocking(LPUART_1, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)rcv_buffer, n))
+		if (kStatus_Success != LPUART_WriteBlocking(LPUART_3, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&uart1_handle, (uint8_t *)rcv_buffer, n))
 		{
 			vTaskSuspend(NULL);
 		}
@@ -627,7 +645,7 @@ void com_exitCommandMode(){
 static void exitCommandMode() {
 	int sizeOfTx = sizeof(warm_reset) / sizeof(warm_reset[0]);
 	int sizeExpectedResponse = sizeof(reset_response) / sizeof(reset_response[0]);
-	bool exitedCommandMode = sendConfigCommand(warm_reset, reset_response, sizeOfTx, sizeExpectedResponse);
+	bool exitedCommandMode = sendConfigCommand(warm_reset, reset_response, 4, sizeExpectedResponse);
 	if (exitedCommandMode) {
 		PRINTF("Radio reset to data mode.\n");
 		return true;

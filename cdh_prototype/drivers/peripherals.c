@@ -37,7 +37,8 @@ uint8_t background_buffer1[32];
 uint8_t recv_buffer1[4];
 
 lpuart_rtos_config_t lpuart1_config = { // TODO: should we make these const?
-    .baudrate    = 115200,
+    .baudrate    = 38400, //Maybe try this baud rate from 115200 to 38400? Default
+	                       // baud rate of radio is 38400 I believe
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer1,
@@ -95,7 +96,7 @@ uint8_t background_buffer3[32];
 uint8_t recv_buffer3[4];
 
 lpuart_rtos_config_t lpuart3_config = {
-    .baudrate    = 115200,
+    .baudrate    = 38400,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer3,
@@ -124,7 +125,7 @@ uint8_t background_buffer4[32];
 uint8_t recv_buffer4[4];
 
 lpuart_rtos_config_t lpuart4_config = {
-    .baudrate    = 115200,
+    .baudrate    = 38400,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer4,
