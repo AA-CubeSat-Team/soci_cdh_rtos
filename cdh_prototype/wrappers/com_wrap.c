@@ -329,7 +329,7 @@ bool com_healthcheck() //checks power
 	return false;
 }
 
-void com_getCommands() //highest priority
+bool com_getCommands(uint8_t* dest) //highest priority
 {
 	size_t n;
 
@@ -343,20 +343,27 @@ void com_getCommands() //highest priority
 	if (kStatus_Success != LPUART_RTOS_Send(&uart1_handle, (uint8_t *)to_send, strlen(to_send)))
 	{
 		PRINTF("could not send!!!\r\n\r\n");
-		return;
+		return false;
 	}
 
 	status_t error = LPUART_RTOS_Receive(&uart1_handle, rcv_buffer, sizeof(rcv_buffer), &n);
 	if (error == kStatus_LPUART_RxHardwareOverrun)
 	{
 		PRINTF("hardware overrun!!!\r\n\r\n");
-		return;
+		return false;
 	}
 	if (error == kStatus_LPUART_RxRingBufferOverrun)
 	{
 		PRINTF("ring buffer overrun!!!\r\n\r\n");
-		return;
+		return false;
 	}
+
+	// updating command struct
+	for (int i = 0; i < sizeof(rcv_buffer); i++) {
+		dest[i] = rcv_buffer[i];
+		PRINTF("%d", dest[i]);
+	}
+	PRINTF("\n");
 	if (n > 0)
 	{
 		/* send back the received data */
@@ -367,6 +374,7 @@ void com_getCommands() //highest priority
 	}
 
 	PRINTF("getting commands from the ground station\r\n");
+	return true;
 }
 
 

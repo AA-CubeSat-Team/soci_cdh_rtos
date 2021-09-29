@@ -18,7 +18,7 @@ void com_init(); //
 void com_set_burn_wire1(); // TODO: (NOT SURE) What pins do the GPIO commands correspond to that we can check?
 void com_set_burn_wire2(); // TODO: (NOT SURE) What pins do the GPIO commands correspond to that we can check?
 bool com_healthcheck(); // TODO: Need to test (7/1/21)
-void com_getCommands(); /// Uplinking?
+bool com_getCommands(); /// Uplinking?
 void com_sendPayloads(); // Downlinking?
 void com_sendImages(); // Downlinking?
 void com_sendBeacons(); // Downlinking?

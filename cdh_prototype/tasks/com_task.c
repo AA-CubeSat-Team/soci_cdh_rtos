@@ -74,6 +74,18 @@ QueueHandle_t xStructQueue = NULL;
 QueueHandle_t xPointerQueue = NULL;
 
 
+// command and telemetry data struct, used to share between subsystem, need to move to global struct after prototype
+typedef struct {
+	uint8_t megID;
+	uint8_t meg[8];
+} TIL_Prototype;
+
+typedef struct {
+	bool new_cmd;
+	uint8_t cmdID;
+	uint8_t cmd[8];
+} CMD_Prototype;
+
 void vCreateQueues( void )
 {
    xMessage.ucMessageID = 0xab;
@@ -272,6 +284,24 @@ void com_task(void *pvParameters)
 	////// uart 1 initialization END ////////
 	/////////////////////////////////////////
 
+
+
+
+	// Creating TIL and CMD message struct and test using one megId and one message
+	// struct should be global and can be accessed by other subsystem
+	volatile TIL_Prototype til_struct;
+	volatile CMD_Prototype cmd_struct;
+
+	// TODO: will ignore this warning for now, may need to implement loop to initilize the array.
+	// https://stackoverflow.com/questions/17144570/how-to-set-volatile-array-to-zero-using-memset
+	til_struct.megID = 0x00;
+	memset( &( til_struct.meg ), 0x00, 8);
+
+	cmd_struct.new_cmd = false;
+	cmd_struct.cmdID = 0x01;
+	memset( &( cmd_struct.cmd ), 0x01, 8);
+
+
 	if(com_wrap_debug){
 		// Delay to test "soft-break" into command mode via com_init function
 //		delay(1);
@@ -399,14 +429,40 @@ void com_task(void *pvParameters)
 				case NORMAL:
 
 					PRINTF("Waiting for commands\n");
-					//com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
-					if (command_request) {
+					// Note: user uart recieve right here to test, consider modifying the wrapper later
+					cmd_struct.new_cmd = com_getCommands(cmd_struct.cmd); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
+
+
+//					// taken from the com_getCommands()
+//					int n = 0;
+//					uint8_t buffer[8] = {0}; // TODO: copy from buffer to struct?
+//					status_t error = LPUART_RTOS_Receive(&uart1_handle, cmd_struct.cmd, sizeof(cmd_struct.cmd), &n);
+//					if (error == kStatus_LPUART_RxHardwareOverrun)
+//					{
+//						PRINTF("hardware overrun!!!\r\n\r\n");
+//						return;
+//					}
+//					if (error == kStatus_LPUART_RxRingBufferOverrun)
+//					{
+//						PRINTF("ring buffer overrun!!!\r\n\r\n");
+//						return;
+//					}
+//					if (n > 0)
+//					{
+//						/* send back the received data */
+//						if (kStatus_Success != LPUART_RTOS_Send(&uart1_handle, cmd_struct.cmd, n))
+//						{
+//							vTaskSuspend(NULL);
+//						}
+//					}
+
+					if (cmd_struct.new_cmd) {
 						comCurrentState = PASSING;
+						cmd_struct.new_cmd = false;
 					} else {
 						vTaskDelayUntil(&xLastWakeTime, xDelayms);
-						break;
 					}
-
+					break;
 
 				case PASSING:
 					// TODO: send beacon

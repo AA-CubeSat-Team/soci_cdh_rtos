@@ -65,10 +65,6 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
-//uint8_t sdram_writeBuffer_copy[SEMC_EXAMPLE_DATALEN];
-//uint8_t sdram_readBuffer_copy[SEMC_EXAMPLE_DATALEN];
-//uint8_t *sdram_copy  = (uint8_t *)EXAMPLE_SEMC_START_ADDRESS; //SD ram
-
 extern SemaphoreHandle_t s_wakeupSig;
 
 int main(void)
@@ -88,6 +84,7 @@ int main(void)
    IOMUXC_GPR->GPR7  = 0x00000000;
    IOMUXC_GPR->GPR8  = 0x00000000;
    IOMUXC_GPR->GPR12 = 0x00000000;
+
 
 //    if (BOARD_InitSEMC() != kStatus_Success)
 //	{
