@@ -60,10 +60,14 @@ extern TaskHandle_t TaskHandler_img;
  */
 int main(void)
 {
+
 	/* Init board hardware. */
     BOARD_ConfigMPU();
     BOARD_InitPins();
     BOARD_InitBootClocks();
+
+	/* Complete board hardware init */
+
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 

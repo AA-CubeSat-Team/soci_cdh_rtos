@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2019 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -11,9 +11,8 @@
 #include "FreeRTOS.h"
 #include "portable.h"
 #include "semphr.h"
-#include "MIMXRT1021.h"
-#include <fsl_lpi2c.h>
 
+#include "fsl_lpi2c.h"
 
 /*!
  * @addtogroup lpi2c_freertos_driver LPI2C FreeRTOS Driver
@@ -26,8 +25,8 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief LPI2C FreeRTOS driver version 2.1.11. */
-#define FSL_LPI2C_FREERTOS_DRIVER_VERSION (MAKE_VERSION(2, 1, 11))
+/*! @brief LPI2C FreeRTOS driver version. */
+#define FSL_LPI2C_FREERTOS_DRIVER_VERSION (MAKE_VERSION(2, 3, 0))
 /*@}*/
 
 /*!
