@@ -74,7 +74,8 @@ extern SemaphoreHandle_t s_wakeupSig;
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
-    BOARD_ConfigMPU();
+
+	BOARD_ConfigMPU();
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();

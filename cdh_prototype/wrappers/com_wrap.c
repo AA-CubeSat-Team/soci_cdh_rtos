@@ -70,7 +70,7 @@ static char set_channel_response[] = {0x01, 0x83, 0x00, 0x7C};
 static char set_bandwidth_response[] = {0x01, 0xF0, 0x00, 0x10};
 static char set_modulation_response[] = {0x01, 0xAB}; //TBD
 static char program_response[] = {0x01,0x9E, 0x00, 0x62};
-static char reset_response[] = {0x01, 0x9D, 0x00, 0x63};
+static char reset_response[] = {0x01, 0x9D, 0x00, 0x62}; // changed checksum to 62, correct response
 static char set_led_rx_response[] = {0x01, 0x00, 0xFF, 0x01};
 
 const char *to_send               = "FreeRTOSFreeRTOS";
@@ -210,12 +210,14 @@ static bool enterCommandMode()
 
 //static char tx_buffer[1] = {};
 void testSending(){
-	memset(tx_buffer, 0, sizeof(tx_buffer));
+	while(1){
+		memset(tx_buffer, 0, sizeof(tx_buffer));
 
-	tx_buffer[0] = 'a';
+		tx_buffer[0] = 'a';
 
-	LPUART_WriteBlocking(LPUART_3, (uint8_t *)tx_buffer, 1);
-	PRINTF("WRITE SUCCESS/n");
+		LPUART_WriteBlocking(LPUART_3, (uint8_t *)tx_buffer, 1);
+		PRINTF("WRITE SUCCESS/n");
+	}
 }
 
 //Sends a command to the radio via UART, retries several times if there is a failure.
