@@ -65,11 +65,6 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="LPI2C2" description="Peripheral LPI2C2 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="JTAG" description="Peripheral JTAG is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
@@ -86,6 +81,11 @@
                      </feature>
                   </dependency>
                   <dependency resourceType="Peripheral" resourceId="SEMC" description="Peripheral SEMC is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="Peripheral" resourceId="LPUART2" description="Peripheral LPUART2 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -149,8 +149,6 @@
                         <pin_feature name="hysteresis_enable" value="Disable"/>
                      </pin_features>
                   </pin>
-                  <pin peripheral="LPI2C2" signal="SCL" pin_num="82" pin_signal="GPIO_AD_B1_08"/>
-                  <pin peripheral="LPI2C2" signal="SDA" pin_num="81" pin_signal="GPIO_AD_B1_09"/>
                   <pin peripheral="GPIO1" signal="gpio_io, 23" pin_num="83" pin_signal="GPIO_AD_B1_07"/>
                   <pin peripheral="GPIO5" signal="gpio_io, 00" pin_num="52" pin_signal="WAKEUP"/>
                   <pin peripheral="JTAG" signal="TCK" pin_num="110" pin_signal="GPIO_AD_B0_01"/>
@@ -208,6 +206,8 @@
                   <pin peripheral="SEMC" signal="semc_ras" pin_num="4" pin_signal="GPIO_EMC_11"/>
                   <pin peripheral="SEMC" signal="semc_rdy" pin_num="92" pin_signal="GPIO_AD_B1_00"/>
                   <pin peripheral="SEMC" signal="semc_we" pin_num="8" pin_signal="GPIO_EMC_09"/>
+                  <pin peripheral="LPUART2" signal="RX" pin_num="81" pin_signal="GPIO_AD_B1_09"/>
+                  <pin peripheral="LPUART2" signal="TX" pin_num="82" pin_signal="GPIO_AD_B1_08"/>
                </pins>
             </function>
          </functions_list>

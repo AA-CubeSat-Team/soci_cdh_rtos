@@ -1,4 +1,6 @@
 #define COM_ENABLE	0
+#define COM_WRAP_DEBUG 0
+#define UART_TESTING 1
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
@@ -16,18 +18,6 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "fsl_lpuart.h"
-
-
-/******************************************************************************
- * Definitions for UART 1
- ******************************************************************************/
-#define LPUART_1           	LPUART1
-#define LPUART1_CLK_FREQ   	BOARD_DebugConsoleSrcFreq()
-#define UART1_IRQn       	LPUART1_IRQn
-#define UART1_IRQHandler 	LPUART1_IRQHandler
-
-/*! @brief Ring buffer size for UART 1 (Unit: Byte). */
-#define UART1_RING_BUFFER_SIZE 16
 
 
 

@@ -36,8 +36,8 @@
 #define CPU_NAME "iMXRT1021"
 
 /* Task priorities. */
-#define idle_task_PRIORITY	 			1
-#define imag_task_PRIORITY 				2
+#define idle_task_PRIORITY	 			3
+#define imag_task_PRIORITY 				3
 #define com_task_PRIORITY				3
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)

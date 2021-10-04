@@ -12,72 +12,11 @@ TaskHandle_t TaskHandler_img;
 extern uint8_t IMG_command; //TODO: what does img command look like?
 extern uint8_t IMG_param; //TODO: what does img command look like?
 
-/*UART 4
-  Ring buffer for data input and output, input data are saved
-  to ring buffer in IRQ handler. The main function polls the ring buffer status,
-  if there is new data, then send them out.
-  Ring buffer full: (((rxIndex + 1) % DEMO_RING_BUFFER_SIZE) == txIndex)
-  Ring buffer empty: (rxIndex == txIndex)
-*/
-uint8_t UART4RingBuffer[UART4_RING_BUFFER_SIZE];
-volatile uint16_t txIndex_4; /* Index of the data to send out. */
-volatile uint16_t rxIndex_4; /* Index of the memory to save new arrived data. */
-uint8_t UART_4[] =
-    "UART 4 initialized \r\n";
-
-void UART4_IRQHandler(void)
-{
-    uint8_t data;
-    uint16_t tmprxIndex = rxIndex_4;
-    uint16_t tmptxIndex = txIndex_4;
-
-    /* If new data arrived. */
-    if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(LPUART_4))
-    {
-        data = LPUART_ReadByte(LPUART_4);
-
-        /* If ring buffer is not full, add data to ring buffer. */
-        if (((tmprxIndex + 1) % UART4_RING_BUFFER_SIZE) != tmptxIndex)
-        {
-        	UART4RingBuffer[rxIndex_4] = data;
-            rxIndex_4++;
-            rxIndex_4 %= UART4_RING_BUFFER_SIZE;
-        }
-    }
-    SDK_ISR_EXIT_BARRIER;
-}
-
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-
-
-	/*initiate UART 4*/
-    lpuart_config_t config;
-    uint16_t tmprxIndex = rxIndex_4;
-    uint16_t tmptxIndex = txIndex_4;
-
-    LPUART_GetDefaultConfig(&config);
-    config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
-    config.enableTx     = true;
-    config.enableRx     = true;
-
-    LPUART_Init(LPUART_4, &config, LPUART4_CLK_FREQ);
-
-    /* Send g_tipString out. */
-    if(kStatus_Success == LPUART_WriteBlocking(LPUART_4, UART_4, sizeof(UART_4) / sizeof(UART_4[0]))) {
-    	PRINTF("UART4 succeed write blocking\r\n");
-	} else {
-		PRINTF("UART4 failed write blocking\r\n");
-	}
-
-    /* Enable RX interrupt. */
-    LPUART_EnableInterrupts(LPUART_4, kLPUART_RxDataRegFullInterruptEnable);
-    EnableIRQ(UART4_IRQn);
-
-    /*UART 4 initialisation done */
 
     // sdram example
     memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));

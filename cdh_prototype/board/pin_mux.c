@@ -48,8 +48,6 @@ BOARD_InitPins:
     pull_keeper_select: Keeper, pull_keeper_enable: Enable, pull_up_down_config: Pull_Up_22K_Ohm, hysteresis_enable: Disable}
   - {pin_num: '74', peripheral: LPI2C1, signal: SDA, pin_signal: GPIO_AD_B1_15, slew_rate: Slow, software_input_on: Enable, open_drain: Enable, speed: MHZ_100, drive_strength: R0_6,
     pull_keeper_select: Keeper, pull_keeper_enable: Enable, pull_up_down_config: Pull_Up_22K_Ohm, hysteresis_enable: Disable}
-  - {pin_num: '82', peripheral: LPI2C2, signal: SCL, pin_signal: GPIO_AD_B1_08}
-  - {pin_num: '81', peripheral: LPI2C2, signal: SDA, pin_signal: GPIO_AD_B1_09}
   - {pin_num: '83', peripheral: GPIO1, signal: 'gpio_io, 23', pin_signal: GPIO_AD_B1_07}
   - {pin_num: '52', peripheral: GPIO5, signal: 'gpio_io, 00', pin_signal: WAKEUP}
   - {pin_num: '110', peripheral: JTAG, signal: TCK, pin_signal: GPIO_AD_B0_01}
@@ -107,6 +105,8 @@ BOARD_InitPins:
   - {pin_num: '4', peripheral: SEMC, signal: semc_ras, pin_signal: GPIO_EMC_11}
   - {pin_num: '92', peripheral: SEMC, signal: semc_rdy, pin_signal: GPIO_AD_B1_00}
   - {pin_num: '8', peripheral: SEMC, signal: semc_we, pin_signal: GPIO_EMC_09}
+  - {pin_num: '81', peripheral: LPUART2, signal: RX, pin_signal: GPIO_AD_B1_09}
+  - {pin_num: '82', peripheral: LPUART2, signal: TX, pin_signal: GPIO_AD_B1_08}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -137,8 +137,8 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_00_SEMC_READY, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_01_SEMC_CSX00, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_07_GPIO1_IO23, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_08_LPI2C2_SCL, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_09_LPI2C2_SDA, 0U); 
+  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_08_LPUART2_TX, 0U); 
+  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_09_LPUART2_RX, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_10_LPUART4_TX, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_11_LPUART4_RX, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_12_GPIO1_IO28, 0U); 

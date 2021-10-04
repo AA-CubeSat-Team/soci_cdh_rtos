@@ -82,9 +82,7 @@ extern "C" {
  * Global variables
  **********************************************************************************************************************/
 
-extern lpuart_rtos_handle_t uart1_handle;
-extern lpuart_rtos_handle_t uart3_handle;
-extern lpuart_rtos_handle_t uart4_handle;
+extern lpuart_rtos_handle_t uart2_handle;
 
 #if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
