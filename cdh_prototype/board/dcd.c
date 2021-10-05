@@ -34,7 +34,7 @@ const uint8_t dcd_data[] = {
 	/* Tag */
 	0xD2,
 	/* Image Length */
-	0x03, 0xE8,
+	0x04, 0x08,
 	/* Version */
 	0x41,
 
@@ -61,8 +61,8 @@ const uint8_t dcd_data[] = {
 	0x40, 0x0D, 0x80, 0x30, 0x00, 0x00, 0x20, 0x01,
 	/* #2, command: write_clear_bits, address: CCM_ANALOG_PFD_528, value: 0x800000, size: 4 */
 	0xCC, 0x00, 0x0C, 0x0C, 0x40, 0x0D, 0x81, 0x00, 0x00, 0x80, 0x00, 0x00,
-	/* #3.1-98, command header bytes for merged 'Write - value' command */
-	0xCC, 0x03, 0x14, 0x04,
+	/* #3.1-102, command header bytes for merged 'Write - value' command */
+	0xCC, 0x03, 0x34, 0x04,
 	/* #3.1, command: write_value, address: CCM_CBCDR, value: 0xA8340, size: 4 */
 	0x40, 0x0F, 0xC0, 0x14, 0x00, 0x0A, 0x83, 0x40,
 	/* #3.2, command: write_value, address: IOMUXC_SW_MUX_CTL_PAD_GPIO_EMC_00, value: 0x00, size: 4 */
@@ -145,119 +145,127 @@ const uint8_t dcd_data[] = {
 	0x40, 0x1F, 0x80, 0xAC, 0x00, 0x00, 0x00, 0x00,
 	/* #3.41, command: write_value, address: IOMUXC_SW_MUX_CTL_PAD_GPIO_EMC_39, value: 0x00, size: 4 */
 	0x40, 0x1F, 0x80, 0xB0, 0x00, 0x00, 0x00, 0x00,
-	/* #3.42, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_31, value: 0xE1, size: 4 */
+	/* #3.42, command: write_value, address: IOMUXC_SW_MUX_CTL_PAD_GPIO_EMC_40, value: 0x00, size: 4 */
+	0x40, 0x1F, 0x80, 0xB4, 0x00, 0x00, 0x00, 0x00,
+	/* #3.43, command: write_value, address: IOMUXC_SW_MUX_CTL_PAD_GPIO_EMC_41, value: 0x00, size: 4 */
+	0x40, 0x1F, 0x80, 0xB8, 0x00, 0x00, 0x00, 0x00,
+	/* #3.44, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_31, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x04, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.43, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_32, value: 0xE1, size: 4 */
+	/* #3.45, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_32, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x08, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.44, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_33, value: 0xE1, size: 4 */
+	/* #3.46, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_33, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x0C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.45, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_34, value: 0xE1, size: 4 */
+	/* #3.47, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_34, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x10, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.46, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_35, value: 0xE1, size: 4 */
+	/* #3.48, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_35, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x14, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.47, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_36, value: 0xE1, size: 4 */
+	/* #3.49, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_36, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x18, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.48, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_37, value: 0xE1, size: 4 */
+	/* #3.50, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_37, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x1C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.49, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_38, value: 0xE1, size: 4 */
+	/* #3.51, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_38, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x20, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.50, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_39, value: 0xE1, size: 4 */
+	/* #3.52, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_39, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x24, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.51, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_00, value: 0xE1, size: 4 */
+	/* #3.53, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_40, value: 0xE1, size: 4 */
+	0x40, 0x1F, 0x82, 0x28, 0x00, 0x00, 0x00, 0xE1,
+	/* #3.54, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_41, value: 0xE1, size: 4 */
+	0x40, 0x1F, 0x82, 0x2C, 0x00, 0x00, 0x00, 0xE1,
+	/* #3.55, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_00, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x30, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.52, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_01, value: 0xE1, size: 4 */
+	/* #3.56, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_01, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x34, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.53, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_02, value: 0xE1, size: 4 */
+	/* #3.57, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_02, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x38, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.54, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_03, value: 0xE1, size: 4 */
+	/* #3.58, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_03, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x3C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.55, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_04, value: 0xE1, size: 4 */
+	/* #3.59, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_04, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x40, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.56, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_05, value: 0xE1, size: 4 */
+	/* #3.60, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_05, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x44, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.57, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_06, value: 0xE1, size: 4 */
+	/* #3.61, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_06, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x48, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.58, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_07, value: 0xE1, size: 4 */
+	/* #3.62, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_07, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x4C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.59, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_08, value: 0xE1, size: 4 */
+	/* #3.63, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_08, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x50, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.60, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_09, value: 0xE1, size: 4 */
+	/* #3.64, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_09, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x54, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.61, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_10, value: 0xE1, size: 4 */
+	/* #3.65, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_10, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x58, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.62, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_11, value: 0xE1, size: 4 */
+	/* #3.66, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_11, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x5C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.63, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_12, value: 0xE1, size: 4 */
+	/* #3.67, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_12, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x60, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.64, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_13, value: 0xE1, size: 4 */
+	/* #3.68, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_13, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x64, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.65, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_14, value: 0xE1, size: 4 */
+	/* #3.69, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_14, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x68, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.66, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_15, value: 0xE1, size: 4 */
+	/* #3.70, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B0_15, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x6C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.67, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_00, value: 0xE1, size: 4 */
+	/* #3.71, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_00, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x70, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.68, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_01, value: 0xE1, size: 4 */
+	/* #3.72, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_01, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x74, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.69, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_02, value: 0xE1, size: 4 */
+	/* #3.73, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_02, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x78, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.70, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_03, value: 0xE1, size: 4 */
+	/* #3.74, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_03, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x7C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.71, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_04, value: 0xE1, size: 4 */
+	/* #3.75, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_04, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x80, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.72, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_05, value: 0xE1, size: 4 */
+	/* #3.76, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_05, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x84, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.73, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_06, value: 0xE1, size: 4 */
+	/* #3.77, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_06, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x88, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.74, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_07, value: 0xE1, size: 4 */
+	/* #3.78, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_07, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x8C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.75, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_08, value: 0xE1, size: 4 */
+	/* #3.79, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_08, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x90, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.76, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_09, value: 0xE1, size: 4 */
+	/* #3.80, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_09, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x94, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.77, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_10, value: 0xE1, size: 4 */
+	/* #3.81, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_10, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x98, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.78, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_11, value: 0xE1, size: 4 */
+	/* #3.82, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_11, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0x9C, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.79, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_12, value: 0xE1, size: 4 */
+	/* #3.83, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_12, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0xA0, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.80, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_13, value: 0xE1, size: 4 */
+	/* #3.84, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_13, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0xA4, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.81, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_14, value: 0xE1, size: 4 */
+	/* #3.85, command: write_value, address: IOMUXC_SW_PAD_CTL_PAD_GPIO_AD_B1_14, value: 0xE1, size: 4 */
 	0x40, 0x1F, 0x82, 0xA8, 0x00, 0x00, 0x00, 0xE1,
-	/* #3.82, command: write_value, address: SEMC_MCR, value: 0x10000004, size: 4 */
+	/* #3.86, command: write_value, address: SEMC_MCR, value: 0x10000004, size: 4 */
 	0x40, 0x2F, 0x00, 0x00, 0x10, 0x00, 0x00, 0x04,
-	/* #3.83, command: write_value, address: SEMC_BMCR0, value: 0x30524, size: 4 */
+	/* #3.87, command: write_value, address: SEMC_BMCR0, value: 0x30524, size: 4 */
 	0x40, 0x2F, 0x00, 0x08, 0x00, 0x03, 0x05, 0x24,
-	/* #3.84, command: write_value, address: SEMC_BMCR1, value: 0x6030524, size: 4 */
+	/* #3.88, command: write_value, address: SEMC_BMCR1, value: 0x6030524, size: 4 */
 	0x40, 0x2F, 0x00, 0x0C, 0x06, 0x03, 0x05, 0x24,
-	/* #3.85, command: write_value, address: SEMC_BR0, value: 0x8000001B, size: 4 */
+	/* #3.89, command: write_value, address: SEMC_BR0, value: 0x8000001B, size: 4 */
 	0x40, 0x2F, 0x00, 0x10, 0x80, 0x00, 0x00, 0x1B,
-	/* #3.86, command: write_value, address: SEMC_BR1, value: 0x8200001B, size: 4 */
+	/* #3.90, command: write_value, address: SEMC_BR1, value: 0x8200001B, size: 4 */
 	0x40, 0x2F, 0x00, 0x14, 0x82, 0x00, 0x00, 0x1B,
-	/* #3.87, command: write_value, address: SEMC_BR2, value: 0x8400001B, size: 4 */
+	/* #3.91, command: write_value, address: SEMC_BR2, value: 0x8400001B, size: 4 */
 	0x40, 0x2F, 0x00, 0x18, 0x84, 0x00, 0x00, 0x1B,
-	/* #3.88, command: write_value, address: SEMC_IOCR, value: 0x7988, size: 4 */
+	/* #3.92, command: write_value, address: SEMC_IOCR, value: 0x7988, size: 4 */
 	0x40, 0x2F, 0x00, 0x04, 0x00, 0x00, 0x79, 0x88,
-	/* #3.89, command: write_value, address: SEMC_SDRAMCR0, value: 0xF37, size: 4 */
+	/* #3.93, command: write_value, address: SEMC_SDRAMCR0, value: 0xF37, size: 4 */
 	0x40, 0x2F, 0x00, 0x40, 0x00, 0x00, 0x0F, 0x37,
-	/* #3.90, command: write_value, address: SEMC_SDRAMCR1, value: 0x652922, size: 4 */
+	/* #3.94, command: write_value, address: SEMC_SDRAMCR1, value: 0x652922, size: 4 */
 	0x40, 0x2F, 0x00, 0x44, 0x00, 0x65, 0x29, 0x22,
-	/* #3.91, command: write_value, address: SEMC_SDRAMCR2, value: 0x10920, size: 4 */
+	/* #3.95, command: write_value, address: SEMC_SDRAMCR2, value: 0x10920, size: 4 */
 	0x40, 0x2F, 0x00, 0x48, 0x00, 0x01, 0x09, 0x20,
-	/* #3.92, command: write_value, address: SEMC_SDRAMCR3, value: 0x50210A08, size: 4 */
+	/* #3.96, command: write_value, address: SEMC_SDRAMCR3, value: 0x50210A08, size: 4 */
 	0x40, 0x2F, 0x00, 0x4C, 0x50, 0x21, 0x0A, 0x08,
-	/* #3.93, command: write_value, address: SEMC_DBICR0, value: 0x21, size: 4 */
+	/* #3.97, command: write_value, address: SEMC_DBICR0, value: 0x21, size: 4 */
 	0x40, 0x2F, 0x00, 0x80, 0x00, 0x00, 0x00, 0x21,
-	/* #3.94, command: write_value, address: SEMC_DBICR1, value: 0x888888, size: 4 */
+	/* #3.98, command: write_value, address: SEMC_DBICR1, value: 0x888888, size: 4 */
 	0x40, 0x2F, 0x00, 0x84, 0x00, 0x88, 0x88, 0x88,
-	/* #3.95, command: write_value, address: SEMC_IPCR1, value: 0x02, size: 4 */
+	/* #3.99, command: write_value, address: SEMC_IPCR1, value: 0x02, size: 4 */
 	0x40, 0x2F, 0x00, 0x94, 0x00, 0x00, 0x00, 0x02,
-	/* #3.96, command: write_value, address: SEMC_IPCR2, value: 0x00, size: 4 */
+	/* #3.100, command: write_value, address: SEMC_IPCR2, value: 0x00, size: 4 */
 	0x40, 0x2F, 0x00, 0x98, 0x00, 0x00, 0x00, 0x00,
-	/* #3.97, command: write_value, address: SEMC_IPCR0, value: 0x80000000, size: 4 */
+	/* #3.101, command: write_value, address: SEMC_IPCR0, value: 0x80000000, size: 4 */
 	0x40, 0x2F, 0x00, 0x90, 0x80, 0x00, 0x00, 0x00,
-	/* #3.98, command: write_value, address: SEMC_IPCMD, value: 0xA55A000F, size: 4 */
+	/* #3.102, command: write_value, address: SEMC_IPCMD, value: 0xA55A000F, size: 4 */
 	0x40, 0x2F, 0x00, 0x9C, 0xA5, 0x5A, 0x00, 0x0F,
 	/* #4, command: check_any_bit_set, address: SEMC_INTR, value: 0x01, size: 4 */
 	0xCF, 0x00, 0x0C, 0x1C, 0x40, 0x2F, 0x00, 0x3C, 0x00, 0x00, 0x00, 0x01,

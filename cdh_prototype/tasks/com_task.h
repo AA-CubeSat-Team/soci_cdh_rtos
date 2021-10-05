@@ -1,4 +1,6 @@
 #define COM_ENABLE	0
+#define COM_WRAP_DEBUG 0
+#define UART_TESTING 1
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
@@ -17,20 +19,6 @@
 #include "clock_config.h"
 #include "fsl_lpuart.h"
 
-
-/******************************************************************************
- * Definitions for UART 1
- ******************************************************************************/
-#define LPUART_3           	LPUART3
-#define LPUART1_CLK_FREQ   	BOARD_DebugConsoleSrcFreq() // Tried changing this to 38400 but nada
-#define UART1_IRQn       	LPUART1_IRQn
-#define UART1_IRQHandler 	LPUART1_IRQHandler
-
-/*! @brief Ring buffer size for UART 1 (Unit: Byte). */
-#define UART1_RING_BUFFER_SIZE 16
-
-
-
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
@@ -47,7 +35,7 @@ extern TaskHandle_t TaskHandler_com;
 /*******************************************************************************
  * Function declarations
  ******************************************************************************/
-void UART1_IRQHandler(void);
+//void UART1_IRQHandler(void); Rithu: 10/5/21 new uart drop from jay, doesn't use IRQ
 void com_task(void *pvParameters);
 
 

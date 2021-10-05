@@ -6,7 +6,7 @@
 #ifndef _PERIPHERALS_H_
 #define _PERIPHERALS_H_
 
-#define SPI_TEST 1
+#define SPI_TEST 0
 #define DEV_BOARD 1
 
 #if DEV_BOARD
@@ -61,7 +61,7 @@ extern "C" {
 ///* BOARD_InitPeripherals defines for LPI2C1 */
 ///* Definition of peripheral ID */
 //#define LPI2C1_PERIPHERAL LPI2C1
-///* Definition of clock source */
+/* Definition of clock source */
 //#define LPI2C1_CLOCK_FREQ 60000000UL
 ///* Transfer buffer size */
 //#define LPI2C1_MASTER_BUFFER_SIZE 1
@@ -82,9 +82,7 @@ extern "C" {
  * Global variables
  **********************************************************************************************************************/
 
-extern lpuart_rtos_handle_t uart1_handle;
-extern lpuart_rtos_handle_t uart3_handle;
-extern lpuart_rtos_handle_t uart4_handle;
+extern lpuart_rtos_handle_t uart2_handle;
 
 #if !DEV_BOARD
 extern lpspi_rtos_handle_t spi_m_rwa1_handle;
@@ -103,6 +101,8 @@ extern uint8_t slaveSendBuffer[];
 #endif
 
 extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
+extern lpi2c_rtos_handle_t LPI2C1_masterHandle;
+extern lpi2c_rtos_handle_t LPI2C2_masterHandle;
 extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
 extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
 
@@ -128,7 +128,8 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void);
 
-
+/* NVIC interrupt vector ID (number). */
+#define DEMO_INT_0_IRQN LPI2C1_IRQn
 
 #if defined(__cplusplus)
 }

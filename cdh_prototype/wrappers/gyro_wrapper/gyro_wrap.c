@@ -6,9 +6,9 @@
  */
 
 
-#include <gyro_wrapper/gyro_wrap.h>
+#include "gyro_wrap.h"
 #if !ARDUINO_CODE
-#include <peripherals.h>
+#include "peripherals.h"
 #endif
 
 // register addresses FXAS21002C_H_

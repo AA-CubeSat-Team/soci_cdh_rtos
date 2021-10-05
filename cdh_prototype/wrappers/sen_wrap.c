@@ -18,8 +18,8 @@ Sun Sensor:
 93	GPIO_AD_B0_15	UART3_RX	Sun Sensor
 
  */
-#include <gyro_wrapper/gyro_wrap.h>
-#include <sen_wrap.h>
+#include "gyro_wrapper/gyro_wrap.h"
+#include "sen_wrap.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpi2c_freertos.h"
