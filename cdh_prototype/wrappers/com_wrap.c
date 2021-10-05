@@ -107,6 +107,7 @@ static bool setRxFreq();
 static bool setTxFreq();
 static bool setChannel();
 static void exitCommandMode();
+//static bool com_getCommands();
 
 // TODO: Why isn't uart1 working?
 
@@ -621,10 +622,8 @@ static void exitCommandMode() {
 	bool exitedCommandMode = sendConfigCommand(warm_reset, reset_response, sizeOfTx, sizeExpectedResponse);
 	if (exitedCommandMode) {
 		PRINTF("Radio reset to data mode.\n");
-		return true;
-	}
-	PRINTF("Unable to reset radio to data mode.\n");
-	return false;
+	} else PRINTF("Unable to reset radio to data mode.\n");
+
 }
 
 

@@ -76,6 +76,7 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
+
     // Rithu: The below line makes sure LPUART_RTOS_Send doesn't get stuck while testing individual wrappers!
     // NVIC_SetPriority(LPUART3_IRQn, 10);
 

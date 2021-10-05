@@ -428,9 +428,9 @@ void com_task(void *pvParameters)
 
 				case NORMAL:
 
-					PRINTF("Waiting for commands\n");
+					PRINTF("Waiting for commands\r\n");
 					// Note: user uart recieve right here to test, consider modifying the wrapper later
-					cmd_struct.new_cmd = com_getCommands(cmd_struct.cmd); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
+					//cmd_struct.new_cmd = com_getCommands(cmd_struct.cmd); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
 
 
 //					// taken from the com_getCommands()

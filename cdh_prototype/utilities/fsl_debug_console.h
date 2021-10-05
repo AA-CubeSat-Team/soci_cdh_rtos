@@ -24,6 +24,7 @@
 
 #include "fsl_common.h"
 #include "serial_manager.h"
+#define SDK_DEBUGCONSOLE 1U
 
 /*!
  * @addtogroup debugconsole
