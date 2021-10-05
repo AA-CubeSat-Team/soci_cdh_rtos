@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-<configuration name="MIMXRT1021xxxxx" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9.xsd" uuid="7ddb85aa-94b0-4528-b421-b6442c48a4b9" version="1.9" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-=======
 <configuration name="MIMXRT1021xxxxx" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9.xsd" uuid="8f709dec-fafa-4fcc-990f-095cc6257052" version="1.9" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
    <common>
       <processor>MIMXRT1021xxxxx</processor>
       <package>MIMXRT1021DAG5A</package>
@@ -12,11 +8,7 @@
       <cores selected="core0">
          <core name="Cortex-M7F" id="core0" description="M7 core"/>
       </cores>
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-      <description>Configuration imported from cdh_prototype_powermode</description>
-=======
       <description></description>
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
    </common>
    <preferences>
       <validate_boot_init_only>true</validate_boot_init_only>
@@ -214,35 +206,8 @@
                   <pin peripheral="SEMC" signal="semc_ras" pin_num="4" pin_signal="GPIO_EMC_11"/>
                   <pin peripheral="SEMC" signal="semc_rdy" pin_num="92" pin_signal="GPIO_AD_B1_00"/>
                   <pin peripheral="SEMC" signal="semc_we" pin_num="8" pin_signal="GPIO_EMC_09"/>
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-                  <pin peripheral="GPIO5" signal="gpio_io, 00" pin_num="52" pin_signal="WAKEUP"/>
-                  <pin peripheral="LPSPI1" signal="SCK" pin_num="98" pin_signal="GPIO_AD_B0_10"/>
-                  <pin peripheral="LPSPI1" signal="SDI" pin_num="95" pin_signal="GPIO_AD_B0_13"/>
-                  <pin peripheral="LPSPI1" signal="SDO" pin_num="96" pin_signal="GPIO_AD_B0_12"/>
-                  <pin peripheral="LPUART1" signal="RX" pin_num="101" pin_signal="GPIO_AD_B0_07"/>
-                  <pin peripheral="LPUART1" signal="TX" pin_num="105" pin_signal="GPIO_AD_B0_06"/>
-                  <pin peripheral="GPIO1" signal="gpio_io, 09" pin_num="99" pin_signal="GPIO_AD_B0_09"/>
-                  <pin peripheral="GPIO1" signal="gpio_io, 29" pin_num="76" pin_signal="GPIO_AD_B1_13"/>
-                  <pin peripheral="ARM" signal="arm_trace_swo" pin_num="97" pin_signal="GPIO_AD_B0_11">
-                     <pin_features>
-                        <pin_feature name="identifier" value=""/>
-                     </pin_features>
-                  </pin>
-                  <pin peripheral="JTAG" signal="TRSTB" pin_num="106" pin_signal="GPIO_AD_B0_05"/>
-                  <pin peripheral="JTAG" signal="TMS" pin_num="111" pin_signal="GPIO_AD_B0_00"/>
-                  <pin peripheral="JTAG" signal="TDO" pin_num="107" pin_signal="GPIO_AD_B0_04"/>
-                  <pin peripheral="JTAG" signal="TDI" pin_num="108" pin_signal="GPIO_AD_B0_03"/>
-                  <pin peripheral="JTAG" signal="TCK" pin_num="110" pin_signal="GPIO_AD_B0_01"/>
-                  <pin peripheral="GPIO1" signal="gpio_io, 28" pin_num="78" pin_signal="GPIO_AD_B1_12"/>
-                  <pin peripheral="LPI2C4" signal="SCL" pin_num="30" pin_signal="GPIO_SD_B1_02"/>
-                  <pin peripheral="LPI2C4" signal="SDA" pin_num="28" pin_signal="GPIO_SD_B1_03"/>
-                  <pin peripheral="GPIO1" signal="gpio_io, 22" pin_num="84" pin_signal="GPIO_AD_B1_06"/>
-                  <pin peripheral="GPIO1" signal="gpio_io, 18" pin_num="90" pin_signal="GPIO_AD_B1_02"/>
-                  <pin peripheral="GPIO1" signal="gpio_io, 19" pin_num="89" pin_signal="GPIO_AD_B1_03"/>
-=======
                   <pin peripheral="LPUART2" signal="RX" pin_num="81" pin_signal="GPIO_AD_B1_09"/>
                   <pin peripheral="LPUART2" signal="TX" pin_num="82" pin_signal="GPIO_AD_B1_08"/>
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
                </pins>
             </function>
          </functions_list>
@@ -538,8 +503,6 @@
          </dcdx_configurations>
       </dcdx>
       <periphs name="Peripherals" version="9.0" enabled="true" update_project_code="false">
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-=======
          <dependencies>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.gpt" description="gpt not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
@@ -562,7 +525,6 @@
                </feature>
             </dependency>
          </dependencies>
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
          <generated_project_files>
             <file path="drivers/peripherals.c" update_enabled="true"/>
             <file path="drivers/peripherals.h" update_enabled="true"/>
@@ -571,17 +533,6 @@
             <processor_version>9.0.1</processor_version>
          </peripherals_profile>
          <functional_groups>
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-            <functional_group name="BOARD_InitPeripherals" uuid="a18feb2b-2726-4c13-af36-f07c75e6da1b" called_from_default_init="true" id_prefix="" core="core0">
-               <description></description>
-               <options/>
-               <dependencies/>
-               <instances>
-                  <instance name="NVIC" uuid="5c5144a6-01d3-4fd1-8ed5-f7b984be67f6" type="nvic" type_id="nvic_57b5eef3774cc60acaede6f5b8bddc67" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="nvic">
-                        <array name="interrupt_table"/>
-                        <array name="interrupts"/>
-=======
             <functional_group name="BOARD_InitPeripherals" uuid="866434d8-d5d8-49f5-9bd0-90c806985966" called_from_default_init="true" id_prefix="DEMO_" core="core0">
                <description></description>
                <options/>
@@ -708,32 +659,18 @@
                            <setting name="enable_custom_buffer" value="false"/>
                            <setting name="dataSize" value="32"/>
                         </struct>
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
                      </config_set>
                   </instance>
                </instances>
             </functional_group>
          </functional_groups>
          <components>
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-            <component name="system" uuid="9d7f57a5-940d-4b4d-935f-d578b8788c16" type_id="system_54b53072540eeeb8f8e9343e71f28176">
-=======
             <component name="system" uuid="f9b5124f-1568-4e0b-b8e8-3185b253baec" type_id="system_54b53072540eeeb8f8e9343e71f28176">
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
                <config_set_global name="global_system_definitions">
                   <setting name="user_definitions" value=""/>
                   <setting name="user_includes" value=""/>
                </config_set_global>
             </component>
-<<<<<<< HEAD:cdh_prototype/cdh_prototype_powermode.mex
-            <component name="msg" uuid="f6c37b24-1d02-4be0-9ee2-f4b5aafb3626" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
-               <config_set_global name="global_messages"/>
-            </component>
-            <component name="generic_uart" uuid="61349c8c-379c-4117-a5ac-ab155288a397" type_id="generic_uart_8cae00565451cf2346eb1b8c624e73a6">
-               <config_set_global name="global_uart"/>
-            </component>
-            <component name="generic_can" uuid="cef56e39-bf86-492e-b44f-4d925cbaa348" type_id="generic_can_1bfdd78b1af214566c1f23cf6a582d80">
-=======
             <component name="msg" uuid="771edf9f-749f-4f3a-93f3-74485a768eeb" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
@@ -741,7 +678,6 @@
                <config_set_global name="global_uart"/>
             </component>
             <component name="generic_can" uuid="ffaa8e14-e514-449f-94c9-bf1bebb4c178" type_id="generic_can_1bfdd78b1af214566c1f23cf6a582d80">
->>>>>>> dev:cdh_prototype/cdh_prototype.mex
                <config_set_global name="global_can"/>
             </component>
          </components>
