@@ -130,6 +130,11 @@ void BOARD_InitPeripherals(void);
 
 /* NVIC interrupt vector ID (number). */
 #define DEMO_INT_0_IRQN LPI2C1_IRQn
+#define DEMO_INT_1_IRQN LPI2C2_IRQn
+
+/* NVIC interrupt vector priority. */
+#define DEMO_INT_0_IRQ_PRIORITY 0
+#define DEMO_INT_1_IRQ_PRIORITY 0
 
 #if defined(__cplusplus)
 }

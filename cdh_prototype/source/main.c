@@ -65,9 +65,6 @@ int main(void)
     BOARD_ConfigMPU();
     BOARD_InitPins();
     BOARD_InitBootClocks();
-
-	/* Complete board hardware init */
-
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
@@ -93,13 +90,13 @@ int main(void)
 		while (1)
 			;
 	}
-    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-		pdPASS)
-	{
-		PRINTF("Task creation failed!.\r\n");
-		while (1)
-			;
-	}
+//    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+//		pdPASS)
+//	{
+//		PRINTF("Task creation failed!.\r\n");
+//		while (1)
+//			;
+//	}
     vTaskStartScheduler();
     for (;;)
         ;

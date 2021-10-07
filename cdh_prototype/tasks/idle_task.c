@@ -226,7 +226,7 @@ static void idle_phase2() {
 		/*task control*/
 //		suspendTask(TaskHandler_img);
 //		resumeTask(TaskHandler_com);
-//		voltage = 7.0;
+		voltage = 7.0;
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
@@ -234,7 +234,7 @@ static void idle_phase2() {
 		//i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
 //		resumeTask(TaskHandler_com);
 //		resumeTask(TaskHandler_img);
-//		voltage = 7.5;
+		voltage = 7.5;
 		//GNC task will always be active
 	}
 	setMCUPowerMode();
@@ -304,8 +304,17 @@ void idle_task(void *pvParameters) {
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem
 		PRINTF ("Send I2C Data\r\n");
-//		I2C_send(&LPI2C1_masterHandle, 0x7E, i2c1_tx_buff, 32);
-//		I2C_request(&LPI2C1_masterHandle, 0x7E, i2c1_rx_buff, 32);
+
+		/*Test code for I2C1*/
+
+//		I2C_send(&LPI2C1_masterHandle, 0x7E, i2c1_tx_buff, (32));
+//		I2C_request(&LPI2C1_masterHandle, 0x7E, i2c1_rx_buff, (32));
+
+		/*Test code for I2C2*/
+
+//		I2C_send(&LPI2C2_masterHandle, 0x7E, i2c1_tx_buff, (32));
+//		I2C_request(&LPI2C2_masterHandle, 0x7E, i2c1_rx_buff, (32));
+
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else

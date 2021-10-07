@@ -186,13 +186,15 @@ void Debug_SPI_function()
 
 /* LPI2C master transfer, initial values used as place holders */
 
+uint8_t i2c_master_buff[I2C_DATA_LENGTH];
+
 lpi2c_master_transfer_t LPI2C_masterTransfer = {
   .flags = kLPI2C_TransferDefaultFlag,
   .slaveAddress = 0x7E,
   .direction = kLPI2C_Write,
   .subaddress = 0,
   .subaddressSize = 0,
-  .data = 0,
+  .data = i2c_master_buff,
   .dataSize = I2C_DATA_LENGTH
 };
 
@@ -320,6 +322,7 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 
 	LPI2C_masterTransfer.slaveAddress = slaveAddress;
 	LPI2C_masterTransfer.data = masterSendBuffer;
+	LPI2C_masterTransfer.dataSize = tx_size;
 	LPI2C_masterTransfer.direction = kLPI2C_Write;
 
 	/* Monitor status through transfer */
@@ -332,6 +335,9 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 	else
 	{
 		PRINTF("I2C master transfer completed with error: %d!\r\n", status);
+		if (status == 903) {
+			I2C_send(handle, slaveAddress, masterSendBuffer, tx_size);
+		}
 	}
 }
 
@@ -346,6 +352,7 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 
 	LPI2C_masterTransfer.slaveAddress = slaveAddress;
 	LPI2C_masterTransfer.data = rx_buffer;
+	LPI2C_masterTransfer.dataSize = rx_size;
 	LPI2C_masterTransfer.direction = kLPI2C_Read;
 
 	/* Monitor status through transfer */
@@ -376,8 +383,14 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 
 static void BOARD_InitPeripherals_CommonPostInit(void)
 {
+//	/* Interrupt vector LPI2C1_IRQn priority settings in the NVIC. */
+//	NVIC_SetPriority(DEMO_INT_0_IRQN, DEMO_INT_0_IRQ_PRIORITY);
+//	/* Interrupt vector LPI2C2_IRQn priority settings in the NVIC. */
+//	NVIC_SetPriority(DEMO_INT_1_IRQN, DEMO_INT_1_IRQ_PRIORITY);
 	/* Enable interrupt LPI2C1_IRQn request in the NVIC. */
 	EnableIRQ(DEMO_INT_0_IRQN);
+	/* Enable interrupt LPI2C2_IRQn request in the NVIC. */
+	EnableIRQ(DEMO_INT_1_IRQN);
 }
 
 void BOARD_InitPeripherals(void)
@@ -405,6 +418,7 @@ void BOARD_InitPeripherals(void)
 
 	// Set LPI2C interrupt priority
 	NVIC_SetPriority(LPI2C1_IRQn, 3);
+	NVIC_SetPriority(LPI2C2_IRQn, 3);
 
 	/* Initialize LPI2C interfaces */
 	LPI2C1_init();
