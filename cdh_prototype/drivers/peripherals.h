@@ -112,8 +112,8 @@ void SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
 void SPI_transfer(lpspi_rtos_handle_t * handler, lpspi_master_config_t * config, uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize);
 #endif
 
-void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
-void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
+void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t subAddress, uint8_t * masterSendBuffer, size_t tx_size);
+void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t subAddress, uint8_t * rx_buffer, size_t rx_size);
 
 /***********************************************************************************************************************
  * Definitions

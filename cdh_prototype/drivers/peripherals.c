@@ -408,7 +408,7 @@ static void LPI2C3_init(void) {
 
 #define DEBUG_MODE 1
 
-void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size) {
+void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t subAddress, uint8_t * masterSendBuffer, size_t tx_size) {
 
 	status_t status;
 
@@ -430,6 +430,13 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 
 	LPI2C_masterTransfer.slaveAddress = slaveAddress;
 	LPI2C_masterTransfer.data = masterSendBuffer;
+	if (subAddress != 0) {
+		LPI2C_masterTransfer.subaddress = subAddress;
+		LPI2C_masterTransfer.subaddressSize = 8;
+	} else {
+		LPI2C_masterTransfer.subaddress = 0;
+		LPI2C_masterTransfer.subaddressSize = 0;
+	}
 	LPI2C_masterTransfer.dataSize = tx_size;
 	LPI2C_masterTransfer.direction = kLPI2C_Write;
 
@@ -444,13 +451,13 @@ void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * mas
 	{
 		PRINTF("I2C master transfer completed with error: %d!\r\n", status);
 		if (status == 903) {
-			I2C_send(handle, slaveAddress, masterSendBuffer, tx_size);
+			I2C_send(handle, slaveAddress, subAddress, masterSendBuffer, tx_size);
 		}
 	}
 }
 
 
-void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size) {
+void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t subAddress, uint8_t * rx_buffer, size_t rx_size) {
 
 	status_t status;
 
@@ -459,6 +466,13 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 	/* Make modifications on send buffer */
 
 	LPI2C_masterTransfer.slaveAddress = slaveAddress;
+	if (subAddress != 0) {
+		LPI2C_masterTransfer.subaddress = subAddress;
+		LPI2C_masterTransfer.subaddressSize = 8;
+	} else {
+		LPI2C_masterTransfer.subaddress = 0;
+		LPI2C_masterTransfer.subaddressSize = 0;
+	}
 	LPI2C_masterTransfer.data = rx_buffer;
 	LPI2C_masterTransfer.dataSize = rx_size;
 	LPI2C_masterTransfer.direction = kLPI2C_Read;

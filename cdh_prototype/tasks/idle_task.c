@@ -312,8 +312,8 @@ void idle_task(void *pvParameters) {
 
 		/*Test code for I2C2*/
 
-		I2C_send(&LPI2C2_masterHandle, 0x7E, i2c1_tx_buff, (32));
-		I2C_request(&LPI2C2_masterHandle, 0x7E, i2c1_rx_buff, (32));
+		I2C_send(&LPI2C2_masterHandle, 0x7E, 0, i2c1_tx_buff, (32));
+		I2C_request(&LPI2C2_masterHandle, 0x7E, 0, i2c1_rx_buff, (32));
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
