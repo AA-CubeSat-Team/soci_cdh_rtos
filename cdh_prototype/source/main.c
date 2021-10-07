@@ -36,8 +36,8 @@
 #define CPU_NAME "iMXRT1021"
 
 /* Task priorities. */
-#define idle_task_PRIORITY	 			3
-#define imag_task_PRIORITY 				3
+#define idle_task_PRIORITY	 			1
+#define imag_task_PRIORITY 				2
 #define com_task_PRIORITY				3
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
@@ -90,13 +90,13 @@ int main(void)
 		while (1)
 			;
 	}
-//    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-//		pdPASS)
-//	{
-//		PRINTF("Task creation failed!.\r\n");
-//		while (1)
-//			;
-//	}
+    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+		pdPASS)
+	{
+		PRINTF("Task creation failed!.\r\n");
+		while (1)
+			;
+	}
     vTaskStartScheduler();
     for (;;)
         ;

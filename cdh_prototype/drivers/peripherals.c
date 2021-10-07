@@ -15,26 +15,46 @@
 #include "fsl_lpi2c.h"
 #include "semc_sdram.h"
 
+//#define uart_task_PRIORITY (configMAX_PRIORITIES - 1)
+
 /*
  *
- * UART 2
+ * UART
  *
  */
 
+uint8_t uart1_background_buffer[32];
+lpuart_rtos_handle_t uart1_handle;
+struct _lpuart_handle uart1_t_handle;
 
-uint8_t background_buffer[32];
+lpuart_rtos_config_t lpuart1_config = {
+    .baudrate    = 115200,
+    .parity      = kLPUART_ParityDisabled,
+    .stopbits    = kLPUART_OneStopBit,
+    .buffer      = uart1_background_buffer,
+    .buffer_size = sizeof(uart1_background_buffer),
+};
 
+static void LPUART1_init(void) {
+    NVIC_SetPriority(LPUART1_IRQn, 3);
+    lpuart1_config.srcclk = BOARD_DebugConsoleSrcFreq();
+	lpuart1_config.base   = LPUART1;
+    if (kStatus_Success != LPUART_RTOS_Init(&uart1_handle, &uart1_t_handle, &lpuart1_config))
+    {
+        PRINTF("LPUART1 Init Failed");
+    }
+}
+
+uint8_t uart2_background_buffer[32];
 lpuart_rtos_handle_t uart2_handle;
 struct _lpuart_handle uart2_t_handle;
-
 lpuart_rtos_config_t lpuart2_config = {
     .baudrate    = 115200,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
-    .buffer      = background_buffer,
-    .buffer_size = sizeof(background_buffer),
+    .buffer      = uart2_background_buffer,
+    .buffer_size = sizeof(uart2_background_buffer),
 };
-
 
 static void LPUART2_init(void) {
     NVIC_SetPriority(LPUART2_IRQn, 3);
@@ -45,6 +65,94 @@ static void LPUART2_init(void) {
         PRINTF("LPUART2 Init Failed");
     }
 }
+
+/*
+ * if we want to implement queues for reading from uart
+ *
+ * static QueueHandle_t uartRxQueue;
+ *
+ * uartRxQueue = xQueueCreate(QUEUE_LEN, sizeof(char));
+ * configASSERT(uartRxQueue);
+ *
+ * error = LPUART_RTOS_Receive(&handle3, recv_buffer3, sizeof(recv_buffer3), &n);
+ *
+ * xQueueSendToBack(uartRxQueue, recv_buffer3, xBlockTime)
+ *
+ *
+ * whereever we want to read from uart,
+ *
+ * xQueueReceive(uartRxQueue, &in, xBlockTime);
+ *
+ * instead of
+ *
+ * LPUART_RTOS_Receive(&uart3_handle, recv_buffer, sizeof(recv_buffer), &n);
+ *
+ *
+ *
+ * this portion should be protected : disableInterrupts (not sure if this prevents task switch) or something else to pause scheduler
+ */
+
+
+
+/*
+ *
+ * UART 3
+ *
+ */
+
+lpuart_rtos_handle_t uart3_handle;
+struct _lpuart_handle t_handle3;
+uint8_t background_buffer3[32];
+uint8_t recv_buffer3[4];
+
+lpuart_rtos_config_t lpuart3_config = {
+    .baudrate    = 115200,
+    .parity      = kLPUART_ParityDisabled,
+    .stopbits    = kLPUART_OneStopBit,
+    .buffer      = background_buffer3,
+    .buffer_size = sizeof(background_buffer3),
+	.base        = LPUART3,
+};
+
+
+static void LPUART3_init(void) {
+	lpuart3_config.srcclk = BOARD_DebugConsoleSrcFreq();
+	if (kStatus_Success != LPUART_RTOS_Init(&uart3_handle, &t_handle3, &lpuart3_config))
+	{
+		PRINTF("UART3 initialization failed! \r\n");
+	}
+}
+
+/*
+ *
+ * UART 4
+ *
+ */
+
+lpuart_rtos_handle_t uart4_handle;
+struct _lpuart_handle t_handle4;
+uint8_t background_buffer4[32];
+uint8_t recv_buffer4[4];
+
+lpuart_rtos_config_t lpuart4_config = {
+    .baudrate    = 115200,
+    .parity      = kLPUART_ParityDisabled,
+    .stopbits    = kLPUART_OneStopBit,
+    .buffer      = background_buffer4,
+    .buffer_size = sizeof(background_buffer4),
+	.base        = LPUART4,
+};
+
+
+
+static void LPUART4_init(void) {
+	lpuart4_config.srcclk = BOARD_DebugConsoleSrcFreq();
+	if (kStatus_Success != LPUART_RTOS_Init(&uart4_handle, &t_handle4, &lpuart4_config))
+	{
+		PRINTF("UART4 initialization failed! \r\n");
+	}
+}
+
 
 /*
  *
@@ -383,10 +491,6 @@ void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * 
 
 static void BOARD_InitPeripherals_CommonPostInit(void)
 {
-//	/* Interrupt vector LPI2C1_IRQn priority settings in the NVIC. */
-//	NVIC_SetPriority(DEMO_INT_0_IRQN, DEMO_INT_0_IRQ_PRIORITY);
-//	/* Interrupt vector LPI2C2_IRQn priority settings in the NVIC. */
-//	NVIC_SetPriority(DEMO_INT_1_IRQN, DEMO_INT_1_IRQ_PRIORITY);
 	/* Enable interrupt LPI2C1_IRQn request in the NVIC. */
 	EnableIRQ(DEMO_INT_0_IRQN);
 	/* Enable interrupt LPI2C2_IRQn request in the NVIC. */
@@ -409,7 +513,9 @@ void BOARD_InitPeripherals(void)
 
 	/* Initialize components */
     BOARD_InitSEMC(); //sdram
-	LPUART2_init();
+	LPUART1_init();
+	LPUART3_init();
+	LPUART4_init();
 	LPSPI_RWA_init(); // all three SPI
 
 	/*Clock setting for LPI2C*/
