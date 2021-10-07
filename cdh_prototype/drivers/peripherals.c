@@ -28,7 +28,7 @@ lpuart_rtos_handle_t uart2_handle;
 struct _lpuart_handle uart2_t_handle;
 
 lpuart_rtos_config_t lpuart2_config = {
-    .baudrate    = 115200,
+    .baudrate    = 38400,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer,
@@ -383,7 +383,7 @@ static void BOARD_InitPeripherals_CommonPostInit(void)
 void BOARD_InitPeripherals(void)
 {
 	NVIC_SetPriority(LPSPI1_IRQn, 3);
-    NVIC_SetPriority(LPUART3_IRQn, 10);
+//    NVIC_SetPriority(LPUART3_IRQn, 10);
 
     /* Define the init structure for the output pin */
     gpio_pin_config_t pcs_config = {kGPIO_DigitalOutput, 1, kGPIO_NoIntmode};

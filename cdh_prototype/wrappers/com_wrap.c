@@ -70,7 +70,7 @@ static char set_channel_response[] = {0x01, 0x83, 0x00, 0x7C};
 static char set_bandwidth_response[] = {0x01, 0xF0, 0x00, 0x10};
 static char set_modulation_response[] = {0x01, 0xAB}; //TBD
 static char program_response[] = {0x01,0x9E, 0x00, 0x62};
-static char reset_response[] = {0x01, 0x9D, 0x00, 0x63};
+static char reset_response[] = {0x01, 0x9D, 0x00, 0x62};
 static char set_led_rx_response[] = {0x01, 0x00, 0xFF, 0x01};
 
 const char *to_send               = "FreeRTOSFreeRTOS";
@@ -78,8 +78,8 @@ const char *send_ring_overrun     = "\r\nRing buffer overrun!FreeRTOS\r\n";
 const char *send_hardware_overrun = "\r\nHardware buffer overrun!FreeRTOS\r\n";
 uint8_t backgroundBuffer[500];
 
-static char tx_buffer[3] = {};
-static char rx_buffer[3] = {};
+static char tx_buffer[7] = {};
+static char rx_buffer[5] = {};
 static char downlink_buffer[] = {};
 static int rx_size = 0;
 // maybe try uint8_t for buffers
@@ -148,7 +148,7 @@ static bool enterCommandMode()
     PRINTF("message sent\n");
 
 	//Another delay of 100 msec so radio can go into command mode
-	delay(0.1);
+	delay(10);
 
 	// Checking that sending of '+++' is successful
 	if (returnVal == kStatus_Success){
@@ -160,6 +160,18 @@ static bool enterCommandMode()
 
 }
 
+void testSending(){
+	while(1){
+		memset(tx_buffer, 0, sizeof(tx_buffer));
+
+		tx_buffer[0] = 'a';
+
+		LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, 1);
+		PRINTF("WRITE SUCCESS\n");
+		delay(5);
+	}
+}
+
 //Sends a command to the radia via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
@@ -167,14 +179,16 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 	//clear buffers here
 	memset(rx_buffer, 0, sizeof(rx_buffer));
 	memset(tx_buffer, 0, sizeof(tx_buffer));
-    for (int i = 0; i < sizeofTx; i++) {
-    	tx_buffer[i] = data[i];
-    	PRINTF("tx_buffer");
-    }
+
     // Sends data to radio via UART, if the response is not correct it retries sending the command
     int size_t = 0;
     while (try < DEFAULT_RETRIES) {
     	PRINTF("Trying to send ...\n");
+    	PRINTF("Should be sending the following ...\n");
+        for (int i = 0; i < sizeofTx; i++) {
+        	tx_buffer[i] = data[i];
+        	PRINTF("tx_buffer[i]: %d\n", tx_buffer[i]);
+        }
     	int sendReturnVal = LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, sizeofTx); //LPUART_RTOS_Send(&uart2_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
     	if (sendReturnVal == kStatus_Success){
     		PRINTF("SUCCESS SENDING\n");
@@ -182,8 +196,9 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     	else {
     		PRINTF("ERROR SENDING\n");
     	}
+
         PRINTF("Trying to receive ...\n");
-        int recReturnVal = LPUART_RTOS_Receive(&uart2_handle, rx_buffer, sizeof(rx_buffer), size_t);
+        int recReturnVal = LPUART_RTOS_Receive(&uart2_handle, rx_buffer, sizeExpectedResponse, size_t);
     	if (recReturnVal == kStatus_Success){
     		PRINTF("SUCCESS RECEIVING\n");
     	}
@@ -191,7 +206,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("ERROR RECEIVING\n");
     	}
     	PRINTF("Value of rx_buffer: \n");
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < sizeExpectedResponse; i++) {
         	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
         }
         bool sentCommand = checkConfigCommand(*rx_buffer, *expectedResponse, sizeExpectedResponse);
