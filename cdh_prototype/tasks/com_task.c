@@ -34,6 +34,8 @@ uint8_t recv_buffer[8];
 
 void com_task(void *pvParameters)
 {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 #if UART_TESTING
 	int error;
 	size_t n = 0;
@@ -81,18 +83,20 @@ void com_task(void *pvParameters)
 	// Delay to test "soft-break" into command mode via com_init function
 	// delay(1);
 
-	PRINTF("Testing enterCommandMode function:\n");
-	com_enterCommandMode();
-	PRINTF("\n");
-
-	//Testing if sending a command to the radio (non delay dependent) works
-	PRINTF("Testing exitCommandMode function:\n");;
-	com_exitCommandMode();
-	PRINTF("\n");
+//	PRINTF("Testing enterCommandMode function:\n");
+//	com_enterCommandMode();
+//	PRINTF("\n");
+//
+//	//Testing if sending a command to the radio (non delay dependent) works
+//	PRINTF("Testing exitCommandMode function:\n");;
+//	com_exitCommandMode();
+//	PRINTF("\n");
 
 	//PRINTF("Testing com_init() function:\n");
 	//com_init();
 	//PRINTF("\n");
+
+	com_deployAntenna();
 
 	//PRINTF("Testing com_healthcheck() function:\n");
 	//com_healthcheck(); // exits command mode afterwards
@@ -111,8 +115,8 @@ void com_task(void *pvParameters)
 	//PRINTF("\n");
 
 #else
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+//	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+//	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
     // Moved uart initialization up so both if/else statements can use
 #endif

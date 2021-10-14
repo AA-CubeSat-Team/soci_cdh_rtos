@@ -338,7 +338,7 @@ void com_getCommands() //highest priority
 void com_deployAntenna()
 {
 	//using algorithm one as the default
-    I2C_send(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmOne, sizeof(algorithmOne));
+    I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmOne, sizeof(algorithmOne));
 	deploy_initiated = clock();
     delay(15); //longest time possible to deploy is 15 seconds
 }
@@ -346,7 +346,7 @@ void com_deployAntenna()
 void com_deployAntenna_algorithmTwo()
 {
 	//TODO: Uncomment this! Comment below statement if testing i2c
-	I2C_send(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
+	I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
 	delay(30); //longest time possible to deploy is 30 seconds
 }
 
@@ -524,7 +524,7 @@ bool com_i2c_checkDeploy() //returns a true if doors are deployed
 	}
 	memset(rcv_buffer, 0, sizeof(*rcv_buffer));
     //TODO: Uncomment this! Comment below if statement if testing I2C
-	I2C_request(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, rcv_buffer, sizeof(rcv_buffer));
+	I2C_request(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, rcv_buffer, sizeof(rcv_buffer));
 	//Receive 4 bytes back with status of antenna
 	//First byte of rx_buffer is:
 	//MSB LSB D4 D3 D2 D1 0 M S2 S1
