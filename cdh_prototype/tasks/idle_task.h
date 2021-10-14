@@ -10,7 +10,7 @@
 #include "fsl_debug_console.h"
 #include "board.h"
 
-#define IDLE_ENABLE	1
+#define IDLE_ENABLE	0
 
 /*******************************************************************************
  * Variable Declarations

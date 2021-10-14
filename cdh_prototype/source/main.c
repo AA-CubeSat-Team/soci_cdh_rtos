@@ -58,7 +58,7 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
-// Queue handlers declared in queue folder
+// Queue handlers 
 extern QueueHandle_t QueueHandler_IndexSDRAM;
 extern QueueHandle_t QueueHandler_ImageInfo;
 extern QueueHandle_t QueueHandler_CommandIMG; 
@@ -122,7 +122,7 @@ int main(void)
 	}
 
 	// Queue Folder
-	QueueHandle_t QueueHandler_IndexSDRAM = xQueueCreate(1, sizeof(uint8_t)); 	// Tracks available index in SDRAM for IMG & GNC
+	QueueHandle_t QueueHandler_IndexSDRAM = xQueueCreate(1, sizeof(uint8_t)); 	// Tracks available index in SDRAM
 	QueueHandle_t QueueHandler_ImageInfo = xQueueCreate(20, sizeof(uint8_t)); 	// Holds up to 10 pairs of size & location of images written to SDRAM by IMG
 	QueueHandle_t QueueHandler_CommandIMG = xQueueCreate(20, sizeof(uint8_t)); 	// Holds up to 10 command/param pairs for systems to command IMG
 

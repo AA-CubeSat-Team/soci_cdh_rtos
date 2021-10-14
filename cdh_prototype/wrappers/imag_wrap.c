@@ -7,13 +7,12 @@
 #include <stdbool.h>
 #include "peripherals.h"
 #include "semc_sdram.h"
-#include "projdefs.h"
 
-QueueHandle_t QueueHandler_IndexSDRAM;
-QueueHandle_t QueueHandler_ImageInfo; 
 extern uint8_t recv_buffer[5]; // Receive 5 bytes
 static uint8_t package_buffer[32]; // Packages sent from IMG are 32 bytes or less
 const uint8_t EXTERNAL_PACKAGE_SIZE = 32; // External packages should be 32 bytes (receiving image files)
+QueueHandle_t QueueHandler_IndexSDRAM; 
+QueueHandle_t QueueHandler_ImageInfo; 
 uint8_t imageBytesReceived; // Tracks the image bytes received in getPackages
 
 // TODO: 500 ticks was chosen arbitrarily for all FreeRTOS queue functions 
@@ -33,7 +32,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 	// Send command to IMG (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 		
-		status = LPUART_WriteBlocking(LPUART_4, toSend, sizeof(toSend)/sizeof(toSend[0]));
+		status = LPUART_WriteBlocking(LPUART4, toSend, sizeof(toSend)/sizeof(toSend[0]));
 
 		if(status == kStatus_Success){
 			PRINTF("Sending command succeeded!\r\n");
@@ -537,7 +536,3 @@ uint8_t setSleepTime(uint8_t seconds){
 		return NAK;
 	}
 }
-
-
-
-

@@ -70,10 +70,7 @@ void scanCommands(){
 		PRINTF("Fetching command failed. \r\n");
 	}
 	PRINTF("Fetching param from commandIMG queue...\r\n");
-
 	if(xQueueReceive(QueueHandler_CommandIMG, &IMG_param, 500) != pdTRUE){ // TODO: How long to wait for queue? 500 ticks is arbitrary 
 		PRINTF("Fetching param failed. \r\n");
 	}
 }	
-
-// Correct Version
