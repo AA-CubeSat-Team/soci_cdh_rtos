@@ -2317,14 +2317,6 @@ __STATIC_FORCEINLINE void SCB_InvalidateICache_by_Addr (void *addr, int32_t isiz
   #endif
 }
 
-/*
- * Optimize the Data Cache functions, for the endless loop issue.
- * More details, see https://github.com/ARM-software/CMSIS_5/issues/620
- */
-#if (defined(__GNUC__) && !defined(__OPTIMIZE__))
-#pragma GCC push_options
-#pragma GCC optimize ("Og")
-#endif
 
 /**
   \brief   Enable D-Cache
@@ -2373,9 +2365,9 @@ __STATIC_FORCEINLINE void SCB_EnableDCache (void)
 __STATIC_FORCEINLINE void SCB_DisableDCache (void)
 {
   #if defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
-    uint32_t ccsidr;
-    uint32_t sets;
-    uint32_t ways;
+    register uint32_t ccsidr;
+    register uint32_t sets;
+    register uint32_t ways;
 
     SCB->CSSELR = 0U;                       /* select Level 1 data cache */
     __DSB();
@@ -2508,9 +2500,6 @@ __STATIC_FORCEINLINE void SCB_CleanInvalidateDCache (void)
   #endif
 }
 
-#if (defined(__GNUC__) && !defined(__OPTIMIZE__))
-#pragma GCC pop_options
-#endif
 
 /**
   \brief   D-Cache Invalidate by address

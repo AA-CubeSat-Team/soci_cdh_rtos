@@ -317,6 +317,73 @@ void idle_task(void *pvParameters) {
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
+#elif IDLE_UART
+
+	char *to_send               = "FreeRTOS LPUART driver example!\r\n";
+	char *send_ring_overrun     = "\r\nRing buffer overrun!\r\n";
+	char *send_hardware_overrun = "\r\nHardware buffer overrun!\r\n";
+	uint8_t background_buffer[32];
+	uint8_t recv_buffer[4];
+
+    uint8_t rxbuff[4] = {0x00, 0x00, 0x00, 0x00};
+    uint8_t txbuff[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+
+    //LPUART_WriteBlocking(uart3_handle, txbuff, sizeof(txbuff));
+
+//	for (;;) {
+//
+//		PRINTF("Sending UART3\r\n");
+//
+//        LPUART_ReadBlocking(uart3_handle, rxbuff, sizeof(rxbuff));
+//        PRINTF("%X, %X, %X, %X\n", rxbuff[0], rxbuff[1], rxbuff[2], rxbuff[3]);
+//        LPUART_WriteBlocking(uart3_handle, txbuff, sizeof(txbuff));
+//
+//		LPUART_RTOS_Send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length);
+//
+//		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+//	}
+//
+    /* Send introduction message. */
+    if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send)))
+    {
+        vTaskSuspend(NULL);
+    }
+
+    int error;
+    size_t n = 0;
+
+    do
+    {
+        error = LPUART_RTOS_Receive(&uart3_handle, recv_buffer, sizeof(recv_buffer), &n);
+        if (error == kStatus_LPUART_RxHardwareOverrun)
+        {
+            /* Notify about hardware buffer overrun */
+            if (kStatus_Success !=
+                LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
+            {
+                vTaskSuspend(NULL);
+            }
+        }
+        if (error == kStatus_LPUART_RxRingBufferOverrun)
+        {
+            /* Notify about ring buffer overrun */
+            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
+            {
+                vTaskSuspend(NULL);
+            }
+        }
+        if (n > 0)
+        {
+            /* send back the received data */
+            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, recv_buffer, n))
+            {
+                vTaskSuspend(NULL);
+            }
+        }
+        vTaskDelayUntil(&xLastWakeTime, xDelayms);
+    } while (kStatus_Success == error);
+
+
 #else
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 #endif
