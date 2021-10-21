@@ -1,7 +1,5 @@
 #include "sun_wrap.h"
 
-const int unFiltVoltsComm[4] = {0x60, 0x01, 0x01, 0x02};
-const int filtVoltsComm[4] = {0x60, 0x03, 0x01, 0x04};
 const uint8_t anglesComm[4] = {0x60, 0x04, 0x01, 0x05};
 const TickType_t xDelay10ms = pdMS_TO_TICKS(10);
 

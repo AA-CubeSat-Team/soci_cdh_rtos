@@ -161,16 +161,17 @@ static bool enterCommandMode()
 }
 
 void testSending(){
-	while(1){
-		memset(tx_buffer, 0, sizeof(tx_buffer));
+	memset(tx_buffer, 0, sizeof(tx_buffer));
 
-		tx_buffer[0] = 'a';
+	tx_buffer[0] = 'a';
+	tx_buffer[1] = 'b';
 
-		LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, 1);
-		PRINTF("WRITE SUCCESS\n");
-		delay(5);
-	}
+	delay(10);
+	LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, 1);
+	PRINTF("WRITE SUCCESS\n");
+	delay(5);
 }
+
 
 //Sends a command to the radia via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
