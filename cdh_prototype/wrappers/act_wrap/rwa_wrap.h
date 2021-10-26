@@ -35,10 +35,15 @@ SPISettings spiSet(125000, MSBFIRST, SPI_MODE0); // SPI driver is initialized
 #define EN4 A4
 #else
 // assigns GPIO pins
-#define SS1 RWA0
-#define SS2 RWA1
-#define SS3 RWA2
-#define SS4 RWA3
+// TODO: Fix this
+#define SS1 0
+#define SS2 1
+#define SS3 2
+#define SS4 3
+//#define SS1 RWA0
+//#define SS2 RWA1
+//#define SS3 RWA2
+//#define SS4 RWA3
 #endif
 
 #define MAX_REQ_PAYLOAD 6 + 1     // N_max = 6 plus comID

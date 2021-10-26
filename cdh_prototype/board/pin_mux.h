@@ -37,16 +37,6 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
-/* GPIO_AD_B0_07 (number 101), UART1_RXD/J17[4] */
-/* Routed pin properties */
-#define BOARD_UART1_RXD_PERIPHERAL                                       LPUART1   /*!< Peripheral name */
-#define BOARD_UART1_RXD_SIGNAL                                                RX   /*!< Signal name */
-
-/* GPIO_AD_B0_06 (number 105), UART1_TXD/J17[6] */
-/* Routed pin properties */
-#define BOARD_UART1_TXD_PERIPHERAL                                       LPUART1   /*!< Peripheral name */
-#define BOARD_UART1_TXD_SIGNAL                                                TX   /*!< Signal name */
-
 /* GPIO_AD_B0_11 (number 97), ENET_CRS_DV/U11[18]/J19[3] */
 /* Routed pin properties */
 #define BOARD_ENET_CRS_DV_PERIPHERAL                                         ARM   /*!< Peripheral name */
@@ -357,6 +347,16 @@ void BOARD_InitBootPins(void);
 /* Routed pin properties */
 #define BOARD_SEMC_WE_PERIPHERAL                                            SEMC   /*!< Peripheral name */
 #define BOARD_SEMC_WE_SIGNAL                                             semc_we   /*!< Signal name */
+
+/* GPIO_AD_B0_07 (number 101), UART1_RXD/J17[4] */
+/* Routed pin properties */
+#define BOARD_UART1_RXD_PERIPHERAL                                       LPUART1   /*!< Peripheral name */
+#define BOARD_UART1_RXD_SIGNAL                                                RX   /*!< Signal name */
+
+/* GPIO_AD_B0_06 (number 105), UART1_TXD/J17[6] */
+/* Routed pin properties */
+#define BOARD_UART1_TXD_PERIPHERAL                                       LPUART1   /*!< Peripheral name */
+#define BOARD_UART1_TXD_SIGNAL                                                TX   /*!< Signal name */
 
 
 /*!

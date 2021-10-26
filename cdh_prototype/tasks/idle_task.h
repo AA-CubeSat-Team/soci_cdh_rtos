@@ -11,8 +11,8 @@
 #include "board.h"
 #include "lpm.h"
 
-#define IDLE_ENABLE	0
-#define IDLE_UART 1
+#define IDLE_ENABLE	1
+#define IDLE_UART 0
 
 /*******************************************************************************
  * Variable Declarations
