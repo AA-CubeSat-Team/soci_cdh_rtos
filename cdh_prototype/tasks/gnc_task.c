@@ -5,6 +5,7 @@
 #include "sen_wrap.h"
 #include "idle_task.h"
 #include "peripherals.h"
+#include "ert_main.c"
 
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
@@ -16,6 +17,7 @@ void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+	fsw_main();
 
 #if SPI_TEST
 		/* Initialize data in transfer buffers */

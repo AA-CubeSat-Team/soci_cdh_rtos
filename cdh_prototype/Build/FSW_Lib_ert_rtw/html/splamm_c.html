@@ -1,0 +1,399 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - splamm.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('splamm_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/splamm.c" target="rtwreport_document_frame" id="linkToText_plain">splamm.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="22">   22   </a><span class="CT"> * Sparse linear algebra library for setup phase, i.e. this module</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * accesses MALLOC and hence should not go on an embedded platform.</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="25">   25   </a>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;splamm.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><span class="CT">/* SYSTEM INCLUDES FOR MEMORY ALLOCATION ------------------------------- */</span>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="30">   30   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;stdlib.h&gt;</font>
+</span><span><a class="LN" name="31">   31   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="32">   32   </a>
+</span><span><a class="LN" name="33">   33   </a>
+</span><span><a class="LN" name="34">   34   </a><span class="CT">/* </span>
+</span><span><a class="LN" name="35">   35   </a><span class="CT"> * Cumulative sum. p[i] = sum w[0..i-1] and w = p on output.</span>
+</span><span><a class="LN" name="36">   36   </a><span class="CT"> * Defined for vectors of length m.</span>
+</span><span><a class="LN" name="37">   37   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="38">   38   </a><span class="DT">void</span> <a name="fcn_spla_cumsum">spla_cumsum</a>(idxint* p, idxint* w, idxint m)
+</span><span><a class="LN" name="39">   39   </a><b>{</b>
+</span><span><a class="LN" name="40">   40   </a>	idxint cumsum = 0;
+</span><span><a class="LN" name="41">   41   </a>	idxint i;
+</span><span><a class="LN" name="42">   42   </a>	<span class="KW">for</span>( i=0; i &lt; m; i++ )<b>{</b> 
+</span><span><a class="LN" name="43">   43   </a>		p[i] = cumsum; 
+</span><span><a class="LN" name="44">   44   </a>		cumsum += w[i]; 
+</span><span><a class="LN" name="45">   45   </a>		w[i] = p[i];
+</span><span><a class="LN" name="46">   46   </a>	<b>}</b>
+</span><span><a class="LN" name="47">   47   </a><b>}</b>
+</span><span><a class="LN" name="48">   48   </a>
+</span><span><a class="LN" name="49">   49   </a>
+</span><span><a class="LN" name="50">   50   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="51">   51   </a><span class="CT"> * Returns the inverse of permutation p of length n.</span>
+</span><span><a class="LN" name="52">   52   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="53">   53   </a><span class="DT">void</span> <a name="fcn_pinv">pinv</a>(idxint n, idxint* p, idxint* <a name="fcn_pinv">pinv</a>)
+</span><span><a class="LN" name="54">   54   </a><b>{</b>
+</span><span><a class="LN" name="55">   55   </a>	idxint i;
+</span><span><a class="LN" name="56">   56   </a>	<span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b> <a href="#fcn_pinv" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_pinv');" target="_self"><font color="#1122aa">pinv</font></a>[p[i]] = i; <b>}</b>
+</span><span><a class="LN" name="57">   57   </a><b>}</b>
+</span><span><a class="LN" name="58">   58   </a>
+</span><span><a class="LN" name="59">   59   </a>
+</span><span><a class="LN" name="60">   60   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="61">   61   </a><span class="CT"> * Transpose a matrix; returns A = M',</span>
+</span><span><a class="LN" name="62">   62   </a><span class="CT"> * and an index vector MtoMt that directly maps elements of M</span>
+</span><span><a class="LN" name="63">   63   </a><span class="CT"> * to elements of M'.</span>
+</span><span><a class="LN" name="64">   64   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="65">   65   </a>spmat* <a name="fcn_transposeSparseMatrix">transposeSparseMatrix</a>(spmat* M, idxint* MtoMt)
+</span><span><a class="LN" name="66">   66   </a><b>{</b>	
+</span><span><a class="LN" name="67">   67   </a>	idxint j, i, k, q;    
+</span><span><a class="LN" name="68">   68   </a>	idxint* w;
+</span><span><a class="LN" name="69">   69   </a>  
+</span><span><a class="LN" name="70">   70   </a>  spmat* A = <a href="#fcn_newSparseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_newSparseMatrix');" target="_self"><font color="#1122aa">newSparseMatrix</font></a>(M-&gt;n, M-&gt;m, M-&gt;nnz);
+</span><span><a class="LN" name="71">   71   </a>  <span class="KW">if</span> (M-&gt;nnz == 0) <span class="KW">return</span> A;
+</span><span><a class="LN" name="72">   72   </a>  
+</span><span><a class="LN" name="73">   73   </a>	w = (idxint *)MALLOC(M-&gt;m*<span class="KW">sizeof</span>(idxint));
+</span><span><a class="LN" name="74">   74   </a>
+</span><span><a class="LN" name="75">   75   </a>	<span class="CT">/* row count: how often does row k occur in M? */</span>
+</span><span><a class="LN" name="76">   76   </a>	<span class="KW">for</span>( i=0; i &lt; M-&gt;m; i++ ) <b>{</b> w[i] = 0; <b>}</b>
+</span><span><a class="LN" name="77">   77   </a>	<span class="KW">for</span>( k=0; k &lt; M-&gt;nnz; k++ ) <b>{</b> w[M-&gt;ir[k]]++; <b>}</b>
+</span><span><a class="LN" name="78">   78   </a>	
+</span><span><a class="LN" name="79">   79   </a>	<span class="CT">/* row pointers: cumulative sum of w gives A-&gt;jc */</span>
+</span><span><a class="LN" name="80">   80   </a>	<a href="#fcn_spla_cumsum" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_spla_cumsum');" target="_self"><font color="#1122aa">spla_cumsum</font></a>(A-&gt;jc, w, M-&gt;m);
+</span><span><a class="LN" name="81">   81   </a>
+</span><span><a class="LN" name="82">   82   </a>	<span class="CT">/* now walk through M and copy data to right places and set row counter */</span>
+</span><span><a class="LN" name="83">   83   </a>	<span class="KW">for</span>( j=0; j &lt; M-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="84">   84   </a>		<span class="KW">for</span>( k = M-&gt;jc[j]; k &lt; M-&gt;jc[j+1]; k++ )<b>{</b>
+</span><span><a class="LN" name="85">   85   </a>			q = w[M-&gt;ir[k]]++;
+</span><span><a class="LN" name="86">   86   </a>			A-&gt;ir[q] = j;
+</span><span><a class="LN" name="87">   87   </a>			A-&gt;pr[q] = M-&gt;pr[k];
+</span><span><a class="LN" name="88">   88   </a>			MtoMt[k] = q;
+</span><span><a class="LN" name="89">   89   </a>		<b>}</b>
+</span><span><a class="LN" name="90">   90   </a>	<b>}</b>
+</span><span><a class="LN" name="91">   91   </a>
+</span><span><a class="LN" name="92">   92   </a>	FREE(w);
+</span><span><a class="LN" name="93">   93   </a>	<span class="KW">return</span> A;
+</span><span><a class="LN" name="94">   94   </a><b>}</b>
+</span><span><a class="LN" name="95">   95   </a>
+</span><span><a class="LN" name="96">   96   </a>
+</span><span><a class="LN" name="97">   97   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="98">   98   </a><span class="CT"> * Create a new sparse matrix (uses MALLOC!) </span>
+</span><span><a class="LN" name="99">   99   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="100">  100   </a>spmat* <a name="fcn_newSparseMatrix">newSparseMatrix</a>(idxint m, idxint n, idxint nnz)
+</span><span><a class="LN" name="101">  101   </a><b>{</b>
+</span><span><a class="LN" name="102">  102   </a>	idxint* jc = (idxint *)MALLOC((n+1)*<span class="KW">sizeof</span>(idxint));
+</span><span><a class="LN" name="103">  103   </a>	idxint* ir = (idxint *)MALLOC(nnz*<span class="KW">sizeof</span>(idxint));
+</span><span><a class="LN" name="104">  104   </a>	pfloat* pr = (pfloat *)MALLOC(nnz*<span class="KW">sizeof</span>(pfloat));
+</span><span><a class="LN" name="105">  105   </a>	jc[n] = nnz;
+</span><span><a class="LN" name="106">  106   </a>	<span class="KW">return</span> <a href="#fcn_ecoscreateSparseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ecoscreateSparseMatrix');" target="_self"><font color="#1122aa">ecoscreateSparseMatrix</font></a>(m, n, nnz, jc, ir, pr);
+</span><span><a class="LN" name="107">  107   </a><b>}</b>
+</span><span><a class="LN" name="108">  108   </a>
+</span><span><a class="LN" name="109">  109   </a>
+</span><span><a class="LN" name="110">  110   </a><span class="CT">/** </span>
+</span><span><a class="LN" name="111">  111   </a><span class="CT"> * Create a sparse matrix from existing arrays (no MALLOC) </span>
+</span><span><a class="LN" name="112">  112   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="113">  113   </a>spmat* <a name="fcn_ecoscreateSparseMatrix">ecoscreateSparseMatrix</a>(idxint m, idxint n, idxint nnz, idxint* jc, idxint* ir, pfloat* pr)
+</span><span><a class="LN" name="114">  114   </a><b>{</b>
+</span><span><a class="LN" name="115">  115   </a>	spmat* M = (spmat *)MALLOC(<span class="KW">sizeof</span>(spmat));
+</span><span><a class="LN" name="116">  116   </a>	M-&gt;m = m;
+</span><span><a class="LN" name="117">  117   </a>	M-&gt;n = n;    
+</span><span><a class="LN" name="118">  118   </a>	M-&gt;nnz = nnz;	
+</span><span><a class="LN" name="119">  119   </a>	M-&gt;jc = jc;
+</span><span><a class="LN" name="120">  120   </a>    M-&gt;ir = ir;
+</span><span><a class="LN" name="121">  121   </a>    M-&gt;pr = pr;
+</span><span><a class="LN" name="122">  122   </a>	<span class="KW">if</span> (M-&gt;jc) M-&gt;jc[n] = nnz;
+</span><span><a class="LN" name="123">  123   </a>	<span class="KW">return</span> M;
+</span><span><a class="LN" name="124">  124   </a><b>}</b>
+</span><span><a class="LN" name="125">  125   </a>
+</span><span><a class="LN" name="126">  126   </a>
+</span><span><a class="LN" name="127">  127   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="128">  128   </a><span class="CT"> * Create a new sparse matrix (uses FREE!)</span>
+</span><span><a class="LN" name="129">  129   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="130">  130   </a><span class="DT">void</span> <a name="fcn_freeSparseMatrix">freeSparseMatrix</a>(spmat* M)
+</span><span><a class="LN" name="131">  131   </a><b>{</b>
+</span><span><a class="LN" name="132">  132   </a>	<span class="KW">if</span> (M-&gt;ir) FREE(M-&gt;ir);
+</span><span><a class="LN" name="133">  133   </a>	<span class="KW">if</span> (M-&gt;jc) FREE(M-&gt;jc);
+</span><span><a class="LN" name="134">  134   </a>	<span class="KW">if</span> (M-&gt;pr) FREE(M-&gt;pr);
+</span><span><a class="LN" name="135">  135   </a>	FREE(M);
+</span><span><a class="LN" name="136">  136   </a><b>}</b>
+</span><span><a class="LN" name="137">  137   </a>
+</span><span><a class="LN" name="138">  138   </a>
+</span><span><a class="LN" name="139">  139   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="140">  140   </a><span class="CT"> * Permutes a symmetric matrix with only the upper triangular part stored.</span>
+</span><span><a class="LN" name="141">  141   </a><span class="CT"> * Writes the upper triangular part of C = A(p,p) in column compressed</span>
+</span><span><a class="LN" name="142">  142   </a><span class="CT"> * storage format.</span>
+</span><span><a class="LN" name="143">  143   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="144">  144   </a><span class="CT"> * The function additionally returns the mapping PK that maps the row indices</span>
+</span><span><a class="LN" name="145">  145   </a><span class="CT"> * of the sparse matrix A on the row indices of C, such that C[P[k]] = A[k].</span>
+</span><span><a class="LN" name="146">  146   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="147">  147   </a><span class="CT"> * NOTE: The matrix C and the vector PK are NOT created within this function </span>
+</span><span><a class="LN" name="148">  148   </a><span class="CT"> *       - you need to allocate them beforehand!!</span>
+</span><span><a class="LN" name="149">  149   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="150">  150   </a><span class="CT"> * If PK is NULL then the last output argument is ignored.</span>
+</span><span><a class="LN" name="151">  151   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="152">  152   </a><span class="DT">void</span> <a name="fcn_permuteSparseSymmetricMatrix">permuteSparseSymmetricMatrix</a>(spmat* A, idxint* <a href="#fcn_pinv" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_pinv');" target="_self"><font color="#1122aa">pinv</font></a>, spmat* C, idxint* PK)
+</span><span><a class="LN" name="153">  153   </a><b>{</b>
+</span><span><a class="LN" name="154">  154   </a>	idxint i, i2, j, j2, k, q;
+</span><span><a class="LN" name="155">  155   </a>	idxint* w;
+</span><span><a class="LN" name="156">  156   </a>
+</span><span><a class="LN" name="157">  157   </a>	<span class="CT">/* create matrix, permutation vector and temporary work space */</span>	
+</span><span><a class="LN" name="158">  158   </a>	w = (idxint *)MALLOC(A-&gt;n*<span class="KW">sizeof</span>(idxint));
+</span><span><a class="LN" name="159">  159   </a>
+</span><span><a class="LN" name="160">  160   </a>	<span class="CT">/* count number of entries per column of C, store this in w */</span>
+</span><span><a class="LN" name="161">  161   </a>	<span class="KW">for</span>( j=0; j &lt; A-&gt;n; j++ )<b>{</b> w[j] = 0; <b>}</b>
+</span><span><a class="LN" name="162">  162   </a>	<span class="KW">for</span>( j=0; j &lt; A-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="163">  163   </a>		j2 = <a href="#fcn_pinv" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_pinv');" target="_self"><font color="#1122aa">pinv</font></a>[j];
+</span><span><a class="LN" name="164">  164   </a>		<span class="KW">for</span>( k=A-&gt;jc[j]; k &lt; A-&gt;jc[j+1]; k++ )<b>{</b>
+</span><span><a class="LN" name="165">  165   </a>			i = A-&gt;ir[k];
+</span><span><a class="LN" name="166">  166   </a>			<span class="KW">if</span>( i &gt; j ) <span class="KW">continue</span>; <span class="CT">/* skip lower triangular part of A */</span>
+</span><span><a class="LN" name="167">  167   </a>			i2 = <a href="#fcn_pinv" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_pinv');" target="_self"><font color="#1122aa">pinv</font></a>[i];
+</span><span><a class="LN" name="168">  168   </a>			w[ i2 &gt; j2 ? i2 : j2]++;
+</span><span><a class="LN" name="169">  169   </a>		<b>}</b>
+</span><span><a class="LN" name="170">  170   </a>	<b>}</b>
+</span><span><a class="LN" name="171">  171   </a>
+</span><span><a class="LN" name="172">  172   </a>	<span class="CT">/* cumulative sum gives column pointers */</span>
+</span><span><a class="LN" name="173">  173   </a>	<a href="#fcn_spla_cumsum" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_spla_cumsum');" target="_self"><font color="#1122aa">spla_cumsum</font></a>(C-&gt;jc, w, A-&gt;n);
+</span><span><a class="LN" name="174">  174   </a>
+</span><span><a class="LN" name="175">  175   </a>	<span class="CT">/* copy data over */</span>
+</span><span><a class="LN" name="176">  176   </a>	<span class="KW">for</span>( j=0; j &lt; A-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="177">  177   </a>		j2 = <a href="#fcn_pinv" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_pinv');" target="_self"><font color="#1122aa">pinv</font></a>[j];
+</span><span><a class="LN" name="178">  178   </a>		<span class="KW">for</span>( k=A-&gt;jc[j]; k &lt; A-&gt;jc[j+1]; k++ )<b>{</b>
+</span><span><a class="LN" name="179">  179   </a>			i = A-&gt;ir[k];
+</span><span><a class="LN" name="180">  180   </a>			<span class="KW">if</span>( i &gt; j ) <span class="KW">continue</span>; <span class="CT">/* skip lower triangular part of A */</span>
+</span><span><a class="LN" name="181">  181   </a>			i2 = <a href="#fcn_pinv" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_pinv');" target="_self"><font color="#1122aa">pinv</font></a>[i];
+</span><span><a class="LN" name="182">  182   </a>			q = w[i2 &gt; j2 ? i2 : j2]++;
+</span><span><a class="LN" name="183">  183   </a>			C-&gt;ir[q] = i2 &lt; j2 ? i2 : j2;
+</span><span><a class="LN" name="184">  184   </a>			C-&gt;pr[q] = A-&gt;pr[k];
+</span><span><a class="LN" name="185">  185   </a>			<span class="KW">if</span>( PK ) PK[k] = q;
+</span><span><a class="LN" name="186">  186   </a>		<b>}</b>
+</span><span><a class="LN" name="187">  187   </a>	<b>}</b>
+</span><span><a class="LN" name="188">  188   </a>
+</span><span><a class="LN" name="189">  189   </a>	<span class="CT">/* free work space */</span>
+</span><span><a class="LN" name="190">  190   </a>	FREE(w);
+</span><span><a class="LN" name="191">  191   </a><b>}</b>
+</span><span><a class="LN" name="192">  192   </a>
+</span><span><a class="LN" name="193">  193   </a>
+</span><span><a class="LN" name="194">  194   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="195">  195   </a><span class="CT"> * Returns a copy of a sparse matrix A.</span>
+</span><span><a class="LN" name="196">  196   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="197">  197   </a>spmat* <a name="fcn_copySparseMatrix">copySparseMatrix</a>(spmat* A)
+</span><span><a class="LN" name="198">  198   </a><b>{</b>	
+</span><span><a class="LN" name="199">  199   </a>	idxint i;
+</span><span><a class="LN" name="200">  200   </a>	spmat* B = <a href="#fcn_newSparseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_newSparseMatrix');" target="_self"><font color="#1122aa">newSparseMatrix</font></a>(A-&gt;m, A-&gt;n, A-&gt;nnz);
+</span><span><a class="LN" name="201">  201   </a>
+</span><span><a class="LN" name="202">  202   </a>	<span class="CT">/* copy over */</span>
+</span><span><a class="LN" name="203">  203   </a>	<span class="KW">for</span>( i=0; i&lt;=A-&gt;n; i++ )<b>{</b> B-&gt;jc[i] = A-&gt;jc[i]; <b>}</b>
+</span><span><a class="LN" name="204">  204   </a>	<span class="KW">for</span>( i=0; i&lt;A-&gt;nnz; i++ )<b>{</b> B-&gt;ir[i] = A-&gt;ir[i]; <b>}</b>
+</span><span><a class="LN" name="205">  205   </a>	<span class="KW">for</span>( i=0; i&lt;A-&gt;nnz; i++ )<b>{</b> B-&gt;pr[i] = A-&gt;pr[i]; <b>}</b>
+</span><span><a class="LN" name="206">  206   </a>
+</span><span><a class="LN" name="207">  207   </a>	<span class="KW">return</span> B;
+</span><span><a class="LN" name="208">  208   </a><b>}</b>
+</span><span><a class="LN" name="209">  209   </a>
+</span><span><a class="LN" name="210">  210   </a>
+</span><span><a class="LN" name="211">  211   </a>
+</span><span><a class="LN" name="212">  212   </a><span class="CT">/* ================================= DEBUG FUNCTIONS ======================= */</span>
+</span><span><a class="LN" name="213">  213   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="214">  214   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="215">  215   </a><span class="CT"> * Prints a dense matrix.</span>
+</span><span><a class="LN" name="216">  216   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="217">  217   </a><span class="DT">void</span> <a name="fcn_printDenseMatrix">printDenseMatrix</a>(pfloat *M, idxint dim1, idxint dim2, <span class="DT">char</span> *name)
+</span><span><a class="LN" name="218">  218   </a><b>{</b>
+</span><span><a class="LN" name="219">  219   </a>    idxint i,j;
+</span><span><a class="LN" name="220">  220   </a>    PRINTTEXT(<font color="#1122ff">&quot;%s = \n\t&quot;</font>,name);
+</span><span><a class="LN" name="221">  221   </a>    <span class="KW">for</span>( i=0; i&lt;dim1; i++ )<b>{</b>
+</span><span><a class="LN" name="222">  222   </a>        <span class="KW">for</span>( j=0; j&lt;dim2; j++ )<b>{</b>
+</span><span><a class="LN" name="223">  223   </a>            <span class="KW">if</span>( j&lt;dim2-1 )
+</span><span><a class="LN" name="224">  224   </a>                PRINTTEXT(<font color="#1122ff">&quot;% 14.12e,  &quot;</font>,M[i*dim2+j]);
+</span><span><a class="LN" name="225">  225   </a>            <span class="KW">else</span>
+</span><span><a class="LN" name="226">  226   </a>                PRINTTEXT(<font color="#1122ff">&quot;% 14.12e;  &quot;</font>,M[i*dim2+j]);
+</span><span><a class="LN" name="227">  227   </a>        <b>}</b>
+</span><span><a class="LN" name="228">  228   </a>        <span class="KW">if</span>( i&lt;dim1-1)<b>{</b>
+</span><span><a class="LN" name="229">  229   </a>            PRINTTEXT(<font color="#1122ff">&quot;\n\t&quot;</font>);
+</span><span><a class="LN" name="230">  230   </a>        <b>}</b>
+</span><span><a class="LN" name="231">  231   </a>    <b>}</b>
+</span><span><a class="LN" name="232">  232   </a>    PRINTTEXT(<font color="#1122ff">&quot;\n&quot;</font>);
+</span><span><a class="LN" name="233">  233   </a><b>}</b>
+</span><span><a class="LN" name="234">  234   </a>
+</span><span><a class="LN" name="235">  235   </a>
+</span><span><a class="LN" name="236">  236   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="237">  237   </a><span class="CT"> * Prints a dense integer matrix.</span>
+</span><span><a class="LN" name="238">  238   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="239">  239   </a><span class="DT">void</span> <a name="fcn_printDenseMatrix_i">printDenseMatrix_i</a>(idxint *M, idxint dim1, idxint dim2, <span class="DT">char</span> *name)
+</span><span><a class="LN" name="240">  240   </a><b>{</b>
+</span><span><a class="LN" name="241">  241   </a>    idxint i,j;
+</span><span><a class="LN" name="242">  242   </a>    PRINTTEXT(<font color="#1122ff">&quot;%s = \n\t&quot;</font>,name);
+</span><span><a class="LN" name="243">  243   </a>    <span class="KW">for</span>( i=0; i&lt;dim1; i++ )<b>{</b>
+</span><span><a class="LN" name="244">  244   </a>        <span class="KW">for</span>( j=0; j&lt;dim2; j++ )<b>{</b>
+</span><span><a class="LN" name="245">  245   </a>            <span class="KW">if</span>( j&lt;dim2-1 )
+</span><span><a class="LN" name="246">  246   </a>                PRINTTEXT(<font color="#1122ff">&quot;%d,  &quot;</font>,(<span class="DT">int</span>)M[i*dim2+j]);
+</span><span><a class="LN" name="247">  247   </a>            <span class="KW">else</span>
+</span><span><a class="LN" name="248">  248   </a>                PRINTTEXT(<font color="#1122ff">&quot;%d;  &quot;</font>,(<span class="DT">int</span>)M[i*dim2+j]);
+</span><span><a class="LN" name="249">  249   </a>        <b>}</b>
+</span><span><a class="LN" name="250">  250   </a>        <span class="KW">if</span>( i&lt;dim1-1)<b>{</b>
+</span><span><a class="LN" name="251">  251   </a>            PRINTTEXT(<font color="#1122ff">&quot;\n\t&quot;</font>);
+</span><span><a class="LN" name="252">  252   </a>        <b>}</b>
+</span><span><a class="LN" name="253">  253   </a>    <b>}</b>
+</span><span><a class="LN" name="254">  254   </a>    PRINTTEXT(<font color="#1122ff">&quot;\n&quot;</font>);
+</span><span><a class="LN" name="255">  255   </a><b>}</b>
+</span><span><a class="LN" name="256">  256   </a>
+</span><span><a class="LN" name="257">  257   </a>
+</span><span><a class="LN" name="258">  258   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="259">  259   </a><span class="CT"> * Prints a sparse matrix.</span>
+</span><span><a class="LN" name="260">  260   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="261">  261   </a><span class="DT">void</span> <a name="fcn_printSparseMatrix">printSparseMatrix</a>(spmat* M)
+</span><span><a class="LN" name="262">  262   </a><b>{</b>
+</span><span><a class="LN" name="263">  263   </a>    idxint j, i, row_strt, row_stop;
+</span><span><a class="LN" name="264">  264   </a>    idxint k = 0;
+</span><span><a class="LN" name="265">  265   </a>    <span class="KW">for</span>(j=0; j&lt;M-&gt;n; j++)<b>{</b>
+</span><span><a class="LN" name="266">  266   </a>        row_strt = M-&gt;jc[j];
+</span><span><a class="LN" name="267">  267   </a>        row_stop = M-&gt;jc[j+1];        
+</span><span><a class="LN" name="268">  268   </a>        <span class="KW">if</span> (row_strt == row_stop)
+</span><span><a class="LN" name="269">  269   </a>            <span class="KW">continue</span>;
+</span><span><a class="LN" name="270">  270   </a>        <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="271">  271   </a>            <span class="KW">for</span>(i=row_strt; i&lt;row_stop; i++ )<b>{</b>                
+</span><span><a class="LN" name="272">  272   </a>                PRINTTEXT(<font color="#1122ff">&quot;\t(%3u,%3u) = %g\n&quot;</font>, (<span class="DT">int</span>)M-&gt;ir[i]+1, (<span class="DT">int</span>)j+1, M-&gt;pr[k++]);
+</span><span><a class="LN" name="273">  273   </a>            <b>}</b>
+</span><span><a class="LN" name="274">  274   </a>        <b>}</b>
+</span><span><a class="LN" name="275">  275   </a>    <b>}</b>
+</span><span><a class="LN" name="276">  276   </a><b>}</b>
+</span><span><a class="LN" name="277">  277   </a>
+</span><span><a class="LN" name="278">  278   </a>
+</span><span><a class="LN" name="279">  279   </a><span class="CT">/* dump a sparse matrix in Matlab format */</span>
+</span><span><a class="LN" name="280">  280   </a><span class="CT">/* use LOAD and SPCONVERT to read in the file in MATLAB */</span>
+</span><span><a class="LN" name="281">  281   </a><span class="DT">void</span> <a name="fcn_dumpSparseMatrix">dumpSparseMatrix</a>(spmat* M, <span class="DT">char</span>* fn)
+</span><span><a class="LN" name="282">  282   </a><b>{</b>	
+</span><span><a class="LN" name="283">  283   </a>	idxint j, i, row_strt, row_stop;
+</span><span><a class="LN" name="284">  284   </a>    idxint k = 0;
+</span><span><a class="LN" name="285">  285   </a>	FILE *f = fopen(fn,<font color="#1122ff">&quot;w&quot;</font>);
+</span><span><a class="LN" name="286">  286   </a>	<span class="KW">if</span>( f != NULL )<b>{</b>
+</span><span><a class="LN" name="287">  287   </a>		<span class="KW">for</span>(j=0; j&lt;M-&gt;n; j++)<b>{</b>
+</span><span><a class="LN" name="288">  288   </a>			row_strt = M-&gt;jc[j];
+</span><span><a class="LN" name="289">  289   </a>			row_stop = M-&gt;jc[j+1];        
+</span><span><a class="LN" name="290">  290   </a>			<span class="KW">if</span> (row_strt == row_stop)
+</span><span><a class="LN" name="291">  291   </a>				<span class="KW">continue</span>;
+</span><span><a class="LN" name="292">  292   </a>			<span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="293">  293   </a>				<span class="KW">for</span>(i=row_strt; i&lt;row_stop; i++ )<b>{</b>                
+</span><span><a class="LN" name="294">  294   </a>					fprintf(f,<font color="#1122ff">&quot;%d\t%d\t%20.18e\n&quot;</font>, (<span class="DT">int</span>)M-&gt;ir[i]+1, (<span class="DT">int</span>)j+1, M-&gt;pr[k++]);
+</span><span><a class="LN" name="295">  295   </a>				<b>}</b>
+</span><span><a class="LN" name="296">  296   </a>			<b>}</b>
+</span><span><a class="LN" name="297">  297   </a>		<b>}</b>
+</span><span><a class="LN" name="298">  298   </a>        fprintf(f,<font color="#1122ff">&quot;%d\t%d\t%20.18e\n&quot;</font>, (<span class="DT">int</span>)M-&gt;m, (<span class="DT">int</span>)M-&gt;n, 0.0);
+</span><span><a class="LN" name="299">  299   </a>		fclose(f);
+</span><span><a class="LN" name="300">  300   </a>		PRINTTEXT(<font color="#1122ff">&quot;File %s successfully written.\n&quot;</font>, fn);
+</span><span><a class="LN" name="301">  301   </a>	<b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="302">  302   </a>		PRINTTEXT(<font color="#1122ff">&quot;Error during writing file %s.\n&quot;</font>, fn);
+</span><span><a class="LN" name="303">  303   </a>	<b>}</b>
+</span><span><a class="LN" name="304">  304   </a><b>}</b>
+</span><span><a class="LN" name="305">  305   </a>
+</span><span><a class="LN" name="306">  306   </a>
+</span><span><a class="LN" name="307">  307   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="308">  308   </a><span class="CT"> * Dumps a dense matrix of doubles to a CSV file.</span>
+</span><span><a class="LN" name="309">  309   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="310">  310   </a><span class="DT">void</span> <a name="fcn_dumpDenseMatrix">dumpDenseMatrix</a>(pfloat *M, <span class="DT">int</span> dim1, <span class="DT">int</span> dim2, <span class="DT">char</span> *fn)
+</span><span><a class="LN" name="311">  311   </a><b>{</b>
+</span><span><a class="LN" name="312">  312   </a>    FILE *f = fopen(fn,<font color="#1122ff">&quot;w&quot;</font>);
+</span><span><a class="LN" name="313">  313   </a>    <span class="DT">int</span> i,j;
+</span><span><a class="LN" name="314">  314   </a>    
+</span><span><a class="LN" name="315">  315   </a>    <span class="CT">/* swap dimensions if only vector to be printed */</span>
+</span><span><a class="LN" name="316">  316   </a>    <span class="KW">if</span>( dim1 == 1 &amp;&amp; dim2 &gt; 1)<b>{</b>
+</span><span><a class="LN" name="317">  317   </a>        i = dim2;
+</span><span><a class="LN" name="318">  318   </a>        dim2 = dim1;
+</span><span><a class="LN" name="319">  319   </a>        dim1 = i;
+</span><span><a class="LN" name="320">  320   </a>    <b>}</b>
+</span><span><a class="LN" name="321">  321   </a>    
+</span><span><a class="LN" name="322">  322   </a>    <span class="KW">if</span>( f != NULL )<b>{</b>
+</span><span><a class="LN" name="323">  323   </a>        <span class="KW">for</span>( i=0; i&lt;dim1; i++ )<b>{</b>
+</span><span><a class="LN" name="324">  324   </a>            <span class="KW">if</span>( dim2 &gt; 1 )<b>{</b>
+</span><span><a class="LN" name="325">  325   </a>                <span class="KW">for</span>( j=0; j&lt;dim2-1; j++ )<b>{</b>
+</span><span><a class="LN" name="326">  326   </a>                    fprintf(f, <font color="#1122ff">&quot;%+18.16e,&quot;</font>,M[i*dim2+j]);
+</span><span><a class="LN" name="327">  327   </a>                <b>}</b>
+</span><span><a class="LN" name="328">  328   </a>                j = dim2;
+</span><span><a class="LN" name="329">  329   </a>                fprintf(f, <font color="#1122ff">&quot;%+18.16e\n&quot;</font>,M[i*dim2+j]);                
+</span><span><a class="LN" name="330">  330   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="331">  331   </a>                fprintf(f, <font color="#1122ff">&quot;%+18.16e\n&quot;</font>,M[i]);                
+</span><span><a class="LN" name="332">  332   </a>            <b>}</b>                
+</span><span><a class="LN" name="333">  333   </a>        <b>}</b>
+</span><span><a class="LN" name="334">  334   </a>        fclose(f);
+</span><span><a class="LN" name="335">  335   </a>        printf(<font color="#1122ff">&quot;Written %d x %d matrix to '%s'.\n&quot;</font>,i,dim2,fn);
+</span><span><a class="LN" name="336">  336   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="337">  337   </a>        printf(<font color="#1122ff">&quot;ERROR: file %s could not be opened. Exiting.&quot;</font>,fn);
+</span><span><a class="LN" name="338">  338   </a>        <span class="KW">exit</span>(1);
+</span><span><a class="LN" name="339">  339   </a>    <b>}</b>    
+</span><span><a class="LN" name="340">  340   </a><b>}</b>
+</span><span><a class="LN" name="341">  341   </a>
+</span><span><a class="LN" name="342">  342   </a>
+</span><span><a class="LN" name="343">  343   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="344">  344   </a><span class="CT"> * Dumps a dense matrix of integers to a CSV file.</span>
+</span><span><a class="LN" name="345">  345   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="346">  346   </a><span class="DT">void</span> <a name="fcn_dumpDenseMatrix_i">dumpDenseMatrix_i</a>(idxint *M, <span class="DT">int</span> dim1, <span class="DT">int</span> dim2, <span class="DT">char</span> *fn)
+</span><span><a class="LN" name="347">  347   </a><b>{</b>
+</span><span><a class="LN" name="348">  348   </a>    FILE *f = fopen(fn,<font color="#1122ff">&quot;w&quot;</font>);
+</span><span><a class="LN" name="349">  349   </a>    <span class="DT">int</span> i,j;
+</span><span><a class="LN" name="350">  350   </a>    
+</span><span><a class="LN" name="351">  351   </a>    <span class="CT">/* swap dimensions if only vector to be printed */</span>
+</span><span><a class="LN" name="352">  352   </a>    <span class="KW">if</span>( dim1 == 1 &amp;&amp; dim2 &gt; 1)<b>{</b>
+</span><span><a class="LN" name="353">  353   </a>        i = dim2;
+</span><span><a class="LN" name="354">  354   </a>        dim2 = dim1;
+</span><span><a class="LN" name="355">  355   </a>        dim1 = i;
+</span><span><a class="LN" name="356">  356   </a>    <b>}</b>
+</span><span><a class="LN" name="357">  357   </a>    
+</span><span><a class="LN" name="358">  358   </a>    <span class="KW">if</span>( f != NULL )<b>{</b>
+</span><span><a class="LN" name="359">  359   </a>        <span class="KW">for</span>( i=0; i&lt;dim1; i++ )<b>{</b>
+</span><span><a class="LN" name="360">  360   </a>            <span class="KW">if</span>( dim2 &gt; 1 )<b>{</b>
+</span><span><a class="LN" name="361">  361   </a>                <span class="KW">for</span>( j=0; j&lt;dim2-1; j++ )<b>{</b>
+</span><span><a class="LN" name="362">  362   </a>                    fprintf(f, <font color="#1122ff">&quot;%d,&quot;</font>,(<span class="DT">int</span>)M[i*dim2+j]);
+</span><span><a class="LN" name="363">  363   </a>                <b>}</b>
+</span><span><a class="LN" name="364">  364   </a>                j = dim2;
+</span><span><a class="LN" name="365">  365   </a>                fprintf(f, <font color="#1122ff">&quot;%d\n&quot;</font>,(<span class="DT">int</span>)M[i*dim2+j]);
+</span><span><a class="LN" name="366">  366   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="367">  367   </a>                fprintf(f, <font color="#1122ff">&quot;%d\n&quot;</font>,(<span class="DT">int</span>)M[i]);
+</span><span><a class="LN" name="368">  368   </a>            <b>}</b>                
+</span><span><a class="LN" name="369">  369   </a>        <b>}</b>
+</span><span><a class="LN" name="370">  370   </a>        fclose(f);
+</span><span><a class="LN" name="371">  371   </a>        printf(<font color="#1122ff">&quot;Written %d x %d matrix to '%s'.\n&quot;</font>,i,dim2,fn);
+</span><span><a class="LN" name="372">  372   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="373">  373   </a>        printf(<font color="#1122ff">&quot;ERROR: file %s could not be opened. Exiting.&quot;</font>,fn);
+</span><span><a class="LN" name="374">  374   </a>        <span class="KW">exit</span>(1);
+</span><span><a class="LN" name="375">  375   </a>    <b>}</b>    
+</span><span><a class="LN" name="376">  376   </a><b>}</b>
+</span><span><a class="LN" name="377">  377   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="378">  378   </a>
+</span><span><a class="LN" name="379">  379   </a>
+</span><span><a class="LN" name="380">  380   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - mrdivide_helper_23K2DU9e.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('mrdivide_helper_23K2DU9e_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../mrdivide_helper_23K2DU9e.c" target="rtwreport_document_frame" id="linkToText_plain">mrdivide_helper_23K2DU9e.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: mrdivide_helper_23K2DU9e.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;string.h&gt;</font>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;mrdivide_helper_23K2DU9e.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:114')" name="code2model"><font color="#117755"><i>&lt;S119&gt;/QR_factorization</i></font></a>' */</span>
+</span><span><a class="LN" name="21">   21   </a><span class="DT">void</span> <a name="fcn_mrdivide_helper_23K2DU9e">mrdivide_helper_23K2DU9e</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A[36], <span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> B_0[36])
+</span><span><a class="LN" name="22">   22   </a><b>{</b>
+</span><span><a class="LN" name="23">   23   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> b_A[36];
+</span><span><a class="LN" name="24">   24   </a>  <a href="rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> ipiv[6];
+</span><span><a class="LN" name="25">   25   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> j;
+</span><span><a class="LN" name="26">   26   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ix;
+</span><span><a class="LN" name="27">   27   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> smax;
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> s;
+</span><span><a class="LN" name="29">   29   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> iy;
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> c_ix;
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> d;
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ijA;
+</span><span><a class="LN" name="33">   33   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> jBcol;
+</span><span><a class="LN" name="34">   34   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> kBcol;
+</span><span><a class="LN" name="35">   35   </a>  memcpy(&amp;b_A[0], &amp;B_0[0], 36U * <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>));
+</span><span><a class="LN" name="36">   36   </a>  <span class="KW">for</span> (d = 0; d &lt; 6; d++) <b>{</b>
+</span><span><a class="LN" name="37">   37   </a>    ipiv[d] = (<a href="rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a>)(1 + d);
+</span><span><a class="LN" name="38">   38   </a>  <b>}</b>
+</span><span><a class="LN" name="39">   39   </a>
+</span><span><a class="LN" name="40">   40   </a>  <span class="KW">for</span> (j = 0; j &lt; 5; j++) <b>{</b>
+</span><span><a class="LN" name="41">   41   </a>    jBcol = j * 7;
+</span><span><a class="LN" name="42">   42   </a>    iy = 0;
+</span><span><a class="LN" name="43">   43   </a>    ix = jBcol;
+</span><span><a class="LN" name="44">   44   </a>    smax = fabs(b_A[jBcol]);
+</span><span><a class="LN" name="45">   45   </a>    <span class="KW">for</span> (kBcol = 2; kBcol &lt;= 6 - j; kBcol++) <b>{</b>
+</span><span><a class="LN" name="46">   46   </a>      ix++;
+</span><span><a class="LN" name="47">   47   </a>      s = fabs(b_A[ix]);
+</span><span><a class="LN" name="48">   48   </a>      <span class="KW">if</span> (s &gt; smax) <b>{</b>
+</span><span><a class="LN" name="49">   49   </a>        iy = kBcol - 1;
+</span><span><a class="LN" name="50">   50   </a>        smax = s;
+</span><span><a class="LN" name="51">   51   </a>      <b>}</b>
+</span><span><a class="LN" name="52">   52   </a>    <b>}</b>
+</span><span><a class="LN" name="53">   53   </a>
+</span><span><a class="LN" name="54">   54   </a>    <span class="KW">if</span> (b_A[jBcol + iy] != 0.0) <b>{</b>
+</span><span><a class="LN" name="55">   55   </a>      <span class="KW">if</span> (iy != 0) <b>{</b>
+</span><span><a class="LN" name="56">   56   </a>        iy += j;
+</span><span><a class="LN" name="57">   57   </a>        ipiv[j] = (<a href="rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a>)(iy + 1);
+</span><span><a class="LN" name="58">   58   </a>        ix = j;
+</span><span><a class="LN" name="59">   59   </a>        <span class="KW">for</span> (kBcol = 0; kBcol &lt; 6; kBcol++) <b>{</b>
+</span><span><a class="LN" name="60">   60   </a>          smax = b_A[ix];
+</span><span><a class="LN" name="61">   61   </a>          b_A[ix] = b_A[iy];
+</span><span><a class="LN" name="62">   62   </a>          b_A[iy] = smax;
+</span><span><a class="LN" name="63">   63   </a>          ix += 6;
+</span><span><a class="LN" name="64">   64   </a>          iy += 6;
+</span><span><a class="LN" name="65">   65   </a>        <b>}</b>
+</span><span><a class="LN" name="66">   66   </a>      <b>}</b>
+</span><span><a class="LN" name="67">   67   </a>
+</span><span><a class="LN" name="68">   68   </a>      iy = (jBcol - j) + 6;
+</span><span><a class="LN" name="69">   69   </a>      <span class="KW">for</span> (ix = jBcol + 1; ix &lt; iy; ix++) <b>{</b>
+</span><span><a class="LN" name="70">   70   </a>        b_A[ix] /= b_A[jBcol];
+</span><span><a class="LN" name="71">   71   </a>      <b>}</b>
+</span><span><a class="LN" name="72">   72   </a>    <b>}</b>
+</span><span><a class="LN" name="73">   73   </a>
+</span><span><a class="LN" name="74">   74   </a>    iy = jBcol;
+</span><span><a class="LN" name="75">   75   </a>    ix = jBcol + 6;
+</span><span><a class="LN" name="76">   76   </a>    <span class="KW">for</span> (kBcol = 0; kBcol &lt;= 4 - j; kBcol++) <b>{</b>
+</span><span><a class="LN" name="77">   77   </a>      <span class="KW">if</span> (b_A[ix] != 0.0) <b>{</b>
+</span><span><a class="LN" name="78">   78   </a>        smax = -b_A[ix];
+</span><span><a class="LN" name="79">   79   </a>        c_ix = jBcol + 1;
+</span><span><a class="LN" name="80">   80   </a>        d = (iy - j) + 12;
+</span><span><a class="LN" name="81">   81   </a>        <span class="KW">for</span> (ijA = 7 + iy; ijA &lt; d; ijA++) <b>{</b>
+</span><span><a class="LN" name="82">   82   </a>          b_A[ijA] += b_A[c_ix] * smax;
+</span><span><a class="LN" name="83">   83   </a>          c_ix++;
+</span><span><a class="LN" name="84">   84   </a>        <b>}</b>
+</span><span><a class="LN" name="85">   85   </a>      <b>}</b>
+</span><span><a class="LN" name="86">   86   </a>
+</span><span><a class="LN" name="87">   87   </a>      ix += 6;
+</span><span><a class="LN" name="88">   88   </a>      iy += 6;
+</span><span><a class="LN" name="89">   89   </a>    <b>}</b>
+</span><span><a class="LN" name="90">   90   </a>  <b>}</b>
+</span><span><a class="LN" name="91">   91   </a>
+</span><span><a class="LN" name="92">   92   </a>  <span class="KW">for</span> (j = 0; j &lt; 6; j++) <b>{</b>
+</span><span><a class="LN" name="93">   93   </a>    jBcol = 6 * j;
+</span><span><a class="LN" name="94">   94   </a>    iy = 6 * j;
+</span><span><a class="LN" name="95">   95   </a>    <span class="KW">for</span> (ix = 0; ix &lt; j; ix++) <b>{</b>
+</span><span><a class="LN" name="96">   96   </a>      kBcol = 6 * ix;
+</span><span><a class="LN" name="97">   97   </a>      smax = b_A[ix + iy];
+</span><span><a class="LN" name="98">   98   </a>      <span class="KW">if</span> (smax != 0.0) <b>{</b>
+</span><span><a class="LN" name="99">   99   </a>        <span class="KW">for</span> (c_ix = 0; c_ix &lt; 6; c_ix++) <b>{</b>
+</span><span><a class="LN" name="100">  100   </a>          d = c_ix + jBcol;
+</span><span><a class="LN" name="101">  101   </a>          A[d] -= smax * A[c_ix + kBcol];
+</span><span><a class="LN" name="102">  102   </a>        <b>}</b>
+</span><span><a class="LN" name="103">  103   </a>      <b>}</b>
+</span><span><a class="LN" name="104">  104   </a>    <b>}</b>
+</span><span><a class="LN" name="105">  105   </a>
+</span><span><a class="LN" name="106">  106   </a>    smax = 1.0 / b_A[j + iy];
+</span><span><a class="LN" name="107">  107   </a>    <span class="KW">for</span> (iy = 0; iy &lt; 6; iy++) <b>{</b>
+</span><span><a class="LN" name="108">  108   </a>      d = iy + jBcol;
+</span><span><a class="LN" name="109">  109   </a>      A[d] *= smax;
+</span><span><a class="LN" name="110">  110   </a>    <b>}</b>
+</span><span><a class="LN" name="111">  111   </a>  <b>}</b>
+</span><span><a class="LN" name="112">  112   </a>
+</span><span><a class="LN" name="113">  113   </a>  <span class="KW">for</span> (j = 5; j &gt;= 0; j--) <b>{</b>
+</span><span><a class="LN" name="114">  114   </a>    jBcol = 6 * j;
+</span><span><a class="LN" name="115">  115   </a>    iy = 6 * j - 1;
+</span><span><a class="LN" name="116">  116   </a>    <span class="KW">for</span> (ix = j + 2; ix &lt; 7; ix++) <b>{</b>
+</span><span><a class="LN" name="117">  117   </a>      kBcol = (ix - 1) * 6;
+</span><span><a class="LN" name="118">  118   </a>      smax = b_A[ix + iy];
+</span><span><a class="LN" name="119">  119   </a>      <span class="KW">if</span> (smax != 0.0) <b>{</b>
+</span><span><a class="LN" name="120">  120   </a>        <span class="KW">for</span> (c_ix = 0; c_ix &lt; 6; c_ix++) <b>{</b>
+</span><span><a class="LN" name="121">  121   </a>          A[c_ix + jBcol] -= smax * A[c_ix + kBcol];
+</span><span><a class="LN" name="122">  122   </a>        <b>}</b>
+</span><span><a class="LN" name="123">  123   </a>      <b>}</b>
+</span><span><a class="LN" name="124">  124   </a>    <b>}</b>
+</span><span><a class="LN" name="125">  125   </a>  <b>}</b>
+</span><span><a class="LN" name="126">  126   </a>
+</span><span><a class="LN" name="127">  127   </a>  <span class="KW">for</span> (j = 4; j &gt;= 0; j--) <b>{</b>
+</span><span><a class="LN" name="128">  128   </a>    <span class="KW">if</span> (j + 1 != ipiv[j]) <b>{</b>
+</span><span><a class="LN" name="129">  129   </a>      jBcol = ipiv[j] - 1;
+</span><span><a class="LN" name="130">  130   </a>      <span class="KW">for</span> (iy = 0; iy &lt; 6; iy++) <b>{</b>
+</span><span><a class="LN" name="131">  131   </a>        smax = A[6 * j + iy];
+</span><span><a class="LN" name="132">  132   </a>        A[iy + 6 * j] = A[6 * jBcol + iy];
+</span><span><a class="LN" name="133">  133   </a>        A[iy + 6 * jBcol] = smax;
+</span><span><a class="LN" name="134">  134   </a>      <b>}</b>
+</span><span><a class="LN" name="135">  135   </a>    <b>}</b>
+</span><span><a class="LN" name="136">  136   </a>  <b>}</b>
+</span><span><a class="LN" name="137">  137   </a><b>}</b>
+</span><span><a class="LN" name="138">  138   </a>
+</span><span><a class="LN" name="139">  139   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="140">  140   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="141">  141   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="142">  142   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="143">  143   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="144">  144   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - MEKF_lib.h</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('MEKF_lib_h_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../MEKF_lib.h" target="rtwreport_document_frame" id="linkToText_plain">MEKF_lib.h</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: MEKF_lib.h</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Tue Oct 26 16:29:45 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * Target selection: ert.tlc</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Embedded hardware selection: NXP-&gt;Cortex-M4</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Code generation objectives:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *    1. Execution efficiency</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *    2. RAM efficiency</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Validation result: Not run</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">ifndef</span> RTW_HEADER_MEKF_lib_h_
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">define</span> RTW_HEADER_MEKF_lib_h_
+</span><span><a class="LN" name="24">   24   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;string.h&gt;</font>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">ifndef</span> FSW_Lib_COMMON_INCLUDES_
+</span><span><a class="LN" name="27">   27   </a><font color="#992211">#</font> <span class="PP">define</span> FSW_Lib_COMMON_INCLUDES_
+</span><span><a class="LN" name="28">   28   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;zero_crossing_types.h&quot;</font>
+</span><span><a class="LN" name="30">   30   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="31">   31   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">/* FSW_Lib_COMMON_INCLUDES_ */</span>
+</span><span><a class="LN" name="32">   32   </a>
+</span><span><a class="LN" name="33">   33   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib_types.h&quot;</font>
+</span><span><a class="LN" name="34">   34   </a>
+</span><span><a class="LN" name="35">   35   </a><span class="CT">/* Child system includes */</span>
+</span><span><a class="LN" name="36">   36   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;CrossProdMatrix_lib.h&quot;</font>
+</span><span><a class="LN" name="37">   37   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;TRIADActivation_lib.h&quot;</font>
+</span><span><a class="LN" name="38">   38   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;parallel_protection_lib.h&quot;</font>
+</span><span><a class="LN" name="39">   39   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;quat_rectify_lib.h&quot;</font>
+</span><span><a class="LN" name="40">   40   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_sys_MEKF_lib_37.h&quot;</font>
+</span><span><a class="LN" name="41">   41   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_sys_MEKF_lib_41.h&quot;</font>
+</span><span><a class="LN" name="42">   42   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_sys_MEKF_lib_48.h&quot;</font>
+</span><span><a class="LN" name="43">   43   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtGetNaN.h&quot;</font>
+</span><span><a class="LN" name="44">   44   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_nonfinite.h&quot;</font>
+</span><span><a class="LN" name="45">   45   </a>
+</span><span><a class="LN" name="46">   46   </a><span class="CT">/* Block signals and states (default storage) for system '<a href="matlab:coder.internal.code2model('Main_Sim:593:229')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/MEKF_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="47">   47   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
+</span><span><a class="LN" name="48">   48   </a>  <a href="rt_sys_MEKF_lib_48_h.html#type_DW_IfWarningError" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_IfWarningError');" target="_self"><font color="#1122aa">DW_IfWarningError</font></a> IfWarningError_o;  <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:750:97:1247:32')" name="code2model"><font color="#117755"><i>&lt;S191&gt;/If Warning//Error</i></font></a>' */</span>
+</span><span><a class="LN" name="49">   49   </a>  <a href="TRIADActivation_lib_h.html#type_DW_TRIADActivation_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_TRIADActivation_lib');" target="_self"><font color="#1122aa">DW_TRIADActivation_lib</font></a> TRIADActivation_lib_f;<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:742')" name="code2model"><font color="#117755"><i>&lt;S3&gt;/TRIADActivation_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="50">   50   </a>  <a href="FSW_Lib_types_h.html#type_dsp_private_SlidingWindowAverag" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_dsp_private_SlidingWindowAverag');" target="_self"><font color="#1122aa">dsp_private_SlidingWindowAverag</font></a> gobj_0;<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:777:777')" name="code2model"><font color="#117755"><i>&lt;S121&gt;/Moving Average</i></font></a>' */</span>
+</span><span><a class="LN" name="51">   51   </a>  <a href="FSW_Lib_types_h.html#type_dsp_private_SlidingWindowAverag" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_dsp_private_SlidingWindowAverag');" target="_self"><font color="#1122aa">dsp_private_SlidingWindowAverag</font></a> gobj_1;<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:777:777')" name="code2model"><font color="#117755"><i>&lt;S121&gt;/Moving Average</i></font></a>' */</span>
+</span><span><a class="LN" name="52">   52   </a>  <a href="FSW_Lib_types_h.html#type_dsp_simulink_MovingAverage" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_dsp_simulink_MovingAverage');" target="_self"><font color="#1122aa">dsp_simulink_MovingAverage</font></a> obj;      <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:777:777')" name="code2model"><font color="#117755"><i>&lt;S121&gt;/Moving Average</i></font></a>' */</span>
+</span><span><a class="LN" name="53">   53   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Id_3[9];                      <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:324')" name="code2model"><font color="#117755"><i>&lt;S165&gt;/Id_3</i></font></a>' */</span>
+</span><span><a class="LN" name="54">   54   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Merge[4];                     <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:750:97:277')" name="code2model"><font color="#117755"><i>&lt;S188&gt;/Merge</i></font></a>' */</span>
+</span><span><a class="LN" name="55">   55   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> UnitDelay_DSTATE[36];         <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:177')" name="code2model"><font color="#117755"><i>&lt;S3&gt;/Unit Delay</i></font></a>' */</span>
+</span><span><a class="LN" name="56">   56   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> UnitDelay1_DSTATE[3];         <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:178')" name="code2model"><font color="#117755"><i>&lt;S3&gt;/Unit Delay1</i></font></a>' */</span>
+</span><span><a class="LN" name="57">   57   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> UnitDelay3_DSTATE[4];         <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:684')" name="code2model"><font color="#117755"><i>&lt;S3&gt;/Unit Delay3</i></font></a>' */</span>
+</span><span><a class="LN" name="58">   58   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> UnitDelay_DSTATE_g[4];        <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:750:112')" name="code2model"><font color="#117755"><i>&lt;S125&gt;/Unit Delay</i></font></a>' */</span>
+</span><span><a class="LN" name="59">   59   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> TRIAD_activation_ActiveSubsyste;<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:58')" name="code2model"><font color="#117755"><i>&lt;S3&gt;/TRIAD_activation</i></font></a>' */</span>
+</span><span><a class="LN" name="60">   60   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> DelayInput1_DSTATE;        <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:761:2')" name="code2model"><font color="#117755"><i>&lt;S157&gt;/Delay Input1</i></font></a>' */</span>
+</span><span><a class="LN" name="61">   61   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> objisempty;                <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:777:777')" name="code2model"><font color="#117755"><i>&lt;S121&gt;/Moving Average</i></font></a>' */</span>
+</span><span><a class="LN" name="62">   62   </a><b>}</b> <a name="type_DW_MEKF_lib">DW_MEKF_lib</a>;
+</span><span><a class="LN" name="63">   63   </a>
+</span><span><a class="LN" name="64">   64   </a><span class="DT">extern</span> <span class="DT">void</span> <a href="MEKF_lib_c.html#fcn_MEKF_lib_Init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_MEKF_lib_Init');" target="_self"><font color="#1122aa">MEKF_lib_Init</font></a>(<a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sc_quat[4], <a href="#type_DW_MEKF_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_MEKF_lib');" target="_self"><font color="#1122aa">DW_MEKF_lib</font></a> *localDW);
+</span><span><a class="LN" name="65">   65   </a><span class="DT">extern</span> <span class="DT">void</span> <a href="MEKF_lib_c.html#fcn_MEKF_lib_Start" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_MEKF_lib_Start');" target="_self"><font color="#1122aa">MEKF_lib_Start</font></a>(<a href="#type_DW_MEKF_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_MEKF_lib');" target="_self"><font color="#1122aa">DW_MEKF_lib</font></a> *localDW);
+</span><span><a class="LN" name="66">   66   </a><span class="DT">extern</span> <span class="DT">void</span> <a href="MEKF_lib_c.html#fcn_MEKF_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_MEKF_lib');" target="_self"><font color="#1122aa">MEKF_lib</font></a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sc2sun_eci_unit[3], <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="67">   67   </a>                     rtu_mag_eci_T[3], <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sun_meas_body_unit[3],
+</span><span><a class="LN" name="68">   68   </a>                     <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_mag_meas_body_T[3], <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="69">   69   </a>                     rtu_gyro_meas_body_radps[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> rtu_sunsensor_valid,
+</span><span><a class="LN" name="70">   70   </a>                     <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_mag_meas_valid, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_gryo_meas_valid,
+</span><span><a class="LN" name="71">   71   </a>                     <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_triad_activate, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sc_quat[4], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="72">   72   </a>                     rty_body_rates_radps[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_threeSigma_rad[6],
+</span><span><a class="LN" name="73">   73   </a>                     <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_bias_radps[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> *rty_mekf_telem,
+</span><span><a class="LN" name="74">   74   </a>                     <a href="#type_DW_MEKF_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_MEKF_lib');" target="_self"><font color="#1122aa">DW_MEKF_lib</font></a> *localDW);
+</span><span><a class="LN" name="75">   75   </a>
+</span><span><a class="LN" name="76">   76   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">/* RTW_HEADER_MEKF_lib_h_ */</span>
+</span><span><a class="LN" name="77">   77   </a>
+</span><span><a class="LN" name="78">   78   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="79">   79   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="80">   80   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="81">   81   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="82">   82   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="83">   83   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - rt_defines.h</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('rt_defines_h_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../rt_defines.h" target="rtwreport_document_frame" id="linkToText_plain">rt_defines.h</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: rt_defines.h</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">ifndef</span> RTW_HEADER_rt_defines_h_
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">define</span> RTW_HEADER_rt_defines_h_
+</span><span><a class="LN" name="17">   17   </a>
+</span><span><a class="LN" name="18">   18   </a><span class="CT">/*===========*</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Constants *</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> *===========*/</span>
+</span><span><a class="LN" name="21">   21   </a><font color="#992211">#</font><span class="PP">define</span> RT_PI                          3.14159265358979323846
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">define</span> RT_PIF                         3.1415927F
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">define</span> RT_LN_10                       2.30258509299404568402
+</span><span><a class="LN" name="24">   24   </a><font color="#992211">#</font><span class="PP">define</span> RT_LN_10F                      2.3025851F
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">define</span> RT_LOG10E                      0.43429448190325182765
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">define</span> RT_LOG10EF                     0.43429449F
+</span><span><a class="LN" name="27">   27   </a><font color="#992211">#</font><span class="PP">define</span> RT_E                           2.7182818284590452354
+</span><span><a class="LN" name="28">   28   </a><font color="#992211">#</font><span class="PP">define</span> RT_EF                          2.7182817F
+</span><span><a class="LN" name="29">   29   </a>
+</span><span><a class="LN" name="30">   30   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="31">   31   </a><span class="CT"> * UNUSED_PARAMETER(x)</span>
+</span><span><a class="LN" name="32">   32   </a><span class="CT"> *   Used to specify that a function parameter (argument) is required but not</span>
+</span><span><a class="LN" name="33">   33   </a><span class="CT"> *   accessed by the function body.</span>
+</span><span><a class="LN" name="34">   34   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="35">   35   </a><font color="#992211">#</font><span class="PP">ifndef</span> UNUSED_PARAMETER
+</span><span><a class="LN" name="36">   36   </a><font color="#992211">#</font> <span class="PP">if</span> <span class="PP">defined</span>(__LCC__)
+</span><span><a class="LN" name="37">   37   </a><font color="#992211">#</font>   <span class="PP">define</span> UNUSED_PARAMETER(x)                                   <span class="CT">/* do nothing */</span>
+</span><span><a class="LN" name="38">   38   </a><font color="#992211">#</font> <span class="PP">else</span>
+</span><span><a class="LN" name="39">   39   </a>
+</span><span><a class="LN" name="40">   40   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="41">   41   </a><span class="CT"> * This is the semi-ANSI standard way of indicating that an</span>
+</span><span><a class="LN" name="42">   42   </a><span class="CT"> * unused function parameter is required.</span>
+</span><span><a class="LN" name="43">   43   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="44">   44   </a><font color="#992211">#</font>   <span class="PP">define</span> UNUSED_PARAMETER(x)         (void) (x)
+</span><span><a class="LN" name="45">   45   </a><font color="#992211">#</font> <span class="PP">endif</span>
+</span><span><a class="LN" name="46">   46   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="47">   47   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">/* RTW_HEADER_rt_defines_h_ */</span>
+</span><span><a class="LN" name="48">   48   </a>
+</span><span><a class="LN" name="49">   49   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="50">   50   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="51">   51   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="52">   52   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="53">   53   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="54">   54   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

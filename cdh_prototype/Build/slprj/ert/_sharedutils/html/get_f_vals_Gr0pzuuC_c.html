@@ -1,0 +1,87 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - get_f_vals_Gr0pzuuC.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('get_f_vals_Gr0pzuuC_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../get_f_vals_Gr0pzuuC.c" target="rtwreport_document_frame" id="linkToText_plain">get_f_vals_Gr0pzuuC.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: get_f_vals_Gr0pzuuC.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;Q_linearize_CKnbADMM.h&quot;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;get_f_vals_Gr0pzuuC.h&quot;</font>
+</span><span><a class="LN" name="18">   18   </a>
+</span><span><a class="LN" name="19">   19   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:271:46:187:35')" name="code2model"><font color="#117755"><i>&lt;S438&gt;/SOLVE</i></font></a>' */</span>
+</span><span><a class="LN" name="20">   20   </a><span class="DT">void</span> <a name="fcn_get_f_vals_Gr0pzuuC">get_f_vals_Gr0pzuuC</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> t, <span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> x[10], <span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> u[6], <span class="DT">const</span>
+</span><span><a class="LN" name="21">   21   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tspan[10], <span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> J[9], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> f[10], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A[100], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Bp[30],
+</span><span><a class="LN" name="22">   22   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Bm[30], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Z[10])
+</span><span><a class="LN" name="23">   23   </a><b>{</b>
+</span><span><a class="LN" name="24">   24   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> lam_km;
+</span><span><a class="LN" name="25">   25   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> lam_kp;
+</span><span><a class="LN" name="26">   26   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> u_tau[3];
+</span><span><a class="LN" name="27">   27   </a>  <span class="DT">static</span> <span class="DT">const</span> <a href="rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> b[30] = <b>{</b> 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1,
+</span><span><a class="LN" name="28">   28   </a>    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1 <b>}</b>;
+</span><span><a class="LN" name="29">   29   </a>
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> Bp_tmp[30];
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A_0[100];
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A_1[10];
+</span><span><a class="LN" name="33">   33   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="34">   34   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i_0;
+</span><span><a class="LN" name="35">   35   </a>  lam_kp = tspan[9] - tspan[0];
+</span><span><a class="LN" name="36">   36   </a>  lam_km = (tspan[9] - t) / lam_kp;
+</span><span><a class="LN" name="37">   37   </a>  lam_kp = (t - tspan[0]) / lam_kp;
+</span><span><a class="LN" name="38">   38   </a>  u_tau[0] = lam_km * u[0] + lam_kp * u[3];
+</span><span><a class="LN" name="39">   39   </a>  u_tau[1] = lam_km * u[1] + lam_kp * u[4];
+</span><span><a class="LN" name="40">   40   </a>  u_tau[2] = lam_km * u[2] + lam_kp * u[5];
+</span><span><a class="LN" name="41">   41   </a>  <a href="Q_linearize_CKnbADMM_c.html#fcn_Q_linearize_CKnbADMM" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_Q_linearize_CKnbADMM');" target="_self"><font color="#1122aa">Q_linearize_CKnbADMM</font></a>(x, u_tau, J, A, f);
+</span><span><a class="LN" name="42">   42   </a>  <span class="KW">for</span> (i = 0; i &lt; 30; i++) <b>{</b>
+</span><span><a class="LN" name="43">   43   </a>    Bp[i] = lam_kp * (<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)b[i];
+</span><span><a class="LN" name="44">   44   </a>    Bm[i] = lam_km * (<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)b[i];
+</span><span><a class="LN" name="45">   45   </a>    Bp_tmp[i] = b[i];
+</span><span><a class="LN" name="46">   46   </a>  <b>}</b>
+</span><span><a class="LN" name="47">   47   </a>
+</span><span><a class="LN" name="48">   48   </a>  <span class="KW">for</span> (i = 0; i &lt; 100; i++) <b>{</b>
+</span><span><a class="LN" name="49">   49   </a>    A_0[i] = -A[i];
+</span><span><a class="LN" name="50">   50   </a>  <b>}</b>
+</span><span><a class="LN" name="51">   51   </a>
+</span><span><a class="LN" name="52">   52   </a>  <span class="KW">for</span> (i = 0; i &lt; 10; i++) <b>{</b>
+</span><span><a class="LN" name="53">   53   </a>    A_1[i] = 0.0;
+</span><span><a class="LN" name="54">   54   </a>    <span class="KW">for</span> (i_0 = 0; i_0 &lt; 10; i_0++) <b>{</b>
+</span><span><a class="LN" name="55">   55   </a>      A_1[i] += A_0[10 * i_0 + i] * x[i_0];
+</span><span><a class="LN" name="56">   56   </a>    <b>}</b>
+</span><span><a class="LN" name="57">   57   </a>
+</span><span><a class="LN" name="58">   58   </a>    Z[i] = A_1[i] - ((<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)Bp_tmp[i + 20] * u_tau[2] + ((<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)Bp_tmp[i + 10]
+</span><span><a class="LN" name="59">   59   </a>      * u_tau[1] + (<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)Bp_tmp[i] * u_tau[0]));
+</span><span><a class="LN" name="60">   60   </a>  <b>}</b>
+</span><span><a class="LN" name="61">   61   </a><b>}</b>
+</span><span><a class="LN" name="62">   62   </a>
+</span><span><a class="LN" name="63">   63   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="64">   64   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="65">   65   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="66">   66   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="67">   67   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="68">   68   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

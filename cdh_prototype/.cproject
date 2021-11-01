@@ -188,6 +188,33 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gnc_build}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/wrappers/act_wrap}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/wrappers/sensor_wrap}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/R2018b/extern}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/rtw/c/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/extern/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/simulink/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp/extern/src/export/include/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/shared/dsp/vision/matlab/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/extern}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/rtw}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/simulink}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/rtw/c}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/rtw/c/src/ext_mode}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/rtw/c/src/ext_mode/common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/shared}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp/extern}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp/extern/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp/extern/src/export}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/dsp/extern/src/export/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/shared/dsp}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/shared/dsp/vision}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/R2018b/toolbox/shared/dsp/vision/matlab}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/Build/FSW_Lib_ert_rtw}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/Build/FSW_Lib_ert_rtw/html}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/Build/slprj/ert/_sharedutils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cdh_prototype_powermode/otherFiles}&quot;"/>
 								</option>
 								<option id="gnu.both.asm.option.warnings.nowarn.967973201" name="Suppress warnings (-W)" superClass="gnu.both.asm.option.warnings.nowarn"/>
 								<option id="gnu.both.asm.option.version.553649683" name="Announce version (-v)" superClass="gnu.both.asm.option.version"/>
@@ -325,20 +352,22 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Build"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="R2018b"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="evkmimxrt1020"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="gnc_build"/>
+						<entry excluding="freertos_kernel/portable/MemMang/heap_1.c|freertos_kernel/portable/MemMang/heap_2.c|freertos_kernel/portable/MemMang/heap_3.c|freertos_kernel/portable/MemMang/heap_5.c" flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freertos"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="otherFiles"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="tasks"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="utilities"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="wrappers"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="xip"/>
-						<entry excluding="freertos_kernel/portable/MemMang/heap_1.c|freertos_kernel/portable/MemMang/heap_2.c|freertos_kernel/portable/MemMang/heap_3.c|freertos_kernel/portable/MemMang/heap_5.c" flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freertos"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -666,20 +695,22 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Build"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="R2018b"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="evkmimxrt1020"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="gnc_build"/>
+						<entry excluding="freertos_kernel/portable/MemMang/heap_1.c|freertos_kernel/portable/MemMang/heap_2.c|freertos_kernel/portable/MemMang/heap_3.c|freertos_kernel/portable/MemMang/heap_5.c" flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freertos"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="otherFiles"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="tasks"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="utilities"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="wrappers"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="xip"/>
-						<entry excluding="freertos_kernel/portable/MemMang/heap_1.c|freertos_kernel/portable/MemMang/heap_2.c|freertos_kernel/portable/MemMang/heap_3.c|freertos_kernel/portable/MemMang/heap_5.c" flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freertos"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -742,7 +773,14 @@
 &lt;/infoList&gt;&#13;
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/cdh_prototype_powermode"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/cdh_prototype_powermode"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

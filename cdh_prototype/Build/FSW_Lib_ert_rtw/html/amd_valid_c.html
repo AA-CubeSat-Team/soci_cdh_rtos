@@ -1,0 +1,112 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - amd_valid.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('amd_valid_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/amd_valid.c" target="rtwreport_document_frame" id="linkToText_plain">amd_valid.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">/* === AMD_valid =========================================================== */</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="4">    4   </a>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">/* AMD, Copyright (c) Timothy A. Davis,					     */</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT">/* Patrick R. Amestoy, and Iain S. Duff.  See ../README.txt for License.     */</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">/* email: DrTimothyAldenDavis@gmail.com                                      */</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="10">   10   </a>
+</span><span><a class="LN" name="11">   11   </a><span class="CT">/* Check if a column-form matrix is valid or not.  The matrix A is</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * n_row-by-n_col.  The row indices of entries in column j are in</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * Ai [Ap [j] ... Ap [j+1]-1].  Required conditions are:</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *	n_row &gt;= 0</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> *	n_col &gt;= 0</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *	nz = Ap [n_col] &gt;= 0	    number of entries in the matrix</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *	Ap [0] == 0</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> *	Ap [j] &lt;= Ap [j+1] for all j in the range 0 to n_col.</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> *      Ai [0 ... nz-1] must be in the range 0 to n_row-1.</span>
+</span><span><a class="LN" name="21">   21   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="22">   22   </a><span class="CT"> * If any of the above conditions hold, AMD_INVALID is returned.  If the</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * following condition holds, AMD_OK_BUT_JUMBLED is returned (a warning,</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> * not an error):</span>
+</span><span><a class="LN" name="25">   25   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="26">   26   </a><span class="CT"> *	row indices in Ai [Ap [j] ... Ap [j+1]-1] are not sorted in ascending</span>
+</span><span><a class="LN" name="27">   27   </a><span class="CT"> *	    order, and/or duplicate entries exist.</span>
+</span><span><a class="LN" name="28">   28   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="29">   29   </a><span class="CT"> * Otherwise, AMD_OK is returned.</span>
+</span><span><a class="LN" name="30">   30   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="31">   31   </a><span class="CT"> * In v1.2 and earlier, this function returned TRUE if the matrix was valid</span>
+</span><span><a class="LN" name="32">   32   </a><span class="CT"> * (now returns AMD_OK), or FALSE otherwise (now returns AMD_INVALID or</span>
+</span><span><a class="LN" name="33">   33   </a><span class="CT"> * AMD_OK_BUT_JUMBLED).</span>
+</span><span><a class="LN" name="34">   34   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="35">   35   </a>
+</span><span><a class="LN" name="36">   36   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;amd_internal.h&quot;</font>
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a>GLOBAL Int <a name="fcn_AMD_valid">AMD_valid</a>
+</span><span><a class="LN" name="39">   39   </a>(
+</span><span><a class="LN" name="40">   40   </a>    <span class="CT">/* inputs, not modified on output: */</span>
+</span><span><a class="LN" name="41">   41   </a>    Int n_row,		<span class="CT">/* A is n_row-by-n_col */</span>
+</span><span><a class="LN" name="42">   42   </a>    Int n_col,
+</span><span><a class="LN" name="43">   43   </a>    <span class="DT">const</span> Int Ap [ ],	<span class="CT">/* column pointers of A, of size n_col+1 */</span>
+</span><span><a class="LN" name="44">   44   </a>    <span class="DT">const</span> Int Ai [ ]	<span class="CT">/* row indices of A, of size nz = Ap [n_col] */</span>
+</span><span><a class="LN" name="45">   45   </a>)
+</span><span><a class="LN" name="46">   46   </a><b>{</b>
+</span><span><a class="LN" name="47">   47   </a>    Int nz, j, p1, p2, ilast, i, p, result = AMD_OK ;
+</span><span><a class="LN" name="48">   48   </a>
+</span><span><a class="LN" name="49">   49   </a>    <span class="KW">if</span> (n_row &lt; 0 || n_col &lt; 0 || Ap == NULL || Ai == NULL)
+</span><span><a class="LN" name="50">   50   </a>    <b>{</b>
+</span><span><a class="LN" name="51">   51   </a>	<span class="KW">return</span> (AMD_INVALID) ;
+</span><span><a class="LN" name="52">   52   </a>    <b>}</b>
+</span><span><a class="LN" name="53">   53   </a>    nz = Ap [n_col] ;
+</span><span><a class="LN" name="54">   54   </a>    <span class="KW">if</span> (Ap [0] != 0 || nz &lt; 0)
+</span><span><a class="LN" name="55">   55   </a>    <b>{</b>
+</span><span><a class="LN" name="56">   56   </a>	<span class="CT">/* column pointers must start at Ap [0] = 0, and Ap [n] must be &gt;= 0 */</span>
+</span><span><a class="LN" name="57">   57   </a>	AMD_DEBUG0 ((<font color="#1122ff">&quot;column 0 pointer bad or nz < 0\n&quot;</font>)) ;
+</span><span><a class="LN" name="58">   58   </a>	<span class="KW">return</span> (AMD_INVALID) ;
+</span><span><a class="LN" name="59">   59   </a>    <b>}</b>
+</span><span><a class="LN" name="60">   60   </a>    <span class="KW">for</span> (j = 0 ; j &lt; n_col ; j++)
+</span><span><a class="LN" name="61">   61   </a>    <b>{</b>
+</span><span><a class="LN" name="62">   62   </a>	p1 = Ap [j] ;
+</span><span><a class="LN" name="63">   63   </a>	p2 = Ap [j+1] ;
+</span><span><a class="LN" name="64">   64   </a>	AMD_DEBUG2 ((<font color="#1122ff">&quot;\nColumn: &quot;</font>ID<font color="#1122ff">&quot; p1: &quot;</font>ID<font color="#1122ff">&quot; p2: &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, j, p1, p2)) ;
+</span><span><a class="LN" name="65">   65   </a>	<span class="KW">if</span> (p1 &gt; p2)
+</span><span><a class="LN" name="66">   66   </a>	<b>{</b>
+</span><span><a class="LN" name="67">   67   </a>	    <span class="CT">/* column pointers must be ascending */</span>
+</span><span><a class="LN" name="68">   68   </a>	    AMD_DEBUG0 ((<font color="#1122ff">&quot;column &quot;</font>ID<font color="#1122ff">&quot; pointer bad\n&quot;</font>, j)) ;
+</span><span><a class="LN" name="69">   69   </a>	    <span class="KW">return</span> (AMD_INVALID) ;
+</span><span><a class="LN" name="70">   70   </a>	<b>}</b>
+</span><span><a class="LN" name="71">   71   </a>	ilast = EMPTY ;
+</span><span><a class="LN" name="72">   72   </a>	<span class="KW">for</span> (p = p1 ; p &lt; p2 ; p++)
+</span><span><a class="LN" name="73">   73   </a>	<b>{</b>
+</span><span><a class="LN" name="74">   74   </a>	    i = Ai [p] ;
+</span><span><a class="LN" name="75">   75   </a>	    AMD_DEBUG3 ((<font color="#1122ff">&quot;row: &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, i)) ;
+</span><span><a class="LN" name="76">   76   </a>	    <span class="KW">if</span> (i &lt; 0 || i &gt;= n_row)
+</span><span><a class="LN" name="77">   77   </a>	    <b>{</b>
+</span><span><a class="LN" name="78">   78   </a>		<span class="CT">/* row index out of range */</span>
+</span><span><a class="LN" name="79">   79   </a>		AMD_DEBUG0 ((<font color="#1122ff">&quot;index out of range, col &quot;</font>ID<font color="#1122ff">&quot; row &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, j, i));
+</span><span><a class="LN" name="80">   80   </a>		<span class="KW">return</span> (AMD_INVALID) ;
+</span><span><a class="LN" name="81">   81   </a>	    <b>}</b>
+</span><span><a class="LN" name="82">   82   </a>	    <span class="KW">if</span> (i &lt;= ilast)
+</span><span><a class="LN" name="83">   83   </a>	    <b>{</b>
+</span><span><a class="LN" name="84">   84   </a>		<span class="CT">/* row index unsorted, or duplicate entry present */</span>
+</span><span><a class="LN" name="85">   85   </a>		AMD_DEBUG1 ((<font color="#1122ff">&quot;index unsorted/dupl col &quot;</font>ID<font color="#1122ff">&quot; row &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, j, i));
+</span><span><a class="LN" name="86">   86   </a>		result = AMD_OK_BUT_JUMBLED ;
+</span><span><a class="LN" name="87">   87   </a>	    <b>}</b>
+</span><span><a class="LN" name="88">   88   </a>	    ilast = i ;
+</span><span><a class="LN" name="89">   89   </a>	<b>}</b>
+</span><span><a class="LN" name="90">   90   </a>    <b>}</b>
+</span><span><a class="LN" name="91">   91   </a>    <span class="KW">return</span> (result) ;
+</span><span><a class="LN" name="92">   92   </a><b>}</b>
+</span><span><a class="LN" name="93">   93   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

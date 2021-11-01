@@ -1,0 +1,114 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - rt_nonfinite.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('rt_nonfinite_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../rt_nonfinite.c" target="rtwreport_document_frame" id="linkToText_plain">rt_nonfinite.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: rt_nonfinite.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Abstract:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *      Function to initialize non-finites,</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *      (Inf, NaN and -Inf).</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="20">   20   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_nonfinite.h&quot;</font>
+</span><span><a class="LN" name="21">   21   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtGetNaN.h&quot;</font>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtGetInf.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">define</span> NumBitsPerChar                 8U
+</span><span><a class="LN" name="24">   24   </a>
+</span><span><a class="LN" name="25">   25   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_rtInf">rtInf</a>;
+</span><span><a class="LN" name="26">   26   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_rtMinusInf">rtMinusInf</a>;
+</span><span><a class="LN" name="27">   27   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_rtNaN">rtNaN</a>;
+</span><span><a class="LN" name="28">   28   </a><a href="rtwtypes_h.html#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> <a name="var_rtInfF">rtInfF</a>;
+</span><span><a class="LN" name="29">   29   </a><a href="rtwtypes_h.html#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> <a name="var_rtMinusInfF">rtMinusInfF</a>;
+</span><span><a class="LN" name="30">   30   </a><a href="rtwtypes_h.html#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> <a name="var_rtNaNF">rtNaNF</a>;
+</span><span><a class="LN" name="31">   31   </a>
+</span><span><a class="LN" name="32">   32   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="33">   33   </a><span class="CT"> * Initialize the rtInf, rtMinusInf, and rtNaN needed by the</span>
+</span><span><a class="LN" name="34">   34   </a><span class="CT"> * generated code. NaN is initialized as non-signaling. Assumes IEEE.</span>
+</span><span><a class="LN" name="35">   35   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="36">   36   </a><span class="DT">void</span> <a name="fcn_rt_InitInfAndNaN">rt_InitInfAndNaN</a>(size_t realSize)
+</span><span><a class="LN" name="37">   37   </a><b>{</b>
+</span><span><a class="LN" name="38">   38   </a>  (<span class="DT">void</span>) (realSize);
+</span><span><a class="LN" name="39">   39   </a>  <a href="#var_rtNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtNaN');" target="_self"><font color="#1122aa">rtNaN</font></a> = <a href="rtGetNaN_c.html#fcn_rtGetNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtGetNaN');" target="_self"><font color="#1122aa">rtGetNaN</font></a>();
+</span><span><a class="LN" name="40">   40   </a>  <a href="#var_rtNaNF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtNaNF');" target="_self"><font color="#1122aa">rtNaNF</font></a> = <a href="rtGetNaN_c.html#fcn_rtGetNaNF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtGetNaNF');" target="_self"><font color="#1122aa">rtGetNaNF</font></a>();
+</span><span><a class="LN" name="41">   41   </a>  <a href="#var_rtInf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtInf');" target="_self"><font color="#1122aa">rtInf</font></a> = <a href="rtGetInf_c.html#fcn_rtGetInf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtGetInf');" target="_self"><font color="#1122aa">rtGetInf</font></a>();
+</span><span><a class="LN" name="42">   42   </a>  <a href="#var_rtInfF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtInfF');" target="_self"><font color="#1122aa">rtInfF</font></a> = <a href="rtGetInf_c.html#fcn_rtGetInfF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtGetInfF');" target="_self"><font color="#1122aa">rtGetInfF</font></a>();
+</span><span><a class="LN" name="43">   43   </a>  <a href="#var_rtMinusInf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtMinusInf');" target="_self"><font color="#1122aa">rtMinusInf</font></a> = <a href="rtGetInf_c.html#fcn_rtGetMinusInf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtGetMinusInf');" target="_self"><font color="#1122aa">rtGetMinusInf</font></a>();
+</span><span><a class="LN" name="44">   44   </a>  <a href="#var_rtMinusInfF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtMinusInfF');" target="_self"><font color="#1122aa">rtMinusInfF</font></a> = <a href="rtGetInf_c.html#fcn_rtGetMinusInfF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtGetMinusInfF');" target="_self"><font color="#1122aa">rtGetMinusInfF</font></a>();
+</span><span><a class="LN" name="45">   45   </a><b>}</b>
+</span><span><a class="LN" name="46">   46   </a>
+</span><span><a class="LN" name="47">   47   </a><span class="CT">/* Test if value is infinite */</span>
+</span><span><a class="LN" name="48">   48   </a><a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> <a name="fcn_rtIsInf">rtIsInf</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> value)
+</span><span><a class="LN" name="49">   49   </a><b>{</b>
+</span><span><a class="LN" name="50">   50   </a>  <span class="KW">return</span> (<a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>)((value==<a href="#var_rtInf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtInf');" target="_self"><font color="#1122aa">rtInf</font></a> || value==<a href="#var_rtMinusInf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtMinusInf');" target="_self"><font color="#1122aa">rtMinusInf</font></a>) ? 1U : 0U);
+</span><span><a class="LN" name="51">   51   </a><b>}</b>
+</span><span><a class="LN" name="52">   52   </a>
+</span><span><a class="LN" name="53">   53   </a><span class="CT">/* Test if single-precision value is infinite */</span>
+</span><span><a class="LN" name="54">   54   </a><a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> <a name="fcn_rtIsInfF">rtIsInfF</a>(<a href="rtwtypes_h.html#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> value)
+</span><span><a class="LN" name="55">   55   </a><b>{</b>
+</span><span><a class="LN" name="56">   56   </a>  <span class="KW">return</span> (<a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>)(((value)==<a href="#var_rtInfF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtInfF');" target="_self"><font color="#1122aa">rtInfF</font></a> || (value)==<a href="#var_rtMinusInfF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_rtMinusInfF');" target="_self"><font color="#1122aa">rtMinusInfF</font></a>) ? 1U : 0U);
+</span><span><a class="LN" name="57">   57   </a><b>}</b>
+</span><span><a class="LN" name="58">   58   </a>
+</span><span><a class="LN" name="59">   59   </a><span class="CT">/* Test if value is not a number */</span>
+</span><span><a class="LN" name="60">   60   </a><a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> <a name="fcn_rtIsNaN">rtIsNaN</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> value)
+</span><span><a class="LN" name="61">   61   </a><b>{</b>
+</span><span><a class="LN" name="62">   62   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> result = (<a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>) 0;
+</span><span><a class="LN" name="63">   63   </a>  size_t bitsPerReal = <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>) * (NumBitsPerChar);
+</span><span><a class="LN" name="64">   64   </a>  <span class="KW">if</span> (bitsPerReal == 32U) <b>{</b>
+</span><span><a class="LN" name="65">   65   </a>    result = <a href="#fcn_rtIsNaNF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaNF');" target="_self"><font color="#1122aa">rtIsNaNF</font></a>((<a href="rtwtypes_h.html#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a>)value);
+</span><span><a class="LN" name="66">   66   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="67">   67   </a>    <span class="KW">union</span> <b>{</b>
+</span><span><a class="LN" name="68">   68   </a>      <a href="rt_nonfinite_h.html#type_LittleEndianIEEEDouble" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_LittleEndianIEEEDouble');" target="_self"><font color="#1122aa">LittleEndianIEEEDouble</font></a> bitVal;
+</span><span><a class="LN" name="69">   69   </a>      <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> fltVal;
+</span><span><a class="LN" name="70">   70   </a>    <b>}</b> tmpVal;
+</span><span><a class="LN" name="71">   71   </a>
+</span><span><a class="LN" name="72">   72   </a>    tmpVal.fltVal = value;
+</span><span><a class="LN" name="73">   73   </a>    result = (<a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>)((tmpVal.bitVal.words.wordH &amp; 0x7FF00000) == 0x7FF00000 &amp;&amp;
+</span><span><a class="LN" name="74">   74   </a>                         ( (tmpVal.bitVal.words.wordH &amp; 0x000FFFFF) != 0 ||
+</span><span><a class="LN" name="75">   75   </a>                          (tmpVal.bitVal.words.wordL != 0) ));
+</span><span><a class="LN" name="76">   76   </a>  <b>}</b>
+</span><span><a class="LN" name="77">   77   </a>
+</span><span><a class="LN" name="78">   78   </a>  <span class="KW">return</span> result;
+</span><span><a class="LN" name="79">   79   </a><b>}</b>
+</span><span><a class="LN" name="80">   80   </a>
+</span><span><a class="LN" name="81">   81   </a><span class="CT">/* Test if single-precision value is not a number */</span>
+</span><span><a class="LN" name="82">   82   </a><a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> <a name="fcn_rtIsNaNF">rtIsNaNF</a>(<a href="rtwtypes_h.html#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> value)
+</span><span><a class="LN" name="83">   83   </a><b>{</b>
+</span><span><a class="LN" name="84">   84   </a>  <a href="rt_nonfinite_h.html#type_IEEESingle" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_IEEESingle');" target="_self"><font color="#1122aa">IEEESingle</font></a> tmp;
+</span><span><a class="LN" name="85">   85   </a>  tmp.wordL.wordLreal = value;
+</span><span><a class="LN" name="86">   86   </a>  <span class="KW">return</span> (<a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>)( (tmp.wordL.wordLuint &amp; 0x7F800000) == 0x7F800000 &amp;&amp;
+</span><span><a class="LN" name="87">   87   </a>                     (tmp.wordL.wordLuint &amp; 0x007FFFFF) != 0 );
+</span><span><a class="LN" name="88">   88   </a><b>}</b>
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="91">   91   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="92">   92   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="93">   93   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="94">   94   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="95">   95   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

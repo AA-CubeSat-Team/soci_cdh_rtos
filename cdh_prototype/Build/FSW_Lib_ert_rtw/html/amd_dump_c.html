@@ -1,0 +1,199 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - amd_dump.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('amd_dump_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/amd_dump.c" target="rtwreport_document_frame" id="linkToText_plain">amd_dump.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">/* === AMD_dump ============================================================ */</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="4">    4   </a>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">/* AMD, Copyright (c) Timothy A. Davis,					     */</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT">/* Patrick R. Amestoy, and Iain S. Duff.  See ../README.txt for License.     */</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">/* email: DrTimothyAldenDavis@gmail.com                                      */</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="10">   10   </a>
+</span><span><a class="LN" name="11">   11   </a><span class="CT">/* Debugging routines for AMD.  Not used if NDEBUG is not defined at compile-</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * time (the default).  See comments in amd_internal.h on how to enable</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * debugging.  Not user-callable.</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="15">   15   </a>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;amd_internal.h&quot;</font>
+</span><span><a class="LN" name="17">   17   </a>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">ifndef</span> NDEBUG
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a><span class="CT">/* This global variable is present only when debugging */</span>
+</span><span><a class="LN" name="21">   21   </a>GLOBAL Int <a name="var_AMD_debug">AMD_debug</a> = -999 ;		<span class="CT">/* default is no debug printing */</span>
+</span><span><a class="LN" name="22">   22   </a>
+</span><span><a class="LN" name="23">   23   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT">/* === AMD_debug_init ====================================================== */</span>
+</span><span><a class="LN" name="25">   25   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="26">   26   </a>
+</span><span><a class="LN" name="27">   27   </a><span class="CT">/* Sets the debug print level, by reading the file debug.amd (if it exists) */</span>
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a>GLOBAL <span class="DT">void</span> <a name="fcn_AMD_debug_init">AMD_debug_init</a> ( <span class="DT">char</span> *s )
+</span><span><a class="LN" name="30">   30   </a><b>{</b>
+</span><span><a class="LN" name="31">   31   </a>    FILE *f ;
+</span><span><a class="LN" name="32">   32   </a>    f = fopen (<font color="#1122ff">&quot;debug.amd&quot;</font>, <font color="#1122ff">&quot;r&quot;</font>) ;
+</span><span><a class="LN" name="33">   33   </a>    <span class="KW">if</span> (f == (FILE *) NULL)
+</span><span><a class="LN" name="34">   34   </a>    <b>{</b>
+</span><span><a class="LN" name="35">   35   </a>	<a href="#var_AMD_debug" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_AMD_debug');" target="_self"><font color="#1122aa">AMD_debug</font></a> = -999 ;
+</span><span><a class="LN" name="36">   36   </a>    <b>}</b>
+</span><span><a class="LN" name="37">   37   </a>    <span class="KW">else</span>
+</span><span><a class="LN" name="38">   38   </a>    <b>{</b>
+</span><span><a class="LN" name="39">   39   </a>	fscanf (f, ID, &amp;<a href="#var_AMD_debug" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_AMD_debug');" target="_self"><font color="#1122aa">AMD_debug</font></a>) ;
+</span><span><a class="LN" name="40">   40   </a>	fclose (f) ;
+</span><span><a class="LN" name="41">   41   </a>    <b>}</b>
+</span><span><a class="LN" name="42">   42   </a>    <span class="KW">if</span> (<a href="#var_AMD_debug" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_AMD_debug');" target="_self"><font color="#1122aa">AMD_debug</font></a> &gt;= 0)
+</span><span><a class="LN" name="43">   43   </a>    <b>{</b>
+</span><span><a class="LN" name="44">   44   </a>	printf (<font color="#1122ff">&quot;%s: AMD_debug_init, D= &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, s, <a href="#var_AMD_debug" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_AMD_debug');" target="_self"><font color="#1122aa">AMD_debug</font></a>) ;
+</span><span><a class="LN" name="45">   45   </a>    <b>}</b>
+</span><span><a class="LN" name="46">   46   </a><b>}</b>
+</span><span><a class="LN" name="47">   47   </a>
+</span><span><a class="LN" name="48">   48   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="49">   49   </a><span class="CT">/* === AMD_dump ============================================================ */</span>
+</span><span><a class="LN" name="50">   50   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="51">   51   </a>
+</span><span><a class="LN" name="52">   52   </a><span class="CT">/* Dump AMD's data structure, except for the hash buckets.  This routine</span>
+</span><span><a class="LN" name="53">   53   </a><span class="CT"> * cannot be called when the hash buckets are non-empty.</span>
+</span><span><a class="LN" name="54">   54   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="55">   55   </a>
+</span><span><a class="LN" name="56">   56   </a>GLOBAL <span class="DT">void</span> <a name="fcn_AMD_dump">AMD_dump</a> (
+</span><span><a class="LN" name="57">   57   </a>    Int n,	    <span class="CT">/* A is n-by-n */</span>
+</span><span><a class="LN" name="58">   58   </a>    Int Pe [ ],	    <span class="CT">/* pe [0..n-1]: index in iw of start of row i */</span>
+</span><span><a class="LN" name="59">   59   </a>    Int Iw [ ],	    <span class="CT">/* workspace of size iwlen, iwlen [0..pfree-1]</span>
+</span><span><a class="LN" name="60">   60   </a><span class="CT">		     * holds the matrix on input */</span>
+</span><span><a class="LN" name="61">   61   </a>    Int Len [ ],    <span class="CT">/* len [0..n-1]: length for row i */</span>
+</span><span><a class="LN" name="62">   62   </a>    Int iwlen,	    <span class="CT">/* length of iw */</span>
+</span><span><a class="LN" name="63">   63   </a>    Int pfree,	    <span class="CT">/* iw [pfree ... iwlen-1] is empty on input */</span>
+</span><span><a class="LN" name="64">   64   </a>    Int Nv [ ],	    <span class="CT">/* nv [0..n-1] */</span>
+</span><span><a class="LN" name="65">   65   </a>    Int Next [ ],   <span class="CT">/* next [0..n-1] */</span>
+</span><span><a class="LN" name="66">   66   </a>    Int Last [ ],   <span class="CT">/* last [0..n-1] */</span>
+</span><span><a class="LN" name="67">   67   </a>    Int Head [ ],   <span class="CT">/* head [0..n-1] */</span>
+</span><span><a class="LN" name="68">   68   </a>    Int Elen [ ],   <span class="CT">/* size n */</span>
+</span><span><a class="LN" name="69">   69   </a>    Int Degree [ ], <span class="CT">/* size n */</span>
+</span><span><a class="LN" name="70">   70   </a>    Int W [ ],	    <span class="CT">/* size n */</span>
+</span><span><a class="LN" name="71">   71   </a>    Int nel
+</span><span><a class="LN" name="72">   72   </a>)
+</span><span><a class="LN" name="73">   73   </a><b>{</b>
+</span><span><a class="LN" name="74">   74   </a>    Int i, pe, elen, nv, len, e, p, k, j, deg, w, cnt, ilast ;
+</span><span><a class="LN" name="75">   75   </a>
+</span><span><a class="LN" name="76">   76   </a>    <span class="KW">if</span> (<a href="#var_AMD_debug" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_AMD_debug');" target="_self"><font color="#1122aa">AMD_debug</font></a> &lt; 0) <span class="KW">return</span> ;
+</span><span><a class="LN" name="77">   77   </a>    ASSERT (pfree &lt;= iwlen) ;
+</span><span><a class="LN" name="78">   78   </a>    AMD_DEBUG3 ((<font color="#1122ff">&quot;\nAMD dump, pfree: &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, pfree)) ;
+</span><span><a class="LN" name="79">   79   </a>    <span class="KW">for</span> (i = 0 ; i &lt; n ; i++)
+</span><span><a class="LN" name="80">   80   </a>    <b>{</b>
+</span><span><a class="LN" name="81">   81   </a>	pe = Pe [i] ;
+</span><span><a class="LN" name="82">   82   </a>	elen = Elen [i] ;
+</span><span><a class="LN" name="83">   83   </a>	nv = Nv [i] ;
+</span><span><a class="LN" name="84">   84   </a>	len = Len [i] ;
+</span><span><a class="LN" name="85">   85   </a>	w = W [i] ;
+</span><span><a class="LN" name="86">   86   </a>
+</span><span><a class="LN" name="87">   87   </a>	<span class="KW">if</span> (elen &gt;= EMPTY)
+</span><span><a class="LN" name="88">   88   </a>	<b>{</b>
+</span><span><a class="LN" name="89">   89   </a>	    <span class="KW">if</span> (nv == 0)
+</span><span><a class="LN" name="90">   90   </a>	    <b>{</b>
+</span><span><a class="LN" name="91">   91   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;\nI &quot;</font>ID<font color="#1122ff">&quot;: nonprincipal:    &quot;</font>, i)) ;
+</span><span><a class="LN" name="92">   92   </a>		ASSERT (elen == EMPTY) ;
+</span><span><a class="LN" name="93">   93   </a>		<span class="KW">if</span> (pe == EMPTY)
+</span><span><a class="LN" name="94">   94   </a>		<b>{</b>
+</span><span><a class="LN" name="95">   95   </a>		    AMD_DEBUG3 ((<font color="#1122ff">&quot; dense node\n&quot;</font>)) ;
+</span><span><a class="LN" name="96">   96   </a>		    ASSERT (w == 1) ;
+</span><span><a class="LN" name="97">   97   </a>		<b>}</b>
+</span><span><a class="LN" name="98">   98   </a>		<span class="KW">else</span>
+</span><span><a class="LN" name="99">   99   </a>		<b>{</b>
+</span><span><a class="LN" name="100">  100   </a>		    ASSERT (pe &lt; EMPTY) ;
+</span><span><a class="LN" name="101">  101   </a>		    AMD_DEBUG3 ((<font color="#1122ff">&quot; i &quot;</font>ID<font color="#1122ff">&quot; -&gt; parent &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, i, FLIP (Pe[i])));
+</span><span><a class="LN" name="102">  102   </a>		<b>}</b>
+</span><span><a class="LN" name="103">  103   </a>	    <b>}</b>
+</span><span><a class="LN" name="104">  104   </a>	    <span class="KW">else</span>
+</span><span><a class="LN" name="105">  105   </a>	    <b>{</b>
+</span><span><a class="LN" name="106">  106   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;\nI &quot;</font>ID<font color="#1122ff">&quot;: active principal supervariable:\n&quot;</font>,i));
+</span><span><a class="LN" name="107">  107   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;   nv(i): &quot;</font>ID<font color="#1122ff">&quot;  Flag: %d\n&quot;</font>, nv, (nv &lt; 0))) ;
+</span><span><a class="LN" name="108">  108   </a>		ASSERT (elen &gt;= 0) ;
+</span><span><a class="LN" name="109">  109   </a>		ASSERT (nv &gt; 0 &amp;&amp; pe &gt;= 0) ;
+</span><span><a class="LN" name="110">  110   </a>		p = pe ;
+</span><span><a class="LN" name="111">  111   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;   e/s: &quot;</font>)) ;
+</span><span><a class="LN" name="112">  112   </a>		<span class="KW">if</span> (elen == 0) AMD_DEBUG3 ((<font color="#1122ff">&quot; : &quot;</font>)) ;
+</span><span><a class="LN" name="113">  113   </a>		ASSERT (pe + len &lt;= pfree) ;
+</span><span><a class="LN" name="114">  114   </a>		<span class="KW">for</span> (k = 0 ; k &lt; len ; k++)
+</span><span><a class="LN" name="115">  115   </a>		<b>{</b>
+</span><span><a class="LN" name="116">  116   </a>		    j = Iw [p] ;
+</span><span><a class="LN" name="117">  117   </a>		    AMD_DEBUG3 ((<font color="#1122ff">&quot;  &quot;</font>ID<font color="#1122ff">&quot;&quot;</font>, j)) ;
+</span><span><a class="LN" name="118">  118   </a>		    ASSERT (j &gt;= 0 &amp;&amp; j &lt; n) ;
+</span><span><a class="LN" name="119">  119   </a>		    <span class="KW">if</span> (k == elen-1) AMD_DEBUG3 ((<font color="#1122ff">&quot; : &quot;</font>)) ;
+</span><span><a class="LN" name="120">  120   </a>		    p++ ;
+</span><span><a class="LN" name="121">  121   </a>		<b>}</b>
+</span><span><a class="LN" name="122">  122   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;\n&quot;</font>)) ;
+</span><span><a class="LN" name="123">  123   </a>	    <b>}</b>
+</span><span><a class="LN" name="124">  124   </a>	<b>}</b>
+</span><span><a class="LN" name="125">  125   </a>	<span class="KW">else</span>
+</span><span><a class="LN" name="126">  126   </a>	<b>{</b>
+</span><span><a class="LN" name="127">  127   </a>	    e = i ;
+</span><span><a class="LN" name="128">  128   </a>	    <span class="KW">if</span> (w == 0)
+</span><span><a class="LN" name="129">  129   </a>	    <b>{</b>
+</span><span><a class="LN" name="130">  130   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;\nE &quot;</font>ID<font color="#1122ff">&quot;: absorbed element: w &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, e, w)) ;
+</span><span><a class="LN" name="131">  131   </a>		ASSERT (nv &gt; 0 &amp;&amp; pe &lt; 0) ;
+</span><span><a class="LN" name="132">  132   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot; e &quot;</font>ID<font color="#1122ff">&quot; -&gt; parent &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, e, FLIP (Pe [e]))) ;
+</span><span><a class="LN" name="133">  133   </a>	    <b>}</b>
+</span><span><a class="LN" name="134">  134   </a>	    <span class="KW">else</span>
+</span><span><a class="LN" name="135">  135   </a>	    <b>{</b>
+</span><span><a class="LN" name="136">  136   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;\nE &quot;</font>ID<font color="#1122ff">&quot;: unabsorbed element: w &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, e, w)) ;
+</span><span><a class="LN" name="137">  137   </a>		ASSERT (nv &gt; 0 &amp;&amp; pe &gt;= 0) ;
+</span><span><a class="LN" name="138">  138   </a>		p = pe ;
+</span><span><a class="LN" name="139">  139   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot; : &quot;</font>)) ;
+</span><span><a class="LN" name="140">  140   </a>		ASSERT (pe + len &lt;= pfree) ;
+</span><span><a class="LN" name="141">  141   </a>		<span class="KW">for</span> (k = 0 ; k &lt; len ; k++)
+</span><span><a class="LN" name="142">  142   </a>		<b>{</b>
+</span><span><a class="LN" name="143">  143   </a>		    j = Iw [p] ;
+</span><span><a class="LN" name="144">  144   </a>		    AMD_DEBUG3 ((<font color="#1122ff">&quot;  &quot;</font>ID<font color="#1122ff">&quot;&quot;</font>, j)) ;
+</span><span><a class="LN" name="145">  145   </a>		    ASSERT (j &gt;= 0 &amp;&amp; j &lt; n) ;
+</span><span><a class="LN" name="146">  146   </a>		    p++ ;
+</span><span><a class="LN" name="147">  147   </a>		<b>}</b>
+</span><span><a class="LN" name="148">  148   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;\n&quot;</font>)) ;
+</span><span><a class="LN" name="149">  149   </a>	    <b>}</b>
+</span><span><a class="LN" name="150">  150   </a>	<b>}</b>
+</span><span><a class="LN" name="151">  151   </a>    <b>}</b>
+</span><span><a class="LN" name="152">  152   </a>
+</span><span><a class="LN" name="153">  153   </a>    <span class="CT">/* this routine cannot be called when the hash buckets are non-empty */</span>
+</span><span><a class="LN" name="154">  154   </a>    AMD_DEBUG3 ((<font color="#1122ff">&quot;\nDegree lists:\n&quot;</font>)) ;
+</span><span><a class="LN" name="155">  155   </a>    <span class="KW">if</span> (nel &gt;= 0)
+</span><span><a class="LN" name="156">  156   </a>    <b>{</b>
+</span><span><a class="LN" name="157">  157   </a>	cnt = 0 ;
+</span><span><a class="LN" name="158">  158   </a>	<span class="KW">for</span> (deg = 0 ; deg &lt; n ; deg++)
+</span><span><a class="LN" name="159">  159   </a>	<b>{</b>
+</span><span><a class="LN" name="160">  160   </a>	    <span class="KW">if</span> (Head [deg] == EMPTY) <span class="KW">continue</span> ;
+</span><span><a class="LN" name="161">  161   </a>	    ilast = EMPTY ;
+</span><span><a class="LN" name="162">  162   </a>	    AMD_DEBUG3 ((ID<font color="#1122ff">&quot;: \n&quot;</font>, deg)) ;
+</span><span><a class="LN" name="163">  163   </a>	    <span class="KW">for</span> (i = Head [deg] ; i != EMPTY ; i = Next [i])
+</span><span><a class="LN" name="164">  164   </a>	    <b>{</b>
+</span><span><a class="LN" name="165">  165   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;   &quot;</font>ID<font color="#1122ff">&quot; : next &quot;</font>ID<font color="#1122ff">&quot; last &quot;</font>ID<font color="#1122ff">&quot; deg &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>,
+</span><span><a class="LN" name="166">  166   </a>		    i, Next [i], Last [i], Degree [i])) ;
+</span><span><a class="LN" name="167">  167   </a>		ASSERT (i &gt;= 0 &amp;&amp; i &lt; n &amp;&amp; ilast == Last [i] &amp;&amp;
+</span><span><a class="LN" name="168">  168   </a>		    deg == Degree [i]) ;
+</span><span><a class="LN" name="169">  169   </a>		cnt += Nv [i] ;
+</span><span><a class="LN" name="170">  170   </a>		ilast = i ;
+</span><span><a class="LN" name="171">  171   </a>	    <b>}</b>
+</span><span><a class="LN" name="172">  172   </a>	    AMD_DEBUG3 ((<font color="#1122ff">&quot;\n&quot;</font>)) ;
+</span><span><a class="LN" name="173">  173   </a>	<b>}</b>
+</span><span><a class="LN" name="174">  174   </a>	ASSERT (cnt == n - nel) ;
+</span><span><a class="LN" name="175">  175   </a>    <b>}</b>
+</span><span><a class="LN" name="176">  176   </a>
+</span><span><a class="LN" name="177">  177   </a><b>}</b>
+</span><span><a class="LN" name="178">  178   </a>
+</span><span><a class="LN" name="179">  179   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="180">  180   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

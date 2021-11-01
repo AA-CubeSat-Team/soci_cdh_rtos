@@ -1,0 +1,126 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - timer.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('timer_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/timer.c" target="rtwreport_document_frame" id="linkToText_plain">timer.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * Implements for the built-in timer of ECOS.</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="25">   25   </a><span class="CT"> * Under Windows, we use QueryPerformanceCounter to obtain the counter value.</span>
+</span><span><a class="LN" name="26">   26   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="27">   27   </a><span class="CT"> * Under Unix systems, we use clock_gettime function from &lt;time.h&gt;</span>
+</span><span><a class="LN" name="28">   28   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="29">   29   </a>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;timer.h&quot;</font>
+</span><span><a class="LN" name="32">   32   </a>
+</span><span><a class="LN" name="33">   33   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 0
+</span><span><a class="LN" name="34">   34   </a>
+</span><span><a class="LN" name="35">   35   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> WIN32 || _WIN64)
+</span><span><a class="LN" name="36">   36   </a>
+</span><span><a class="LN" name="37">   37   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;windows.h&gt;</font>
+</span><span><a class="LN" name="38">   38   </a>
+</span><span><a class="LN" name="39">   39   </a><span class="DT">void</span> <a name="fcn_tic">tic</a>(timer* t)
+</span><span><a class="LN" name="40">   40   </a><b>{</b>
+</span><span><a class="LN" name="41">   41   </a>	QueryPerformanceFrequency((LARGE_INTEGER*)&amp;t-&gt;freq);
+</span><span><a class="LN" name="42">   42   </a>	QueryPerformanceCounter((LARGE_INTEGER*)&amp;t-&gt;tic);
+</span><span><a class="LN" name="43">   43   </a><b>}</b>
+</span><span><a class="LN" name="44">   44   </a>
+</span><span><a class="LN" name="45">   45   </a>pfloat <a name="fcn_toc">toc</a>(timer* t)
+</span><span><a class="LN" name="46">   46   </a><b>{</b>
+</span><span><a class="LN" name="47">   47   </a>	QueryPerformanceCounter((LARGE_INTEGER*)&amp;t-&gt;toc);
+</span><span><a class="LN" name="48">   48   </a>	<span class="KW">return</span> ((t-&gt;toc - t-&gt;tic) / (pfloat)t-&gt;freq);
+</span><span><a class="LN" name="49">   49   </a><b>}</b>
+</span><span><a class="LN" name="50">   50   </a>
+</span><span><a class="LN" name="51">   51   </a>
+</span><span><a class="LN" name="52">   52   </a><font color="#992211">#</font><span class="PP">elif</span> (<span class="PP">defined</span> __APPLE__)
+</span><span><a class="LN" name="53">   53   </a>
+</span><span><a class="LN" name="54">   54   </a><span class="DT">void</span> <a href="#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(timer* t)
+</span><span><a class="LN" name="55">   55   </a><b>{</b>
+</span><span><a class="LN" name="56">   56   </a>    <span class="CT">// read current clock cycles </span>
+</span><span><a class="LN" name="57">   57   </a>    t-&gt;tic = mach_absolute_time();
+</span><span><a class="LN" name="58">   58   </a><b>}</b>
+</span><span><a class="LN" name="59">   59   </a>
+</span><span><a class="LN" name="60">   60   </a>pfloat <a href="#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(timer* t)
+</span><span><a class="LN" name="61">   61   </a><b>{</b>
+</span><span><a class="LN" name="62">   62   </a>
+</span><span><a class="LN" name="63">   63   </a>    uint64_t duration; <span class="CT">/* elapsed time in clock cycles*/</span>
+</span><span><a class="LN" name="64">   64   </a>    
+</span><span><a class="LN" name="65">   65   </a>    t-&gt;toc = mach_absolute_time();
+</span><span><a class="LN" name="66">   66   </a>    duration = t-&gt;toc - t-&gt;tic;
+</span><span><a class="LN" name="67">   67   </a>    
+</span><span><a class="LN" name="68">   68   </a>    <span class="CT">// conversion from clock cycles to nanoseconds</span>
+</span><span><a class="LN" name="69">   69   </a>    mach_timebase_info(&amp;(t-&gt;tinfo));
+</span><span><a class="LN" name="70">   70   </a>    duration *= t-&gt;tinfo.numer;
+</span><span><a class="LN" name="71">   71   </a>    duration /= t-&gt;tinfo.denom;
+</span><span><a class="LN" name="72">   72   </a>
+</span><span><a class="LN" name="73">   73   </a>    <span class="KW">return</span> (pfloat)duration / 1000000000;
+</span><span><a class="LN" name="74">   74   </a><b>}</b>
+</span><span><a class="LN" name="75">   75   </a>
+</span><span><a class="LN" name="76">   76   </a>
+</span><span><a class="LN" name="77">   77   </a><font color="#992211">#</font><span class="PP">elif</span> (<span class="PP">defined</span> __linux__)
+</span><span><a class="LN" name="78">   78   </a>
+</span><span><a class="LN" name="79">   79   </a><span class="CT">/* read current time */</span>
+</span><span><a class="LN" name="80">   80   </a><span class="DT">void</span> <a href="#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(timer* t)
+</span><span><a class="LN" name="81">   81   </a><b>{</b>
+</span><span><a class="LN" name="82">   82   </a>	clock_gettime(CLOCK_MONOTONIC, &amp;t-&gt;tic);
+</span><span><a class="LN" name="83">   83   </a><b>}</b>
+</span><span><a class="LN" name="84">   84   </a>
+</span><span><a class="LN" name="85">   85   </a>
+</span><span><a class="LN" name="86">   86   </a><span class="CT">/* return time passed since last call to tic on this timer */</span>
+</span><span><a class="LN" name="87">   87   </a><span class="DT">double</span> <a href="#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(timer* t)
+</span><span><a class="LN" name="88">   88   </a><b>{</b>
+</span><span><a class="LN" name="89">   89   </a>	<span class="KW">struct</span> timespec temp;
+</span><span><a class="LN" name="90">   90   </a>    
+</span><span><a class="LN" name="91">   91   </a>	clock_gettime(CLOCK_MONOTONIC, &amp;t-&gt;toc);
+</span><span><a class="LN" name="92">   92   </a>    
+</span><span><a class="LN" name="93">   93   </a>	<span class="KW">if</span> ((t-&gt;toc.tv_nsec - t-&gt;tic.tv_nsec)&lt;0) <b>{</b>
+</span><span><a class="LN" name="94">   94   </a>		temp.tv_sec = t-&gt;toc.tv_sec - t-&gt;tic.tv_sec-1;
+</span><span><a class="LN" name="95">   95   </a>		temp.tv_nsec = 1000000000+t-&gt;toc.tv_nsec - t-&gt;tic.tv_nsec;
+</span><span><a class="LN" name="96">   96   </a>	<b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="97">   97   </a>		temp.tv_sec = t-&gt;toc.tv_sec - t-&gt;tic.tv_sec;
+</span><span><a class="LN" name="98">   98   </a>		temp.tv_nsec = t-&gt;toc.tv_nsec - t-&gt;tic.tv_nsec;
+</span><span><a class="LN" name="99">   99   </a>	<b>}</b>
+</span><span><a class="LN" name="100">  100   </a>	<span class="KW">return</span> (pfloat)temp.tv_sec + (pfloat)temp.tv_nsec / 1000000000;
+</span><span><a class="LN" name="101">  101   </a><b>}</b>
+</span><span><a class="LN" name="102">  102   </a>
+</span><span><a class="LN" name="103">  103   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="104">  104   </a>
+</span><span><a class="LN" name="105">  105   </a>
+</span><span><a class="LN" name="106">  106   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="107">  107   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

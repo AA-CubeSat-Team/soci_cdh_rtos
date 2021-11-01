@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - xgerc_DRnL5EPl.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('xgerc_DRnL5EPl_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../xgerc_DRnL5EPl.c" target="rtwreport_document_frame" id="linkToText_plain">xgerc_DRnL5EPl.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: xgerc_DRnL5EPl.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgerc_DRnL5EPl.h&quot;</font>
+</span><span><a class="LN" name="17">   17   </a>
+</span><span><a class="LN" name="18">   18   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:114')" name="code2model"><font color="#117755"><i>&lt;S119&gt;/QR_factorization</i></font></a>' */</span>
+</span><span><a class="LN" name="19">   19   </a><span class="DT">void</span> <a name="fcn_xgerc_DRnL5EPl">xgerc_DRnL5EPl</a>(<a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> m, <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> n, <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> alpha1, <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ix0, <span class="DT">const</span>
+</span><span><a class="LN" name="20">   20   </a>                    <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> y[12], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A[144], <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ia0)
+</span><span><a class="LN" name="21">   21   </a><b>{</b>
+</span><span><a class="LN" name="22">   22   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> jA;
+</span><span><a class="LN" name="23">   23   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> jy;
+</span><span><a class="LN" name="24">   24   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> temp;
+</span><span><a class="LN" name="25">   25   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ix;
+</span><span><a class="LN" name="26">   26   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> j;
+</span><span><a class="LN" name="27">   27   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> b;
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ijA;
+</span><span><a class="LN" name="29">   29   </a>  <span class="KW">if</span> (!(alpha1 == 0.0)) <b>{</b>
+</span><span><a class="LN" name="30">   30   </a>    jA = ia0 - 1;
+</span><span><a class="LN" name="31">   31   </a>    jy = 0;
+</span><span><a class="LN" name="32">   32   </a>    <span class="KW">for</span> (j = 0; j &lt; n; j++) <b>{</b>
+</span><span><a class="LN" name="33">   33   </a>      <span class="KW">if</span> (y[jy] != 0.0) <b>{</b>
+</span><span><a class="LN" name="34">   34   </a>        temp = y[jy] * alpha1;
+</span><span><a class="LN" name="35">   35   </a>        ix = ix0;
+</span><span><a class="LN" name="36">   36   </a>        b = m + jA;
+</span><span><a class="LN" name="37">   37   </a>        <span class="KW">for</span> (ijA = jA; ijA &lt; b; ijA++) <b>{</b>
+</span><span><a class="LN" name="38">   38   </a>          A[ijA] += A[ix - 1] * temp;
+</span><span><a class="LN" name="39">   39   </a>          ix++;
+</span><span><a class="LN" name="40">   40   </a>        <b>}</b>
+</span><span><a class="LN" name="41">   41   </a>      <b>}</b>
+</span><span><a class="LN" name="42">   42   </a>
+</span><span><a class="LN" name="43">   43   </a>      jy++;
+</span><span><a class="LN" name="44">   44   </a>      jA += 12;
+</span><span><a class="LN" name="45">   45   </a>    <b>}</b>
+</span><span><a class="LN" name="46">   46   </a>  <b>}</b>
+</span><span><a class="LN" name="47">   47   </a><b>}</b>
+</span><span><a class="LN" name="48">   48   </a>
+</span><span><a class="LN" name="49">   49   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="50">   50   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="51">   51   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="52">   52   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="53">   53   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="54">   54   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,1665 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - ecos.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('ecos_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/ecos.c" target="rtwreport_document_frame" id="linkToText_plain">ecos.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a><span class="CT">/* Main solver module */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a>
+</span><span><a class="LN" name="23">   23   </a><span class="CT">/* ECOS HEADER FILE ---------------------------------------------------- */</span>
+</span><span><a class="LN" name="24">   24   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;splamm.h&quot;</font>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;equil.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><span class="CT">/* NEEDED FOR SQRT ----------------------------------------------------- */</span>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> _WIN32 || <span class="PP">defined</span> _WIN64 )
+</span><span><a class="LN" name="32">   32   </a><span class="CT">/* include stdio.h for _set_output_format */</span>
+</span><span><a class="LN" name="33">   33   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;stdio.h&gt;</font>
+</span><span><a class="LN" name="34">   34   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="35">   35   </a>
+</span><span><a class="LN" name="36">   36   </a>
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a><span class="CT">/* Some internal defines */</span>
+</span><span><a class="LN" name="39">   39   </a><font color="#992211">#</font><span class="PP">define</span> ECOS_NOT_CONVERGED_YET (-87)  <span class="CT">/* indicates no convergence yet    */</span>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="42">   42   </a><span class="CT"> * Private static const char * for version numbering.</span>
+</span><span><a class="LN" name="43">   43   </a><span class="CT"> * All versions point to this string.</span>
+</span><span><a class="LN" name="44">   44   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="45">   45   </a><span class="DT">static</span> <span class="DT">const</span> <span class="DT">char</span>* <a name="var_thisVersion">thisVersion</a> = ECOS_VERSION;
+</span><span><a class="LN" name="46">   46   </a>
+</span><span><a class="LN" name="47">   47   </a>
+</span><span><a class="LN" name="48">   48   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="49">   49   </a><span class="CT"> * Version: returns the current version number</span>
+</span><span><a class="LN" name="50">   50   </a><span class="CT"> * Returns the version number in the format X.Y.Z</span>
+</span><span><a class="LN" name="51">   51   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="52">   52   </a><span class="DT">const</span> <span class="DT">char</span>* <a name="fcn_ECOS_ver">ECOS_ver</a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="53">   53   </a><b>{</b>
+</span><span><a class="LN" name="54">   54   </a>    <span class="KW">return</span> <a href="#var_thisVersion" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_thisVersion');" target="_self"><font color="#1122aa">thisVersion</font></a>;
+</span><span><a class="LN" name="55">   55   </a><b>}</b>
+</span><span><a class="LN" name="56">   56   </a>
+</span><span><a class="LN" name="57">   57   </a>
+</span><span><a class="LN" name="58">   58   </a><span class="CT">/* Compares stats of two iterates with each other.</span>
+</span><span><a class="LN" name="59">   59   </a><span class="CT"> * Returns 1 if infoA is better than infoB, zero otherwise.</span>
+</span><span><a class="LN" name="60">   60   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="61">   61   </a>idxint <a name="fcn_compareStatistics">compareStatistics</a>(stats* infoA, stats* infoB)
+</span><span><a class="LN" name="62">   62   </a><b>{</b>
+</span><span><a class="LN" name="63">   63   </a>
+</span><span><a class="LN" name="64">   64   </a>    <span class="KW">if</span> ( infoA-&gt;pinfres != ECOS_NAN &amp;&amp; infoA-&gt;kapovert &gt; 1)<b>{</b>
+</span><span><a class="LN" name="65">   65   </a>        <span class="KW">if</span>( infoB-&gt;pinfres != ECOS_NAN) <b>{</b>
+</span><span><a class="LN" name="66">   66   </a>            <span class="CT">/* A-&gt;pinfres != NAN, B-&gt;pinfres!=NAN */</span>
+</span><span><a class="LN" name="67">   67   </a>            <span class="KW">if</span> ( ( infoA-&gt;gap &gt; 0 &amp;&amp; infoB-&gt;gap &gt; 0 &amp;&amp; infoA-&gt;gap &lt; infoB-&gt;gap ) &amp;&amp;
+</span><span><a class="LN" name="68">   68   </a>                ( infoA-&gt;pinfres &gt; 0 &amp;&amp; infoA-&gt;pinfres &lt; infoB-&gt;pres ) &amp;&amp;
+</span><span><a class="LN" name="69">   69   </a>                ( infoA-&gt;mu &gt; 0 &amp;&amp; infoA-&gt;mu &lt; infoB-&gt;mu ) )<b>{</b>
+</span><span><a class="LN" name="70">   70   </a>                <span class="CT">/* PRINTTEXT("BRANCH 1 "); */</span>
+</span><span><a class="LN" name="71">   71   </a>                <span class="KW">return</span> 1;
+</span><span><a class="LN" name="72">   72   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="73">   73   </a>                <span class="CT">/* PRINTTEXT("BRANCH 1 not OK"); */</span>
+</span><span><a class="LN" name="74">   74   </a>                <span class="KW">return</span> 0;
+</span><span><a class="LN" name="75">   75   </a>            <b>}</b>
+</span><span><a class="LN" name="76">   76   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="77">   77   </a>            <span class="CT">/* A-&gt;pinfres != NAN, B-&gt;pinfres==NAN */</span>
+</span><span><a class="LN" name="78">   78   </a>            <span class="KW">if</span> ( ( infoA-&gt;gap &gt; 0 &amp;&amp; infoB-&gt;gap &gt; 0 &amp;&amp; infoA-&gt;gap &lt; infoB-&gt;gap ) &amp;&amp;
+</span><span><a class="LN" name="79">   79   </a>               ( infoA-&gt;mu &gt; 0 &amp;&amp; infoA-&gt;mu &lt; infoB-&gt;mu ) )<b>{</b>
+</span><span><a class="LN" name="80">   80   </a>                <span class="CT">/* PRINTTEXT("BRANCH 2 "); */</span>
+</span><span><a class="LN" name="81">   81   </a>                <span class="KW">return</span> 1;
+</span><span><a class="LN" name="82">   82   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="83">   83   </a>                <span class="CT">/* PRINTTEXT("BRANCH 2 not OK"); */</span>
+</span><span><a class="LN" name="84">   84   </a>                <span class="KW">return</span> 0;
+</span><span><a class="LN" name="85">   85   </a>            <b>}</b>
+</span><span><a class="LN" name="86">   86   </a>        <b>}</b>
+</span><span><a class="LN" name="87">   87   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="88">   88   </a>            <span class="CT">/* A-&gt;pinfres == NAN or pinfres too large */</span>
+</span><span><a class="LN" name="89">   89   </a>        <span class="KW">if</span> ( ( infoA-&gt;gap &gt; 0 &amp;&amp; infoB-&gt;gap &gt; 0 &amp;&amp; infoA-&gt;gap &lt; infoB-&gt;gap ) &amp;&amp;
+</span><span><a class="LN" name="90">   90   </a>            ( infoA-&gt;pres &gt; 0 &amp;&amp; infoA-&gt;pres &lt; infoB-&gt;pres ) &amp;&amp;
+</span><span><a class="LN" name="91">   91   </a>            ( infoA-&gt;dres &gt; 0 &amp;&amp; infoA-&gt;dres &lt; infoB-&gt;dres ) &amp;&amp;
+</span><span><a class="LN" name="92">   92   </a>            ( infoA-&gt;kapovert &gt; 0 &amp;&amp; infoA-&gt;kapovert &lt; infoB-&gt;kapovert) &amp;&amp;
+</span><span><a class="LN" name="93">   93   </a>            ( infoA-&gt;mu &gt; 0 &amp;&amp; infoA-&gt;mu &lt; infoB-&gt;mu ) )<b>{</b>
+</span><span><a class="LN" name="94">   94   </a>            <span class="CT">/* PRINTTEXT("BRANCH 3 OK "); */</span>
+</span><span><a class="LN" name="95">   95   </a>            <span class="KW">return</span> 1;
+</span><span><a class="LN" name="96">   96   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="97">   97   </a>            <span class="CT">/* PRINTTEXT("BRANCH 3 not OK"); */</span>
+</span><span><a class="LN" name="98">   98   </a>            <span class="KW">return</span> 0;
+</span><span><a class="LN" name="99">   99   </a>        <b>}</b>
+</span><span><a class="LN" name="100">  100   </a>    <b>}</b>
+</span><span><a class="LN" name="101">  101   </a><b>}</b>
+</span><span><a class="LN" name="102">  102   </a>
+</span><span><a class="LN" name="103">  103   </a>
+</span><span><a class="LN" name="104">  104   </a><span class="CT">/* Copy variables from current to best iterate */</span>
+</span><span><a class="LN" name="105">  105   </a><span class="DT">void</span> <a name="fcn_saveIterateAsBest">saveIterateAsBest</a>(pwork* w)
+</span><span><a class="LN" name="106">  106   </a><b>{</b>
+</span><span><a class="LN" name="107">  107   </a>    idxint i;
+</span><span><a class="LN" name="108">  108   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;n; i++) <b>{</b> w-&gt;best_x[i] = w-&gt;x[i]; <b>}</b>
+</span><span><a class="LN" name="109">  109   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;p; i++) <b>{</b> w-&gt;best_y[i] = w-&gt;y[i]; <b>}</b>
+</span><span><a class="LN" name="110">  110   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;m; i++) <b>{</b> w-&gt;best_z[i] = w-&gt;z[i]; <b>}</b>
+</span><span><a class="LN" name="111">  111   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;m; i++) <b>{</b> w-&gt;best_s[i] = w-&gt;s[i]; <b>}</b>
+</span><span><a class="LN" name="112">  112   </a>    w-&gt;best_kap = w-&gt;kap;
+</span><span><a class="LN" name="113">  113   </a>    w-&gt;best_tau = w-&gt;tau;
+</span><span><a class="LN" name="114">  114   </a>    w-&gt;best_cx = w-&gt;cx;
+</span><span><a class="LN" name="115">  115   </a>    w-&gt;best_by = w-&gt;by;
+</span><span><a class="LN" name="116">  116   </a>    w-&gt;best_hz = w-&gt;hz;
+</span><span><a class="LN" name="117">  117   </a>    w-&gt;best_info-&gt;pcost = w-&gt;info-&gt;pcost;
+</span><span><a class="LN" name="118">  118   </a>	w-&gt;best_info-&gt;dcost = w-&gt;info-&gt;dcost;
+</span><span><a class="LN" name="119">  119   </a>    w-&gt;best_info-&gt;pres = w-&gt;info-&gt;pres;
+</span><span><a class="LN" name="120">  120   </a>    w-&gt;best_info-&gt;dres = w-&gt;info-&gt;dres;
+</span><span><a class="LN" name="121">  121   </a>	w-&gt;best_info-&gt;pinfres = w-&gt;info-&gt;pinfres;
+</span><span><a class="LN" name="122">  122   </a>    w-&gt;best_info-&gt;dinfres = w-&gt;info-&gt;dinfres;
+</span><span><a class="LN" name="123">  123   </a>    w-&gt;best_info-&gt;gap = w-&gt;info-&gt;gap;
+</span><span><a class="LN" name="124">  124   </a>    w-&gt;best_info-&gt;relgap = w-&gt;info-&gt;relgap;
+</span><span><a class="LN" name="125">  125   </a>    w-&gt;best_info-&gt;mu = w-&gt;info-&gt;mu;
+</span><span><a class="LN" name="126">  126   </a>	w-&gt;best_info-&gt;kapovert = w-&gt;info-&gt;kapovert;
+</span><span><a class="LN" name="127">  127   </a>    w-&gt;best_info-&gt;iter = w-&gt;info-&gt;iter;
+</span><span><a class="LN" name="128">  128   </a><b>}</b>
+</span><span><a class="LN" name="129">  129   </a>
+</span><span><a class="LN" name="130">  130   </a>
+</span><span><a class="LN" name="131">  131   </a><span class="CT">/* Copy variables from best iterate to current</span>
+</span><span><a class="LN" name="132">  132   </a><span class="CT"> * Comapred to saveIterateAsBest, only the iteration number</span>
+</span><span><a class="LN" name="133">  133   </a><span class="CT"> * is not restored.</span>
+</span><span><a class="LN" name="134">  134   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="135">  135   </a><span class="DT">void</span> <a name="fcn_restoreBestIterate">restoreBestIterate</a>(pwork* w)
+</span><span><a class="LN" name="136">  136   </a><b>{</b>
+</span><span><a class="LN" name="137">  137   </a>    idxint i;
+</span><span><a class="LN" name="138">  138   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;n; i++) <b>{</b> w-&gt;x[i] = w-&gt;best_x[i]; <b>}</b>
+</span><span><a class="LN" name="139">  139   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;p; i++) <b>{</b> w-&gt;y[i] = w-&gt;best_y[i]; <b>}</b>
+</span><span><a class="LN" name="140">  140   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;m; i++) <b>{</b> w-&gt;z[i] = w-&gt;best_z[i]; <b>}</b>
+</span><span><a class="LN" name="141">  141   </a>    <span class="KW">for</span> (i=0; i&lt;w-&gt;m; i++) <b>{</b> w-&gt;s[i] = w-&gt;best_s[i]; <b>}</b>
+</span><span><a class="LN" name="142">  142   </a>    w-&gt;kap = w-&gt;best_kap;
+</span><span><a class="LN" name="143">  143   </a>    w-&gt;tau = w-&gt;best_tau;
+</span><span><a class="LN" name="144">  144   </a>    w-&gt;cx = w-&gt;best_cx;
+</span><span><a class="LN" name="145">  145   </a>    w-&gt;by = w-&gt;best_by;
+</span><span><a class="LN" name="146">  146   </a>    w-&gt;hz = w-&gt;best_hz;
+</span><span><a class="LN" name="147">  147   </a>    w-&gt;info-&gt;pcost = w-&gt;best_info-&gt;pcost;
+</span><span><a class="LN" name="148">  148   </a>	w-&gt;info-&gt;dcost = w-&gt;best_info-&gt;dcost;
+</span><span><a class="LN" name="149">  149   </a>    w-&gt;info-&gt;pres = w-&gt;best_info-&gt;pres;
+</span><span><a class="LN" name="150">  150   </a>    w-&gt;info-&gt;dres = w-&gt;best_info-&gt;dres;
+</span><span><a class="LN" name="151">  151   </a>	w-&gt;info-&gt;pinfres = w-&gt;best_info-&gt;pinfres;
+</span><span><a class="LN" name="152">  152   </a>    w-&gt;info-&gt;dinfres = w-&gt;best_info-&gt;dinfres;
+</span><span><a class="LN" name="153">  153   </a>    w-&gt;info-&gt;gap = w-&gt;best_info-&gt;gap;
+</span><span><a class="LN" name="154">  154   </a>    w-&gt;info-&gt;relgap = w-&gt;best_info-&gt;relgap;
+</span><span><a class="LN" name="155">  155   </a>    w-&gt;info-&gt;mu = w-&gt;best_info-&gt;mu;
+</span><span><a class="LN" name="156">  156   </a>	w-&gt;info-&gt;kapovert = w-&gt;best_info-&gt;kapovert;
+</span><span><a class="LN" name="157">  157   </a><b>}</b>
+</span><span><a class="LN" name="158">  158   </a>
+</span><span><a class="LN" name="159">  159   </a>
+</span><span><a class="LN" name="160">  160   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="161">  161   </a><span class="CT"> * This function is reponsible for checking the exit/convergence conditions of ECOS.</span>
+</span><span><a class="LN" name="162">  162   </a><span class="CT"> * If one of the exit conditions is met, ECOS displays an exit message and returns</span>
+</span><span><a class="LN" name="163">  163   </a><span class="CT"> * the corresponding exit code. The calling function must then make sure that ECOS</span>
+</span><span><a class="LN" name="164">  164   </a><span class="CT"> * is indeed correctly exited, so a call to this function should always be followed</span>
+</span><span><a class="LN" name="165">  165   </a><span class="CT"> * by a break statement.</span>
+</span><span><a class="LN" name="166">  166   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="167">  167   </a><span class="CT"> *    If mode == 0, normal precisions are checked.</span>
+</span><span><a class="LN" name="168">  168   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="169">  169   </a><span class="CT"> *    If mode != 0, reduced precisions are checked, and the exit display is augmented</span>
+</span><span><a class="LN" name="170">  170   </a><span class="CT"> *                  by "Close to". The exitcodes returned are increased by the value</span>
+</span><span><a class="LN" name="171">  171   </a><span class="CT"> *                  of mode.</span>
+</span><span><a class="LN" name="172">  172   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="173">  173   </a><span class="CT"> * The primal and dual infeasibility flags w-&gt;info-&gt;pinf and w-&gt;info-&gt;dinf are raised</span>
+</span><span><a class="LN" name="174">  174   </a><span class="CT"> * according to the outcome of the test.</span>
+</span><span><a class="LN" name="175">  175   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="176">  176   </a><span class="CT"> * If none of the exit tests are met, the function returns ECOS_NOT_CONVERGED_YET.</span>
+</span><span><a class="LN" name="177">  177   </a><span class="CT"> * This should not be an exitflag that is ever returned to the outside world.</span>
+</span><span><a class="LN" name="178">  178   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="179">  179   </a>idxint <a name="fcn_checkExitConditions">checkExitConditions</a>(pwork* w, idxint mode)
+</span><span><a class="LN" name="180">  180   </a><b>{</b>
+</span><span><a class="LN" name="181">  181   </a>    pfloat feastol;
+</span><span><a class="LN" name="182">  182   </a>    pfloat abstol;
+</span><span><a class="LN" name="183">  183   </a>    pfloat reltol;
+</span><span><a class="LN" name="184">  184   </a>
+</span><span><a class="LN" name="185">  185   </a>    <span class="CT">/* set accuracy against which to check */</span>
+</span><span><a class="LN" name="186">  186   </a>    <span class="KW">if</span>( mode == 0) <b>{</b>
+</span><span><a class="LN" name="187">  187   </a>        <span class="CT">/* check convergence against normal precisions */</span>
+</span><span><a class="LN" name="188">  188   </a>        feastol = w-&gt;stgs-&gt;feastol;
+</span><span><a class="LN" name="189">  189   </a>        abstol = w-&gt;stgs-&gt;abstol;
+</span><span><a class="LN" name="190">  190   </a>        reltol = w-&gt;stgs-&gt;reltol;
+</span><span><a class="LN" name="191">  191   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="192">  192   </a>        <span class="CT">/* check convergence against reduced precisions */</span>
+</span><span><a class="LN" name="193">  193   </a>        feastol = w-&gt;stgs-&gt;feastol_inacc;
+</span><span><a class="LN" name="194">  194   </a>        abstol = w-&gt;stgs-&gt;abstol_inacc;
+</span><span><a class="LN" name="195">  195   </a>        reltol = w-&gt;stgs-&gt;reltol_inacc;
+</span><span><a class="LN" name="196">  196   </a>    <b>}</b>
+</span><span><a class="LN" name="197">  197   </a>
+</span><span><a class="LN" name="198">  198   </a>    <span class="CT">/* Optimal? */</span>
+</span><span><a class="LN" name="199">  199   </a>    <span class="KW">if</span>( ( -w-&gt;cx &gt; 0 || -w-&gt;by - w-&gt;hz &gt;= -abstol ) &amp;&amp;
+</span><span><a class="LN" name="200">  200   </a>        ( w-&gt;info-&gt;pres &lt; feastol &amp;&amp; w-&gt;info-&gt;dres &lt; feastol ) &amp;&amp;
+</span><span><a class="LN" name="201">  201   </a>        ( w-&gt;info-&gt;gap &lt; abstol || w-&gt;info-&gt;relgap &lt; reltol  ))<b>{</b>
+</span><span><a class="LN" name="202">  202   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="203">  203   </a>        <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <b>{</b>
+</span><span><a class="LN" name="204">  204   </a>            <span class="KW">if</span>( mode == 0) <b>{</b>
+</span><span><a class="LN" name="205">  205   </a>                PRINTTEXT(<font color="#1122ff">&quot;\nOPTIMAL (within feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="206">  206   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="207">  207   </a>                PRINTTEXT(<font color="#1122ff">&quot;\nClose to OPTIMAL (within feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="208">  208   </a>            <b>}</b>
+</span><span><a class="LN" name="209">  209   </a>        <b>}</b>
+</span><span><a class="LN" name="210">  210   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="211">  211   </a>        w-&gt;info-&gt;pinf = 0;
+</span><span><a class="LN" name="212">  212   </a>        w-&gt;info-&gt;dinf = 0;
+</span><span><a class="LN" name="213">  213   </a>        <span class="KW">return</span> ECOS_OPTIMAL + mode;
+</span><span><a class="LN" name="214">  214   </a>    <b>}</b>
+</span><span><a class="LN" name="215">  215   </a>
+</span><span><a class="LN" name="216">  216   </a>    <span class="CT">/* Dual infeasible? */</span>
+</span><span><a class="LN" name="217">  217   </a>    <span class="KW">else</span> <span class="KW">if</span>( (w-&gt;info-&gt;dinfres != ECOS_NAN) &amp;&amp; (w-&gt;info-&gt;dinfres &lt; feastol) &amp;&amp; (w-&gt;tau &lt; w-&gt;kap) )<b>{</b>
+</span><span><a class="LN" name="218">  218   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="219">  219   </a>        <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <b>{</b>
+</span><span><a class="LN" name="220">  220   </a>            <span class="KW">if</span>( mode == 0) <b>{</b>
+</span><span><a class="LN" name="221">  221   </a>                PRINTTEXT(<font color="#1122ff">&quot;\nUNBOUNDED (within feastol=%3.1e).&quot;</font>, w-&gt;info-&gt;dinfres );
+</span><span><a class="LN" name="222">  222   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="223">  223   </a>                PRINTTEXT(<font color="#1122ff">&quot;\nClose to UNBOUNDED (within feastol=%3.1e).&quot;</font>, w-&gt;info-&gt;dinfres );
+</span><span><a class="LN" name="224">  224   </a>            <b>}</b>
+</span><span><a class="LN" name="225">  225   </a>        <b>}</b>
+</span><span><a class="LN" name="226">  226   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="227">  227   </a>        w-&gt;info-&gt;pinf = 0;
+</span><span><a class="LN" name="228">  228   </a>        w-&gt;info-&gt;dinf = 1;
+</span><span><a class="LN" name="229">  229   </a>        <span class="KW">return</span> ECOS_DINF + mode;
+</span><span><a class="LN" name="230">  230   </a>    <b>}</b>
+</span><span><a class="LN" name="231">  231   </a>
+</span><span><a class="LN" name="232">  232   </a>    <span class="CT">/* Primal infeasible? */</span>
+</span><span><a class="LN" name="233">  233   </a>    <span class="KW">else</span> <span class="KW">if</span>( ((w-&gt;info-&gt;pinfres != ECOS_NAN &amp;&amp; w-&gt;info-&gt;pinfres &lt; feastol) &amp;&amp; (w-&gt;tau &lt; w-&gt;kap)) ||
+</span><span><a class="LN" name="234">  234   </a>            ( w-&gt;tau &lt; w-&gt;stgs-&gt;feastol &amp;&amp; w-&gt;kap &lt; w-&gt;stgs-&gt;feastol &amp;&amp; w-&gt;info-&gt;pinfres &lt; w-&gt;stgs-&gt;feastol) )<b>{</b>
+</span><span><a class="LN" name="235">  235   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="236">  236   </a>        <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <b>{</b>
+</span><span><a class="LN" name="237">  237   </a>            <span class="KW">if</span>( mode == 0) <b>{</b>
+</span><span><a class="LN" name="238">  238   </a>                PRINTTEXT(<font color="#1122ff">&quot;\nPRIMAL INFEASIBLE (within feastol=%3.1e).&quot;</font>, w-&gt;info-&gt;pinfres );
+</span><span><a class="LN" name="239">  239   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="240">  240   </a>                PRINTTEXT(<font color="#1122ff">&quot;\nClose to PRIMAL INFEASIBLE (within feastol=%3.1e).&quot;</font>, w-&gt;info-&gt;pinfres );
+</span><span><a class="LN" name="241">  241   </a>            <b>}</b>
+</span><span><a class="LN" name="242">  242   </a>        <b>}</b>
+</span><span><a class="LN" name="243">  243   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="244">  244   </a>        w-&gt;info-&gt;pinf = 1;
+</span><span><a class="LN" name="245">  245   </a>        w-&gt;info-&gt;dinf = 0;
+</span><span><a class="LN" name="246">  246   </a>        <span class="KW">return</span> ECOS_PINF + mode;
+</span><span><a class="LN" name="247">  247   </a>    <b>}</b>
+</span><span><a class="LN" name="248">  248   </a>
+</span><span><a class="LN" name="249">  249   </a>
+</span><span><a class="LN" name="250">  250   </a>    <span class="CT">/* Indicate if none of the above criteria are met */</span>
+</span><span><a class="LN" name="251">  251   </a>    <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="252">  252   </a>        <span class="KW">return</span> ECOS_NOT_CONVERGED_YET;
+</span><span><a class="LN" name="253">  253   </a>    <b>}</b>
+</span><span><a class="LN" name="254">  254   </a><b>}</b>
+</span><span><a class="LN" name="255">  255   </a>
+</span><span><a class="LN" name="256">  256   </a>
+</span><span><a class="LN" name="257">  257   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="258">  258   </a><span class="CT"> * Initializes the solver.</span>
+</span><span><a class="LN" name="259">  259   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="260">  260   </a>idxint <a name="fcn_init">init</a>(pwork* w)
+</span><span><a class="LN" name="261">  261   </a><b>{</b>
+</span><span><a class="LN" name="262">  262   </a>	idxint i, j, k, l, KKT_FACTOR_RETURN_CODE;
+</span><span><a class="LN" name="263">  263   </a>	idxint* Pinv = w-&gt;KKT-&gt;Pinv;
+</span><span><a class="LN" name="264">  264   </a>    pfloat rx, ry, rz;
+</span><span><a class="LN" name="265">  265   </a>
+</span><span><a class="LN" name="266">  266   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="267">  267   </a>	timer tfactor, tkktsolve;
+</span><span><a class="LN" name="268">  268   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="269">  269   </a>
+</span><span><a class="LN" name="270">  270   </a>    <span class="CT">/* set regularization parameter */</span>
+</span><span><a class="LN" name="271">  271   </a>	w-&gt;KKT-&gt;delta = w-&gt;stgs-&gt;delta;
+</span><span><a class="LN" name="272">  272   </a>
+</span><span><a class="LN" name="273">  273   </a>    <span class="CT">/* Initialize KKT matrix */</span>
+</span><span><a class="LN" name="274">  274   </a>    <a href="kkt_c.html#fcn_kkt_init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_init');" target="_self"><font color="#1122aa">kkt_init</font></a>(w-&gt;KKT-&gt;PKPt, w-&gt;KKT-&gt;PK, w-&gt;C);
+</span><span><a class="LN" name="275">  275   </a>
+</span><span><a class="LN" name="276">  276   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG &gt; 0
+</span><span><a class="LN" name="277">  277   </a>    <a href="splamm_c.html#fcn_dumpSparseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_dumpSparseMatrix');" target="_self"><font color="#1122aa">dumpSparseMatrix</font></a>(w-&gt;KKT-&gt;PKPt, <font color="#1122ff">&quot;PKPt0.txt&quot;</font>);
+</span><span><a class="LN" name="278">  278   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="279">  279   </a>
+</span><span><a class="LN" name="280">  280   </a>
+</span><span><a class="LN" name="281">  281   </a>    <span class="CT">/* initialize RHS1 */</span>
+</span><span><a class="LN" name="282">  282   </a>	k = 0; j = 0;
+</span><span><a class="LN" name="283">  283   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;n; i++ )<b>{</b> w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = 0; <b>}</b>
+</span><span><a class="LN" name="284">  284   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;p; i++ )<b>{</b> w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = w-&gt;b[i]; <b>}</b>
+</span><span><a class="LN" name="285">  285   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;C-&gt;lpc-&gt;p; i++ )<b>{</b> w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = w-&gt;h[i]; j++; <b>}</b>
+</span><span><a class="LN" name="286">  286   </a>	<span class="KW">for</span>( l=0; l&lt;w-&gt;C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="287">  287   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;soc[l].p; i++ )<b>{</b> w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = w-&gt;h[j++]; <b>}</b>
+</span><span><a class="LN" name="288">  288   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="289">  289   </a>		w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = 0;
+</span><span><a class="LN" name="290">  290   </a>        w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = 0;
+</span><span><a class="LN" name="291">  291   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="292">  292   </a>	<b>}</b>
+</span><span><a class="LN" name="293">  293   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="294">  294   </a>    <span class="KW">for</span>( l=0; l&lt;w-&gt;C-&gt;nexc; l++)
+</span><span><a class="LN" name="295">  295   </a>    <b>{</b>
+</span><span><a class="LN" name="296">  296   </a>        <span class="KW">for</span>(i=0; i&lt;3; i++)<b>{</b> w-&gt;KKT-&gt;RHS1[w-&gt;KKT-&gt;Pinv[k++]] = w-&gt;h[j++]; <b>}</b>
+</span><span><a class="LN" name="297">  297   </a>    <b>}</b>
+</span><span><a class="LN" name="298">  298   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="299">  299   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="300">  300   </a>    PRINTTEXT(<font color="#1122ff">&quot;Written %i entries of RHS1\n&quot;</font>, (<span class="DT">int</span>)k);
+</span><span><a class="LN" name="301">  301   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="302">  302   </a>
+</span><span><a class="LN" name="303">  303   </a>	<span class="CT">/* initialize RHS2 */</span>
+</span><span><a class="LN" name="304">  304   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;n; i++ )<b>{</b> w-&gt;KKT-&gt;RHS2[w-&gt;KKT-&gt;Pinv[i]] = -w-&gt;c[i]; <b>}</b>
+</span><span><a class="LN" name="305">  305   </a>	<span class="KW">for</span>( i=w-&gt;n; i&lt;w-&gt;KKT-&gt;PKPt-&gt;n; i++ )<b>{</b> w-&gt;KKT-&gt;RHS2[w-&gt;KKT-&gt;Pinv[i]] = 0; <b>}</b>
+</span><span><a class="LN" name="306">  306   </a>
+</span><span><a class="LN" name="307">  307   </a>	<span class="CT">/* get scalings of problem data */</span>
+</span><span><a class="LN" name="308">  308   </a>	rx = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;c, w-&gt;n); w-&gt;resx0 = MAX(1, rx);
+</span><span><a class="LN" name="309">  309   </a>	ry = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;b, w-&gt;p); w-&gt;resy0 = MAX(1, ry);
+</span><span><a class="LN" name="310">  310   </a>	rz = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;h, w-&gt;m); w-&gt;resz0 = MAX(1, rz);
+</span><span><a class="LN" name="311">  311   </a>
+</span><span><a class="LN" name="312">  312   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="313">  313   </a>    <span class="CT">/* If expcone is enabled and there are exponential cones in</span>
+</span><span><a class="LN" name="314">  314   </a><span class="CT">     * the problem definition, then skip the Mehrotra initialization strategy</span>
+</span><span><a class="LN" name="315">  315   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="316">  316   </a>    <span class="KW">if</span>(w-&gt;C-&gt;nexc == 0)
+</span><span><a class="LN" name="317">  317   </a>    <b>{</b>
+</span><span><a class="LN" name="318">  318   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="319">  319   </a>
+</span><span><a class="LN" name="320">  320   </a>	<span class="CT">/* Factor KKT matrix - this is needed in all 3 linear system solves */</span>
+</span><span><a class="LN" name="321">  321   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="322">  322   </a>	<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tfactor);
+</span><span><a class="LN" name="323">  323   </a>    KKT_FACTOR_RETURN_CODE = <a href="kkt_c.html#fcn_kkt_factor" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_factor');" target="_self"><font color="#1122aa">kkt_factor</font></a>(w-&gt;KKT, w-&gt;stgs-&gt;eps, w-&gt;stgs-&gt;delta, &amp;w-&gt;info-&gt;tfactor_t1, &amp;w-&gt;info-&gt;tfactor_t2);
+</span><span><a class="LN" name="324">  324   </a>	w-&gt;info-&gt;tfactor += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tfactor);
+</span><span><a class="LN" name="325">  325   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="326">  326   </a>    KKT_FACTOR_RETURN_CODE = <a href="kkt_c.html#fcn_kkt_factor" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_factor');" target="_self"><font color="#1122aa">kkt_factor</font></a>(w-&gt;KKT, w-&gt;stgs-&gt;eps, w-&gt;stgs-&gt;delta);
+</span><span><a class="LN" name="327">  327   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="328">  328   </a>
+</span><span><a class="LN" name="329">  329   </a>    <span class="CT">/* check if factorization was successful, exit otherwise */</span>
+</span><span><a class="LN" name="330">  330   </a>	<span class="KW">if</span>(  KKT_FACTOR_RETURN_CODE != KKT_OK )<b>{</b>
+</span><span><a class="LN" name="331">  331   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="332">  332   </a>    <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nProblem in factoring KKT system, aborting.&quot;</font>);
+</span><span><a class="LN" name="333">  333   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="334">  334   </a>        <span class="KW">return</span> ECOS_FATAL;
+</span><span><a class="LN" name="335">  335   </a>    <b>}</b>
+</span><span><a class="LN" name="336">  336   </a>
+</span><span><a class="LN" name="337">  337   </a>
+</span><span><a class="LN" name="338">  338   </a>	<span class="CT">/*</span>
+</span><span><a class="LN" name="339">  339   </a><span class="CT">	 * PRIMAL VARIABLES:</span>
+</span><span><a class="LN" name="340">  340   </a><span class="CT">	 *  - solve xhat = arg min ||Gx-h||_2^2  such that Ax = b</span>
+</span><span><a class="LN" name="341">  341   </a><span class="CT">	 *  - r = h - G*xhat</span>
+</span><span><a class="LN" name="342">  342   </a><span class="CT">	 * These two equations are solved by</span>
+</span><span><a class="LN" name="343">  343   </a><span class="CT">	 *</span>
+</span><span><a class="LN" name="344">  344   </a><span class="CT">	 * [ 0   A'  G' ] [ xhat ]     [ 0 ]</span>
+</span><span><a class="LN" name="345">  345   </a><span class="CT">     * [ A   0   0  ] [  y   ]  =  [ b ]</span>
+</span><span><a class="LN" name="346">  346   </a><span class="CT">     * [ G   0  -I  ] [ -r   ]     [ h ]</span>
+</span><span><a class="LN" name="347">  347   </a><span class="CT">     *</span>
+</span><span><a class="LN" name="348">  348   </a><span class="CT">     * and then take shat = r if alphap &lt; 0, zbar + (1+alphap)*e otherwise</span>
+</span><span><a class="LN" name="349">  349   </a><span class="CT">     * where alphap = inf{ alpha | sbar + alpha*e &gt;= 0 }</span>
+</span><span><a class="LN" name="350">  350   </a><span class="CT">	 */</span>
+</span><span><a class="LN" name="351">  351   </a>
+</span><span><a class="LN" name="352">  352   </a>	<span class="CT">/* Solve for RHS [0; b; h] */</span>
+</span><span><a class="LN" name="353">  353   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="354">  354   </a>	<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="355">  355   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="356">  356   </a>	w-&gt;info-&gt;nitref1 = <a href="kkt_c.html#fcn_kkt_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_solve');" target="_self"><font color="#1122aa">kkt_solve</font></a>(w-&gt;KKT, w-&gt;A, w-&gt;G, w-&gt;KKT-&gt;RHS1, w-&gt;KKT-&gt;dx1, w-&gt;KKT-&gt;dy1, w-&gt;KKT-&gt;dz1, w-&gt;n, w-&gt;p, w-&gt;m, w-&gt;C, 1, w-&gt;stgs-&gt;nitref);
+</span><span><a class="LN" name="357">  357   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="358">  358   </a>	w-&gt;info-&gt;tkktsolve += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="359">  359   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="360">  360   </a>
+</span><span><a class="LN" name="361">  361   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG &gt; 0
+</span><span><a class="LN" name="362">  362   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 3
+</span><span><a class="LN" name="363">  363   </a>    <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dx1, w-&gt;n, 1, <font color="#1122ff">&quot;dx1_init&quot;</font>);
+</span><span><a class="LN" name="364">  364   </a>    <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dy1, w-&gt;p, 1, <font color="#1122ff">&quot;dy1_init&quot;</font>);
+</span><span><a class="LN" name="365">  365   </a>    <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dz1, w-&gt;m, 1, <font color="#1122ff">&quot;dz1_init&quot;</font>);
+</span><span><a class="LN" name="366">  366   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="367">  367   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="368">  368   </a>
+</span><span><a class="LN" name="369">  369   </a>	<span class="CT">/* Copy out initial value of x */</span>
+</span><span><a class="LN" name="370">  370   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;n; i++ )<b>{</b> w-&gt;x[i] = w-&gt;KKT-&gt;dx1[i]; <b>}</b>
+</span><span><a class="LN" name="371">  371   </a>
+</span><span><a class="LN" name="372">  372   </a>	<span class="CT">/* Copy out -r into temporary variable */</span>
+</span><span><a class="LN" name="373">  373   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;m; i++ )<b>{</b> w-&gt;KKT-&gt;work1[i] = -w-&gt;KKT-&gt;dz1[i]; <b>}</b>
+</span><span><a class="LN" name="374">  374   </a>
+</span><span><a class="LN" name="375">  375   </a>	<span class="CT">/* Bring variable to cone */</span>
+</span><span><a class="LN" name="376">  376   </a>	<a href="cone_c.html#fcn_bring2cone" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_bring2cone');" target="_self"><font color="#1122aa">bring2cone</font></a>(w-&gt;C, w-&gt;KKT-&gt;work1, w-&gt;s );
+</span><span><a class="LN" name="377">  377   </a>
+</span><span><a class="LN" name="378">  378   </a>	<span class="CT">/*</span>
+</span><span><a class="LN" name="379">  379   </a><span class="CT">	 * dual variables</span>
+</span><span><a class="LN" name="380">  380   </a><span class="CT">	 * solve (yhat,zbar) = arg min ||z||_2^2 such that G'*z + A'*y + c = 0</span>
+</span><span><a class="LN" name="381">  381   </a><span class="CT">	 *</span>
+</span><span><a class="LN" name="382">  382   </a><span class="CT">	 * we can solve this by</span>
+</span><span><a class="LN" name="383">  383   </a><span class="CT">	 *</span>
+</span><span><a class="LN" name="384">  384   </a><span class="CT">	 * [ 0   A'  G' ] [  x   ]     [ -c ]</span>
+</span><span><a class="LN" name="385">  385   </a><span class="CT">	 * [ A   0   0  ] [ yhat ]  =  [  0 ]</span>
+</span><span><a class="LN" name="386">  386   </a><span class="CT">	 * [ G   0  -I  ] [ zbar ]     [  0 ]</span>
+</span><span><a class="LN" name="387">  387   </a><span class="CT">	 *</span>
+</span><span><a class="LN" name="388">  388   </a><span class="CT">	 * and then take zhat = zbar if alphad &lt; 0, zbar + (1+alphad)*e otherwise</span>
+</span><span><a class="LN" name="389">  389   </a><span class="CT">	 * where alphad = inf{ alpha | zbar + alpha*e &gt;= 0 }</span>
+</span><span><a class="LN" name="390">  390   </a><span class="CT">	 */</span>
+</span><span><a class="LN" name="391">  391   </a>
+</span><span><a class="LN" name="392">  392   </a>	<span class="CT">/* Solve for RHS [-c; 0; 0] */</span>
+</span><span><a class="LN" name="393">  393   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="394">  394   </a>	<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="395">  395   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="396">  396   </a>	w-&gt;info-&gt;nitref2 = <a href="kkt_c.html#fcn_kkt_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_solve');" target="_self"><font color="#1122aa">kkt_solve</font></a>(w-&gt;KKT, w-&gt;A, w-&gt;G, w-&gt;KKT-&gt;RHS2, w-&gt;KKT-&gt;dx2, w-&gt;KKT-&gt;dy2, w-&gt;KKT-&gt;dz2, w-&gt;n, w-&gt;p, w-&gt;m, w-&gt;C, 1, w-&gt;stgs-&gt;nitref);
+</span><span><a class="LN" name="397">  397   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="398">  398   </a>	w-&gt;info-&gt;tkktsolve += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="399">  399   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="400">  400   </a>
+</span><span><a class="LN" name="401">  401   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG &gt; 0
+</span><span><a class="LN" name="402">  402   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 3
+</span><span><a class="LN" name="403">  403   </a>    <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dx2, w-&gt;n, 1, <font color="#1122ff">&quot;dx2_init&quot;</font>);
+</span><span><a class="LN" name="404">  404   </a>    <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dy2, w-&gt;p, 1, <font color="#1122ff">&quot;dy2_init&quot;</font>);
+</span><span><a class="LN" name="405">  405   </a>    <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dz2, w-&gt;m, 1, <font color="#1122ff">&quot;dz2_init&quot;</font>);
+</span><span><a class="LN" name="406">  406   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="407">  407   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="408">  408   </a>
+</span><span><a class="LN" name="409">  409   </a>    <span class="CT">/* Copy out initial value of y */</span>
+</span><span><a class="LN" name="410">  410   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;p; i++ )<b>{</b> w-&gt;y[i] = w-&gt;KKT-&gt;dy2[i]; <b>}</b>
+</span><span><a class="LN" name="411">  411   </a>
+</span><span><a class="LN" name="412">  412   </a>	<span class="CT">/* Bring variable to cone */</span>
+</span><span><a class="LN" name="413">  413   </a>	<a href="cone_c.html#fcn_bring2cone" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_bring2cone');" target="_self"><font color="#1122aa">bring2cone</font></a>(w-&gt;C, w-&gt;KKT-&gt;dz2, w-&gt;z );
+</span><span><a class="LN" name="414">  414   </a>
+</span><span><a class="LN" name="415">  415   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="416">  416   </a>    <b>}</b>
+</span><span><a class="LN" name="417">  417   </a>    <span class="KW">else</span> <span class="KW">if</span>(w-&gt;C-&gt;nexc &gt; 0)
+</span><span><a class="LN" name="418">  418   </a>    <b>{</b>
+</span><span><a class="LN" name="419">  419   </a>        <a href="cone_c.html#fcn_unitInitialization" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_unitInitialization');" target="_self"><font color="#1122aa">unitInitialization</font></a>(w-&gt;C, w-&gt;s, w-&gt;z, 1.0);
+</span><span><a class="LN" name="420">  420   </a>
+</span><span><a class="LN" name="421">  421   </a>	    <span class="KW">for</span>( i=0; i&lt;w-&gt;p; i++ )<b>{</b> w-&gt;y[i] = 0.0; <b>}</b>
+</span><span><a class="LN" name="422">  422   </a>	    <span class="KW">for</span>( i=0; i&lt;w-&gt;n; i++ )<b>{</b> w-&gt;x[i] = 0.0; <b>}</b>
+</span><span><a class="LN" name="423">  423   </a>        w-&gt;info-&gt;nitref1 = 0;
+</span><span><a class="LN" name="424">  424   </a>        w-&gt;info-&gt;nitref2 = 0;
+</span><span><a class="LN" name="425">  425   </a>    <b>}</b>
+</span><span><a class="LN" name="426">  426   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="427">  427   </a>
+</span><span><a class="LN" name="428">  428   </a>	<span class="CT">/* Prepare RHS1 - before this line RHS1 = [0; b; h], after it holds [-c; b; h] */</span>
+</span><span><a class="LN" name="429">  429   </a>	<span class="KW">for</span>( i=0; i&lt;w-&gt;n; i++)<b>{</b> w-&gt;KKT-&gt;RHS1[Pinv[i]] = -w-&gt;c[i]; <b>}</b>
+</span><span><a class="LN" name="430">  430   </a>
+</span><span><a class="LN" name="431">  431   </a>	<span class="CT">/*</span>
+</span><span><a class="LN" name="432">  432   </a><span class="CT">	 * other variables</span>
+</span><span><a class="LN" name="433">  433   </a><span class="CT">	 */</span>
+</span><span><a class="LN" name="434">  434   </a>	w-&gt;kap = 1.0;
+</span><span><a class="LN" name="435">  435   </a>	w-&gt;tau = 1.0;
+</span><span><a class="LN" name="436">  436   </a>
+</span><span><a class="LN" name="437">  437   </a>	w-&gt;info-&gt;step = 0;
+</span><span><a class="LN" name="438">  438   </a>	w-&gt;info-&gt;step_aff = 0;
+</span><span><a class="LN" name="439">  439   </a>	w-&gt;info-&gt;dinf = 0;
+</span><span><a class="LN" name="440">  440   </a>	w-&gt;info-&gt;pinf = 0;
+</span><span><a class="LN" name="441">  441   </a>
+</span><span><a class="LN" name="442">  442   </a>	<span class="KW">return</span> 0;
+</span><span><a class="LN" name="443">  443   </a><b>}</b>
+</span><span><a class="LN" name="444">  444   </a>
+</span><span><a class="LN" name="445">  445   </a>
+</span><span><a class="LN" name="446">  446   </a>
+</span><span><a class="LN" name="447">  447   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="448">  448   </a><span class="CT"> * Computes residuals.</span>
+</span><span><a class="LN" name="449">  449   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="450">  450   </a><span class="CT"> * hrx = -A'*y - G'*z;  rx = hrx - c.*tau;  hresx = norm(rx,2);</span>
+</span><span><a class="LN" name="451">  451   </a><span class="CT"> * hry = A*x;           ry = hry - b.*tau;  hresy = norm(ry,2);</span>
+</span><span><a class="LN" name="452">  452   </a><span class="CT"> * hrz = s + G*x;       rz = hrz - h.*tau;  hresz = norm(rz,2);</span>
+</span><span><a class="LN" name="453">  453   </a><span class="CT"> * rt = kappa + c'*x + b'*y + h'*z;</span>
+</span><span><a class="LN" name="454">  454   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="455">  455   </a><span class="DT">void</span> <a name="fcn_computeResiduals">computeResiduals</a>(pwork *w)
+</span><span><a class="LN" name="456">  456   </a><b>{</b>
+</span><span><a class="LN" name="457">  457   </a>	<span class="CT">/* rx = -A'*y - G'*z - c.*tau */</span>
+</span><span><a class="LN" name="458">  458   </a>	<span class="KW">if</span>( w-&gt;p &gt; 0 ) <b>{</b>
+</span><span><a class="LN" name="459">  459   </a>        <a href="spla_c.html#fcn_sparseMtVm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMtVm');" target="_self"><font color="#1122aa">sparseMtVm</font></a>(w-&gt;A, w-&gt;y, w-&gt;rx, 1, 0);
+</span><span><a class="LN" name="460">  460   </a>        <a href="spla_c.html#fcn_sparseMtVm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMtVm');" target="_self"><font color="#1122aa">sparseMtVm</font></a>(w-&gt;G, w-&gt;z, w-&gt;rx, 0, 0);
+</span><span><a class="LN" name="461">  461   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="462">  462   </a>        <a href="spla_c.html#fcn_sparseMtVm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMtVm');" target="_self"><font color="#1122aa">sparseMtVm</font></a>(w-&gt;G, w-&gt;z, w-&gt;rx, 1, 0);
+</span><span><a class="LN" name="463">  463   </a>    <b>}</b>
+</span><span><a class="LN" name="464">  464   </a>	w-&gt;hresx = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;rx, w-&gt;n);
+</span><span><a class="LN" name="465">  465   </a>	<a href="spla_c.html#fcn_vsubscale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_vsubscale');" target="_self"><font color="#1122aa">vsubscale</font></a>(w-&gt;n, w-&gt;tau, w-&gt;c, w-&gt;rx);
+</span><span><a class="LN" name="466">  466   </a>
+</span><span><a class="LN" name="467">  467   </a>	<span class="CT">/* ry = A*x - b.*tau */</span>
+</span><span><a class="LN" name="468">  468   </a>	<span class="KW">if</span>( w-&gt;p &gt; 0 )<b>{</b>
+</span><span><a class="LN" name="469">  469   </a>        <a href="spla_c.html#fcn_sparseMV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMV');" target="_self"><font color="#1122aa">sparseMV</font></a>(w-&gt;A, w-&gt;x, w-&gt;ry, 1, 1);
+</span><span><a class="LN" name="470">  470   </a>        w-&gt;hresy = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;ry, w-&gt;p);
+</span><span><a class="LN" name="471">  471   </a>        <a href="spla_c.html#fcn_vsubscale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_vsubscale');" target="_self"><font color="#1122aa">vsubscale</font></a>(w-&gt;p, w-&gt;tau, w-&gt;b, w-&gt;ry);
+</span><span><a class="LN" name="472">  472   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="473">  473   </a>        w-&gt;hresy = 0;
+</span><span><a class="LN" name="474">  474   </a>        w-&gt;ry = NULL;
+</span><span><a class="LN" name="475">  475   </a>	<b>}</b>
+</span><span><a class="LN" name="476">  476   </a>
+</span><span><a class="LN" name="477">  477   </a>	<span class="CT">/* rz = s + G*x - h.*tau */</span>
+</span><span><a class="LN" name="478">  478   </a>	<a href="spla_c.html#fcn_sparseMV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMV');" target="_self"><font color="#1122aa">sparseMV</font></a>(w-&gt;G, w-&gt;x, w-&gt;rz, 1, 1);
+</span><span><a class="LN" name="479">  479   </a>	<a href="spla_c.html#fcn_vadd" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_vadd');" target="_self"><font color="#1122aa">vadd</font></a>(w-&gt;m, w-&gt;s, w-&gt;rz);
+</span><span><a class="LN" name="480">  480   </a>	w-&gt;hresz = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;rz, w-&gt;m);
+</span><span><a class="LN" name="481">  481   </a>	<a href="spla_c.html#fcn_vsubscale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_vsubscale');" target="_self"><font color="#1122aa">vsubscale</font></a>(w-&gt;m, w-&gt;tau, w-&gt;h, w-&gt;rz);
+</span><span><a class="LN" name="482">  482   </a>
+</span><span><a class="LN" name="483">  483   </a>	<span class="CT">/* rt = kappa + c'*x + b'*y + h'*z; */</span>
+</span><span><a class="LN" name="484">  484   </a>	w-&gt;cx = <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;n, w-&gt;c, w-&gt;x);
+</span><span><a class="LN" name="485">  485   </a>	w-&gt;by = w-&gt;p &gt; 0 ? <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;p, w-&gt;b, w-&gt;y) : 0.0;
+</span><span><a class="LN" name="486">  486   </a>	w-&gt;hz = <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;m, w-&gt;h, w-&gt;z);
+</span><span><a class="LN" name="487">  487   </a>	w-&gt;rt = w-&gt;kap + w-&gt;cx + w-&gt;by + w-&gt;hz;
+</span><span><a class="LN" name="488">  488   </a>
+</span><span><a class="LN" name="489">  489   </a>    <span class="CT">/* Norms of x y z */</span>
+</span><span><a class="LN" name="490">  490   </a>    w-&gt;nx = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;x,w-&gt;n);
+</span><span><a class="LN" name="491">  491   </a>    w-&gt;ny = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;y,w-&gt;p);
+</span><span><a class="LN" name="492">  492   </a>    w-&gt;ns = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;s,w-&gt;m);
+</span><span><a class="LN" name="493">  493   </a>    w-&gt;nz = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;z,w-&gt;m);
+</span><span><a class="LN" name="494">  494   </a>
+</span><span><a class="LN" name="495">  495   </a><b>}</b>
+</span><span><a class="LN" name="496">  496   </a>
+</span><span><a class="LN" name="497">  497   </a>
+</span><span><a class="LN" name="498">  498   </a>
+</span><span><a class="LN" name="499">  499   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="500">  500   </a><span class="CT"> * Updates statistics.</span>
+</span><span><a class="LN" name="501">  501   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="502">  502   </a><span class="DT">void</span> <a name="fcn_updateStatistics">updateStatistics</a>(pwork* w)
+</span><span><a class="LN" name="503">  503   </a><b>{</b>
+</span><span><a class="LN" name="504">  504   </a>	pfloat nry, nrz;
+</span><span><a class="LN" name="505">  505   </a>
+</span><span><a class="LN" name="506">  506   </a>	stats* info = w-&gt;info;
+</span><span><a class="LN" name="507">  507   </a>
+</span><span><a class="LN" name="508">  508   </a>	<span class="CT">/* mu = (s'*z + kap*tau) / (D+1) where s'*z is the duality gap */</span>
+</span><span><a class="LN" name="509">  509   </a>	info-&gt;gap = <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;m, w-&gt;s, w-&gt;z);
+</span><span><a class="LN" name="510">  510   </a>	info-&gt;mu = (info-&gt;gap + w-&gt;kap*w-&gt;tau) / (w-&gt;D + 1);
+</span><span><a class="LN" name="511">  511   </a>
+</span><span><a class="LN" name="512">  512   </a>	info-&gt;kapovert = w-&gt;kap / w-&gt;tau;
+</span><span><a class="LN" name="513">  513   </a>	info-&gt;pcost = w-&gt;cx / w-&gt;tau;
+</span><span><a class="LN" name="514">  514   </a>	info-&gt;dcost = -(w-&gt;hz + w-&gt;by) / w-&gt;tau;
+</span><span><a class="LN" name="515">  515   </a>
+</span><span><a class="LN" name="516">  516   </a>    <span class="CT">/* relative duality gap */</span>
+</span><span><a class="LN" name="517">  517   </a>	<span class="KW">if</span>( info-&gt;pcost &lt; 0 )<b>{</b> info-&gt;relgap = info-&gt;gap / (-info-&gt;pcost); <b>}</b>
+</span><span><a class="LN" name="518">  518   </a>	<span class="KW">else</span> <span class="KW">if</span>( info-&gt;dcost &gt; 0 )<b>{</b> info-&gt;relgap = info-&gt;gap / info-&gt;dcost; <b>}</b>
+</span><span><a class="LN" name="519">  519   </a>	<span class="KW">else</span> info-&gt;relgap = ECOS_NAN;
+</span><span><a class="LN" name="520">  520   </a>
+</span><span><a class="LN" name="521">  521   </a>    <span class="CT">/* residuals */</span>
+</span><span><a class="LN" name="522">  522   </a>    nry = w-&gt;p &gt; 0 ? <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;ry, w-&gt;p)/MAX(w-&gt;resy0+w-&gt;nx,1) : 0.0;
+</span><span><a class="LN" name="523">  523   </a>    nrz = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;rz, w-&gt;m)/MAX(w-&gt;resz0+w-&gt;nx+w-&gt;ns,1);
+</span><span><a class="LN" name="524">  524   </a>	info-&gt;pres = MAX(nry, nrz) / w-&gt;tau;
+</span><span><a class="LN" name="525">  525   </a>	info-&gt;dres = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(w-&gt;rx, w-&gt;n)/MAX(w-&gt;resx0+w-&gt;ny+w-&gt;nz,1) / w-&gt;tau;
+</span><span><a class="LN" name="526">  526   </a>
+</span><span><a class="LN" name="527">  527   </a>	<span class="CT">/* infeasibility measures</span>
+</span><span><a class="LN" name="528">  528   </a><span class="CT">     *</span>
+</span><span><a class="LN" name="529">  529   </a><span class="CT">	 * CVXOPT uses the following:</span>
+</span><span><a class="LN" name="530">  530   </a><span class="CT">     * info-&gt;pinfres = w-&gt;hz + w-&gt;by &lt; 0 ? w-&gt;hresx / w-&gt;resx0 / (-w-&gt;hz - w-&gt;by) : NAN;</span>
+</span><span><a class="LN" name="531">  531   </a><span class="CT">     * info-&gt;dinfres = w-&gt;cx &lt; 0 ? MAX(w-&gt;hresy/w-&gt;resy0, w-&gt;hresz/w-&gt;resz0) / (-w-&gt;cx) : NAN;</span>
+</span><span><a class="LN" name="532">  532   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="533">  533   </a>    info-&gt;pinfres = (w-&gt;hz + w-&gt;by)/MAX(w-&gt;ny+w-&gt;nz,1) &lt; -w-&gt;stgs-&gt;reltol ? w-&gt;hresx / MAX(w-&gt;ny+w-&gt;nz,1) : ECOS_NAN;
+</span><span><a class="LN" name="534">  534   </a>    info-&gt;dinfres = w-&gt;cx/MAX(w-&gt;nx,1) &lt; -w-&gt;stgs-&gt;reltol ? MAX(w-&gt;hresy/MAX(w-&gt;nx,1), w-&gt;hresz/MAX(w-&gt;nx+w-&gt;ns,1)) : ECOS_NAN;
+</span><span><a class="LN" name="535">  535   </a>
+</span><span><a class="LN" name="536">  536   </a>
+</span><span><a class="LN" name="537">  537   </a>
+</span><span><a class="LN" name="538">  538   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="539">  539   </a>    PRINTTEXT(<font color="#1122ff">&quot;TAU=%6.4e  KAP=%6.4e  PINFRES=%6.4e  DINFRES=%6.4e\n&quot;</font>,w-&gt;tau,w-&gt;kap,info-&gt;pinfres, info-&gt;dinfres );
+</span><span><a class="LN" name="540">  540   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="541">  541   </a>
+</span><span><a class="LN" name="542">  542   </a><b>}</b>
+</span><span><a class="LN" name="543">  543   </a>
+</span><span><a class="LN" name="544">  544   </a>
+</span><span><a class="LN" name="545">  545   </a>
+</span><span><a class="LN" name="546">  546   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="547">  547   </a><span class="DT">void</span> <a name="fcn_printProgress">printProgress</a>(stats* info)
+</span><span><a class="LN" name="548">  548   </a><b>{</b>
+</span><span><a class="LN" name="549">  549   </a>	<span class="KW">if</span>( info-&gt;iter == 0 )
+</span><span><a class="LN" name="550">  550   </a>	<b>{</b>
+</span><span><a class="LN" name="551">  551   </a>		<span class="CT">/* print header at very first iteration */</span>
+</span><span><a class="LN" name="552">  552   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL == 2
+</span><span><a class="LN" name="553">  553   </a>		PRINTTEXT(<font color="#1122ff">&quot;\nECOS %s - (C) embotech GmbH, Zurich Switzerland, 2012-15. Web: www.embotech.com/ECOS\n&quot;</font>, ECOS_VERSION);
+</span><span><a class="LN" name="554">  554   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="555">  555   </a>		PRINTTEXT(<font color="#1122ff">&quot;Contributors: Core interior point solver:         A. Domahidi, embotech GmbH\n&quot;</font>);
+</span><span><a class="LN" name="556">  556   </a>		PRINTTEXT(<font color="#1122ff">&quot;              Python interface and equilibration: Eric Chu, Stanford University\n&quot;</font>);
+</span><span><a class="LN" name="557">  557   </a>		PRINTTEXT(<font color="#1122ff">&quot;              Branch-and-bound module:            Han Wang, Stanford University\n&quot;</font>);
+</span><span><a class="LN" name="558">  558   </a>		PRINTTEXT(<font color="#1122ff">&quot;              Maths and Methods:                  Stephen Boyd, Stanford University\n&quot;</font>);
+</span><span><a class="LN" name="559">  559   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="560">  560   </a>		PRINTTEXT(<font color="#1122ff">&quot;              Exponential cone support:           Santiago Akle, Stanford University\n&quot;</font>);
+</span><span><a class="LN" name="561">  561   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="562">  562   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="563">  563   </a>		PRINTTEXT(<font color="#1122ff">&quot;\n&quot;</font>);
+</span><span><a class="LN" name="564">  564   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="565">  565   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> _WIN32 || <span class="PP">defined</span> _WIN64
+</span><span><a class="LN" name="566">  566   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EXPCONE
+</span><span><a class="LN" name="567">  567   </a>        PRINTTEXT(<font color="#1122ff">&quot;It     pcost       dcost      gap   pres   dres    k/t    mu     step   sigma     IR    |   BT\n&quot;</font>);
+</span><span><a class="LN" name="568">  568   </a>		PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e    ---    ---   %2d %2d  - |  -  - \n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, (<span class="DT">int</span>)info-&gt;nitref1, (<span class="DT">int</span>)info-&gt;nitref2);
+</span><span><a class="LN" name="569">  569   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="570">  570   </a>		PRINTTEXT(<font color="#1122ff">&quot;It     pcost       dcost      gap   pres   dres    k/t    mu     step   sigma     IR\n&quot;</font>);
+</span><span><a class="LN" name="571">  571   </a>		PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e    ---    ---   %2d %2d  -\n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, (<span class="DT">int</span>)info-&gt;nitref1, (<span class="DT">int</span>)info-&gt;nitref2);
+</span><span><a class="LN" name="572">  572   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">//if defined expcone</span>
+</span><span><a class="LN" name="573">  573   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="574">  574   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EXPCONE
+</span><span><a class="LN" name="575">  575   </a>        PRINTTEXT(<font color="#1122ff">&quot;It     pcost       dcost      gap   pres   dres    k/t    mu     step   sigma     IR    |   BT\n&quot;</font>);
+</span><span><a class="LN" name="576">  576   </a>		PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e    ---    ---   %2d %2d  - |  -  - \n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, (<span class="DT">int</span>)info-&gt;nitref1, (<span class="DT">int</span>)info-&gt;nitref2);
+</span><span><a class="LN" name="577">  577   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="578">  578   </a>        PRINTTEXT(<font color="#1122ff">&quot;It     pcost       dcost      gap   pres   dres    k/t    mu     step   sigma     IR\n&quot;</font>);
+</span><span><a class="LN" name="579">  579   </a>		PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e    ---    ---   %2d %2d  -\n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, (<span class="DT">int</span>)info-&gt;nitref1, (<span class="DT">int</span>)info-&gt;nitref2);
+</span><span><a class="LN" name="580">  580   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/*End if defined EXPCONE for the branch of the first iteration non windows */</span>
+</span><span><a class="LN" name="581">  581   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="582">  582   </a>	<b>}</b>  <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="583">  583   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> _WIN32 || <span class="PP">defined</span> _WIN64
+</span><span><a class="LN" name="584">  584   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EXPCONE
+</span><span><a class="LN" name="585">  585   </a>	PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e  %6.4f  %2.0e  %2d %2d %2d | %2d %2d\n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, info-&gt;step, info-&gt;sigma,\
+</span><span><a class="LN" name="586">  586   </a>   (<span class="DT">int</span>)info-&gt;nitref1,\
+</span><span><a class="LN" name="587">  587   </a>   (<span class="DT">int</span>)info-&gt;nitref2,\
+</span><span><a class="LN" name="588">  588   </a>   (<span class="DT">int</span>)info-&gt;nitref3,\
+</span><span><a class="LN" name="589">  589   </a>   (<span class="DT">int</span>)info-&gt;affBack,\
+</span><span><a class="LN" name="590">  590   </a>   (<span class="DT">int</span>)info-&gt;cmbBack);
+</span><span><a class="LN" name="591">  591   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="592">  592   </a>	PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e  %6.4f  %2.0e  %2d %2d %2d\n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, info-&gt;step, info-&gt;sigma,\
+</span><span><a class="LN" name="593">  593   </a>   (<span class="DT">int</span>)info-&gt;nitref1,\
+</span><span><a class="LN" name="594">  594   </a>   (<span class="DT">int</span>)info-&gt;nitref2,\
+</span><span><a class="LN" name="595">  595   </a>   (<span class="DT">int</span>)info-&gt;nitref3);
+</span><span><a class="LN" name="596">  596   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">//End of if defined EXPCONE</span>
+</span><span><a class="LN" name="597">  597   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="598">  598   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EXPCONE
+</span><span><a class="LN" name="599">  599   </a>	PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e  %6.4f  %2.0e  %2d %2d %2d | %2d %2d\n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, info-&gt;step, info-&gt;sigma,\
+</span><span><a class="LN" name="600">  600   </a>   (<span class="DT">int</span>)info-&gt;nitref1,\
+</span><span><a class="LN" name="601">  601   </a>   (<span class="DT">int</span>)info-&gt;nitref2,\
+</span><span><a class="LN" name="602">  602   </a>   (<span class="DT">int</span>)info-&gt;nitref3,\
+</span><span><a class="LN" name="603">  603   </a>   (<span class="DT">int</span>)info-&gt;affBack,\
+</span><span><a class="LN" name="604">  604   </a>   (<span class="DT">int</span>)info-&gt;cmbBack);
+</span><span><a class="LN" name="605">  605   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="606">  606   </a>	PRINTTEXT(<font color="#1122ff">&quot;%2d  %+5.3e  %+5.3e  %+2.0e  %2.0e  %2.0e  %2.0e  %2.0e  %6.4f  %2.0e  %2d %2d %2d\n&quot;</font>,(<span class="DT">int</span>)info-&gt;iter, info-&gt;pcost, info-&gt;dcost, info-&gt;gap, info-&gt;pres, info-&gt;dres, info-&gt;kapovert, info-&gt;mu, info-&gt;step, info-&gt;sigma,\
+</span><span><a class="LN" name="607">  607   </a>   (<span class="DT">int</span>)info-&gt;nitref1,\
+</span><span><a class="LN" name="608">  608   </a>   (<span class="DT">int</span>)info-&gt;nitref2,\
+</span><span><a class="LN" name="609">  609   </a>   (<span class="DT">int</span>)info-&gt;nitref3);
+</span><span><a class="LN" name="610">  610   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/* End of if defined expcone */</span>
+</span><span><a class="LN" name="611">  611   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/* end of windows block */</span>
+</span><span><a class="LN" name="612">  612   </a>	<b>}</b>
+</span><span><a class="LN" name="613">  613   </a>
+</span><span><a class="LN" name="614">  614   </a><span class="CT">/* enable to flush printf in Matlab immediately */</span>
+</span><span><a class="LN" name="615">  615   </a><font color="#992211">#</font><span class="PP">ifdef</span> MATLAB_MEX_FILE
+</span><span><a class="LN" name="616">  616   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> MATLAB_FLUSH_PRINTS
+</span><span><a class="LN" name="617">  617   </a>    mexEvalString(<font color="#1122ff">&quot;pause(0.0001);&quot;</font>);
+</span><span><a class="LN" name="618">  618   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="619">  619   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="620">  620   </a>
+</span><span><a class="LN" name="621">  621   </a>
+</span><span><a class="LN" name="622">  622   </a><b>}</b>
+</span><span><a class="LN" name="623">  623   </a>
+</span><span><a class="LN" name="624">  624   </a><span class="DT">void</span> <a name="fcn_deleteLastProgressLine">deleteLastProgressLine</a>( stats* info )
+</span><span><a class="LN" name="625">  625   </a><b>{</b>
+</span><span><a class="LN" name="626">  626   </a>    idxint i;
+</span><span><a class="LN" name="627">  627   </a>    idxint offset = 0;
+</span><span><a class="LN" name="628">  628   </a>
+</span><span><a class="LN" name="629">  629   </a>    <span class="KW">if</span>( info-&gt;kapovert &lt; 0 ) offset++;
+</span><span><a class="LN" name="630">  630   </a>    <span class="KW">if</span>( info-&gt;mu &lt; 0) offset++;
+</span><span><a class="LN" name="631">  631   </a>    <span class="KW">if</span>( info-&gt;pres &lt; 0 ) offset++;
+</span><span><a class="LN" name="632">  632   </a>    <span class="KW">if</span> (info-&gt;dres &lt; 0 ) offset++;
+</span><span><a class="LN" name="633">  633   </a>
+</span><span><a class="LN" name="634">  634   </a>    <span class="KW">for</span> (i=0; i&lt;82+offset; i++) <b>{</b>
+</span><span><a class="LN" name="635">  635   </a>        PRINTTEXT(<font color="#1122ff">&quot;%c&quot;</font>,8);
+</span><span><a class="LN" name="636">  636   </a>    <b>}</b>
+</span><span><a class="LN" name="637">  637   </a><b>}</b>
+</span><span><a class="LN" name="638">  638   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="639">  639   </a>
+</span><span><a class="LN" name="640">  640   </a>
+</span><span><a class="LN" name="641">  641   </a>
+</span><span><a class="LN" name="642">  642   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="643">  643   </a><span class="CT"> * Prepares the affine RHS for KKT system.</span>
+</span><span><a class="LN" name="644">  644   </a><span class="CT"> * Given the special way we store the KKT matrix (sparse representation</span>
+</span><span><a class="LN" name="645">  645   </a><span class="CT"> * of the scalings for the second-order cone), we need this to prepare</span>
+</span><span><a class="LN" name="646">  646   </a><span class="CT"> * the RHS before solving the KKT system in the special format.</span>
+</span><span><a class="LN" name="647">  647   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="648">  648   </a><span class="DT">void</span> <a name="fcn_RHS_affine">RHS_affine</a>(pwork* w)
+</span><span><a class="LN" name="649">  649   </a><b>{</b>
+</span><span><a class="LN" name="650">  650   </a>	pfloat* RHS = w-&gt;KKT-&gt;RHS2;
+</span><span><a class="LN" name="651">  651   </a>	idxint n = w-&gt;n;
+</span><span><a class="LN" name="652">  652   </a>	idxint p = w-&gt;p;
+</span><span><a class="LN" name="653">  653   </a>	idxint i, j, k, l;
+</span><span><a class="LN" name="654">  654   </a>	idxint* Pinv = w-&gt;KKT-&gt;Pinv;
+</span><span><a class="LN" name="655">  655   </a>
+</span><span><a class="LN" name="656">  656   </a>	j = 0;
+</span><span><a class="LN" name="657">  657   </a>	<span class="KW">for</span>( i=0; i &lt; n; i++ )<b>{</b> RHS[Pinv[j++]] = w-&gt;rx[i]; <b>}</b>
+</span><span><a class="LN" name="658">  658   </a>	<span class="KW">for</span>( i=0; i &lt; p; i++ )<b>{</b> RHS[Pinv[j++]] = -w-&gt;ry[i]; <b>}</b>
+</span><span><a class="LN" name="659">  659   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;lpc-&gt;p; i++ )<b>{</b> RHS[Pinv[j++]] = w-&gt;s[i] - w-&gt;rz[i]; <b>}</b>
+</span><span><a class="LN" name="660">  660   </a>	k = w-&gt;C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="661">  661   </a>	<span class="KW">for</span>( l=0; l &lt; w-&gt;C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="662">  662   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;soc[l].p; i++ )<b>{</b>
+</span><span><a class="LN" name="663">  663   </a>			RHS[Pinv[j++]] = w-&gt;s[k] - w-&gt;rz[k]; k++;
+</span><span><a class="LN" name="664">  664   </a>		<b>}</b>
+</span><span><a class="LN" name="665">  665   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="666">  666   </a>		RHS[Pinv[j++]] = 0;
+</span><span><a class="LN" name="667">  667   </a>        RHS[Pinv[j++]] = 0;
+</span><span><a class="LN" name="668">  668   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="669">  669   </a>	<b>}</b>
+</span><span><a class="LN" name="670">  670   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="671">  671   </a>
+</span><span><a class="LN" name="672">  672   </a>    <span class="CT">/*Exponential cones*/</span>
+</span><span><a class="LN" name="673">  673   </a>    <span class="KW">for</span>(l=0;l&lt;w-&gt;C-&gt;nexc; l++)<b>{</b>
+</span><span><a class="LN" name="674">  674   </a>        <span class="KW">for</span>(i=0;i&lt;3;i++)
+</span><span><a class="LN" name="675">  675   </a>        <b>{</b>
+</span><span><a class="LN" name="676">  676   </a>    		RHS[Pinv[j++]] = w-&gt;s[k] - w-&gt;rz[k]; k++;
+</span><span><a class="LN" name="677">  677   </a>        <b>}</b>
+</span><span><a class="LN" name="678">  678   </a>    <b>}</b>
+</span><span><a class="LN" name="679">  679   </a>
+</span><span><a class="LN" name="680">  680   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="681">  681   </a><b>}</b>
+</span><span><a class="LN" name="682">  682   </a>
+</span><span><a class="LN" name="683">  683   </a>
+</span><span><a class="LN" name="684">  684   </a>
+</span><span><a class="LN" name="685">  685   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="686">  686   </a><span class="CT"> * Prepares the RHS for computing the combined search direction.</span>
+</span><span><a class="LN" name="687">  687   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="688">  688   </a><span class="DT">void</span> <a name="fcn_RHS_combined">RHS_combined</a>(pwork* w)
+</span><span><a class="LN" name="689">  689   </a><b>{</b>
+</span><span><a class="LN" name="690">  690   </a>	pfloat* ds1 = w-&gt;KKT-&gt;work1;
+</span><span><a class="LN" name="691">  691   </a>	pfloat* ds2 = w-&gt;KKT-&gt;work2;
+</span><span><a class="LN" name="692">  692   </a>	idxint i, j, k, l;
+</span><span><a class="LN" name="693">  693   </a>	pfloat sigmamu = w-&gt;info-&gt;sigma * w-&gt;info-&gt;mu;
+</span><span><a class="LN" name="694">  694   </a>	pfloat one_minus_sigma = 1.0 - w-&gt;info-&gt;sigma;
+</span><span><a class="LN" name="695">  695   </a>	idxint* Pinv = w-&gt;KKT-&gt;Pinv;
+</span><span><a class="LN" name="696">  696   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="697">  697   </a>	pfloat* s;
+</span><span><a class="LN" name="698">  698   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="699">  699   </a>
+</span><span><a class="LN" name="700">  700   </a>	<span class="CT">/* ds = lambda o lambda + W\s o Wz - sigma*mu*e) */</span>
+</span><span><a class="LN" name="701">  701   </a>	<a href="cone_c.html#fcn_conicProduct" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_conicProduct');" target="_self"><font color="#1122aa">conicProduct</font></a>(w-&gt;lambda, w-&gt;lambda, w-&gt;C, ds1);
+</span><span><a class="LN" name="702">  702   </a>	<a href="cone_c.html#fcn_conicProduct" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_conicProduct');" target="_self"><font color="#1122aa">conicProduct</font></a>(w-&gt;dsaff_by_W, w-&gt;W_times_dzaff, w-&gt;C, ds2);
+</span><span><a class="LN" name="703">  703   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;lpc-&gt;p; i++ )<b>{</b> ds1[i] += ds2[i] - sigmamu; <b>}</b>
+</span><span><a class="LN" name="704">  704   </a>	k = w-&gt;C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="705">  705   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;nsoc; i++ )<b>{</b>
+</span><span><a class="LN" name="706">  706   </a>		ds1[k] += ds2[k] - sigmamu; k++;
+</span><span><a class="LN" name="707">  707   </a>		<span class="KW">for</span>( j=1; j &lt; w-&gt;C-&gt;soc[i].p; j++ )<b>{</b> ds1[k] += ds2[k]; k++; <b>}</b>
+</span><span><a class="LN" name="708">  708   </a>	<b>}</b>
+</span><span><a class="LN" name="709">  709   </a>
+</span><span><a class="LN" name="710">  710   </a>	<span class="CT">/* dz = -(1-sigma)*rz + W*(lambda \ ds) */</span>
+</span><span><a class="LN" name="711">  711   </a>	<a href="cone_c.html#fcn_conicDivision" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_conicDivision');" target="_self"><font color="#1122aa">conicDivision</font></a>(w-&gt;lambda, ds1, w-&gt;C, w-&gt;dsaff_by_W);
+</span><span><a class="LN" name="712">  712   </a>	<a href="cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>(w-&gt;dsaff_by_W, w-&gt;C, ds1);
+</span><span><a class="LN" name="713">  713   </a>
+</span><span><a class="LN" name="714">  714   </a>	<span class="CT">/* copy in RHS */</span>
+</span><span><a class="LN" name="715">  715   </a>	j = 0;
+</span><span><a class="LN" name="716">  716   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;n; i++ )<b>{</b> w-&gt;KKT-&gt;RHS2[Pinv[j++]] *= one_minus_sigma; <b>}</b>
+</span><span><a class="LN" name="717">  717   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;p; i++ )<b>{</b> w-&gt;KKT-&gt;RHS2[Pinv[j++]] *= one_minus_sigma; <b>}</b>
+</span><span><a class="LN" name="718">  718   </a>    <span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;lpc-&gt;p; i++) <b>{</b> w-&gt;KKT-&gt;RHS2[Pinv[j++]] = -one_minus_sigma*w-&gt;rz[i] + ds1[i]; <b>}</b>
+</span><span><a class="LN" name="719">  719   </a>	k = w-&gt;C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="720">  720   </a>	<span class="KW">for</span>( l=0; l &lt; w-&gt;C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="721">  721   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;C-&gt;soc[l].p; i++ )<b>{</b>
+</span><span><a class="LN" name="722">  722   </a>			w-&gt;KKT-&gt;RHS2[Pinv[j++]] = -one_minus_sigma*w-&gt;rz[k] + ds1[k];
+</span><span><a class="LN" name="723">  723   </a>			k++;
+</span><span><a class="LN" name="724">  724   </a>		<b>}</b>
+</span><span><a class="LN" name="725">  725   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="726">  726   </a>		w-&gt;KKT-&gt;RHS2[Pinv[j++]] = 0;
+</span><span><a class="LN" name="727">  727   </a>        w-&gt;KKT-&gt;RHS2[Pinv[j++]] = 0;
+</span><span><a class="LN" name="728">  728   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="729">  729   </a>	<b>}</b>
+</span><span><a class="LN" name="730">  730   </a>
+</span><span><a class="LN" name="731">  731   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="732">  732   </a>    s = w-&gt;s;
+</span><span><a class="LN" name="733">  733   </a>    k = w-&gt;C-&gt;fexv;
+</span><span><a class="LN" name="734">  734   </a>
+</span><span><a class="LN" name="735">  735   </a>    <span class="CT">/*Exponential cones*/</span>
+</span><span><a class="LN" name="736">  736   </a>    <span class="CT">/* -(1-sigma)*rz +s + mu*sigma*g(x) */</span>
+</span><span><a class="LN" name="737">  737   </a>    <span class="KW">for</span>(l=0;l&lt;w-&gt;C-&gt;nexc;l++)
+</span><span><a class="LN" name="738">  738   </a>    <b>{</b>
+</span><span><a class="LN" name="739">  739   </a>            w-&gt;C-&gt;expc[l].g[0] = s[k]+sigmamu*w-&gt;C-&gt;expc[l].g[0];
+</span><span><a class="LN" name="740">  740   </a>           	w-&gt;KKT-&gt;RHS2[Pinv[j++]] = -one_minus_sigma*w-&gt;rz[k] + w-&gt;C-&gt;expc[l].g[0];
+</span><span><a class="LN" name="741">  741   </a>			k++;
+</span><span><a class="LN" name="742">  742   </a>            w-&gt;C-&gt;expc[l].g[1] = s[k]+sigmamu*w-&gt;C-&gt;expc[l].g[1];
+</span><span><a class="LN" name="743">  743   </a>           	w-&gt;KKT-&gt;RHS2[Pinv[j++]] = -one_minus_sigma*w-&gt;rz[k] + w-&gt;C-&gt;expc[l].g[1];
+</span><span><a class="LN" name="744">  744   </a>            k++;
+</span><span><a class="LN" name="745">  745   </a>            w-&gt;C-&gt;expc[l].g[2] = s[k]+sigmamu*w-&gt;C-&gt;expc[l].g[2];
+</span><span><a class="LN" name="746">  746   </a>           	w-&gt;KKT-&gt;RHS2[Pinv[j++]] = -one_minus_sigma*w-&gt;rz[k] + w-&gt;C-&gt;expc[l].g[2];
+</span><span><a class="LN" name="747">  747   </a>			k++;
+</span><span><a class="LN" name="748">  748   </a>
+</span><span><a class="LN" name="749">  749   </a>    <b>}</b>
+</span><span><a class="LN" name="750">  750   </a>
+</span><span><a class="LN" name="751">  751   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="752">  752   </a><b>}</b>
+</span><span><a class="LN" name="753">  753   </a>
+</span><span><a class="LN" name="754">  754   </a>
+</span><span><a class="LN" name="755">  755   </a>
+</span><span><a class="LN" name="756">  756   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="757">  757   </a><span class="CT">/* Line search to backtrack into feasibility for the exponential cones</span>
+</span><span><a class="LN" name="758">  758   </a><span class="CT"> * When affine = 1 it starts from alpha=w-&gt;info-&gt;step_aff</span>
+</span><span><a class="LN" name="759">  759   </a><span class="CT"> * when affine = 0 it starts from alpha=w-&gt;info-&gt;step</span>
+</span><span><a class="LN" name="760">  760   </a><span class="CT">*/</span>
+</span><span><a class="LN" name="761">  761   </a>pfloat <a name="fcn_expConeLineSearch">expConeLineSearch</a>(pwork* w, pfloat dtau, pfloat dkappa, idxint affine)
+</span><span><a class="LN" name="762">  762   </a><b>{</b>
+</span><span><a class="LN" name="763">  763   </a>    <span class="CT">/* Iterates and workspace */</span>
+</span><span><a class="LN" name="764">  764   </a>    pfloat* ws = w-&gt;KKT-&gt;work1;
+</span><span><a class="LN" name="765">  765   </a>    pfloat* wz = w-&gt;KKT-&gt;work2;
+</span><span><a class="LN" name="766">  766   </a>    pfloat* s  = w-&gt;s;
+</span><span><a class="LN" name="767">  767   </a>    pfloat* z  = w-&gt;z;
+</span><span><a class="LN" name="768">  768   </a>    pfloat* ds = w-&gt;dsaff;
+</span><span><a class="LN" name="769">  769   </a>    pfloat* dz = w-&gt;KKT-&gt;dz2;
+</span><span><a class="LN" name="770">  770   </a>    pfloat tau = w-&gt;tau;
+</span><span><a class="LN" name="771">  771   </a>    pfloat kap = w-&gt;kap;
+</span><span><a class="LN" name="772">  772   </a>    <span class="CT">/* pfloat* ds = w-&gt;dsaff_by_W; */</span>
+</span><span><a class="LN" name="773">  773   </a>    <span class="CT">/* pfloat* dz = w-&gt;W_times_dzaff; */</span>
+</span><span><a class="LN" name="774">  774   </a>
+</span><span><a class="LN" name="775">  775   </a>    <span class="CT">/* Settings */</span>
+</span><span><a class="LN" name="776">  776   </a>    pfloat gamma = w-&gt;stgs-&gt;gamma;
+</span><span><a class="LN" name="777">  777   </a>
+</span><span><a class="LN" name="778">  778   </a>    <span class="CT">/* Misc */</span>
+</span><span><a class="LN" name="779">  779   </a>    idxint bk_iter, j;
+</span><span><a class="LN" name="780">  780   </a>
+</span><span><a class="LN" name="781">  781   </a>    pfloat mui, mu;
+</span><span><a class="LN" name="782">  782   </a>
+</span><span><a class="LN" name="783">  783   </a>    <span class="CT">/* Initial alpha */</span>
+</span><span><a class="LN" name="784">  784   </a>    pfloat alpha;
+</span><span><a class="LN" name="785">  785   </a>
+</span><span><a class="LN" name="786">  786   </a>    <span class="CT">/* Pointers to counters */</span>
+</span><span><a class="LN" name="787">  787   </a>    idxint* pob;
+</span><span><a class="LN" name="788">  788   </a>    idxint* cb;
+</span><span><a class="LN" name="789">  789   </a>    idxint* cob;
+</span><span><a class="LN" name="790">  790   </a>    idxint* pb;
+</span><span><a class="LN" name="791">  791   </a>    idxint* db;
+</span><span><a class="LN" name="792">  792   </a>
+</span><span><a class="LN" name="793">  793   </a>	 <span class="CT">/* Initialize the other statistics */</span>
+</span><span><a class="LN" name="794">  794   </a>	pfloat* centrality = &amp;w-&gt;info-&gt;centrality;
+</span><span><a class="LN" name="795">  795   </a>	pfloat barrier = 0.0;  <span class="CT">/* Variable to hold the value of f_e(s_e)+f^\star_e(z_e) */</span>
+</span><span><a class="LN" name="796">  796   </a>
+</span><span><a class="LN" name="797">  797   </a>	<span class="CT">/* Constants */</span>
+</span><span><a class="LN" name="798">  798   </a>    <span class="DT">const</span> pfloat cent_constant = w-&gt;D+1;
+</span><span><a class="LN" name="799">  799   </a>
+</span><span><a class="LN" name="800">  800   </a>	<span class="CT">/* Placeholder */</span>
+</span><span><a class="LN" name="801">  801   </a>	*(centrality) = 1e300; <span class="CT">/* Placeholder */</span>
+</span><span><a class="LN" name="802">  802   </a>
+</span><span><a class="LN" name="803">  803   </a>    <span class="CT">/* Start from the alpha chosen for the symmetric cones */</span>
+</span><span><a class="LN" name="804">  804   </a>    <span class="KW">if</span>(affine ==1)
+</span><span><a class="LN" name="805">  805   </a>    <b>{</b>
+</span><span><a class="LN" name="806">  806   </a>        alpha = w-&gt;info-&gt;step_aff;
+</span><span><a class="LN" name="807">  807   </a>    <b>}</b>
+</span><span><a class="LN" name="808">  808   </a>    <span class="KW">else</span> <span class="CT">/* Combined */</span>
+</span><span><a class="LN" name="809">  809   </a>    <b>{</b>
+</span><span><a class="LN" name="810">  810   </a>        alpha = w-&gt;info-&gt;step;
+</span><span><a class="LN" name="811">  811   </a>    <b>}</b>
+</span><span><a class="LN" name="812">  812   </a>    pob = &amp;w-&gt;info-&gt;pob;
+</span><span><a class="LN" name="813">  813   </a>    cb  = &amp;w-&gt;info-&gt;cb;
+</span><span><a class="LN" name="814">  814   </a>    cob = &amp;w-&gt;info-&gt;cob;
+</span><span><a class="LN" name="815">  815   </a>    pb  = &amp;w-&gt;info-&gt;pb;
+</span><span><a class="LN" name="816">  816   </a>    db  = &amp;w-&gt;info-&gt;db;
+</span><span><a class="LN" name="817">  817   </a>
+</span><span><a class="LN" name="818">  818   </a>    <span class="CT">/* Initialize the counters */</span>
+</span><span><a class="LN" name="819">  819   </a>    *pob = 0;
+</span><span><a class="LN" name="820">  820   </a>    *cb  = 0;
+</span><span><a class="LN" name="821">  821   </a>    *cob = 0;
+</span><span><a class="LN" name="822">  822   </a>    *pb  = 0;
+</span><span><a class="LN" name="823">  823   </a>    *db  = 0;
+</span><span><a class="LN" name="824">  824   </a>
+</span><span><a class="LN" name="825">  825   </a>    <span class="KW">for</span>(bk_iter = 0;bk_iter&lt;w-&gt;stgs-&gt;max_bk_iter;bk_iter++)
+</span><span><a class="LN" name="826">  826   </a>    <b>{</b>
+</span><span><a class="LN" name="827">  827   </a>         mu = 0.0;
+</span><span><a class="LN" name="828">  828   </a>
+</span><span><a class="LN" name="829">  829   </a>         <span class="KW">for</span>(j=0;j&lt;w-&gt;m;j++)
+</span><span><a class="LN" name="830">  830   </a>         <b>{</b>
+</span><span><a class="LN" name="831">  831   </a>            ws[j] = s[j]+alpha*ds[j];
+</span><span><a class="LN" name="832">  832   </a>            wz[j] = z[j]+alpha*dz[j];
+</span><span><a class="LN" name="833">  833   </a>            mu += ws[j]*wz[j];
+</span><span><a class="LN" name="834">  834   </a>         <b>}</b>
+</span><span><a class="LN" name="835">  835   </a>
+</span><span><a class="LN" name="836">  836   </a>         mu = mu+(tau+alpha*dtau)*(kap+alpha*dkappa);
+</span><span><a class="LN" name="837">  837   </a>         mu = mu/(w-&gt;D+1);
+</span><span><a class="LN" name="838">  838   </a>
+</span><span><a class="LN" name="839">  839   </a>        <span class="CT">/* Evaluate the feasibility */</span>
+</span><span><a class="LN" name="840">  840   </a>        <span class="KW">if</span>(<a href="expcone_c.html#fcn_evalExpDualFeas" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_evalExpDualFeas');" target="_self"><font color="#1122aa">evalExpDualFeas</font></a>(wz+w-&gt;C-&gt;fexv,w-&gt;C-&gt;nexc)==1)
+</span><span><a class="LN" name="841">  841   </a>        <b>{</b>
+</span><span><a class="LN" name="842">  842   </a>            <span class="KW">if</span>(<a href="expcone_c.html#fcn_evalExpPrimalFeas" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_evalExpPrimalFeas');" target="_self"><font color="#1122aa">evalExpPrimalFeas</font></a>(ws+w-&gt;C-&gt;fexv,w-&gt;C-&gt;nexc)==1)
+</span><span><a class="LN" name="843">  843   </a>            <b>{</b>
+</span><span><a class="LN" name="844">  844   </a>
+</span><span><a class="LN" name="845">  845   </a>                <span class="CT">/* Compute the mu_i for each cone</span>
+</span><span><a class="LN" name="846">  846   </a><span class="CT">                 * Because the sum mu_i = mu*nexc,</span>
+</span><span><a class="LN" name="847">  847   </a><span class="CT">                 * Dont let any mu_i get much smaller than mu</span>
+</span><span><a class="LN" name="848">  848   </a><span class="CT">                 */</span>
+</span><span><a class="LN" name="849">  849   </a>
+</span><span><a class="LN" name="850">  850   </a>                <span class="CT">/* Evaluate the first mui */</span>
+</span><span><a class="LN" name="851">  851   </a>                j=w-&gt;C-&gt;fexv;
+</span><span><a class="LN" name="852">  852   </a>                mui = ws[j]*wz[j]+ws[j+1]*wz[j+1]+ws[j+2]*wz[j+2];
+</span><span><a class="LN" name="853">  853   </a>                mui /= 3.0;
+</span><span><a class="LN" name="854">  854   </a>                <span class="KW">while</span>(mui&gt;MIN_DISTANCE*mu &amp;&amp; j&lt;w-&gt;m-2)
+</span><span><a class="LN" name="855">  855   </a>                <b>{</b>
+</span><span><a class="LN" name="856">  856   </a>                      <span class="CT">/* Calculate mui */</span>
+</span><span><a class="LN" name="857">  857   </a>                      j+=3;
+</span><span><a class="LN" name="858">  858   </a>                      <span class="KW">if</span>(j&lt;w-&gt;m)
+</span><span><a class="LN" name="859">  859   </a>                      <b>{</b>
+</span><span><a class="LN" name="860">  860   </a>                          mui = ws[j]*wz[j]+ws[j+1]*wz[j+1]+ws[j+2]*wz[j+2];
+</span><span><a class="LN" name="861">  861   </a>                          mui /= 3.0;
+</span><span><a class="LN" name="862">  862   </a>                      <b>}</b>
+</span><span><a class="LN" name="863">  863   </a>
+</span><span><a class="LN" name="864">  864   </a>                <b>}</b>
+</span><span><a class="LN" name="865">  865   </a>                <span class="CT">/* If all the mui are larger than MIN_DISTANCE*exmpu then j == m */</span>
+</span><span><a class="LN" name="866">  866   </a>                <span class="KW">if</span>(j==w-&gt;m)
+</span><span><a class="LN" name="867">  867   </a>                <b>{</b>
+</span><span><a class="LN" name="868">  868   </a>
+</span><span><a class="LN" name="869">  869   </a>                        barrier = <a href="expcone_c.html#fcn_evalBarrierValue" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_evalBarrierValue');" target="_self"><font color="#1122aa">evalBarrierValue</font></a>(ws,wz, w-&gt;C-&gt;fexv, w-&gt;C-&gt;nexc);
+</span><span><a class="LN" name="870">  870   </a>
+</span><span><a class="LN" name="871">  871   </a>                        barrier += <a href="cone_c.html#fcn_evalSymmetricBarrierValue" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_evalSymmetricBarrierValue');" target="_self"><font color="#1122aa">evalSymmetricBarrierValue</font></a>(ws, wz, tau+alpha*dtau, kap+alpha*dkappa, w-&gt;C, w-&gt;D);
+</span><span><a class="LN" name="872">  872   </a>
+</span><span><a class="LN" name="873">  873   </a>                        *centrality = barrier + cent_constant*log(mu) + cent_constant;
+</span><span><a class="LN" name="874">  874   </a>
+</span><span><a class="LN" name="875">  875   </a>                        <span class="KW">if</span>(*centrality&lt;w-&gt;stgs-&gt;centrality)
+</span><span><a class="LN" name="876">  876   </a>                        <b>{</b>
+</span><span><a class="LN" name="877">  877   </a>                               <span class="KW">return</span> alpha*gamma;
+</span><span><a class="LN" name="878">  878   </a>                        <b>}</b>
+</span><span><a class="LN" name="879">  879   </a>                        <span class="KW">else</span> <span class="CT">/* Iterate violates centrality */</span>
+</span><span><a class="LN" name="880">  880   </a>                        <b>{</b>
+</span><span><a class="LN" name="881">  881   </a>
+</span><span><a class="LN" name="882">  882   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL       &gt; 2
+</span><span><a class="LN" name="883">  883   </a>                                 PRINTTEXT(<font color="#1122ff">&quot;Centrality violation %e, step %e , mu %e, barrier %e\n&quot;</font>,*centrality,alpha,mu,barrier);
+</span><span><a class="LN" name="884">  884   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="885">  885   </a>                                  <span class="CT">/*Count a backtrack due to centrality violation*/</span>
+</span><span><a class="LN" name="886">  886   </a>                                  (*cb)++;
+</span><span><a class="LN" name="887">  887   </a>                       <b>}</b>
+</span><span><a class="LN" name="888">  888   </a>                <b>}</b>
+</span><span><a class="LN" name="889">  889   </a>                <span class="KW">else</span> <span class="CT">/* At least one mui is too small*/</span>
+</span><span><a class="LN" name="890">  890   </a>                <b>{</b>
+</span><span><a class="LN" name="891">  891   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL      &gt; 2
+</span><span><a class="LN" name="892">  892   </a>                            PRINTTEXT(<font color="#1122ff">&quot;Cone too close to complementary %e, step %e , mu %e\n&quot;</font>,mui,alpha,mu);
+</span><span><a class="LN" name="893">  893   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="894">  894   </a>                             <span class="CT">/*Count a backtrack due to primal infeasibility*/</span>
+</span><span><a class="LN" name="895">  895   </a>                             (*cob)++;
+</span><span><a class="LN" name="896">  896   </a>                <b>}</b>
+</span><span><a class="LN" name="897">  897   </a>
+</span><span><a class="LN" name="898">  898   </a>           <b>}</b>
+</span><span><a class="LN" name="899">  899   </a>           <span class="KW">else</span>
+</span><span><a class="LN" name="900">  900   </a>           <b>{</b>
+</span><span><a class="LN" name="901">  901   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="902">  902   </a>            PRINTTEXT(<font color="#1122ff">&quot;Primal infeasible at backtrack %ld\n&quot;</font>,bk_iter);
+</span><span><a class="LN" name="903">  903   </a>            <span class="CT">/* Something is fishy find the largest entry in the iterate */</span>
+</span><span><a class="LN" name="904">  904   </a>            <span class="DT">double</span> max = 0;
+</span><span><a class="LN" name="905">  905   </a>            <span class="DT">int</span> mix = 0;
+</span><span><a class="LN" name="906">  906   </a>            <span class="DT">int</span> ik = 0;
+</span><span><a class="LN" name="907">  907   </a>            <span class="KW">for</span>(ik = 0; ik &lt; w-&gt;m;ik++)
+</span><span><a class="LN" name="908">  908   </a>            <b>{</b>
+</span><span><a class="LN" name="909">  909   </a>                <span class="KW">if</span>(ds[ik]&gt;max)
+</span><span><a class="LN" name="910">  910   </a>                <b>{</b>
+</span><span><a class="LN" name="911">  911   </a>                    max = ds[ik];
+</span><span><a class="LN" name="912">  912   </a>                    mix = ik;
+</span><span><a class="LN" name="913">  913   </a>                <b>}</b>
+</span><span><a class="LN" name="914">  914   </a>                <span class="KW">if</span>(dz[ik]&gt;max)
+</span><span><a class="LN" name="915">  915   </a>                <b>{</b>
+</span><span><a class="LN" name="916">  916   </a>                    max = dz[ik];
+</span><span><a class="LN" name="917">  917   </a>                    mix = ik;
+</span><span><a class="LN" name="918">  918   </a>                <b>}</b>
+</span><span><a class="LN" name="919">  919   </a>            <b>}</b>
+</span><span><a class="LN" name="920">  920   </a>            PRINTTEXT(<font color="#1122ff">&quot;Max dir %lf %ld \n&quot;</font>,max,mix);
+</span><span><a class="LN" name="921">  921   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="922">  922   </a>                         (*pb)++;
+</span><span><a class="LN" name="923">  923   </a>           <b>}</b>
+</span><span><a class="LN" name="924">  924   </a>        <b>}</b>
+</span><span><a class="LN" name="925">  925   </a>        <span class="KW">else</span>
+</span><span><a class="LN" name="926">  926   </a>        <b>{</b>
+</span><span><a class="LN" name="927">  927   </a>
+</span><span><a class="LN" name="928">  928   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="929">  929   </a>            PRINTTEXT(<font color="#1122ff">&quot;Dual infeasible at backtrack %ld\n&quot;</font>,bk_iter);
+</span><span><a class="LN" name="930">  930   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="931">  931   </a>            <span class="CT">/*Count a backtrack due to dual infeasibility*/</span>
+</span><span><a class="LN" name="932">  932   </a>            (*db)++;
+</span><span><a class="LN" name="933">  933   </a>        <b>}</b>
+</span><span><a class="LN" name="934">  934   </a>        alpha = alpha*w-&gt;stgs-&gt;bk_scale;
+</span><span><a class="LN" name="935">  935   </a>
+</span><span><a class="LN" name="936">  936   </a>    <b>}</b>
+</span><span><a class="LN" name="937">  937   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="938">  938   </a>       PRINTTEXT(<font color="#1122ff">&quot;Max backtrack iters reached\n&quot;</font>);
+</span><span><a class="LN" name="939">  939   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="940">  940   </a>
+</span><span><a class="LN" name="941">  941   </a>    <span class="KW">return</span> -1;
+</span><span><a class="LN" name="942">  942   </a><b>}</b>
+</span><span><a class="LN" name="943">  943   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="944">  944   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="945">  945   </a><span class="CT"> * Line search according to Vandenberghe (cf. ï¿½8 in his manual).</span>
+</span><span><a class="LN" name="946">  946   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="947">  947   </a>pfloat <a name="fcn_lineSearch">lineSearch</a>(pfloat* lambda, pfloat* ds, pfloat* dz, pfloat tau, pfloat dtau, pfloat kap, pfloat dkap, cone* C, kkt* KKT)
+</span><span><a class="LN" name="948">  948   </a><b>{</b>
+</span><span><a class="LN" name="949">  949   </a>	idxint i, j, cone_start, conesize;
+</span><span><a class="LN" name="950">  950   </a>	pfloat rhomin, sigmamin, alpha, lknorm2, lknorm, lknorminv, rhonorm, sigmanorm, conic_step, temp;
+</span><span><a class="LN" name="951">  951   </a>	pfloat lkbar_times_dsk, lkbar_times_dzk, factor;
+</span><span><a class="LN" name="952">  952   </a>	pfloat* lk;
+</span><span><a class="LN" name="953">  953   </a>	pfloat* dsk;
+</span><span><a class="LN" name="954">  954   </a>	pfloat* dzk;
+</span><span><a class="LN" name="955">  955   </a>	pfloat* lkbar = KKT-&gt;work1;
+</span><span><a class="LN" name="956">  956   </a>	pfloat* rho = KKT-&gt;work2;
+</span><span><a class="LN" name="957">  957   </a>	pfloat* sigma = KKT-&gt;work2;
+</span><span><a class="LN" name="958">  958   </a>    pfloat minus_tau_by_dtau = -tau/dtau;
+</span><span><a class="LN" name="959">  959   </a>    pfloat minus_kap_by_dkap = -kap/dkap;
+</span><span><a class="LN" name="960">  960   </a>
+</span><span><a class="LN" name="961">  961   </a>
+</span><span><a class="LN" name="962">  962   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="963">  963   </a>	<span class="KW">if</span>( C-&gt;lpc-&gt;p &gt; 0 )<b>{</b>
+</span><span><a class="LN" name="964">  964   </a>		rhomin = ds[0] / lambda[0];  sigmamin = dz[0] / lambda[0];
+</span><span><a class="LN" name="965">  965   </a>		<span class="KW">for</span>( i=1; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="966">  966   </a>			rho[0] = ds[i] / lambda[i];   <span class="KW">if</span>( rho[0] &lt; rhomin )<b>{</b> rhomin = rho[0]; <b>}</b>
+</span><span><a class="LN" name="967">  967   </a>			sigma[0] = dz[i] / lambda[i]; <span class="KW">if</span>( sigma[0] &lt; sigmamin )<b>{</b> sigmamin = sigma[0]; <b>}</b>
+</span><span><a class="LN" name="968">  968   </a>		<b>}</b>
+</span><span><a class="LN" name="969">  969   </a>
+</span><span><a class="LN" name="970">  970   </a>		<span class="KW">if</span>( -sigmamin &gt; -rhomin )<b>{</b>
+</span><span><a class="LN" name="971">  971   </a>			alpha = sigmamin &lt; 0 ? 1.0 / (-sigmamin) : 1.0 / EPS;
+</span><span><a class="LN" name="972">  972   </a>		<b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="973">  973   </a>			alpha = rhomin &lt; 0 ? 1.0 / (-rhomin) : 1.0 / EPS;
+</span><span><a class="LN" name="974">  974   </a>		<b>}</b>
+</span><span><a class="LN" name="975">  975   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="976">  976   </a>        alpha = 10;
+</span><span><a class="LN" name="977">  977   </a>    <b>}</b>
+</span><span><a class="LN" name="978">  978   </a>
+</span><span><a class="LN" name="979">  979   </a>    <span class="CT">/* tau and kappa */</span>
+</span><span><a class="LN" name="980">  980   </a>    <span class="KW">if</span>( minus_tau_by_dtau &gt; 0 &amp;&amp; minus_tau_by_dtau &lt; alpha )
+</span><span><a class="LN" name="981">  981   </a>    <b>{</b>
+</span><span><a class="LN" name="982">  982   </a>        alpha = minus_tau_by_dtau;
+</span><span><a class="LN" name="983">  983   </a>    <b>}</b>
+</span><span><a class="LN" name="984">  984   </a>    <span class="KW">if</span>( minus_kap_by_dkap &gt; 0 &amp;&amp; minus_kap_by_dkap &lt; alpha )
+</span><span><a class="LN" name="985">  985   </a>    <b>{</b>
+</span><span><a class="LN" name="986">  986   </a>        alpha = minus_kap_by_dkap;
+</span><span><a class="LN" name="987">  987   </a>    <b>}</b>
+</span><span><a class="LN" name="988">  988   </a>
+</span><span><a class="LN" name="989">  989   </a>
+</span><span><a class="LN" name="990">  990   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="991">  991   </a>	cone_start = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="992">  992   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;nsoc; i++ )<b>{</b>
+</span><span><a class="LN" name="993">  993   </a>
+</span><span><a class="LN" name="994">  994   </a>		<span class="CT">/* indices */</span>
+</span><span><a class="LN" name="995">  995   </a>		conesize = C-&gt;soc[i].p;
+</span><span><a class="LN" name="996">  996   </a>		lk = lambda + cone_start;  dsk = ds + cone_start;  dzk = dz + cone_start;
+</span><span><a class="LN" name="997">  997   </a>
+</span><span><a class="LN" name="998">  998   </a>		<span class="CT">/* normalize */</span>
+</span><span><a class="LN" name="999">  999   </a>		lknorm2 = lk[0]*lk[0] - <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(conesize-1, lk+1, lk+1);
+</span><span><a class="LN" name="1000"> 1000   </a>		<span class="KW">if</span> (lknorm2 &lt;= 0.0)
+</span><span><a class="LN" name="1001"> 1001   </a>			<span class="KW">continue</span>;
+</span><span><a class="LN" name="1002"> 1002   </a>
+</span><span><a class="LN" name="1003"> 1003   </a>		lknorm = sqrt( lknorm2 );
+</span><span><a class="LN" name="1004"> 1004   </a>		<span class="KW">for</span>( j=0; j &lt; conesize; j++ )<b>{</b> lkbar[j] = lk[j] / lknorm; <b>}</b>
+</span><span><a class="LN" name="1005"> 1005   </a>		lknorminv = 1.0 / lknorm;
+</span><span><a class="LN" name="1006"> 1006   </a>
+</span><span><a class="LN" name="1007"> 1007   </a>		<span class="CT">/* calculate products */</span>
+</span><span><a class="LN" name="1008"> 1008   </a>		lkbar_times_dsk = lkbar[0]*dsk[0];
+</span><span><a class="LN" name="1009"> 1009   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b> lkbar_times_dsk -= lkbar[j]*dsk[j]; <b>}</b>
+</span><span><a class="LN" name="1010"> 1010   </a>		lkbar_times_dzk = lkbar[0]*dzk[0];
+</span><span><a class="LN" name="1011"> 1011   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b> lkbar_times_dzk -= lkbar[j]*dzk[j]; <b>}</b>
+</span><span><a class="LN" name="1012"> 1012   </a>
+</span><span><a class="LN" name="1013"> 1013   </a>		<span class="CT">/* now construct rhok and sigmak, the first element is different */</span>
+</span><span><a class="LN" name="1014"> 1014   </a>		rho[0] = lknorminv * lkbar_times_dsk;
+</span><span><a class="LN" name="1015"> 1015   </a>		factor = (lkbar_times_dsk+dsk[0])/(lkbar[0]+1);
+</span><span><a class="LN" name="1016"> 1016   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b> rho[j] = lknorminv*(dsk[j] - factor*lkbar[j]); <b>}</b>
+</span><span><a class="LN" name="1017"> 1017   </a>		rhonorm = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(rho+1, conesize-1) - rho[0];
+</span><span><a class="LN" name="1018"> 1018   </a>
+</span><span><a class="LN" name="1019"> 1019   </a>		sigma[0] = lknorminv * lkbar_times_dzk;
+</span><span><a class="LN" name="1020"> 1020   </a>		factor = (lkbar_times_dzk+dzk[0])/(lkbar[0]+1);
+</span><span><a class="LN" name="1021"> 1021   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b> sigma[j] = lknorminv*(dzk[j] - factor*lkbar[j]); <b>}</b>
+</span><span><a class="LN" name="1022"> 1022   </a>		sigmanorm = <a href="spla_c.html#fcn_norm2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norm2');" target="_self"><font color="#1122aa">norm2</font></a>(sigma+1, conesize-1) - sigma[0];
+</span><span><a class="LN" name="1023"> 1023   </a>
+</span><span><a class="LN" name="1024"> 1024   </a>		<span class="CT">/* update alpha */</span>
+</span><span><a class="LN" name="1025"> 1025   </a>		conic_step = 0;
+</span><span><a class="LN" name="1026"> 1026   </a>		<span class="KW">if</span>( rhonorm &gt; conic_step )<b>{</b> conic_step = rhonorm; <b>}</b>
+</span><span><a class="LN" name="1027"> 1027   </a>		<span class="KW">if</span>( sigmanorm &gt; conic_step )<b>{</b> conic_step = sigmanorm; <b>}</b>
+</span><span><a class="LN" name="1028"> 1028   </a>		<span class="KW">if</span>( conic_step != 0 )<b>{</b>
+</span><span><a class="LN" name="1029"> 1029   </a>			temp = 1.0 / conic_step;
+</span><span><a class="LN" name="1030"> 1030   </a>			<span class="KW">if</span>( temp &lt; alpha )<b>{</b> alpha = temp; <b>}</b>
+</span><span><a class="LN" name="1031"> 1031   </a>		<b>}</b>
+</span><span><a class="LN" name="1032"> 1032   </a>
+</span><span><a class="LN" name="1033"> 1033   </a>		cone_start += C-&gt;soc[i].p;
+</span><span><a class="LN" name="1034"> 1034   </a>
+</span><span><a class="LN" name="1035"> 1035   </a>	<b>}</b>
+</span><span><a class="LN" name="1036"> 1036   </a>
+</span><span><a class="LN" name="1037"> 1037   </a>    <span class="CT">/* saturate between STEPMIN and STEPMAX */</span>
+</span><span><a class="LN" name="1038"> 1038   </a>    <span class="KW">if</span>( alpha &gt; STEPMAX ) alpha = STEPMAX;
+</span><span><a class="LN" name="1039"> 1039   </a>    <span class="KW">if</span>( alpha &lt; STEPMIN ) alpha = STEPMIN;
+</span><span><a class="LN" name="1040"> 1040   </a>
+</span><span><a class="LN" name="1041"> 1041   </a>    <span class="CT">/* return alpha */</span>
+</span><span><a class="LN" name="1042"> 1042   </a>	<span class="KW">return</span> alpha;
+</span><span><a class="LN" name="1043"> 1043   </a><b>}</b>
+</span><span><a class="LN" name="1044"> 1044   </a>
+</span><span><a class="LN" name="1045"> 1045   </a>
+</span><span><a class="LN" name="1046"> 1046   </a>
+</span><span><a class="LN" name="1047"> 1047   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="1048"> 1048   </a><span class="CT"> * Scales variables by 1.0/tau, i.e. computes</span>
+</span><span><a class="LN" name="1049"> 1049   </a><span class="CT"> * x = x./tau, y = y./tau, z = z./tau, s = s./tau</span>
+</span><span><a class="LN" name="1050"> 1050   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="1051"> 1051   </a><span class="DT">void</span> <a name="fcn_backscale">backscale</a>(pwork *w)
+</span><span><a class="LN" name="1052"> 1052   </a><b>{</b>
+</span><span><a class="LN" name="1053"> 1053   </a>	idxint i;
+</span><span><a class="LN" name="1054"> 1054   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EQUILIBRATE &amp;&amp; EQUILIBRATE &gt; 0
+</span><span><a class="LN" name="1055"> 1055   </a>    <span class="CT">/* We performed a change of variables on x so this unsets the equilibration */</span>
+</span><span><a class="LN" name="1056"> 1056   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;n; i++ )<b>{</b> w-&gt;x[i] /= (w-&gt;xequil[i] * w-&gt;tau); <b>}</b>
+</span><span><a class="LN" name="1057"> 1057   </a>    <span class="KW">for</span>( i=0; i &lt; w-&gt;p; i++ )<b>{</b> w-&gt;y[i] /= (w-&gt;Aequil[i] * w-&gt;tau); <b>}</b>
+</span><span><a class="LN" name="1058"> 1058   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;z[i] /= (w-&gt;Gequil[i] * w-&gt;tau); <b>}</b>
+</span><span><a class="LN" name="1059"> 1059   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;s[i] *= (w-&gt;Gequil[i] / w-&gt;tau); <b>}</b>
+</span><span><a class="LN" name="1060"> 1060   </a>    <span class="KW">for</span>( i=0; i &lt; w-&gt;n; i++ )<b>{</b> w-&gt;c[i] *= w-&gt;xequil[i]; <b>}</b>
+</span><span><a class="LN" name="1061"> 1061   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="1062"> 1062   </a>    <span class="CT">/* standard back scaling without equilibration */</span>
+</span><span><a class="LN" name="1063"> 1063   </a>    <span class="KW">for</span>( i=0; i &lt; w-&gt;n; i++ )<b>{</b> w-&gt;x[i] /= w-&gt;tau; <b>}</b>
+</span><span><a class="LN" name="1064"> 1064   </a>    <span class="KW">for</span>( i=0; i &lt; w-&gt;p; i++ )<b>{</b> w-&gt;y[i] /= w-&gt;tau; <b>}</b>
+</span><span><a class="LN" name="1065"> 1065   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;z[i] /= w-&gt;tau; <b>}</b>
+</span><span><a class="LN" name="1066"> 1066   </a>	<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;s[i] /= w-&gt;tau; <b>}</b>
+</span><span><a class="LN" name="1067"> 1067   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1068"> 1068   </a><b>}</b>
+</span><span><a class="LN" name="1069"> 1069   </a>
+</span><span><a class="LN" name="1070"> 1070   </a>
+</span><span><a class="LN" name="1071"> 1071   </a>
+</span><span><a class="LN" name="1072"> 1072   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="1073"> 1073   </a><span class="CT"> * Main solver routine.</span>
+</span><span><a class="LN" name="1074"> 1074   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="1075"> 1075   </a>idxint <a name="fcn_ECOS_solve">ECOS_solve</a>(pwork* w)
+</span><span><a class="LN" name="1076"> 1076   </a><b>{</b>
+</span><span><a class="LN" name="1077"> 1077   </a>	idxint i, initcode, KKT_FACTOR_RETURN_CODE;
+</span><span><a class="LN" name="1078"> 1078   </a>	pfloat dtau_denom, dtauaff, dkapaff, sigma, dtau, dkap, bkap;
+</span><span><a class="LN" name="1079"> 1079   </a>	idxint exitcode = ECOS_FATAL, interrupted = 0;
+</span><span><a class="LN" name="1080"> 1080   </a>	pfloat pres_prev = (pfloat)ECOS_NAN;
+</span><span><a class="LN" name="1081"> 1081   </a>
+</span><span><a class="LN" name="1082"> 1082   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="1083"> 1083   </a>        idxint fc = w-&gt;C-&gt;fexv; <span class="CT">/* First cone variable e */</span>
+</span><span><a class="LN" name="1084"> 1084   </a>        idxint k;
+</span><span><a class="LN" name="1085"> 1085   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1086"> 1086   </a>
+</span><span><a class="LN" name="1087"> 1087   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG
+</span><span><a class="LN" name="1088"> 1088   </a>    <span class="DT">char</span> fn[20];
+</span><span><a class="LN" name="1089"> 1089   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1090"> 1090   </a>
+</span><span><a class="LN" name="1091"> 1091   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 0
+</span><span><a class="LN" name="1092"> 1092   </a>	timer tsolve;
+</span><span><a class="LN" name="1093"> 1093   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1094"> 1094   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1095"> 1095   </a>    timer tfactor, tkktsolve;
+</span><span><a class="LN" name="1096"> 1096   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1097"> 1097   </a>
+</span><span><a class="LN" name="1098"> 1098   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EQUILIBRATE &amp;&amp; EQUILIBRATE &gt; 0
+</span><span><a class="LN" name="1099"> 1099   </a>    <span class="KW">for</span>(i = 0; i &lt;w-&gt;n; i++) <b>{</b> w-&gt;c[i] /= w-&gt;xequil[i]; <b>}</b>
+</span><span><a class="LN" name="1100"> 1100   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1101"> 1101   </a>
+</span><span><a class="LN" name="1102"> 1102   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 0
+</span><span><a class="LN" name="1103"> 1103   </a>    <span class="CT">/* start timer */</span>
+</span><span><a class="LN" name="1104"> 1104   </a>    <a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tsolve);
+</span><span><a class="LN" name="1105"> 1105   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1106"> 1106   </a>
+</span><span><a class="LN" name="1107"> 1107   </a>    <span class="CT">/* initialize ctrl-c support */</span>
+</span><span><a class="LN" name="1108"> 1108   </a><font color="#992211">#</font><span class="PP">if</span> CTRLC &gt; 0
+</span><span><a class="LN" name="1109"> 1109   </a>    <a href="ctrlc_c.html#fcn_init_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_init_ctrlc');" target="_self"><font color="#1122aa">init_ctrlc</font></a>();
+</span><span><a class="LN" name="1110"> 1110   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1111"> 1111   </a>
+</span><span><a class="LN" name="1112"> 1112   </a>	<span class="CT">/* Initialize solver */</span>
+</span><span><a class="LN" name="1113"> 1113   </a>    initcode = <a href="#fcn_init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_init');" target="_self"><font color="#1122aa">init</font></a>(w);
+</span><span><a class="LN" name="1114"> 1114   </a>	<span class="KW">if</span>( initcode == ECOS_FATAL )<b>{</b>
+</span><span><a class="LN" name="1115"> 1115   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1116"> 1116   </a>        <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nFatal error during initialization, aborting.&quot;</font>);
+</span><span><a class="LN" name="1117"> 1117   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1118"> 1118   </a>        <span class="KW">return</span> ECOS_FATAL;
+</span><span><a class="LN" name="1119"> 1119   </a>    <b>}</b>
+</span><span><a class="LN" name="1120"> 1120   </a>
+</span><span><a class="LN" name="1121"> 1121   </a>
+</span><span><a class="LN" name="1122"> 1122   </a>
+</span><span><a class="LN" name="1123"> 1123   </a>	<span class="CT">/* MAIN INTERIOR POINT LOOP ---------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="1124"> 1124   </a>	<span class="KW">for</span>( w-&gt;info-&gt;iter = 0; w-&gt;info-&gt;iter &lt;= w-&gt;stgs-&gt;maxit ; w-&gt;info-&gt;iter++ )<b>{</b>
+</span><span><a class="LN" name="1125"> 1125   </a>
+</span><span><a class="LN" name="1126"> 1126   </a>		<span class="CT">/* Compute residuals */</span>
+</span><span><a class="LN" name="1127"> 1127   </a>		<a href="#fcn_computeResiduals" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_computeResiduals');" target="_self"><font color="#1122aa">computeResiduals</font></a>(w);
+</span><span><a class="LN" name="1128"> 1128   </a>
+</span><span><a class="LN" name="1129"> 1129   </a>		<span class="CT">/* Update statistics */</span>
+</span><span><a class="LN" name="1130"> 1130   </a>		<a href="#fcn_updateStatistics" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_updateStatistics');" target="_self"><font color="#1122aa">updateStatistics</font></a>(w);
+</span><span><a class="LN" name="1131"> 1131   </a>
+</span><span><a class="LN" name="1132"> 1132   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 1
+</span><span><a class="LN" name="1133"> 1133   </a>		<span class="CT">/* Print info */</span>
+</span><span><a class="LN" name="1134"> 1134   </a>		<span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <a href="#fcn_printProgress" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printProgress');" target="_self"><font color="#1122aa">printProgress</font></a>(w-&gt;info);
+</span><span><a class="LN" name="1135"> 1135   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1136"> 1136   </a>
+</span><span><a class="LN" name="1137"> 1137   </a>        <span class="CT">/* SAFEGUARD: Backtrack to best previously seen iterate if</span>
+</span><span><a class="LN" name="1138"> 1138   </a><span class="CT">         *</span>
+</span><span><a class="LN" name="1139"> 1139   </a><span class="CT">         * - the update was bad such that the primal residual PRES has increased by a factor of SAFEGUARD, or</span>
+</span><span><a class="LN" name="1140"> 1140   </a><span class="CT">         * - the gap became negative</span>
+</span><span><a class="LN" name="1141"> 1141   </a><span class="CT">         *</span>
+</span><span><a class="LN" name="1142"> 1142   </a><span class="CT">         * If the safeguard is activated, the solver tests if reduced precision has been reached, and reports</span>
+</span><span><a class="LN" name="1143"> 1143   </a><span class="CT">         * accordingly. If not even reduced precision is reached, ECOS returns the flag ECOS_NUMERICS.</span>
+</span><span><a class="LN" name="1144"> 1144   </a><span class="CT">         */</span>
+</span><span><a class="LN" name="1145"> 1145   </a>        <span class="KW">if</span>( w-&gt;info-&gt;iter &gt; 0 &amp;&amp; (w-&gt;info-&gt;pres &gt; SAFEGUARD*pres_prev || w-&gt;info-&gt;gap &lt; 0) )<b>{</b>
+</span><span><a class="LN" name="1146"> 1146   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 1
+</span><span><a class="LN" name="1147"> 1147   </a>            <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <a href="#fcn_deleteLastProgressLine" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_deleteLastProgressLine');" target="_self"><font color="#1122aa">deleteLastProgressLine</font></a>( w-&gt;info );
+</span><span><a class="LN" name="1148"> 1148   </a>            <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;Unreliable search direction detected, recovering best iterate (%i) and stopping.\n&quot;</font>, (<span class="DT">int</span>)w-&gt;best_info-&gt;iter);
+</span><span><a class="LN" name="1149"> 1149   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1150"> 1150   </a>            <a href="#fcn_restoreBestIterate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restoreBestIterate');" target="_self"><font color="#1122aa">restoreBestIterate</font></a>( w );
+</span><span><a class="LN" name="1151"> 1151   </a>
+</span><span><a class="LN" name="1152"> 1152   </a>            <span class="CT">/* Determine whether we have reached at least reduced accuracy */</span>
+</span><span><a class="LN" name="1153"> 1153   </a>            exitcode = <a href="#fcn_checkExitConditions" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_checkExitConditions');" target="_self"><font color="#1122aa">checkExitConditions</font></a>( w, ECOS_INACC_OFFSET );
+</span><span><a class="LN" name="1154"> 1154   </a>
+</span><span><a class="LN" name="1155"> 1155   </a>            <span class="CT">/* if not, exit anyways */</span>
+</span><span><a class="LN" name="1156"> 1156   </a>            <span class="KW">if</span>( exitcode == ECOS_NOT_CONVERGED_YET )<b>{</b>
+</span><span><a class="LN" name="1157"> 1157   </a>                exitcode = ECOS_NUMERICS;
+</span><span><a class="LN" name="1158"> 1158   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1159"> 1159   </a>                <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nNUMERICAL PROBLEMS (reached feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="1160"> 1160   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1161"> 1161   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1162"> 1162   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="1163"> 1163   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1164"> 1164   </a>            <b>}</b>
+</span><span><a class="LN" name="1165"> 1165   </a>        <b>}</b>
+</span><span><a class="LN" name="1166"> 1166   </a>        pres_prev = w-&gt;info-&gt;pres;
+</span><span><a class="LN" name="1167"> 1167   </a>
+</span><span><a class="LN" name="1168"> 1168   </a>
+</span><span><a class="LN" name="1169"> 1169   </a>		<span class="CT">/* Check termination criteria to full precision and exit if necessary */</span>
+</span><span><a class="LN" name="1170"> 1170   </a>		exitcode = <a href="#fcn_checkExitConditions" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_checkExitConditions');" target="_self"><font color="#1122aa">checkExitConditions</font></a>( w, 0 );
+</span><span><a class="LN" name="1171"> 1171   </a><font color="#992211">#</font><span class="PP">if</span> CTRLC &gt; 0
+</span><span><a class="LN" name="1172"> 1172   </a>        interrupted = <a href="ctrlc_c.html#fcn_check_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_check_ctrlc');" target="_self"><font color="#1122aa">check_ctrlc</font></a>();
+</span><span><a class="LN" name="1173"> 1173   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1174"> 1174   </a>        <span class="KW">if</span>( exitcode == ECOS_NOT_CONVERGED_YET )<b>{</b>
+</span><span><a class="LN" name="1175"> 1175   </a>
+</span><span><a class="LN" name="1176"> 1176   </a>            <span class="CT">/*</span>
+</span><span><a class="LN" name="1177"> 1177   </a><span class="CT">             * Full precision has not been reached yet. Check for two more cases of exit:</span>
+</span><span><a class="LN" name="1178"> 1178   </a><span class="CT">             *  (i) min step size, in which case we assume we won't make progress any more, and</span>
+</span><span><a class="LN" name="1179"> 1179   </a><span class="CT">             * (ii) maximum number of iterations reached</span>
+</span><span><a class="LN" name="1180"> 1180   </a><span class="CT">             * If these two are not fulfilled, another iteration will be made.</span>
+</span><span><a class="LN" name="1181"> 1181   </a><span class="CT">             */</span>
+</span><span><a class="LN" name="1182"> 1182   </a>
+</span><span><a class="LN" name="1183"> 1183   </a>            <span class="CT">/* Did the line search cock up? (zero step length) */</span>
+</span><span><a class="LN" name="1184"> 1184   </a>            <span class="KW">if</span>( w-&gt;info-&gt;iter &gt; 0 &amp;&amp; w-&gt;info-&gt;step == STEPMIN*GAMMA )<b>{</b>
+</span><span><a class="LN" name="1185"> 1185   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1186"> 1186   </a>                <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <a href="#fcn_deleteLastProgressLine" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_deleteLastProgressLine');" target="_self"><font color="#1122aa">deleteLastProgressLine</font></a>( w-&gt;info );
+</span><span><a class="LN" name="1187"> 1187   </a>                <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;No further progress possible, recovering best iterate (%i) and stopping.&quot;</font>, (<span class="DT">int</span>)w-&gt;best_info-&gt;iter );
+</span><span><a class="LN" name="1188"> 1188   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1189"> 1189   </a>                <a href="#fcn_restoreBestIterate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restoreBestIterate');" target="_self"><font color="#1122aa">restoreBestIterate</font></a>( w );
+</span><span><a class="LN" name="1190"> 1190   </a>
+</span><span><a class="LN" name="1191"> 1191   </a>                <span class="CT">/* Determine whether we have reached reduced precision */</span>
+</span><span><a class="LN" name="1192"> 1192   </a>                exitcode = <a href="#fcn_checkExitConditions" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_checkExitConditions');" target="_self"><font color="#1122aa">checkExitConditions</font></a>( w, ECOS_INACC_OFFSET );
+</span><span><a class="LN" name="1193"> 1193   </a>                <span class="KW">if</span>( exitcode == ECOS_NOT_CONVERGED_YET )<b>{</b>
+</span><span><a class="LN" name="1194"> 1194   </a>                    exitcode = ECOS_NUMERICS;
+</span><span><a class="LN" name="1195"> 1195   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1196"> 1196   </a>                    <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nNUMERICAL PROBLEMS (reached feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="1197"> 1197   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1198"> 1198   </a>                <b>}</b>
+</span><span><a class="LN" name="1199"> 1199   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1200"> 1200   </a>            <b>}</b>
+</span><span><a class="LN" name="1201"> 1201   </a>            <span class="CT">/* MAXIT reached? */</span>
+</span><span><a class="LN" name="1202"> 1202   </a>            <span class="KW">else</span> <span class="KW">if</span>( interrupted || w-&gt;info-&gt;iter == w-&gt;stgs-&gt;maxit )<b>{</b>
+</span><span><a class="LN" name="1203"> 1203   </a>
+</span><span><a class="LN" name="1204"> 1204   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1205"> 1205   </a>                <span class="DT">const</span> <span class="DT">char</span> *what = interrupted ? <font color="#1122ff">&quot;SIGINT intercepted&quot;</font> : <font color="#1122ff">&quot;Maximum number of iterations reached&quot;</font>;
+</span><span><a class="LN" name="1206"> 1206   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1207"> 1207   </a>                <span class="CT">/* Determine whether current iterate is better than what we had so far */</span>
+</span><span><a class="LN" name="1208"> 1208   </a>                <span class="KW">if</span>( <a href="#fcn_compareStatistics" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_compareStatistics');" target="_self"><font color="#1122aa">compareStatistics</font></a>( w-&gt;info, w-&gt;best_info) )<b>{</b>
+</span><span><a class="LN" name="1209"> 1209   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1210"> 1210   </a>                    <span class="KW">if</span>( w-&gt;stgs-&gt;verbose )
+</span><span><a class="LN" name="1211"> 1211   </a>                        PRINTTEXT(<font color="#1122ff">&quot;%s, stopping.\n&quot;</font>,what);
+</span><span><a class="LN" name="1212"> 1212   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1213"> 1213   </a>                <b>}</b> <span class="KW">else</span>
+</span><span><a class="LN" name="1214"> 1214   </a>                <b>{</b>
+</span><span><a class="LN" name="1215"> 1215   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1216"> 1216   </a>                    <span class="KW">if</span>( w-&gt;stgs-&gt;verbose )
+</span><span><a class="LN" name="1217"> 1217   </a>                        PRINTTEXT(<font color="#1122ff">&quot;%s, recovering best iterate (%i) and stopping.\n&quot;</font>, what, (<span class="DT">int</span>)w-&gt;best_info-&gt;iter);
+</span><span><a class="LN" name="1218"> 1218   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1219"> 1219   </a>                    <a href="#fcn_restoreBestIterate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restoreBestIterate');" target="_self"><font color="#1122aa">restoreBestIterate</font></a>( w );
+</span><span><a class="LN" name="1220"> 1220   </a>                <b>}</b>
+</span><span><a class="LN" name="1221"> 1221   </a>
+</span><span><a class="LN" name="1222"> 1222   </a>                <span class="CT">/* Determine whether we have reached reduced precision */</span>
+</span><span><a class="LN" name="1223"> 1223   </a>                exitcode = <a href="#fcn_checkExitConditions" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_checkExitConditions');" target="_self"><font color="#1122aa">checkExitConditions</font></a>( w, ECOS_INACC_OFFSET );
+</span><span><a class="LN" name="1224"> 1224   </a>                <span class="KW">if</span>( exitcode == ECOS_NOT_CONVERGED_YET )<b>{</b>
+</span><span><a class="LN" name="1225"> 1225   </a>                    exitcode = interrupted ? ECOS_SIGINT : ECOS_MAXIT;
+</span><span><a class="LN" name="1226"> 1226   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1227"> 1227   </a>                    <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <b>{</b>
+</span><span><a class="LN" name="1228"> 1228   </a>                        <span class="DT">const</span> <span class="DT">char</span>* what = interrupted ? <font color="#1122ff">&quot;INTERRUPTED&quot;</font> : <font color="#1122ff">&quot;RAN OUT OF ITERATIONS&quot;</font>;
+</span><span><a class="LN" name="1229"> 1229   </a>                        PRINTTEXT(<font color="#1122ff">&quot;\n%s (reached feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, what, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="1230"> 1230   </a>                    <b>}</b>
+</span><span><a class="LN" name="1231"> 1231   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1232"> 1232   </a>                <b>}</b>
+</span><span><a class="LN" name="1233"> 1233   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1234"> 1234   </a>
+</span><span><a class="LN" name="1235"> 1235   </a>            <b>}</b>
+</span><span><a class="LN" name="1236"> 1236   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="1237"> 1237   </a>
+</span><span><a class="LN" name="1238"> 1238   </a>            <span class="CT">/* Full precision has been reached, stop solver */</span>
+</span><span><a class="LN" name="1239"> 1239   </a>            <span class="KW">break</span>;
+</span><span><a class="LN" name="1240"> 1240   </a>        <b>}</b>
+</span><span><a class="LN" name="1241"> 1241   </a>
+</span><span><a class="LN" name="1242"> 1242   </a>
+</span><span><a class="LN" name="1243"> 1243   </a>
+</span><span><a class="LN" name="1244"> 1244   </a>        <span class="CT">/* SAFEGUARD:</span>
+</span><span><a class="LN" name="1245"> 1245   </a><span class="CT">         * Check whether current iterate is worth keeping as the best solution so far,</span>
+</span><span><a class="LN" name="1246"> 1246   </a><span class="CT">         * before doing another iteration</span>
+</span><span><a class="LN" name="1247"> 1247   </a><span class="CT">         */</span>
+</span><span><a class="LN" name="1248"> 1248   </a>        <span class="KW">if</span> (w-&gt;info-&gt;iter == 0) <b>{</b>
+</span><span><a class="LN" name="1249"> 1249   </a>            <span class="CT">/* we're at the first iterate, so there's nothing to compare yet */</span>
+</span><span><a class="LN" name="1250"> 1250   </a>            <a href="#fcn_saveIterateAsBest" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_saveIterateAsBest');" target="_self"><font color="#1122aa">saveIterateAsBest</font></a>( w );
+</span><span><a class="LN" name="1251"> 1251   </a>        <b>}</b> <span class="KW">else</span> <span class="KW">if</span>( <a href="#fcn_compareStatistics" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_compareStatistics');" target="_self"><font color="#1122aa">compareStatistics</font></a>( w-&gt;info, w-&gt;best_info) )<b>{</b>
+</span><span><a class="LN" name="1252"> 1252   </a>            <span class="CT">/* PRINTTEXT("Better solution found, saving as best so far \n"); */</span>
+</span><span><a class="LN" name="1253"> 1253   </a>            <a href="#fcn_saveIterateAsBest" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_saveIterateAsBest');" target="_self"><font color="#1122aa">saveIterateAsBest</font></a>( w );
+</span><span><a class="LN" name="1254"> 1254   </a>        <b>}</b>
+</span><span><a class="LN" name="1255"> 1255   </a>
+</span><span><a class="LN" name="1256"> 1256   </a>
+</span><span><a class="LN" name="1257"> 1257   </a>		<span class="CT">/* Compute scalings */</span>
+</span><span><a class="LN" name="1258"> 1258   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="1259"> 1259   </a>		<span class="KW">if</span>( <a href="cone_c.html#fcn_updateScalings" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_updateScalings');" target="_self"><font color="#1122aa">updateScalings</font></a>(w-&gt;C, w-&gt;s, w-&gt;z, w-&gt;lambda, w-&gt;info-&gt;mu) == OUTSIDE_CONE )<b>{</b>
+</span><span><a class="LN" name="1260"> 1260   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="1261"> 1261   </a>		<span class="KW">if</span>( <a href="cone_c.html#fcn_updateScalings" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_updateScalings');" target="_self"><font color="#1122aa">updateScalings</font></a>(w-&gt;C, w-&gt;s, w-&gt;z, w-&gt;lambda) == OUTSIDE_CONE )<b>{</b>
+</span><span><a class="LN" name="1262"> 1262   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1263"> 1263   </a>            <span class="CT">/* SAFEGUARD: we have to recover here */</span>
+</span><span><a class="LN" name="1264"> 1264   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1265"> 1265   </a>            <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) <a href="#fcn_deleteLastProgressLine" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_deleteLastProgressLine');" target="_self"><font color="#1122aa">deleteLastProgressLine</font></a>( w-&gt;info );
+</span><span><a class="LN" name="1266"> 1266   </a>            <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;Slacks/multipliers leaving the cone, recovering best iterate (%i) and stopping.\n&quot;</font>, (<span class="DT">int</span>)w-&gt;best_info-&gt;iter);
+</span><span><a class="LN" name="1267"> 1267   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1268"> 1268   </a>            <a href="#fcn_restoreBestIterate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restoreBestIterate');" target="_self"><font color="#1122aa">restoreBestIterate</font></a>( w );
+</span><span><a class="LN" name="1269"> 1269   </a>
+</span><span><a class="LN" name="1270"> 1270   </a>            <span class="CT">/* Determine whether we have reached at least reduced accuracy */</span>
+</span><span><a class="LN" name="1271"> 1271   </a>            exitcode = <a href="#fcn_checkExitConditions" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_checkExitConditions');" target="_self"><font color="#1122aa">checkExitConditions</font></a>( w, ECOS_INACC_OFFSET );
+</span><span><a class="LN" name="1272"> 1272   </a>            <span class="KW">if</span>( exitcode == ECOS_NOT_CONVERGED_YET )<b>{</b>
+</span><span><a class="LN" name="1273"> 1273   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1274"> 1274   </a>                <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nNUMERICAL PROBLEMS (reached feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="1275"> 1275   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1276"> 1276   </a>                <span class="KW">return</span> ECOS_OUTCONE;
+</span><span><a class="LN" name="1277"> 1277   </a>
+</span><span><a class="LN" name="1278"> 1278   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="1279"> 1279   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1280"> 1280   </a>            <b>}</b>
+</span><span><a class="LN" name="1281"> 1281   </a>        <b>}</b>
+</span><span><a class="LN" name="1282"> 1282   </a>
+</span><span><a class="LN" name="1283"> 1283   </a>		<span class="CT">/* Update KKT matrix with scalings */</span>
+</span><span><a class="LN" name="1284"> 1284   </a>		<a href="kkt_c.html#fcn_kkt_update" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_update');" target="_self"><font color="#1122aa">kkt_update</font></a>(w-&gt;KKT-&gt;PKPt, w-&gt;KKT-&gt;PK, w-&gt;C);
+</span><span><a class="LN" name="1285"> 1285   </a>
+</span><span><a class="LN" name="1286"> 1286   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG &gt; 0
+</span><span><a class="LN" name="1287"> 1287   </a>        <span class="CT">/* DEBUG: Store matrix to be factored */</span>
+</span><span><a class="LN" name="1288"> 1288   </a>        sprintf(fn, <font color="#1122ff">&quot;PKPt_updated_%02i.txt&quot;</font>, (<span class="DT">int</span>)w-&gt;info-&gt;iter);
+</span><span><a class="LN" name="1289"> 1289   </a>        <a href="splamm_c.html#fcn_dumpSparseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_dumpSparseMatrix');" target="_self"><font color="#1122aa">dumpSparseMatrix</font></a>(w-&gt;KKT-&gt;PKPt, fn);
+</span><span><a class="LN" name="1290"> 1290   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1291"> 1291   </a>        <span class="CT">/* factor KKT matrix */</span>
+</span><span><a class="LN" name="1292"> 1292   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1293"> 1293   </a>		<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tfactor);
+</span><span><a class="LN" name="1294"> 1294   </a>        KKT_FACTOR_RETURN_CODE = <a href="kkt_c.html#fcn_kkt_factor" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_factor');" target="_self"><font color="#1122aa">kkt_factor</font></a>(w-&gt;KKT, w-&gt;stgs-&gt;eps, w-&gt;stgs-&gt;delta, &amp;w-&gt;info-&gt;tfactor_t1, &amp;w-&gt;info-&gt;tfactor_t2);
+</span><span><a class="LN" name="1295"> 1295   </a>        w-&gt;info-&gt;tfactor += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tfactor);
+</span><span><a class="LN" name="1296"> 1296   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="1297"> 1297   </a>        KKT_FACTOR_RETURN_CODE = <a href="kkt_c.html#fcn_kkt_factor" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_factor');" target="_self"><font color="#1122aa">kkt_factor</font></a>(w-&gt;KKT, w-&gt;stgs-&gt;eps, w-&gt;stgs-&gt;delta);
+</span><span><a class="LN" name="1298"> 1298   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1299"> 1299   </a>
+</span><span><a class="LN" name="1300"> 1300   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG &gt; 0
+</span><span><a class="LN" name="1301"> 1301   </a>        <span class="CT">/* DEBUG: store factor */</span>
+</span><span><a class="LN" name="1302"> 1302   </a>        sprintf(fn, <font color="#1122ff">&quot;PKPt_factor_%02i.txt&quot;</font>, (<span class="DT">int</span>)w-&gt;info-&gt;iter);
+</span><span><a class="LN" name="1303"> 1303   </a>        <a href="splamm_c.html#fcn_dumpSparseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_dumpSparseMatrix');" target="_self"><font color="#1122aa">dumpSparseMatrix</font></a>(w-&gt;KKT-&gt;L, fn);
+</span><span><a class="LN" name="1304"> 1304   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1305"> 1305   </a>
+</span><span><a class="LN" name="1306"> 1306   </a>	    <span class="CT">/* check if factorization was successful, exit otherwise */</span>
+</span><span><a class="LN" name="1307"> 1307   </a>		<span class="KW">if</span>(  KKT_FACTOR_RETURN_CODE != KKT_OK )<b>{</b>
+</span><span><a class="LN" name="1308"> 1308   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1309"> 1309   </a>	    <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nProblem in factoring KKT system, aborting.&quot;</font>);
+</span><span><a class="LN" name="1310"> 1310   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1311"> 1311   </a>	        <span class="KW">return</span> ECOS_FATAL;
+</span><span><a class="LN" name="1312"> 1312   </a>	    <b>}</b>
+</span><span><a class="LN" name="1313"> 1313   </a>
+</span><span><a class="LN" name="1314"> 1314   </a>		<span class="CT">/* Solve for RHS1, which is used later also in combined direction */</span>
+</span><span><a class="LN" name="1315"> 1315   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1316"> 1316   </a>		<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="1317"> 1317   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1318"> 1318   </a>		w-&gt;info-&gt;nitref1 = <a href="kkt_c.html#fcn_kkt_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_solve');" target="_self"><font color="#1122aa">kkt_solve</font></a>(w-&gt;KKT, w-&gt;A, w-&gt;G, w-&gt;KKT-&gt;RHS1, w-&gt;KKT-&gt;dx1, w-&gt;KKT-&gt;dy1, w-&gt;KKT-&gt;dz1, w-&gt;n, w-&gt;p, w-&gt;m, w-&gt;C, 0, w-&gt;stgs-&gt;nitref);
+</span><span><a class="LN" name="1319"> 1319   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1320"> 1320   </a>		w-&gt;info-&gt;tkktsolve += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="1321"> 1321   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1322"> 1322   </a>
+</span><span><a class="LN" name="1323"> 1323   </a><font color="#992211">#</font><span class="PP">if</span> DEBUG &gt; 0 &amp;&amp; PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="1324"> 1324   </a>        <span class="CT">/* Print result of linear system solve */</span>
+</span><span><a class="LN" name="1325"> 1325   </a>        <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dx1, 1, 5, <font color="#1122ff">&quot;dx1(1:5)&quot;</font>);
+</span><span><a class="LN" name="1326"> 1326   </a>        <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dy1, 1, 5, <font color="#1122ff">&quot;dy1(1:5)&quot;</font>);
+</span><span><a class="LN" name="1327"> 1327   </a>        <a href="splamm_c.html#fcn_printDenseMatrix" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_printDenseMatrix');" target="_self"><font color="#1122aa">printDenseMatrix</font></a>(w-&gt;KKT-&gt;dz1, 1, 5, <font color="#1122ff">&quot;dz1(1:5)&quot;</font>);
+</span><span><a class="LN" name="1328"> 1328   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1329"> 1329   </a>
+</span><span><a class="LN" name="1330"> 1330   </a>		<span class="CT">/* AFFINE SEARCH DIRECTION (predictor, need dsaff and dzaff only) */</span>
+</span><span><a class="LN" name="1331"> 1331   </a>		<a href="#fcn_RHS_affine" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_RHS_affine');" target="_self"><font color="#1122aa">RHS_affine</font></a>(w);
+</span><span><a class="LN" name="1332"> 1332   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1333"> 1333   </a>		<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="1334"> 1334   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1335"> 1335   </a>		w-&gt;info-&gt;nitref2 = <a href="kkt_c.html#fcn_kkt_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_solve');" target="_self"><font color="#1122aa">kkt_solve</font></a>(w-&gt;KKT, w-&gt;A, w-&gt;G, w-&gt;KKT-&gt;RHS2, w-&gt;KKT-&gt;dx2, w-&gt;KKT-&gt;dy2, w-&gt;KKT-&gt;dz2, w-&gt;n, w-&gt;p, w-&gt;m, w-&gt;C, 0, w-&gt;stgs-&gt;nitref);
+</span><span><a class="LN" name="1336"> 1336   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1337"> 1337   </a>		w-&gt;info-&gt;tkktsolve += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="1338"> 1338   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1339"> 1339   </a>
+</span><span><a class="LN" name="1340"> 1340   </a>		<span class="CT">/* dtau_denom = kap/tau - (c'*x1 + by1 + h'*z1); */</span>
+</span><span><a class="LN" name="1341"> 1341   </a>		dtau_denom = w-&gt;kap/w-&gt;tau - <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;n, w-&gt;c, w-&gt;KKT-&gt;dx1) - <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;p, w-&gt;b, w-&gt;KKT-&gt;dy1) - <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;m, w-&gt;h, w-&gt;KKT-&gt;dz1);
+</span><span><a class="LN" name="1342"> 1342   </a>
+</span><span><a class="LN" name="1343"> 1343   </a>        <span class="CT">/* dtauaff = (dt + c'*x2 + by2 + h'*z2) / dtau_denom; */</span>
+</span><span><a class="LN" name="1344"> 1344   </a>		dtauaff = (w-&gt;rt - w-&gt;kap + <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;n, w-&gt;c, w-&gt;KKT-&gt;dx2) + <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;p, w-&gt;b, w-&gt;KKT-&gt;dy2) + <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;m, w-&gt;h, w-&gt;KKT-&gt;dz2)) / dtau_denom;
+</span><span><a class="LN" name="1345"> 1345   </a>
+</span><span><a class="LN" name="1346"> 1346   </a>		<span class="CT">/* dzaff = dz2 + dtau_aff*dz1 */</span>
+</span><span><a class="LN" name="1347"> 1347   </a>        <span class="CT">/* let dz2   = dzaff  we use this in the linesearch for unsymmetric cones*/</span>
+</span><span><a class="LN" name="1348"> 1348   </a>        <span class="CT">/* and w_times_dzaff = Wdz_aff*/</span>
+</span><span><a class="LN" name="1349"> 1349   </a>        <span class="CT">/* and dz2 = dz2+dtau_aff*dz1 will store the unscaled dz*/</span>
+</span><span><a class="LN" name="1350"> 1350   </a>		<span class="KW">for</span>( i=0; i&lt;w-&gt;m; i++ )<b>{</b> w-&gt;KKT-&gt;dz2[i] = w-&gt;KKT-&gt;dz2[i] + dtauaff*w-&gt;KKT-&gt;dz1[i]; <b>}</b>
+</span><span><a class="LN" name="1351"> 1351   </a>		<a href="cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>(w-&gt;KKT-&gt;dz2, w-&gt;C, w-&gt;W_times_dzaff);
+</span><span><a class="LN" name="1352"> 1352   </a>
+</span><span><a class="LN" name="1353"> 1353   </a>		<span class="CT">/* W\dsaff = -W*dzaff -lambda; */</span>
+</span><span><a class="LN" name="1354"> 1354   </a>		<span class="KW">for</span>( i=0; i&lt;w-&gt;m; i++ )<b>{</b> w-&gt;dsaff_by_W[i] = -w-&gt;W_times_dzaff[i] - w-&gt;lambda[i]; <b>}</b>
+</span><span><a class="LN" name="1355"> 1355   </a>
+</span><span><a class="LN" name="1356"> 1356   </a>		<span class="CT">/* dkapaff = -(bkap + kap*dtauaff)/tau; bkap = kap*tau*/</span>
+</span><span><a class="LN" name="1357"> 1357   </a>		dkapaff = -w-&gt;kap - w-&gt;kap/w-&gt;tau*dtauaff;
+</span><span><a class="LN" name="1358"> 1358   </a>
+</span><span><a class="LN" name="1359"> 1359   </a>        <span class="CT">/* Line search on W\dsaff and W*dzaff */</span>
+</span><span><a class="LN" name="1360"> 1360   </a>		w-&gt;info-&gt;step_aff = <a href="#fcn_lineSearch" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_lineSearch');" target="_self"><font color="#1122aa">lineSearch</font></a>(w-&gt;lambda, w-&gt;dsaff_by_W, w-&gt;W_times_dzaff, w-&gt;tau, dtauaff, w-&gt;kap, dkapaff, w-&gt;C, w-&gt;KKT);
+</span><span><a class="LN" name="1361"> 1361   </a>
+</span><span><a class="LN" name="1362"> 1362   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="1363"> 1363   </a>
+</span><span><a class="LN" name="1364"> 1364   </a>        <span class="CT">/* The present value of step_aff keeps the primal and dual symmetric slacks close to the boundary</span>
+</span><span><a class="LN" name="1365"> 1365   </a><span class="CT">         * Here w-&gt;W_times_dzaff contains dzaff for the exponential cones</span>
+</span><span><a class="LN" name="1366"> 1366   </a><span class="CT">         * However W\dsaff is not initialized for the exponential cones.</span>
+</span><span><a class="LN" name="1367"> 1367   </a><span class="CT">         * first we must calculate dsaff</span>
+</span><span><a class="LN" name="1368"> 1368   </a><span class="CT">         * From \muH(x)dxaff + dsaff = -s we set dsaff to be</span>
+</span><span><a class="LN" name="1369"> 1369   </a><span class="CT">         * dsaff = -s - \mu H(z)dzaff</span>
+</span><span><a class="LN" name="1370"> 1370   </a><span class="CT">         */</span>
+</span><span><a class="LN" name="1371"> 1371   </a>
+</span><span><a class="LN" name="1372"> 1372   </a>        <span class="CT">/* Calculate muH(s)dzaff and store in dsaff_by_W */</span>
+</span><span><a class="LN" name="1373"> 1373   </a>
+</span><span><a class="LN" name="1374"> 1374   </a>        <span class="CT">/* For the linesearch we need to compute x's+tk at every step size so</span>
+</span><span><a class="LN" name="1375"> 1375   </a><span class="CT">         * we need to calculate the search direction for the symmetric cones too</span>
+</span><span><a class="LN" name="1376"> 1376   </a><span class="CT">         */</span>
+</span><span><a class="LN" name="1377"> 1377   </a>
+</span><span><a class="LN" name="1378"> 1378   </a>        <span class="CT">/* ds = W*ds_by_W */</span>
+</span><span><a class="LN" name="1379"> 1379   </a>		<a href="cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>(w-&gt;dsaff_by_W, w-&gt;C, w-&gt;dsaff);
+</span><span><a class="LN" name="1380"> 1380   </a>
+</span><span><a class="LN" name="1381"> 1381   </a>        <span class="CT">/* Zero out */</span>
+</span><span><a class="LN" name="1382"> 1382   </a>        <span class="KW">for</span>(i=fc; i&lt;w-&gt;m; i++)
+</span><span><a class="LN" name="1383"> 1383   </a>        <b>{</b>
+</span><span><a class="LN" name="1384"> 1384   </a>            w-&gt;dsaff[i] = 0.0;
+</span><span><a class="LN" name="1385"> 1385   </a>        <b>}</b>
+</span><span><a class="LN" name="1386"> 1386   </a>
+</span><span><a class="LN" name="1387"> 1387   </a>        <a href="expcone_c.html#fcn_scaleToAddExpcone" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scaleToAddExpcone');" target="_self"><font color="#1122aa">scaleToAddExpcone</font></a>(w-&gt;dsaff,w-&gt;KKT-&gt;dz2, w-&gt;C-&gt;expc, w-&gt;C-&gt;nexc, fc);
+</span><span><a class="LN" name="1388"> 1388   </a>
+</span><span><a class="LN" name="1389"> 1389   </a>        <span class="CT">/* Add -s  ds = -s - muH(z)dz */</span>
+</span><span><a class="LN" name="1390"> 1390   </a>        <span class="KW">for</span>(i=fc; i&lt;w-&gt;m; i++)
+</span><span><a class="LN" name="1391"> 1391   </a>        <b>{</b>
+</span><span><a class="LN" name="1392"> 1392   </a>            w-&gt;dsaff[i] = -w-&gt;dsaff[i]-w-&gt;s[i];
+</span><span><a class="LN" name="1393"> 1393   </a>        <b>}</b>
+</span><span><a class="LN" name="1394"> 1394   </a>        <span class="CT">/* Now dsaff_by_W has dsaff and W_times_dzaff dzaff */</span>
+</span><span><a class="LN" name="1395"> 1395   </a>
+</span><span><a class="LN" name="1396"> 1396   </a>
+</span><span><a class="LN" name="1397"> 1397   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="1398"> 1398   </a>    PRINTTEXT(<font color="#1122ff">&quot;Backtrack affine\n&quot;</font>);
+</span><span><a class="LN" name="1399"> 1399   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1400"> 1400   </a>        <span class="CT">/* Set the affine backtracking counter to zero */</span>
+</span><span><a class="LN" name="1401"> 1401   </a>        w-&gt;info-&gt;affBack = 0;
+</span><span><a class="LN" name="1402"> 1402   </a>        <span class="KW">if</span>(w-&gt;C-&gt;nexc&gt;0)
+</span><span><a class="LN" name="1403"> 1403   </a>            <b>{</b>
+</span><span><a class="LN" name="1404"> 1404   </a>            w-&gt;info-&gt;step_aff = <a href="#fcn_expConeLineSearch" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_expConeLineSearch');" target="_self"><font color="#1122aa">expConeLineSearch</font></a>(w,dtauaff,dkapaff,1);
+</span><span><a class="LN" name="1405"> 1405   </a>            <span class="CT">/* Sum all the backtracking steps */</span>
+</span><span><a class="LN" name="1406"> 1406   </a>            <span class="CT">/* Sum the backtracking counts */</span>
+</span><span><a class="LN" name="1407"> 1407   </a>            w-&gt;info-&gt;affBack+= w-&gt;info-&gt;pob;
+</span><span><a class="LN" name="1408"> 1408   </a>            w-&gt;info-&gt;affBack+=w-&gt;info-&gt;cb;
+</span><span><a class="LN" name="1409"> 1409   </a>            w-&gt;info-&gt;affBack+= w-&gt;info-&gt;cob;
+</span><span><a class="LN" name="1410"> 1410   </a>            w-&gt;info-&gt;affBack+=w-&gt;info-&gt;pb;
+</span><span><a class="LN" name="1411"> 1411   </a>            w-&gt;info-&gt;affBack+=w-&gt;info-&gt;db;
+</span><span><a class="LN" name="1412"> 1412   </a>
+</span><span><a class="LN" name="1413"> 1413   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="1414"> 1414   </a>           PRINTTEXT(<font color="#1122ff">&quot;Affine backtracking %i %i %i %i %i \n&quot;</font>,\
+</span><span><a class="LN" name="1415"> 1415   </a>           (<span class="DT">int</span>)w-&gt;info-&gt;pob,\
+</span><span><a class="LN" name="1416"> 1416   </a>           (<span class="DT">int</span>)w-&gt;info-&gt;cb,\
+</span><span><a class="LN" name="1417"> 1417   </a>           (<span class="DT">int</span>)w-&gt;info-&gt;cob,\
+</span><span><a class="LN" name="1418"> 1418   </a>           (<span class="DT">int</span>)w-&gt;info-&gt;pb,\
+</span><span><a class="LN" name="1419"> 1419   </a>           (<span class="DT">int</span>)w-&gt;info-&gt;db);
+</span><span><a class="LN" name="1420"> 1420   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1421"> 1421   </a>            <span class="CT">/* Detect linesearch failure, recover and end. */</span>
+</span><span><a class="LN" name="1422"> 1422   </a>            <span class="KW">if</span>(w-&gt;info-&gt;step_aff == -1)
+</span><span><a class="LN" name="1423"> 1423   </a>            <b>{</b>
+</span><span><a class="LN" name="1424"> 1424   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="1425"> 1425   </a>                PRINTTEXT(<font color="#1122ff">&quot;Affine backtrack failed\n&quot;</font>);
+</span><span><a class="LN" name="1426"> 1426   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1427"> 1427   </a>                w-&gt;info-&gt;step_aff = 0.0;
+</span><span><a class="LN" name="1428"> 1428   </a>            <b>}</b>
+</span><span><a class="LN" name="1429"> 1429   </a>
+</span><span><a class="LN" name="1430"> 1430   </a>        <b>}</b>
+</span><span><a class="LN" name="1431"> 1431   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/* END EXPCONE */</span>
+</span><span><a class="LN" name="1432"> 1432   </a>
+</span><span><a class="LN" name="1433"> 1433   </a>		<span class="CT">/* Centering parameter */</span>
+</span><span><a class="LN" name="1434"> 1434   </a>        sigma = 1.0 - w-&gt;info-&gt;step_aff;
+</span><span><a class="LN" name="1435"> 1435   </a>        sigma = sigma*sigma*sigma;
+</span><span><a class="LN" name="1436"> 1436   </a>        <span class="KW">if</span>( sigma &gt; SIGMAMAX ) sigma = SIGMAMAX;
+</span><span><a class="LN" name="1437"> 1437   </a>        <span class="KW">if</span>( sigma &lt; SIGMAMIN ) sigma = SIGMAMIN;
+</span><span><a class="LN" name="1438"> 1438   </a>        w-&gt;info-&gt;sigma = sigma;
+</span><span><a class="LN" name="1439"> 1439   </a>
+</span><span><a class="LN" name="1440"> 1440   </a>
+</span><span><a class="LN" name="1441"> 1441   </a>		<span class="CT">/* COMBINED SEARCH DIRECTION */</span>
+</span><span><a class="LN" name="1442"> 1442   </a>		<a href="#fcn_RHS_combined" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_RHS_combined');" target="_self"><font color="#1122aa">RHS_combined</font></a>(w);
+</span><span><a class="LN" name="1443"> 1443   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1444"> 1444   </a>		<a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="1445"> 1445   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1446"> 1446   </a>		w-&gt;info-&gt;nitref3 = <a href="kkt_c.html#fcn_kkt_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_solve');" target="_self"><font color="#1122aa">kkt_solve</font></a>(w-&gt;KKT, w-&gt;A, w-&gt;G, w-&gt;KKT-&gt;RHS2, w-&gt;KKT-&gt;dx2, w-&gt;KKT-&gt;dy2, w-&gt;KKT-&gt;dz2, w-&gt;n, w-&gt;p, w-&gt;m, w-&gt;C, 0, w-&gt;stgs-&gt;nitref);
+</span><span><a class="LN" name="1447"> 1447   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="1448"> 1448   </a>		w-&gt;info-&gt;tkktsolve += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tkktsolve);
+</span><span><a class="LN" name="1449"> 1449   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1450"> 1450   </a>
+</span><span><a class="LN" name="1451"> 1451   </a>  		<span class="CT">/* bkap = kap*tau + dkapaff*dtauaff - sigma*info.mu; */</span>
+</span><span><a class="LN" name="1452"> 1452   </a>		bkap = w-&gt;kap*w-&gt;tau + dkapaff*dtauaff - sigma*w-&gt;info-&gt;mu;
+</span><span><a class="LN" name="1453"> 1453   </a>
+</span><span><a class="LN" name="1454"> 1454   </a>		<span class="CT">/* dtau = ((1-sigma)*rt - bkap/tau + c'*x2 + by2 + h'*z2) / dtau_denom; */</span>
+</span><span><a class="LN" name="1455"> 1455   </a>		dtau = ((1-sigma)*w-&gt;rt - bkap/w-&gt;tau + <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;n, w-&gt;c, w-&gt;KKT-&gt;dx2) + <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;p, w-&gt;b, w-&gt;KKT-&gt;dy2) + <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(w-&gt;m, w-&gt;h, w-&gt;KKT-&gt;dz2)) / dtau_denom;
+</span><span><a class="LN" name="1456"> 1456   </a>
+</span><span><a class="LN" name="1457"> 1457   </a>		<span class="CT">/* dx = x2 + dtau*x1;     dy = y2 + dtau*y1;       dz = z2 + dtau*z1; */</span>
+</span><span><a class="LN" name="1458"> 1458   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;n; i++ )<b>{</b> w-&gt;KKT-&gt;dx2[i] += dtau*w-&gt;KKT-&gt;dx1[i]; <b>}</b>
+</span><span><a class="LN" name="1459"> 1459   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;p; i++ )<b>{</b> w-&gt;KKT-&gt;dy2[i] += dtau*w-&gt;KKT-&gt;dy1[i]; <b>}</b>
+</span><span><a class="LN" name="1460"> 1460   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;KKT-&gt;dz2[i] += dtau*w-&gt;KKT-&gt;dz1[i]; <b>}</b>
+</span><span><a class="LN" name="1461"> 1461   </a>
+</span><span><a class="LN" name="1462"> 1462   </a>		<span class="CT">/*  ds_by_W = -(lambda \ bs + conelp_timesW(scaling,dz,dims)); */</span>
+</span><span><a class="LN" name="1463"> 1463   </a>		<span class="CT">/* note that at this point w-&gt;dsaff_by_W holds already (lambda \ ds) */</span>
+</span><span><a class="LN" name="1464"> 1464   </a>		<a href="cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>(w-&gt;KKT-&gt;dz2, w-&gt;C, w-&gt;W_times_dzaff);
+</span><span><a class="LN" name="1465"> 1465   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;dsaff_by_W[i] = -(w-&gt;dsaff_by_W[i] + w-&gt;W_times_dzaff[i]); <b>}</b>
+</span><span><a class="LN" name="1466"> 1466   </a>
+</span><span><a class="LN" name="1467"> 1467   </a>		<span class="CT">/* dkap = -(bkap + kap*dtau)/tau; */</span>
+</span><span><a class="LN" name="1468"> 1468   </a>		dkap = -(bkap + w-&gt;kap*dtau)/w-&gt;tau;
+</span><span><a class="LN" name="1469"> 1469   </a>
+</span><span><a class="LN" name="1470"> 1470   </a>		<span class="CT">/* Line search on combined direction */</span>
+</span><span><a class="LN" name="1471"> 1471   </a>		w-&gt;info-&gt;step = <a href="#fcn_lineSearch" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_lineSearch');" target="_self"><font color="#1122aa">lineSearch</font></a>(w-&gt;lambda, w-&gt;dsaff_by_W, w-&gt;W_times_dzaff, w-&gt;tau, dtau, w-&gt;kap, dkap, w-&gt;C, w-&gt;KKT) * w-&gt;stgs-&gt;gamma;
+</span><span><a class="LN" name="1472"> 1472   </a>
+</span><span><a class="LN" name="1473"> 1473   </a>        <span class="CT">/* Bring ds to the final unscaled form */</span>
+</span><span><a class="LN" name="1474"> 1474   </a>	    <span class="CT">/* ds = W*ds_by_W */</span>
+</span><span><a class="LN" name="1475"> 1475   </a>		<a href="cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>(w-&gt;dsaff_by_W, w-&gt;C, w-&gt;dsaff);
+</span><span><a class="LN" name="1476"> 1476   </a>
+</span><span><a class="LN" name="1477"> 1477   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="1478"> 1478   </a>
+</span><span><a class="LN" name="1479"> 1479   </a>        <span class="CT">/* Zero out the section corresponding to the exponential vars */</span>
+</span><span><a class="LN" name="1480"> 1480   </a>        <span class="KW">for</span>(i=fc; i&lt;w-&gt;m; i++)
+</span><span><a class="LN" name="1481"> 1481   </a>        <b>{</b>
+</span><span><a class="LN" name="1482"> 1482   </a>            w-&gt;dsaff[i] = 0.0;
+</span><span><a class="LN" name="1483"> 1483   </a>        <b>}</b>
+</span><span><a class="LN" name="1484"> 1484   </a>        <span class="CT">/* Calculate muH(z)dzaff and store in dsaff */</span>
+</span><span><a class="LN" name="1485"> 1485   </a>        <a href="expcone_c.html#fcn_scaleToAddExpcone" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scaleToAddExpcone');" target="_self"><font color="#1122aa">scaleToAddExpcone</font></a>(w-&gt;dsaff,w-&gt;KKT-&gt;dz2,w-&gt;C-&gt;expc,w-&gt;C-&gt;nexc,fc);
+</span><span><a class="LN" name="1486"> 1486   </a>
+</span><span><a class="LN" name="1487"> 1487   </a>        <span class="CT">/* We have modified g to contain s+sigma*mu*g(z) */</span>
+</span><span><a class="LN" name="1488"> 1488   </a>        k = fc;
+</span><span><a class="LN" name="1489"> 1489   </a>        <span class="KW">for</span>(i=0;i&lt;w-&gt;C-&gt;nexc;i++)
+</span><span><a class="LN" name="1490"> 1490   </a>        <b>{</b>
+</span><span><a class="LN" name="1491"> 1491   </a>            w-&gt;dsaff[k] = -w-&gt;dsaff[k] - w-&gt;C-&gt;expc[i].g[0];
+</span><span><a class="LN" name="1492"> 1492   </a>			k++;
+</span><span><a class="LN" name="1493"> 1493   </a>            w-&gt;dsaff[k] = -w-&gt;dsaff[k] - w-&gt;C-&gt;expc[i].g[1];
+</span><span><a class="LN" name="1494"> 1494   </a>			k++;
+</span><span><a class="LN" name="1495"> 1495   </a>            w-&gt;dsaff[k] = -w-&gt;dsaff[k] - w-&gt;C-&gt;expc[i].g[2];
+</span><span><a class="LN" name="1496"> 1496   </a>			k++;
+</span><span><a class="LN" name="1497"> 1497   </a>        <b>}</b>
+</span><span><a class="LN" name="1498"> 1498   </a>
+</span><span><a class="LN" name="1499"> 1499   </a>    <span class="CT">/* Set the backtracking counter to zero */</span>
+</span><span><a class="LN" name="1500"> 1500   </a>    w-&gt;info-&gt;cmbBack = 0;
+</span><span><a class="LN" name="1501"> 1501   </a>    <span class="KW">if</span>(w-&gt;C-&gt;nexc&gt;0)
+</span><span><a class="LN" name="1502"> 1502   </a>    <b>{</b>
+</span><span><a class="LN" name="1503"> 1503   </a>        w-&gt;info-&gt;step = <a href="#fcn_expConeLineSearch" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_expConeLineSearch');" target="_self"><font color="#1122aa">expConeLineSearch</font></a>(w,dtau,dkap,0);
+</span><span><a class="LN" name="1504"> 1504   </a>        <span class="CT">/* Sum the backtracking counts */</span>
+</span><span><a class="LN" name="1505"> 1505   </a>        w-&gt;info-&gt;cmbBack+= w-&gt;info-&gt;cb;
+</span><span><a class="LN" name="1506"> 1506   </a>        w-&gt;info-&gt;cmbBack+= w-&gt;info-&gt;cob;
+</span><span><a class="LN" name="1507"> 1507   </a>        w-&gt;info-&gt;cmbBack+= w-&gt;info-&gt;pb;
+</span><span><a class="LN" name="1508"> 1508   </a>        w-&gt;info-&gt;cmbBack+= w-&gt;info-&gt;db;
+</span><span><a class="LN" name="1509"> 1509   </a>
+</span><span><a class="LN" name="1510"> 1510   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="1511"> 1511   </a>        PRINTTEXT(<font color="#1122ff">&quot;Combined backtracking %i %i %i %i \n&quot;</font>,\
+</span><span><a class="LN" name="1512"> 1512   </a>        (<span class="DT">int</span>)w-&gt;info-&gt;cb,\
+</span><span><a class="LN" name="1513"> 1513   </a>        (<span class="DT">int</span>)w-&gt;info-&gt;cob,\
+</span><span><a class="LN" name="1514"> 1514   </a>        (<span class="DT">int</span>)w-&gt;info-&gt;pb,\
+</span><span><a class="LN" name="1515"> 1515   </a>        (<span class="DT">int</span>)w-&gt;info-&gt;db);
+</span><span><a class="LN" name="1516"> 1516   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1517"> 1517   </a>
+</span><span><a class="LN" name="1518"> 1518   </a>        <span class="CT">/* Detect linesearch failure, recover and end. */</span>
+</span><span><a class="LN" name="1519"> 1519   </a>        <span class="KW">if</span>(w-&gt;info-&gt;step == -1)
+</span><span><a class="LN" name="1520"> 1520   </a>        <b>{</b>
+</span><span><a class="LN" name="1521"> 1521   </a>
+</span><span><a class="LN" name="1522"> 1522   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 1
+</span><span><a class="LN" name="1523"> 1523   </a>            <span class="KW">if</span>( w-&gt;stgs-&gt;verbose )<b>{</b>
+</span><span><a class="LN" name="1524"> 1524   </a>	            PRINTTEXT(<font color="#1122ff">&quot;Combined backtracking failed %i %i %i %i sigma %g\n&quot;</font>,\
+</span><span><a class="LN" name="1525"> 1525   </a>	            (<span class="DT">int</span>)w-&gt;info-&gt;cb,\
+</span><span><a class="LN" name="1526"> 1526   </a>	            (<span class="DT">int</span>)w-&gt;info-&gt;cob,\
+</span><span><a class="LN" name="1527"> 1527   </a>	            (<span class="DT">int</span>)w-&gt;info-&gt;pb,\
+</span><span><a class="LN" name="1528"> 1528   </a>	            (<span class="DT">int</span>)w-&gt;info-&gt;db,\
+</span><span><a class="LN" name="1529"> 1529   </a>	            sigma);
+</span><span><a class="LN" name="1530"> 1530   </a>
+</span><span><a class="LN" name="1531"> 1531   </a>	            PRINTTEXT(<font color="#1122ff">&quot;Combined line search failed, recovering best iterate (%i) and stopping.\n&quot;</font>,\
+</span><span><a class="LN" name="1532"> 1532   </a>	            (<span class="DT">int</span>)w-&gt;best_info-&gt;iter);
+</span><span><a class="LN" name="1533"> 1533   </a>            <b>}</b>
+</span><span><a class="LN" name="1534"> 1534   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1535"> 1535   </a>            <a href="#fcn_restoreBestIterate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restoreBestIterate');" target="_self"><font color="#1122aa">restoreBestIterate</font></a>( w );
+</span><span><a class="LN" name="1536"> 1536   </a>
+</span><span><a class="LN" name="1537"> 1537   </a>            <span class="CT">/* Determine whether we have reached at least reduced accuracy */</span>
+</span><span><a class="LN" name="1538"> 1538   </a>            exitcode = <a href="#fcn_checkExitConditions" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_checkExitConditions');" target="_self"><font color="#1122aa">checkExitConditions</font></a>( w, ECOS_INACC_OFFSET );
+</span><span><a class="LN" name="1539"> 1539   </a>
+</span><span><a class="LN" name="1540"> 1540   </a>            <span class="CT">/* if not, exit anyways */</span>
+</span><span><a class="LN" name="1541"> 1541   </a>            <span class="KW">if</span>( exitcode == ECOS_NOT_CONVERGED_YET )<b>{</b>
+</span><span><a class="LN" name="1542"> 1542   </a>                exitcode = ECOS_NUMERICS;
+</span><span><a class="LN" name="1543"> 1543   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1544"> 1544   </a>                <span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nNUMERICAL PROBLEMS (reached feastol=%3.1e, reltol=%3.1e, abstol=%3.1e).&quot;</font>, MAX(w-&gt;info-&gt;dres, w-&gt;info-&gt;pres), w-&gt;info-&gt;relgap, w-&gt;info-&gt;gap);
+</span><span><a class="LN" name="1545"> 1545   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1546"> 1546   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1547"> 1547   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="1548"> 1548   </a>                <span class="KW">break</span>;
+</span><span><a class="LN" name="1549"> 1549   </a>            <b>}</b>
+</span><span><a class="LN" name="1550"> 1550   </a>       <b>}</b>
+</span><span><a class="LN" name="1551"> 1551   </a>
+</span><span><a class="LN" name="1552"> 1552   </a>    <b>}</b>
+</span><span><a class="LN" name="1553"> 1553   </a>
+</span><span><a class="LN" name="1554"> 1554   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/* endif of EXPCONE */</span>
+</span><span><a class="LN" name="1555"> 1555   </a>
+</span><span><a class="LN" name="1556"> 1556   </a>
+</span><span><a class="LN" name="1557"> 1557   </a>		<span class="CT">/* Update variables */</span>
+</span><span><a class="LN" name="1558"> 1558   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;n; i++ )<b>{</b> w-&gt;x[i] += w-&gt;info-&gt;step * w-&gt;KKT-&gt;dx2[i]; <b>}</b>
+</span><span><a class="LN" name="1559"> 1559   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;p; i++ )<b>{</b> w-&gt;y[i] += w-&gt;info-&gt;step * w-&gt;KKT-&gt;dy2[i]; <b>}</b>
+</span><span><a class="LN" name="1560"> 1560   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;z[i] += w-&gt;info-&gt;step * w-&gt;KKT-&gt;dz2[i]; <b>}</b>
+</span><span><a class="LN" name="1561"> 1561   </a>		<span class="KW">for</span>( i=0; i &lt; w-&gt;m; i++ )<b>{</b> w-&gt;s[i] += w-&gt;info-&gt;step * w-&gt;dsaff[i]; <b>}</b>
+</span><span><a class="LN" name="1562"> 1562   </a>		w-&gt;kap += w-&gt;info-&gt;step * dkap;
+</span><span><a class="LN" name="1563"> 1563   </a>		w-&gt;tau += w-&gt;info-&gt;step * dtau;
+</span><span><a class="LN" name="1564"> 1564   </a>	<b>}</b>
+</span><span><a class="LN" name="1565"> 1565   </a>
+</span><span><a class="LN" name="1566"> 1566   </a>	<span class="CT">/* scale variables back */</span>
+</span><span><a class="LN" name="1567"> 1567   </a>	<a href="#fcn_backscale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_backscale');" target="_self"><font color="#1122aa">backscale</font></a>(w);
+</span><span><a class="LN" name="1568"> 1568   </a>
+</span><span><a class="LN" name="1569"> 1569   </a>	<span class="CT">/* stop timer */</span>
+</span><span><a class="LN" name="1570"> 1570   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 0
+</span><span><a class="LN" name="1571"> 1571   </a>	w-&gt;info-&gt;tsolve = <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;tsolve);
+</span><span><a class="LN" name="1572"> 1572   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1573"> 1573   </a>
+</span><span><a class="LN" name="1574"> 1574   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 0
+</span><span><a class="LN" name="1575"> 1575   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 0
+</span><span><a class="LN" name="1576"> 1576   </a>	<span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\nRuntime: %f seconds.&quot;</font>, w-&gt;info-&gt;tsetup + w-&gt;info-&gt;tsolve);
+</span><span><a class="LN" name="1577"> 1577   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1578"> 1578   </a>	<span class="KW">if</span>( w-&gt;stgs-&gt;verbose ) PRINTTEXT(<font color="#1122ff">&quot;\n\n&quot;</font>);
+</span><span><a class="LN" name="1579"> 1579   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1580"> 1580   </a>
+</span><span><a class="LN" name="1581"> 1581   </a><font color="#992211">#</font><span class="PP">if</span> CTRLC &gt; 0
+</span><span><a class="LN" name="1582"> 1582   </a>    <a href="ctrlc_c.html#fcn_remove_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_remove_ctrlc');" target="_self"><font color="#1122aa">remove_ctrlc</font></a>();
+</span><span><a class="LN" name="1583"> 1583   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1584"> 1584   </a>	<span class="KW">return</span> exitcode;
+</span><span><a class="LN" name="1585"> 1585   </a><b>}</b>
+</span><span><a class="LN" name="1586"> 1586   </a>
+</span><span><a class="LN" name="1587"> 1587   </a>
+</span><span><a class="LN" name="1588"> 1588   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="1589"> 1589   </a><span class="CT"> * Updates one element of the RHS vector h of inequalities</span>
+</span><span><a class="LN" name="1590"> 1590   </a><span class="CT"> * After the call, w-&gt;h[idx] = value (but equilibrated)</span>
+</span><span><a class="LN" name="1591"> 1591   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="1592"> 1592   </a><span class="DT">void</span> ecos_updateDataEntry_h(pwork* w, idxint idx, pfloat value)
+</span><span><a class="LN" name="1593"> 1593   </a><b>{</b>
+</span><span><a class="LN" name="1594"> 1594   </a><font color="#992211">#</font><span class="PP">if</span> EQUILIBRATE &gt; 0
+</span><span><a class="LN" name="1595"> 1595   </a>    w-&gt;h[idx] = value / w-&gt;Gequil[idx];
+</span><span><a class="LN" name="1596"> 1596   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="1597"> 1597   </a>    w-&gt;h[idx] = value;
+</span><span><a class="LN" name="1598"> 1598   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1599"> 1599   </a><b>}</b>
+</span><span><a class="LN" name="1600"> 1600   </a>
+</span><span><a class="LN" name="1601"> 1601   </a>
+</span><span><a class="LN" name="1602"> 1602   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="1603"> 1603   </a><span class="CT"> * Updates one element of the OBJ vector c of inequalities</span>
+</span><span><a class="LN" name="1604"> 1604   </a><span class="CT"> * After the call, w-&gt;c[idx] = value (but equilibrated)</span>
+</span><span><a class="LN" name="1605"> 1605   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="1606"> 1606   </a><span class="DT">void</span> ecos_updateDataEntry_c(pwork* w, idxint idx, pfloat value)
+</span><span><a class="LN" name="1607"> 1607   </a><b>{</b>
+</span><span><a class="LN" name="1608"> 1608   </a>    w-&gt;c[idx] = value;
+</span><span><a class="LN" name="1609"> 1609   </a><b>}</b>
+</span><span><a class="LN" name="1610"> 1610   </a>
+</span><span><a class="LN" name="1611"> 1611   </a>
+</span><span><a class="LN" name="1612"> 1612   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="1613"> 1613   </a><span class="CT"> * Updates numerical data for G, A, c, h, and b,</span>
+</span><span><a class="LN" name="1614"> 1614   </a><span class="CT"> * and re-equilibrates.</span>
+</span><span><a class="LN" name="1615"> 1615   </a><span class="CT"> * Then updates the corresponding KKT entries.</span>
+</span><span><a class="LN" name="1616"> 1616   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="1617"> 1617   </a><span class="DT">void</span> ECOS_updateData(pwork *w, pfloat *Gpr, pfloat *Apr,
+</span><span><a class="LN" name="1618"> 1618   </a>                     pfloat* c, pfloat* h, pfloat* b)
+</span><span><a class="LN" name="1619"> 1619   </a><b>{</b>
+</span><span><a class="LN" name="1620"> 1620   </a>
+</span><span><a class="LN" name="1621"> 1621   </a>    idxint k;
+</span><span><a class="LN" name="1622"> 1622   </a>
+</span><span><a class="LN" name="1623"> 1623   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EQUILIBRATE &amp;&amp; EQUILIBRATE &gt; 0
+</span><span><a class="LN" name="1624"> 1624   </a>    <a href="equil_c.html#fcn_unset_equilibration" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_unset_equilibration');" target="_self"><font color="#1122aa">unset_equilibration</font></a>(w);
+</span><span><a class="LN" name="1625"> 1625   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1626"> 1626   </a>
+</span><span><a class="LN" name="1627"> 1627   </a>    <span class="CT">/* update pointers */</span>
+</span><span><a class="LN" name="1628"> 1628   </a>    w-&gt;G-&gt;pr = Gpr;
+</span><span><a class="LN" name="1629"> 1629   </a>    w-&gt;A-&gt;pr = Apr;
+</span><span><a class="LN" name="1630"> 1630   </a>    w-&gt;c = c;
+</span><span><a class="LN" name="1631"> 1631   </a>    w-&gt;h = h;
+</span><span><a class="LN" name="1632"> 1632   </a>    w-&gt;b = b;
+</span><span><a class="LN" name="1633"> 1633   </a>
+</span><span><a class="LN" name="1634"> 1634   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EQUILIBRATE &amp;&amp; EQUILIBRATE &gt; 0
+</span><span><a class="LN" name="1635"> 1635   </a>    <a href="equil_c.html#fcn_set_equilibration" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_set_equilibration');" target="_self"><font color="#1122aa">set_equilibration</font></a>(w);
+</span><span><a class="LN" name="1636"> 1636   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="1637"> 1637   </a>
+</span><span><a class="LN" name="1638"> 1638   </a>    <span class="CT">/* update KKT matrix */</span>
+</span><span><a class="LN" name="1639"> 1639   </a>    <span class="KW">for</span> (k=0; k&lt;w-&gt;A-&gt;nnz; k++)<b>{</b>
+</span><span><a class="LN" name="1640"> 1640   </a>        w-&gt;KKT-&gt;PKPt-&gt;pr[w-&gt;KKT-&gt;PK[w-&gt;AtoK[k]]] = Apr[k];
+</span><span><a class="LN" name="1641"> 1641   </a>    <b>}</b>
+</span><span><a class="LN" name="1642"> 1642   </a>    <span class="KW">for</span> (k=0; k&lt;w-&gt;G-&gt;nnz; k++)<b>{</b>
+</span><span><a class="LN" name="1643"> 1643   </a>        w-&gt;KKT-&gt;PKPt-&gt;pr[w-&gt;KKT-&gt;PK[w-&gt;GtoK[k]]] = Gpr[k];
+</span><span><a class="LN" name="1644"> 1644   </a>    <b>}</b>
+</span><span><a class="LN" name="1645"> 1645   </a><b>}</b>
+</span><span><a class="LN" name="1646"> 1646   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

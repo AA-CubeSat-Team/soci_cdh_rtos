@@ -1,0 +1,170 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - xgeqrf_oLvid02n.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('xgeqrf_oLvid02n_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../xgeqrf_oLvid02n.c" target="rtwreport_document_frame" id="linkToText_plain">xgeqrf_oLvid02n.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: xgeqrf_oLvid02n.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;string.h&gt;</font>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_hypotd_snf.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgemv_yhLPhpBF.h&quot;</font>
+</span><span><a class="LN" name="20">   20   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgerc_DRnL5EPl.h&quot;</font>
+</span><span><a class="LN" name="21">   21   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xnrm2_BCgvJNRK.h&quot;</font>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgeqrf_oLvid02n.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a>
+</span><span><a class="LN" name="24">   24   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:114')" name="code2model"><font color="#117755"><i>&lt;S119&gt;/QR_factorization</i></font></a>' */</span>
+</span><span><a class="LN" name="25">   25   </a><span class="DT">void</span> <a name="fcn_xgeqrf_oLvid02n">xgeqrf_oLvid02n</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A[144], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tau[12])
+</span><span><a class="LN" name="26">   26   </a><b>{</b>
+</span><span><a class="LN" name="27">   27   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> work[12];
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i_i;
+</span><span><a class="LN" name="29">   29   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> b_atmp;
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> xnorm;
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> knt;
+</span><span><a class="LN" name="33">   33   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> lastv;
+</span><span><a class="LN" name="34">   34   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> lastc;
+</span><span><a class="LN" name="35">   35   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> coltop;
+</span><span><a class="LN" name="36">   36   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ia;
+</span><span><a class="LN" name="37">   37   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> exitg1;
+</span><span><a class="LN" name="38">   38   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> exitg2;
+</span><span><a class="LN" name="39">   39   </a>  memset(&amp;work[0], 0, 12U * <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>));
+</span><span><a class="LN" name="40">   40   </a>  <span class="KW">for</span> (i = 0; i &lt; 12; i++) <b>{</b>
+</span><span><a class="LN" name="41">   41   </a>    i_i = i * 12 + i;
+</span><span><a class="LN" name="42">   42   </a>    <span class="KW">if</span> (1 + i &lt; 12) <b>{</b>
+</span><span><a class="LN" name="43">   43   </a>      b_atmp = A[i_i];
+</span><span><a class="LN" name="44">   44   </a>      tau[i] = 0.0;
+</span><span><a class="LN" name="45">   45   </a>      xnorm = <a href="xnrm2_BCgvJNRK_c.html#fcn_xnrm2_BCgvJNRK" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xnrm2_BCgvJNRK');" target="_self"><font color="#1122aa">xnrm2_BCgvJNRK</font></a>(11 - i, A, i_i + 2);
+</span><span><a class="LN" name="46">   46   </a>      <span class="KW">if</span> (xnorm != 0.0) <b>{</b>
+</span><span><a class="LN" name="47">   47   </a>        xnorm = <a href="rt_hypotd_snf_c.html#fcn_rt_hypotd_snf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rt_hypotd_snf');" target="_self"><font color="#1122aa">rt_hypotd_snf</font></a>(A[i_i], xnorm);
+</span><span><a class="LN" name="48">   48   </a>        <span class="KW">if</span> (A[i_i] &gt;= 0.0) <b>{</b>
+</span><span><a class="LN" name="49">   49   </a>          xnorm = -xnorm;
+</span><span><a class="LN" name="50">   50   </a>        <b>}</b>
+</span><span><a class="LN" name="51">   51   </a>
+</span><span><a class="LN" name="52">   52   </a>        <span class="KW">if</span> (fabs(xnorm) &lt; 1.0020841800044864E-292) <b>{</b>
+</span><span><a class="LN" name="53">   53   </a>          knt = -1;
+</span><span><a class="LN" name="54">   54   </a>          lastv = i_i - i;
+</span><span><a class="LN" name="55">   55   </a>          <span class="KW">do</span> <b>{</b>
+</span><span><a class="LN" name="56">   56   </a>            knt++;
+</span><span><a class="LN" name="57">   57   </a>            <span class="KW">for</span> (lastc = i_i + 1; lastc &lt; lastv + 12; lastc++) <b>{</b>
+</span><span><a class="LN" name="58">   58   </a>              A[lastc] *= 9.9792015476736E+291;
+</span><span><a class="LN" name="59">   59   </a>            <b>}</b>
+</span><span><a class="LN" name="60">   60   </a>
+</span><span><a class="LN" name="61">   61   </a>            xnorm *= 9.9792015476736E+291;
+</span><span><a class="LN" name="62">   62   </a>            b_atmp *= 9.9792015476736E+291;
+</span><span><a class="LN" name="63">   63   </a>          <b>}</b> <span class="KW">while</span> (!(fabs(xnorm) &gt;= 1.0020841800044864E-292));
+</span><span><a class="LN" name="64">   64   </a>
+</span><span><a class="LN" name="65">   65   </a>          xnorm = <a href="rt_hypotd_snf_c.html#fcn_rt_hypotd_snf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rt_hypotd_snf');" target="_self"><font color="#1122aa">rt_hypotd_snf</font></a>(b_atmp, <a href="xnrm2_BCgvJNRK_c.html#fcn_xnrm2_BCgvJNRK" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xnrm2_BCgvJNRK');" target="_self"><font color="#1122aa">xnrm2_BCgvJNRK</font></a>(11 - i, A, i_i + 2));
+</span><span><a class="LN" name="66">   66   </a>          <span class="KW">if</span> (b_atmp &gt;= 0.0) <b>{</b>
+</span><span><a class="LN" name="67">   67   </a>            xnorm = -xnorm;
+</span><span><a class="LN" name="68">   68   </a>          <b>}</b>
+</span><span><a class="LN" name="69">   69   </a>
+</span><span><a class="LN" name="70">   70   </a>          tau[i] = (xnorm - b_atmp) / xnorm;
+</span><span><a class="LN" name="71">   71   </a>          b_atmp = 1.0 / (b_atmp - xnorm);
+</span><span><a class="LN" name="72">   72   </a>          lastv = i_i - i;
+</span><span><a class="LN" name="73">   73   </a>          <span class="KW">for</span> (lastc = i_i + 1; lastc &lt; lastv + 12; lastc++) <b>{</b>
+</span><span><a class="LN" name="74">   74   </a>            A[lastc] *= b_atmp;
+</span><span><a class="LN" name="75">   75   </a>          <b>}</b>
+</span><span><a class="LN" name="76">   76   </a>
+</span><span><a class="LN" name="77">   77   </a>          <span class="KW">for</span> (lastv = 0; lastv &lt;= knt; lastv++) <b>{</b>
+</span><span><a class="LN" name="78">   78   </a>            xnorm *= 1.0020841800044864E-292;
+</span><span><a class="LN" name="79">   79   </a>          <b>}</b>
+</span><span><a class="LN" name="80">   80   </a>
+</span><span><a class="LN" name="81">   81   </a>          b_atmp = xnorm;
+</span><span><a class="LN" name="82">   82   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="83">   83   </a>          tau[i] = (xnorm - A[i_i]) / xnorm;
+</span><span><a class="LN" name="84">   84   </a>          b_atmp = 1.0 / (A[i_i] - xnorm);
+</span><span><a class="LN" name="85">   85   </a>          knt = i_i - i;
+</span><span><a class="LN" name="86">   86   </a>          <span class="KW">for</span> (lastv = i_i + 1; lastv &lt; knt + 12; lastv++) <b>{</b>
+</span><span><a class="LN" name="87">   87   </a>            A[lastv] *= b_atmp;
+</span><span><a class="LN" name="88">   88   </a>          <b>}</b>
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a>          b_atmp = xnorm;
+</span><span><a class="LN" name="91">   91   </a>        <b>}</b>
+</span><span><a class="LN" name="92">   92   </a>      <b>}</b>
+</span><span><a class="LN" name="93">   93   </a>
+</span><span><a class="LN" name="94">   94   </a>      A[i_i] = b_atmp;
+</span><span><a class="LN" name="95">   95   </a>      b_atmp = A[i_i];
+</span><span><a class="LN" name="96">   96   </a>      A[i_i] = 1.0;
+</span><span><a class="LN" name="97">   97   </a>      knt = ((1 + i) * 12 + i) + 1;
+</span><span><a class="LN" name="98">   98   </a>      <span class="KW">if</span> (tau[i] != 0.0) <b>{</b>
+</span><span><a class="LN" name="99">   99   </a>        lastv = 12 - i;
+</span><span><a class="LN" name="100">  100   </a>        lastc = i_i - i;
+</span><span><a class="LN" name="101">  101   </a>        <span class="KW">while</span> ((lastv &gt; 0) &amp;&amp; (A[lastc + 11] == 0.0)) <b>{</b>
+</span><span><a class="LN" name="102">  102   </a>          lastv--;
+</span><span><a class="LN" name="103">  103   </a>          lastc--;
+</span><span><a class="LN" name="104">  104   </a>        <b>}</b>
+</span><span><a class="LN" name="105">  105   </a>
+</span><span><a class="LN" name="106">  106   </a>        lastc = 11 - i;
+</span><span><a class="LN" name="107">  107   </a>        exitg2 = false;
+</span><span><a class="LN" name="108">  108   </a>        <span class="KW">while</span> ((!exitg2) &amp;&amp; (lastc &gt; 0)) <b>{</b>
+</span><span><a class="LN" name="109">  109   </a>          coltop = (lastc - 1) * 12 + knt;
+</span><span><a class="LN" name="110">  110   </a>          ia = coltop;
+</span><span><a class="LN" name="111">  111   </a>          <span class="KW">do</span> <b>{</b>
+</span><span><a class="LN" name="112">  112   </a>            exitg1 = 0;
+</span><span><a class="LN" name="113">  113   </a>            <span class="KW">if</span> (ia &lt;= (coltop + lastv) - 1) <b>{</b>
+</span><span><a class="LN" name="114">  114   </a>              <span class="KW">if</span> (A[ia - 1] != 0.0) <b>{</b>
+</span><span><a class="LN" name="115">  115   </a>                exitg1 = 1;
+</span><span><a class="LN" name="116">  116   </a>              <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="117">  117   </a>                ia++;
+</span><span><a class="LN" name="118">  118   </a>              <b>}</b>
+</span><span><a class="LN" name="119">  119   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="120">  120   </a>              lastc--;
+</span><span><a class="LN" name="121">  121   </a>              exitg1 = 2;
+</span><span><a class="LN" name="122">  122   </a>            <b>}</b>
+</span><span><a class="LN" name="123">  123   </a>          <b>}</b> <span class="KW">while</span> (exitg1 == 0);
+</span><span><a class="LN" name="124">  124   </a>
+</span><span><a class="LN" name="125">  125   </a>          <span class="KW">if</span> (exitg1 == 1) <b>{</b>
+</span><span><a class="LN" name="126">  126   </a>            exitg2 = true;
+</span><span><a class="LN" name="127">  127   </a>          <b>}</b>
+</span><span><a class="LN" name="128">  128   </a>        <b>}</b>
+</span><span><a class="LN" name="129">  129   </a>      <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="130">  130   </a>        lastv = 0;
+</span><span><a class="LN" name="131">  131   </a>        lastc = 0;
+</span><span><a class="LN" name="132">  132   </a>      <b>}</b>
+</span><span><a class="LN" name="133">  133   </a>
+</span><span><a class="LN" name="134">  134   </a>      <span class="KW">if</span> (lastv &gt; 0) <b>{</b>
+</span><span><a class="LN" name="135">  135   </a>        <a href="xgemv_yhLPhpBF_c.html#fcn_xgemv_yhLPhpBF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xgemv_yhLPhpBF');" target="_self"><font color="#1122aa">xgemv_yhLPhpBF</font></a>(lastv, lastc, A, knt, A, i_i + 1, work);
+</span><span><a class="LN" name="136">  136   </a>        <a href="xgerc_DRnL5EPl_c.html#fcn_xgerc_DRnL5EPl" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xgerc_DRnL5EPl');" target="_self"><font color="#1122aa">xgerc_DRnL5EPl</font></a>(lastv, lastc, -tau[i], i_i + 1, work, A, knt);
+</span><span><a class="LN" name="137">  137   </a>      <b>}</b>
+</span><span><a class="LN" name="138">  138   </a>
+</span><span><a class="LN" name="139">  139   </a>      A[i_i] = b_atmp;
+</span><span><a class="LN" name="140">  140   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="141">  141   </a>      tau[11] = 0.0;
+</span><span><a class="LN" name="142">  142   </a>    <b>}</b>
+</span><span><a class="LN" name="143">  143   </a>  <b>}</b>
+</span><span><a class="LN" name="144">  144   </a><b>}</b>
+</span><span><a class="LN" name="145">  145   </a>
+</span><span><a class="LN" name="146">  146   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="147">  147   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="148">  148   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="149">  149   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="150">  150   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="151">  151   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

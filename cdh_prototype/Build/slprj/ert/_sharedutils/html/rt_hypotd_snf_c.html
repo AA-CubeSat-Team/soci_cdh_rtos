@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - rt_hypotd_snf.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('rt_hypotd_snf_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../rt_hypotd_snf.c" target="rtwreport_document_frame" id="linkToText_plain">rt_hypotd_snf.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: rt_hypotd_snf.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_nonfinite.h&quot;</font>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_hypotd_snf.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="fcn_rt_hypotd_snf">rt_hypotd_snf</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> u0, <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> u1)
+</span><span><a class="LN" name="21">   21   </a><b>{</b>
+</span><span><a class="LN" name="22">   22   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> y;
+</span><span><a class="LN" name="23">   23   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> a;
+</span><span><a class="LN" name="24">   24   </a>  a = fabs(u0);
+</span><span><a class="LN" name="25">   25   </a>  y = fabs(u1);
+</span><span><a class="LN" name="26">   26   </a>  <span class="KW">if</span> (a &lt; y) <b>{</b>
+</span><span><a class="LN" name="27">   27   </a>    a /= y;
+</span><span><a class="LN" name="28">   28   </a>    y *= sqrt(a * a + 1.0);
+</span><span><a class="LN" name="29">   29   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (a &gt; y) <b>{</b>
+</span><span><a class="LN" name="30">   30   </a>    y /= a;
+</span><span><a class="LN" name="31">   31   </a>    y = sqrt(y * y + 1.0) * a;
+</span><span><a class="LN" name="32">   32   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="33">   33   </a>    <span class="KW">if</span> (!<a href="rt_nonfinite_c.html#fcn_rtIsNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaN');" target="_self"><font color="#1122aa">rtIsNaN</font></a>(y)) <b>{</b>
+</span><span><a class="LN" name="34">   34   </a>      y = a * 1.4142135623730951;
+</span><span><a class="LN" name="35">   35   </a>    <b>}</b>
+</span><span><a class="LN" name="36">   36   </a>  <b>}</b>
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a>  <span class="KW">return</span> y;
+</span><span><a class="LN" name="39">   39   </a><b>}</b>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="42">   42   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="43">   43   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="44">   44   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="45">   45   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="46">   46   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

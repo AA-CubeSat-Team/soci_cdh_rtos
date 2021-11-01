@@ -1,0 +1,140 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - qr_c0VdrKOo.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('qr_c0VdrKOo_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../qr_c0VdrKOo.c" target="rtwreport_document_frame" id="linkToText_plain">qr_c0VdrKOo.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: qr_c0VdrKOo.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;string.h&gt;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgemv_yhLPhpBF.h&quot;</font>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgeqrf_oLvid02n.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xgerc_DRnL5EPl.h&quot;</font>
+</span><span><a class="LN" name="20">   20   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;qr_c0VdrKOo.h&quot;</font>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:114')" name="code2model"><font color="#117755"><i>&lt;S119&gt;/QR_factorization</i></font></a>' */</span>
+</span><span><a class="LN" name="23">   23   </a><span class="DT">void</span> <a name="fcn_qr_c0VdrKOo">qr_c0VdrKOo</a>(<span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A[144], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Q[144], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> R[144])
+</span><span><a class="LN" name="24">   24   </a><b>{</b>
+</span><span><a class="LN" name="25">   25   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> b_A[144];
+</span><span><a class="LN" name="26">   26   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tau[12];
+</span><span><a class="LN" name="27">   27   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> d_i;
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> itau;
+</span><span><a class="LN" name="29">   29   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> work[12];
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> iaii;
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> lastv;
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> lastc;
+</span><span><a class="LN" name="33">   33   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> coltop;
+</span><span><a class="LN" name="34">   34   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ia;
+</span><span><a class="LN" name="35">   35   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> exitg1;
+</span><span><a class="LN" name="36">   36   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> exitg2;
+</span><span><a class="LN" name="37">   37   </a>  memcpy(&amp;b_A[0], &amp;A[0], 144U * <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>));
+</span><span><a class="LN" name="38">   38   </a>  <a href="xgeqrf_oLvid02n_c.html#fcn_xgeqrf_oLvid02n" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xgeqrf_oLvid02n');" target="_self"><font color="#1122aa">xgeqrf_oLvid02n</font></a>(b_A, tau);
+</span><span><a class="LN" name="39">   39   </a>  <span class="KW">for</span> (itau = 0; itau &lt; 12; itau++) <b>{</b>
+</span><span><a class="LN" name="40">   40   </a>    <span class="KW">for</span> (d_i = 0; d_i &lt;= itau; d_i++) <b>{</b>
+</span><span><a class="LN" name="41">   41   </a>      R[d_i + 12 * itau] = b_A[12 * itau + d_i];
+</span><span><a class="LN" name="42">   42   </a>    <b>}</b>
+</span><span><a class="LN" name="43">   43   </a>
+</span><span><a class="LN" name="44">   44   </a>    <span class="KW">for</span> (d_i = itau; d_i + 2 &lt; 13; d_i++) <b>{</b>
+</span><span><a class="LN" name="45">   45   </a>      R[(d_i + 12 * itau) + 1] = 0.0;
+</span><span><a class="LN" name="46">   46   </a>    <b>}</b>
+</span><span><a class="LN" name="47">   47   </a>
+</span><span><a class="LN" name="48">   48   </a>    work[itau] = 0.0;
+</span><span><a class="LN" name="49">   49   </a>  <b>}</b>
+</span><span><a class="LN" name="50">   50   </a>
+</span><span><a class="LN" name="51">   51   </a>  itau = 11;
+</span><span><a class="LN" name="52">   52   </a>  <span class="KW">for</span> (d_i = 11; d_i &gt;= 0; d_i--) <b>{</b>
+</span><span><a class="LN" name="53">   53   </a>    iaii = (d_i * 12 + d_i) + 1;
+</span><span><a class="LN" name="54">   54   </a>    <span class="KW">if</span> (d_i + 1 &lt; 12) <b>{</b>
+</span><span><a class="LN" name="55">   55   </a>      b_A[iaii - 1] = 1.0;
+</span><span><a class="LN" name="56">   56   </a>      <span class="KW">if</span> (tau[itau] != 0.0) <b>{</b>
+</span><span><a class="LN" name="57">   57   </a>        lastv = 12 - d_i;
+</span><span><a class="LN" name="58">   58   </a>        lastc = (iaii - d_i) + 10;
+</span><span><a class="LN" name="59">   59   </a>        <span class="KW">while</span> ((lastv &gt; 0) &amp;&amp; (b_A[lastc] == 0.0)) <b>{</b>
+</span><span><a class="LN" name="60">   60   </a>          lastv--;
+</span><span><a class="LN" name="61">   61   </a>          lastc--;
+</span><span><a class="LN" name="62">   62   </a>        <b>}</b>
+</span><span><a class="LN" name="63">   63   </a>
+</span><span><a class="LN" name="64">   64   </a>        lastc = 11 - d_i;
+</span><span><a class="LN" name="65">   65   </a>        exitg2 = false;
+</span><span><a class="LN" name="66">   66   </a>        <span class="KW">while</span> ((!exitg2) &amp;&amp; (lastc &gt; 0)) <b>{</b>
+</span><span><a class="LN" name="67">   67   </a>          coltop = ((lastc - 1) * 12 + iaii) + 11;
+</span><span><a class="LN" name="68">   68   </a>          ia = coltop;
+</span><span><a class="LN" name="69">   69   </a>          <span class="KW">do</span> <b>{</b>
+</span><span><a class="LN" name="70">   70   </a>            exitg1 = 0;
+</span><span><a class="LN" name="71">   71   </a>            <span class="KW">if</span> (ia + 1 &lt;= coltop + lastv) <b>{</b>
+</span><span><a class="LN" name="72">   72   </a>              <span class="KW">if</span> (b_A[ia] != 0.0) <b>{</b>
+</span><span><a class="LN" name="73">   73   </a>                exitg1 = 1;
+</span><span><a class="LN" name="74">   74   </a>              <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="75">   75   </a>                ia++;
+</span><span><a class="LN" name="76">   76   </a>              <b>}</b>
+</span><span><a class="LN" name="77">   77   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="78">   78   </a>              lastc--;
+</span><span><a class="LN" name="79">   79   </a>              exitg1 = 2;
+</span><span><a class="LN" name="80">   80   </a>            <b>}</b>
+</span><span><a class="LN" name="81">   81   </a>          <b>}</b> <span class="KW">while</span> (exitg1 == 0);
+</span><span><a class="LN" name="82">   82   </a>
+</span><span><a class="LN" name="83">   83   </a>          <span class="KW">if</span> (exitg1 == 1) <b>{</b>
+</span><span><a class="LN" name="84">   84   </a>            exitg2 = true;
+</span><span><a class="LN" name="85">   85   </a>          <b>}</b>
+</span><span><a class="LN" name="86">   86   </a>        <b>}</b>
+</span><span><a class="LN" name="87">   87   </a>      <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="88">   88   </a>        lastv = 0;
+</span><span><a class="LN" name="89">   89   </a>        lastc = 0;
+</span><span><a class="LN" name="90">   90   </a>      <b>}</b>
+</span><span><a class="LN" name="91">   91   </a>
+</span><span><a class="LN" name="92">   92   </a>      <span class="KW">if</span> (lastv &gt; 0) <b>{</b>
+</span><span><a class="LN" name="93">   93   </a>        <a href="xgemv_yhLPhpBF_c.html#fcn_xgemv_yhLPhpBF" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xgemv_yhLPhpBF');" target="_self"><font color="#1122aa">xgemv_yhLPhpBF</font></a>(lastv, lastc, b_A, iaii + 12, b_A, iaii, work);
+</span><span><a class="LN" name="94">   94   </a>        <a href="xgerc_DRnL5EPl_c.html#fcn_xgerc_DRnL5EPl" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xgerc_DRnL5EPl');" target="_self"><font color="#1122aa">xgerc_DRnL5EPl</font></a>(lastv, lastc, -tau[itau], iaii, work, b_A, iaii + 12);
+</span><span><a class="LN" name="95">   95   </a>      <b>}</b>
+</span><span><a class="LN" name="96">   96   </a>
+</span><span><a class="LN" name="97">   97   </a>      lastv = (iaii - d_i) + 11;
+</span><span><a class="LN" name="98">   98   </a>      <span class="KW">for</span> (lastc = iaii; lastc &lt; lastv; lastc++) <b>{</b>
+</span><span><a class="LN" name="99">   99   </a>        b_A[lastc] *= -tau[itau];
+</span><span><a class="LN" name="100">  100   </a>      <b>}</b>
+</span><span><a class="LN" name="101">  101   </a>    <b>}</b>
+</span><span><a class="LN" name="102">  102   </a>
+</span><span><a class="LN" name="103">  103   </a>    b_A[iaii - 1] = 1.0 - tau[itau];
+</span><span><a class="LN" name="104">  104   </a>    <span class="KW">for</span> (lastv = 0; lastv &lt; d_i; lastv++) <b>{</b>
+</span><span><a class="LN" name="105">  105   </a>      b_A[(iaii - lastv) - 2] = 0.0;
+</span><span><a class="LN" name="106">  106   </a>    <b>}</b>
+</span><span><a class="LN" name="107">  107   </a>
+</span><span><a class="LN" name="108">  108   </a>    itau--;
+</span><span><a class="LN" name="109">  109   </a>  <b>}</b>
+</span><span><a class="LN" name="110">  110   </a>
+</span><span><a class="LN" name="111">  111   </a>  <span class="KW">for</span> (itau = 0; itau &lt; 12; itau++) <b>{</b>
+</span><span><a class="LN" name="112">  112   </a>    memcpy(&amp;Q[itau * 12], &amp;b_A[itau * 12], 12U * <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>));
+</span><span><a class="LN" name="113">  113   </a>  <b>}</b>
+</span><span><a class="LN" name="114">  114   </a><b>}</b>
+</span><span><a class="LN" name="115">  115   </a>
+</span><span><a class="LN" name="116">  116   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="117">  117   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="118">  118   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="119">  119   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="120">  120   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="121">  121   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

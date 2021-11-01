@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" display="inline" height="381.000000px" preserveAspectRatio="xMinYMin meet" viewBox="-520.23 -35.00 1080.79 381.00" width="1080.789062px" x="0" y="0" zoomAndPan="disable">
+  <g fill="none" stroke="black" stroke-width="1" fill-rule="evenodd" stroke-linecap="square" stroke-linejoin="bevel">
+    <!--RAWSTRING-->
+    <g id="background" pointer-events="none">
+      <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,0,0)">
+        <path d="M-519.227,-34 L559.562,-34 L559.562,345 L-519.227,345 L-519.227,-34 z" fill-rule="evenodd" vector-effect="none"/>
+      </g>
+      <!--RAWSTRING-->
+    </g>
+    <!--RAWSTRING-->
+    <g id="Main_Sim:593:189:92:238">
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:240">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,499,147)">
+            <image height="25" preserveAspectRatio="none" width="41" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAZCAYAAACsGgdbAAAACXBIWXMAABJ0AAASdAHeZh94AAAB/UlEQVRYhe2Xa08aQRSGH5ZdBZRivET8Ur/4//9T2zS1XmFB0IVCP5x3MpPdWVGERBNOcjJkl5l55j2XgQZVS4CsxptAIzLnNVsC/4BZjS9WLdAofc6AFtAGOsCBxjawpwOsA7kACmAKTIAnjVPgWbDLVZANQRwAXeAbcAT05G02o+QUGMoHQA6MBF3UgaYaMwH2gGPgFDjT6CA3peQQuMMi5NZ03yvqIBMsxF0B9oELeR9TtQz5VtBlBDLXXi28SAtgLq/kaIqp2BbMqeC+A5eC3Ea4D7UeAiuw3HyRRyE7WA6eCfISuCpBbkpJB4nAn7EiGmO5+SpkD1PyXHB94ETv0neAheYOlGBRyPAhHmNFM8KK6AGvbgUyFYir6tA7dRPXBHaCzEr7dPFiVMydcA/Yj4zRSR+0VOvH9mzWQX4mi/bJBKu8AkvY8jjfAoir5tie0Ssy0aQJlsB5ySesuLLeYUutNYnsM9LzqChNfI64vMjwORP2xfI9/1Yw1ydfsBbzCFwDP4FfwG/gBrgXbOXWSYPTDbAKa+Eresx2mvk18AP4g12RA3zUKpYGk3NMPVfRM0Fu+locAn8F6CBzvauFXGBdf4Sv9nnwbBtK3gruDmviufaLFk6o2pM+u1O7FAib+kchXdGUf6rVhhq+2I/e0D7d34ed7Wxna9h/jGXZsOi5N+cAAAAASUVORK5CYII=" y="0"/>
+          </g>
+          <g clip-path="none" fill="#00d1d1" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,500,148)">
+            <path d="M7,0 L23,0 C26.866,0 30,3.13401 30,7 C30,10.866 26.866,14 23,14 L7,14 C3.13401,14 0,10.866 0,7 C0,3.13401 3.13401,0 7,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip2">
+                <path d="M-15,-7 L15,-7 L15,7 L-15,7 L-15,-7 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip2)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,515,155)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="5.54688" x="-2.76562" xml:space="preserve" y="3.5">1</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,500,148)">
+              <path d="M7,0 L23,0 C26.866,0 30,3.13401 30,7 C30,10.866 26.866,14 23,14 L7,14 C3.13401,14 0,10.866 0,7 C0,3.13401 3.13401,0 7,0 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk BlockName">
+            <defs>
+              <clipPath id="clip3">
+                <path d="M-989.664,-200 L89.125,-200 L89.125,185 L-989.664,185 L-989.664,-200 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip3)" fill="none" opacity="1" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,470.438,164)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="87.125" x="1" xml:space="preserve" y="10">sensor_meas_body</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:239">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-486,167)">
+            <image height="25" preserveAspectRatio="none" width="41" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAZCAYAAACsGgdbAAAACXBIWXMAABJ0AAASdAHeZh94AAAB/UlEQVRYhe2Xa08aQRSGH5ZdBZRivET8Ur/4//9T2zS1XmFB0IVCP5x3MpPdWVGERBNOcjJkl5l55j2XgQZVS4CsxptAIzLnNVsC/4BZjS9WLdAofc6AFtAGOsCBxjawpwOsA7kACmAKTIAnjVPgWbDLVZANQRwAXeAbcAT05G02o+QUGMoHQA6MBF3UgaYaMwH2gGPgFDjT6CA3peQQuMMi5NZ03yvqIBMsxF0B9oELeR9TtQz5VtBlBDLXXi28SAtgLq/kaIqp2BbMqeC+A5eC3Ea4D7UeAiuw3HyRRyE7WA6eCfISuCpBbkpJB4nAn7EiGmO5+SpkD1PyXHB94ETv0neAheYOlGBRyPAhHmNFM8KK6AGvbgUyFYir6tA7dRPXBHaCzEr7dPFiVMydcA/Yj4zRSR+0VOvH9mzWQX4mi/bJBKu8AkvY8jjfAoir5tie0Ssy0aQJlsB5ySesuLLeYUutNYnsM9LzqChNfI64vMjwORP2xfI9/1Yw1ydfsBbzCFwDP4FfwG/gBrgXbOXWSYPTDbAKa+Eresx2mvk18AP4g12RA3zUKpYGk3NMPVfRM0Fu+locAn8F6CBzvauFXGBdf4Sv9nnwbBtK3gruDmviufaLFk6o2pM+u1O7FAib+kchXdGUf6rVhhq+2I/e0D7d34ed7Wxna9h/jGXZsOi5N+cAAAAASUVORK5CYII=" y="0"/>
+          </g>
+          <g clip-path="none" fill="#00d1d1" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-485,168)">
+            <path d="M7,0 L23,0 C26.866,0 30,3.13401 30,7 C30,10.866 26.866,14 23,14 L7,14 C3.13401,14 0,10.866 0,7 C0,3.13401 3.13401,0 7,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip5">
+                <path d="M-15,-7 L15,-7 L15,7 L-15,7 L-15,-7 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip5)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-470,175)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="5.54688" x="-2.76562" xml:space="preserve" y="3.5">1</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-485,168)">
+              <path d="M7,0 L23,0 C26.866,0 30,3.13401 30,7 C30,10.866 26.866,14 23,14 L7,14 C3.13401,14 0,10.866 0,7 C0,3.13401 3.13401,0 7,0 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk BlockName">
+            <defs>
+              <clipPath id="clip6">
+                <path d="M0,-220 L1078.79,-220 L1078.79,165 L0,165 L0,-220 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip6)" fill="none" opacity="1" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-519.227,184)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="95.4531" x="1.5" xml:space="preserve" y="10">sensor_meas_sensor</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:243">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,359,144)">
+            <image height="31" preserveAspectRatio="none" width="31" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAYAAAAfrhY5AAAACXBIWXMAABJ0AAASdAHeZh94AAACY0lEQVRIie2XW28TMRCFv+xuCklTol6kUkQF/P8fhUAqalGbKM02ZMmNB5/ROo69u0XQp4505I0vc2Y8Ho/TIy09oBD6HnKNb4CVh7Wwa9B5QBDr6wNvgLfAUDhWX6F5a6ACnoCFsFTfqosRIXkmgiEwAt4BY+FExvjkS2AOzIRHoJQhFbBtIi+87wwYiHQMnALnwAVwpv4YeQlMgHvgAZhqTgn8ajLAFPXk8UikF8Al8F44bfF8qvEBLmSZ5mw1JxoCU9THbfVYxB+Aj8C1yLt4PpIDdiC3mrMBfqfIQ68vRfwF+AxcdfR85I1ZJlQijh5AS6UB7nCdy9NrEX/STpxQn3Q7pDsZMxCOPKMqXLz9LFg1kduWW5yv9HvM/naaWEpm1DGucGEotSOP1BlwQJ6xH+8z3BZbax6HxL7kmnOidb6OsXT3YwuN/FiLR0HbRhwzINTRSm63WYgitighRYOeJHlOHfsQses3JX4tCBHdvSzW+VKS4XJynUDnCqW5KT2bFLldBssI1s8gt/yO6TlIM5/8CZeXZdBWKasD2WhuTMciRV5oYIEriRPcVWntgLrMplLOJ54EOmZN5DnulObsv1aOPOQyoOe1UMd4ibvF7oEb4LvwA/gpQxZESmsuJXZF+kSGnRbu5KUVjSUuXFOR3ABfgW/6vsPV97nmHkghpXYnT9l/p63V36Wk3spjI55qrKKlnlvcC+rct1iWdCupt8IdLgSN8fbJfe/BbfMKVxbnHT33n1GzNq99ciO0N5fl7AJ3mB5aPP+rB+Rzns7DBPmCf/R0Dsf+65+GV3mVF5U/KWgFf5Nu6rAAAAAASUVORK5CYII=" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,360,145)">
+            <path d="M20,10 C20,15.5228 15.5228,20 10,20 C4.47715,20 0,15.5228 0,10 C0,4.47715 4.47715,0 10,0 C15.5228,0 20,4.47715 20,10 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip8">
+                <path d="M359.5,144.5 L379.5,144.5 L379.5,164.5 L359.5,164.5 L359.5,144.5 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip8)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0.5,0.5)">
+              <polyline fill="none" points="363,155 367,155" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip9">
+                <path d="M359.5,144.5 L379.5,144.5 L379.5,164.5 L359.5,164.5 L359.5,144.5 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip9)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0.5,0.5)">
+              <polyline fill="none" points="365,153 365,157" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip10">
+                <path d="M359.5,144.5 L379.5,144.5 L379.5,164.5 L359.5,164.5 L359.5,144.5 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip10)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0.5,0.5)">
+              <polyline fill="none" points="368,160 372,160" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip11">
+                <path d="M359.5,144.5 L379.5,144.5 L379.5,164.5 L359.5,164.5 L359.5,144.5 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip11)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0.5,0.5)">
+              <polyline fill="none" points="370,158 370,162" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,360,145)">
+              <path d="M20,10 C20,15.5228 15.5228,20 10,20 C4.47715,20 0,15.5228 0,10 C0,4.47715 4.47715,0 10,0 C15.5228,0 20,4.47715 20,10 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:244">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,164,169)">
+            <image height="31" preserveAspectRatio="none" width="151" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJcAAAAfCAYAAADqfF/MAAAACXBIWXMAABJ0AAASdAHeZh94AAABSElEQVR4nO3bvW7CQBBF4UNEUsQFFElDkyrv/0xpaEJhCiigSTG7wh6b/BSLhHI+abQrVy6uZo2YXQCPqZ4Geyk7lzoN9rVGlkSInoEurc83elndl2OpQ1qvhqsDVsC6VN1LWQ/sy9qXZ5NgwbhzrYHXUi9llbJPYMfls+lMdK+JJfGN1XEJ12ZQUtYRmYEI1pHoZBPDzrUiOtYGeCslZbVjnYiO1XPlx9/csVjD9d78NXWv6lG4J47J2XA93PKN9L8YLjVjuNSM4VIzhkvNGC41Y7jUjOFSM4ZLzRguNWO41IzhUjOGS80suczk9MQ/3B3Oz+u6D2BLZKXnyogzjMO1JyYMh4NgUrYttSMy82245oa+6jMpq2POtXMdiLxM5GMRxoNgUpYvaPx4LNYulb+/pGzuatlsuBZ4KVZ/8+tLsZIkSZLu2Bf/SF8xn/cOTAAAAABJRU5ErkJggg==" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,165,170)">
+            <path d="M0,0 L140,0 L140,20 L0,20 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk*">
+            <defs>
+              <clipPath id="clip13">
+                <path d="M0,0 L141,0 L141,21 L0,21 L0,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip13)" fill="none" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,165,170)">
+              <path d="M0,0 L141,0 L141,21 L0,21 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip18">
+                <path d="M-40,5 L72,5 L72,25 L-40,25 L-40,5 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip18)" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,220,165)">
+              <path d="M-38.6562,14.9844 C-38.6562,14.026 -38.3854,13.3125 -37.8438,12.8438 C-37.4062,12.4688 -36.8646,12.2812 -36.2188,12.2812 C-35.5104,12.2812 -34.9297,12.513 -34.4766,12.9766 C-34.0234,13.4401 -33.7969,14.0833 -33.7969,14.9062 C-33.7969,15.5729 -33.8958,16.099 -34.0938,16.4844 C-34.2917,16.8698 -34.5833,17.1693 -34.9688,17.3828 C-35.3542,17.5964 -35.7708,17.7031 -36.2188,17.7031 C-36.9479,17.7031 -37.5365,17.4688 -37.9844,17 C-38.4323,16.5312 -38.6562,15.8594 -38.6562,14.9844 M-37.75,14.9844 C-37.75,15.651 -37.6042,16.1484 -37.3125,16.4766 C-37.0208,16.8047 -36.6562,16.9688 -36.2188,16.9688 C-35.7812,16.9688 -35.4193,16.8021 -35.1328,16.4688 C-34.8464,16.1354 -34.7031,15.6302 -34.7031,14.9531 C-34.7031,14.3177 -34.849,13.8333 -35.1406,13.5 C-35.4323,13.1667 -35.7917,13 -36.2188,13 C-36.6562,13 -37.0208,13.1641 -37.3125,13.4922 C-37.6042,13.8203 -37.75,14.3177 -37.75,14.9844 M-32.5625,17.5781 L-32.5625,13.0781 L-33.3438,13.0781 L-33.3438,12.3906 L-32.5625,12.3906 L-32.5625,11.8438 C-32.5625,11.4896 -32.5312,11.2292 -32.4688,11.0625 C-32.3854,10.8333 -32.237,10.6484 -32.0234,10.5078 C-31.8099,10.3672 -31.5104,10.2969 -31.125,10.2969 C-30.8854,10.2969 -30.6146,10.3281 -30.3125,10.3906 L-30.4375,11.1562 C-30.625,11.125 -30.8021,11.1094 -30.9688,11.1094 C-31.2292,11.1094 -31.4141,11.1641 -31.5234,11.2734 C-31.6328,11.3828 -31.6875,11.5938 -31.6875,11.9062 L-31.6875,12.3906 L-30.6875,12.3906 L-30.6875,13.0781 L-31.6875,13.0781 L-31.6875,17.5781 L-32.5625,17.5781 M-29.9688,17.5781 L-29.9688,13.0781 L-30.75,13.0781 L-30.75,12.3906 L-29.9688,12.3906 L-29.9688,11.8438 C-29.9688,11.4896 -29.9375,11.2292 -29.875,11.0625 C-29.7917,10.8333 -29.6432,10.6484 -29.4297,10.5078 C-29.2161,10.3672 -28.9167,10.2969 -28.5312,10.2969 C-28.2917,10.2969 -28.0208,10.3281 -27.7188,10.3906 L-27.8438,11.1562 C-28.0312,11.125 -28.2083,11.1094 -28.375,11.1094 C-28.6354,11.1094 -28.8203,11.1641 -28.9297,11.2734 C-29.0391,11.3828 -29.0938,11.5938 -29.0938,11.9062 L-29.0938,12.3906 L-28.0938,12.3906 L-28.0938,13.0781 L-29.0938,13.0781 L-29.0938,17.5781 L-29.9688,17.5781 M-27.7656,16.0312 L-26.9062,15.8906 C-26.8542,16.2448 -26.7161,16.513 -26.4922,16.6953 C-26.2682,16.8776 -25.9583,16.9688 -25.5625,16.9688 C-25.1562,16.9688 -24.8542,16.888 -24.6562,16.7266 C-24.4583,16.5651 -24.3594,16.3698 -24.3594,16.1406 C-24.3594,15.9427 -24.4479,15.7865 -24.625,15.6719 C-24.75,15.599 -25.0521,15.5 -25.5312,15.375 C-26.1667,15.2188 -26.6094,15.0807 -26.8594,14.9609 C-27.1094,14.8411 -27.2995,14.6771 -27.4297,14.4688 C-27.5599,14.2604 -27.625,14.026 -27.625,13.7656 C-27.625,13.5365 -27.5729,13.3229 -27.4688,13.125 C-27.3646,12.9271 -27.2188,12.7656 -27.0312,12.6406 C-26.8958,12.5365 -26.7109,12.4505 -26.4766,12.3828 C-26.2422,12.3151 -25.9896,12.2812 -25.7188,12.2812 C-25.3125,12.2812 -24.9557,12.3385 -24.6484,12.4531 C-24.3411,12.5677 -24.112,12.7266 -23.9609,12.9297 C-23.8099,13.1328 -23.7083,13.401 -23.6562,13.7344 L-24.5156,13.8438 C-24.5573,13.5833 -24.6719,13.3776 -24.8594,13.2266 C-25.0469,13.0755 -25.3125,13 -25.6562,13 C-26.0521,13 -26.3385,13.0651 -26.5156,13.1953 C-26.6927,13.3255 -26.7812,13.4844 -26.7812,13.6719 C-26.7812,13.7865 -26.7448,13.8854 -26.6719,13.9688 C-26.599,14.0625 -26.4844,14.1406 -26.3281,14.2031 C-26.2448,14.2344 -25.9844,14.3125 -25.5469,14.4375 C-24.9323,14.6042 -24.5026,14.7396 -24.2578,14.8438 C-24.013,14.9479 -23.8203,15.1016 -23.6797,15.3047 C-23.5391,15.5078 -23.4688,15.7552 -23.4688,16.0469 C-23.4688,16.349 -23.5521,16.6276 -23.7188,16.8828 C-23.8854,17.138 -24.1302,17.3385 -24.4531,17.4844 C-24.776,17.6302 -25.1406,17.7031 -25.5469,17.7031 C-26.224,17.7031 -26.7396,17.5625 -27.0938,17.2812 C-27.4479,17 -27.6719,16.5833 -27.7656,16.0312 M-18.875,15.9062 L-17.9531,16.0156 C-18.099,16.5469 -18.3672,16.9609 -18.7578,17.2578 C-19.1484,17.5547 -19.6406,17.7031 -20.2344,17.7031 C-20.9948,17.7031 -21.599,17.4688 -22.0469,17 C-22.4948,16.5312 -22.7188,15.875 -22.7188,15.0312 C-22.7188,14.1562 -22.4922,13.4792 -22.0391,13 C-21.5859,12.5208 -21.0052,12.2812 -20.2969,12.2812 C-19.599,12.2812 -19.0312,12.5156 -18.5938,12.9844 C-18.1562,13.4531 -17.9375,14.1146 -17.9375,14.9688 C-17.9375,15.0208 -17.9375,15.099 -17.9375,15.2031 L-21.7969,15.2031 C-21.7656,15.776 -21.6068,16.2135 -21.3203,16.5156 C-21.0339,16.8177 -20.6719,16.9688 -20.2344,16.9688 C-19.9115,16.9688 -19.6354,16.8854 -19.4062,16.7188 C-19.1771,16.5521 -19,16.2812 -18.875,15.9062 M-21.75,14.4844 L-18.8594,14.4844 C-18.901,14.0469 -19.0104,13.7188 -19.1875,13.5 C-19.4688,13.1667 -19.8333,13 -20.2812,13 C-20.6875,13 -21.026,13.1354 -21.2969,13.4062 C-21.5677,13.6771 -21.7188,14.0365 -21.75,14.4844 M-14.9531,16.7969 L-14.8281,17.5625 C-15.0781,17.6146 -15.2969,17.6406 -15.4844,17.6406 C-15.8073,17.6406 -16.0573,17.5911 -16.2344,17.4922 C-16.4115,17.3932 -16.5339,17.2604 -16.6016,17.0938 C-16.6693,16.9271 -16.7031,16.5833 -16.7031,16.0625 L-16.7031,13.0781 L-17.3594,13.0781 L-17.3594,12.3906 L-16.7031,12.3906 L-16.7031,11.1094 L-15.8438,10.5781 L-15.8438,12.3906 L-14.9531,12.3906 L-14.9531,13.0781 L-15.8438,13.0781 L-15.8438,16.1094 C-15.8438,16.3594 -15.8281,16.5208 -15.7969,16.5938 C-15.7656,16.6667 -15.7135,16.724 -15.6406,16.7656 C-15.5677,16.8073 -15.4688,16.8281 -15.3438,16.8281 C-15.2396,16.8281 -15.1094,16.8177 -14.9531,16.7969 M-14.9219,19.5625 L-14.9219,18.9375 L-9.09375,18.9375 L-9.09375,19.5625 L-14.9219,19.5625 M-5.17188,15.6719 L-4.3125,15.7969 C-4.40625,16.3906 -4.64844,16.8568 -5.03906,17.1953 C-5.42969,17.5339 -5.90625,17.7031 -6.46875,17.7031 C-7.17708,17.7031 -7.7474,17.4688 -8.17969,17 C-8.61198,16.5312 -8.82812,15.8646 -8.82812,15 C-8.82812,14.4479 -8.73438,13.9609 -8.54688,13.5391 C-8.35938,13.1172 -8.07812,12.8021 -7.70312,12.5938 C-7.32812,12.3854 -6.91667,12.2812 -6.46875,12.2812 C-5.90625,12.2812 -5.44531,12.4219 -5.08594,12.7031 C-4.72656,12.9844 -4.49479,13.3906 -4.39062,13.9219 L-5.25,14.0469 C-5.33333,13.7031 -5.47656,13.4427 -5.67969,13.2656 C-5.88281,13.0885 -6.13542,13 -6.4375,13 C-6.875,13 -7.23177,13.1589 -7.50781,13.4766 C-7.78385,13.7943 -7.92188,14.2969 -7.92188,14.9844 C-7.92188,15.6823 -7.78906,16.1875 -7.52344,16.5 C-7.25781,16.8125 -6.91146,16.9688 -6.48438,16.9688 C-6.14062,16.9688 -5.85156,16.8646 -5.61719,16.6562 C-5.38281,16.4479 -5.23438,16.1198 -5.17188,15.6719 M-0.171875,16.9375 C-0.494792,17.2188 -0.807292,17.4167 -1.10938,17.5312 C-1.41146,17.6458 -1.73438,17.7031 -2.07812,17.7031 C-2.65104,17.7031 -3.09115,17.5625 -3.39844,17.2812 C-3.70573,17 -3.85938,16.6406 -3.85938,16.2031 C-3.85938,15.9531 -3.80208,15.724 -3.6875,15.5156 C-3.57292,15.3073 -3.42188,15.138 -3.23438,15.0078 C-3.04688,14.8776 -2.83333,14.7812 -2.59375,14.7188 C-2.42708,14.6771 -2.16667,14.6354 -1.8125,14.5938 C-1.10417,14.5104 -0.583333,14.4062 -0.25,14.2812 C-0.25,14.1667 -0.25,14.0938 -0.25,14.0625 C-0.25,13.6979 -0.333333,13.4427 -0.5,13.2969 C-0.71875,13.099 -1.05208,13 -1.5,13 C-1.90625,13 -2.20833,13.0729 -2.40625,13.2188 C-2.60417,13.3646 -2.75,13.6198 -2.84375,13.9844 L-3.70312,13.875 C-3.63021,13.5 -3.5026,13.2005 -3.32031,12.9766 C-3.13802,12.7526 -2.8776,12.5807 -2.53906,12.4609 C-2.20052,12.3411 -1.80729,12.2812 -1.35938,12.2812 C-0.921875,12.2812 -0.565104,12.3333 -0.289062,12.4375 C-0.0130208,12.5417 0.190104,12.6719 0.320312,12.8281 C0.450521,12.9844 0.541667,13.1823 0.59375,13.4219 C0.625,13.5677 0.640625,13.8385 0.640625,14.2344 L0.640625,15.4062 C0.640625,16.2188 0.658854,16.7344 0.695312,16.9531 C0.731771,17.1719 0.807292,17.3802 0.921875,17.5781 L0,17.5781 C-0.09375,17.3906 -0.151042,17.1771 -0.171875,16.9375 M-0.25,14.9688 C-0.572917,15.1042 -1.05208,15.2188 -1.6875,15.3125 C-2.04167,15.3646 -2.29427,15.4219 -2.44531,15.4844 C-2.59635,15.5469 -2.71354,15.6406 -2.79688,15.7656 C-2.88021,15.8906 -2.92188,16.0312 -2.92188,16.1875 C-2.92188,16.4167 -2.83333,16.6094 -2.65625,16.7656 C-2.47917,16.9219 -2.21875,17 -1.875,17 C-1.53125,17 -1.22917,16.9271 -0.96875,16.7812 C-0.708333,16.6354 -0.515625,16.4323 -0.390625,16.1719 C-0.296875,15.974 -0.25,15.6823 -0.25,15.2969 L-0.25,14.9688 M1.95312,17.5781 L1.95312,10.4219 L2.82812,10.4219 L2.82812,17.5781 L1.95312,17.5781 M4.20312,11.4375 L4.20312,10.4219 L5.07812,10.4219 L5.07812,11.4375 L4.20312,11.4375 M4.20312,17.5781 L4.20312,12.3906 L5.07812,12.3906 L5.07812,17.5781 L4.20312,17.5781 M7.21875,17.5781 L6.40625,17.5781 L6.40625,10.4219 L7.28125,10.4219 L7.28125,12.9688 C7.65625,12.5104 8.13021,12.2812 8.70312,12.2812 C9.02604,12.2812 9.32812,12.3438 9.60938,12.4688 C9.89062,12.5938 10.125,12.7734 10.3125,13.0078 C10.5,13.2422 10.6458,13.5234 10.75,13.8516 C10.8542,14.1797 10.9062,14.5312 10.9062,14.9062 C10.9062,15.7917 10.6849,16.4792 10.2422,16.9688 C9.79948,17.4583 9.27083,17.7031 8.65625,17.7031 C8.05208,17.7031 7.57292,17.4427 7.21875,16.9219 L7.21875,17.5781 M7.20312,14.9531 C7.20312,15.5677 7.29167,16.0156 7.46875,16.2969 C7.73958,16.7448 8.11458,16.9688 8.59375,16.9688 C8.96875,16.9688 9.29688,16.8021 9.57812,16.4688 C9.85938,16.1354 10,15.6406 10,14.9844 C10,14.3073 9.86719,13.8073 9.60156,13.4844 C9.33594,13.1615 9.01042,13 8.625,13 C8.23958,13 7.90625,13.1667 7.625,13.5 C7.34375,13.8333 7.20312,14.3177 7.20312,14.9531 M11.9531,17.5781 L11.9531,12.3906 L12.7344,12.3906 L12.7344,13.1719 C12.9427,12.8073 13.1302,12.5677 13.2969,12.4531 C13.4635,12.3385 13.651,12.2812 13.8594,12.2812 C14.1615,12.2812 14.4635,12.375 14.7656,12.5625 L14.4688,13.375 C14.25,13.25 14.0312,13.1875 13.8125,13.1875 C13.625,13.1875 13.4531,13.2448 13.2969,13.3594 C13.1406,13.474 13.0312,13.6354 12.9688,13.8438 C12.875,14.1562 12.8281,14.4948 12.8281,14.8594 L12.8281,17.5781 L11.9531,17.5781 M18.6719,16.9375 C18.349,17.2188 18.0365,17.4167 17.7344,17.5312 C17.4323,17.6458 17.1094,17.7031 16.7656,17.7031 C16.1927,17.7031 15.7526,17.5625 15.4453,17.2812 C15.138,17 14.9844,16.6406 14.9844,16.2031 C14.9844,15.9531 15.0417,15.724 15.1562,15.5156 C15.2708,15.3073 15.4219,15.138 15.6094,15.0078 C15.7969,14.8776 16.0104,14.7812 16.25,14.7188 C16.4167,14.6771 16.6771,14.6354 17.0312,14.5938 C17.7396,14.5104 18.2604,14.4062 18.5938,14.2812 C18.5938,14.1667 18.5938,14.0938 18.5938,14.0625 C18.5938,13.6979 18.5104,13.4427 18.3438,13.2969 C18.125,13.099 17.7917,13 17.3438,13 C16.9375,13 16.6354,13.0729 16.4375,13.2188 C16.2396,13.3646 16.0938,13.6198 16,13.9844 L15.1406,13.875 C15.2135,13.5 15.3411,13.2005 15.5234,12.9766 C15.7057,12.7526 15.9661,12.5807 16.3047,12.4609 C16.6432,12.3411 17.0365,12.2812 17.4844,12.2812 C17.9219,12.2812 18.2786,12.3333 18.5547,12.4375 C18.8307,12.5417 19.0339,12.6719 19.1641,12.8281 C19.2943,12.9844 19.3854,13.1823 19.4375,13.4219 C19.4688,13.5677 19.4844,13.8385 19.4844,14.2344 L19.4844,15.4062 C19.4844,16.2188 19.5026,16.7344 19.5391,16.9531 C19.5755,17.1719 19.651,17.3802 19.7656,17.5781 L18.8438,17.5781 C18.75,17.3906 18.6927,17.1771 18.6719,16.9375 M18.5938,14.9688 C18.2708,15.1042 17.7917,15.2188 17.1562,15.3125 C16.8021,15.3646 16.5495,15.4219 16.3984,15.4844 C16.2474,15.5469 16.1302,15.6406 16.0469,15.7656 C15.9635,15.8906 15.9219,16.0312 15.9219,16.1875 C15.9219,16.4167 16.0104,16.6094 16.1875,16.7656 C16.3646,16.9219 16.625,17 16.9688,17 C17.3125,17 17.6146,16.9271 17.875,16.7812 C18.1354,16.6354 18.3281,16.4323 18.4531,16.1719 C18.5469,15.974 18.5938,15.6823 18.5938,15.2969 L18.5938,14.9688 M22.75,16.7969 L22.875,17.5625 C22.625,17.6146 22.4062,17.6406 22.2188,17.6406 C21.8958,17.6406 21.6458,17.5911 21.4688,17.4922 C21.2917,17.3932 21.1693,17.2604 21.1016,17.0938 C21.0339,16.9271 21,16.5833 21,16.0625 L21,13.0781 L20.3438,13.0781 L20.3438,12.3906 L21,12.3906 L21,11.1094 L21.8594,10.5781 L21.8594,12.3906 L22.75,12.3906 L22.75,13.0781 L21.8594,13.0781 L21.8594,16.1094 C21.8594,16.3594 21.875,16.5208 21.9062,16.5938 C21.9375,16.6667 21.9896,16.724 22.0625,16.7656 C22.1354,16.8073 22.2344,16.8281 22.3594,16.8281 C22.4635,16.8281 22.5938,16.8177 22.75,16.7969 M23.6094,11.4375 L23.6094,10.4219 L24.4844,10.4219 L24.4844,11.4375 L23.6094,11.4375 M23.6094,17.5781 L23.6094,12.3906 L24.4844,12.3906 L24.4844,17.5781 L23.6094,17.5781 M25.4844,14.9844 C25.4844,14.026 25.7552,13.3125 26.2969,12.8438 C26.7344,12.4688 27.276,12.2812 27.9219,12.2812 C28.6302,12.2812 29.2109,12.513 29.6641,12.9766 C30.1172,13.4401 30.3438,14.0833 30.3438,14.9062 C30.3438,15.5729 30.2448,16.099 30.0469,16.4844 C29.849,16.8698 29.5573,17.1693 29.1719,17.3828 C28.7865,17.5964 28.3698,17.7031 27.9219,17.7031 C27.1927,17.7031 26.6042,17.4688 26.1562,17 C25.7083,16.5312 25.4844,15.8594 25.4844,14.9844 M26.3906,14.9844 C26.3906,15.651 26.5365,16.1484 26.8281,16.4766 C27.1198,16.8047 27.4844,16.9688 27.9219,16.9688 C28.3594,16.9688 28.7214,16.8021 29.0078,16.4688 C29.2943,16.1354 29.4375,15.6302 29.4375,14.9531 C29.4375,14.3177 29.2917,13.8333 29,13.5 C28.7083,13.1667 28.349,13 27.9219,13 C27.4844,13 27.1198,13.1641 26.8281,13.4922 C26.5365,13.8203 26.3906,14.3177 26.3906,14.9844 M31.3594,17.5781 L31.3594,12.3906 L32.1562,12.3906 L32.1562,13.125 C32.5312,12.5625 33.0781,12.2812 33.7969,12.2812 C34.1094,12.2812 34.3984,12.3359 34.6641,12.4453 C34.9297,12.5547 35.1276,12.7005 35.2578,12.8828 C35.388,13.0651 35.4792,13.2812 35.5312,13.5312 C35.5625,13.6979 35.5781,13.9844 35.5781,14.3906 L35.5781,17.5781 L34.7031,17.5781 L34.7031,14.4219 C34.7031,14.0677 34.6693,13.8021 34.6016,13.625 C34.5339,13.4479 34.4115,13.3047 34.2344,13.1953 C34.0573,13.0859 33.8542,13.0312 33.625,13.0312 C33.25,13.0312 32.9245,13.151 32.6484,13.3906 C32.3724,13.6302 32.2344,14.0833 32.2344,14.75 L32.2344,17.5781 L31.3594,17.5781 M36.0938,19.5625 L36.0938,18.9375 L41.9219,18.9375 L41.9219,19.5625 L36.0938,19.5625 M42.4531,17.5781 L42.4531,12.3906 L43.25,12.3906 L43.25,13.125 C43.4062,12.8646 43.6198,12.6589 43.8906,12.5078 C44.1615,12.3568 44.4688,12.2812 44.8125,12.2812 C45.1979,12.2812 45.513,12.3594 45.7578,12.5156 C46.0026,12.6719 46.1771,12.8958 46.2812,13.1875 C46.6875,12.5833 47.2188,12.2812 47.875,12.2812 C48.3958,12.2812 48.7943,12.4219 49.0703,12.7031 C49.3464,12.9844 49.4844,13.4219 49.4844,14.0156 L49.4844,17.5781 L48.6094,17.5781 L48.6094,14.3125 C48.6094,13.9583 48.5807,13.7031 48.5234,13.5469 C48.4661,13.3906 48.362,13.2656 48.2109,13.1719 C48.0599,13.0781 47.8854,13.0312 47.6875,13.0312 C47.3229,13.0312 47.0208,13.1536 46.7812,13.3984 C46.5417,13.6432 46.4219,14.0312 46.4219,14.5625 L46.4219,17.5781 L45.5312,17.5781 L45.5312,14.2031 C45.5312,13.8177 45.4609,13.526 45.3203,13.3281 C45.1797,13.1302 44.9479,13.0312 44.625,13.0312 C44.375,13.0312 44.1458,13.0964 43.9375,13.2266 C43.7292,13.3568 43.5755,13.5469 43.4766,13.7969 C43.3776,14.0469 43.3281,14.4115 43.3281,14.8906 L43.3281,17.5781 L42.4531,17.5781 M54.1719,16.9375 C53.849,17.2188 53.5365,17.4167 53.2344,17.5312 C52.9323,17.6458 52.6094,17.7031 52.2656,17.7031 C51.6927,17.7031 51.2526,17.5625 50.9453,17.2812 C50.638,17 50.4844,16.6406 50.4844,16.2031 C50.4844,15.9531 50.5417,15.724 50.6562,15.5156 C50.7708,15.3073 50.9219,15.138 51.1094,15.0078 C51.2969,14.8776 51.5104,14.7812 51.75,14.7188 C51.9167,14.6771 52.1771,14.6354 52.5312,14.5938 C53.2396,14.5104 53.7604,14.4062 54.0938,14.2812 C54.0938,14.1667 54.0938,14.0938 54.0938,14.0625 C54.0938,13.6979 54.0104,13.4427 53.8438,13.2969 C53.625,13.099 53.2917,13 52.8438,13 C52.4375,13 52.1354,13.0729 51.9375,13.2188 C51.7396,13.3646 51.5938,13.6198 51.5,13.9844 L50.6406,13.875 C50.7135,13.5 50.8411,13.2005 51.0234,12.9766 C51.2057,12.7526 51.4661,12.5807 51.8047,12.4609 C52.1432,12.3411 52.5365,12.2812 52.9844,12.2812 C53.4219,12.2812 53.7786,12.3333 54.0547,12.4375 C54.3307,12.5417 54.5339,12.6719 54.6641,12.8281 C54.7943,12.9844 54.8854,13.1823 54.9375,13.4219 C54.9688,13.5677 54.9844,13.8385 54.9844,14.2344 L54.9844,15.4062 C54.9844,16.2188 55.0026,16.7344 55.0391,16.9531 C55.0755,17.1719 55.151,17.3802 55.2656,17.5781 L54.3438,17.5781 C54.25,17.3906 54.1927,17.1771 54.1719,16.9375 M54.0938,14.9688 C53.7708,15.1042 53.2917,15.2188 52.6562,15.3125 C52.3021,15.3646 52.0495,15.4219 51.8984,15.4844 C51.7474,15.5469 51.6302,15.6406 51.5469,15.7656 C51.4635,15.8906 51.4219,16.0312 51.4219,16.1875 C51.4219,16.4167 51.5104,16.6094 51.6875,16.7656 C51.8646,16.9219 52.125,17 52.4688,17 C52.8125,17 53.1146,16.9271 53.375,16.7812 C53.6354,16.6354 53.8281,16.4323 53.9531,16.1719 C54.0469,15.974 54.0938,15.6823 54.0938,15.2969 L54.0938,14.9688 M58.25,16.7969 L58.375,17.5625 C58.125,17.6146 57.9062,17.6406 57.7188,17.6406 C57.3958,17.6406 57.1458,17.5911 56.9688,17.4922 C56.7917,17.3932 56.6693,17.2604 56.6016,17.0938 C56.5339,16.9271 56.5,16.5833 56.5,16.0625 L56.5,13.0781 L55.8438,13.0781 L55.8438,12.3906 L56.5,12.3906 L56.5,11.1094 L57.3594,10.5781 L57.3594,12.3906 L58.25,12.3906 L58.25,13.0781 L57.3594,13.0781 L57.3594,16.1094 C57.3594,16.3594 57.375,16.5208 57.4062,16.5938 C57.4375,16.6667 57.4896,16.724 57.5625,16.7656 C57.6354,16.8073 57.7344,16.8281 57.8594,16.8281 C57.9635,16.8281 58.0938,16.8177 58.25,16.7969 M59.0938,17.5781 L59.0938,12.3906 L59.875,12.3906 L59.875,13.1719 C60.0833,12.8073 60.2708,12.5677 60.4375,12.4531 C60.6042,12.3385 60.7917,12.2812 61,12.2812 C61.3021,12.2812 61.6042,12.375 61.9062,12.5625 L61.6094,13.375 C61.3906,13.25 61.1719,13.1875 60.9531,13.1875 C60.7656,13.1875 60.5938,13.2448 60.4375,13.3594 C60.2812,13.474 60.1719,13.6354 60.1094,13.8438 C60.0156,14.1562 59.9688,14.4948 59.9688,14.8594 L59.9688,17.5781 L59.0938,17.5781 M62.4375,11.4375 L62.4375,10.4219 L63.3125,10.4219 L63.3125,11.4375 L62.4375,11.4375 M62.4375,17.5781 L62.4375,12.3906 L63.3125,12.3906 L63.3125,17.5781 L62.4375,17.5781 M64.0625,17.5781 L65.9531,14.875 L64.2031,12.3906 L65.2969,12.3906 L66.0938,13.6094 C66.2396,13.8385 66.3594,14.0312 66.4531,14.1875 C66.599,13.9688 66.7292,13.7812 66.8438,13.625 L67.7188,12.3906 L68.7812,12.3906 L66.9844,14.8281 L68.9062,17.5781 L67.8281,17.5781 L66.7656,15.9688 L66.4844,15.5312 L65.125,17.5781 L64.0625,17.5781" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,165,170)">
+              <path d="M0,0 L140,0 L140,20 L0,20 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk BlockName">
+            <defs>
+              <clipPath id="clip29">
+                <path d="M-728.633,-228 L350.156,-228 L350.156,157 L-728.633,157 L-728.633,-228 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip29)" fill="none" opacity="1" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,209.406,192)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="49.1875" x="1" xml:space="preserve" y="10">mag_offset</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:532">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-206,27)">
+            <image height="55" preserveAspectRatio="none" width="106" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAAA3CAYAAADkMd++AAAACXBIWXMAABJ0AAASdAHeZh94AAABlUlEQVR4nO3cPU/CUBiG4RtTHegAgy4sTv7/38TCIkMZYIBBh/ec9BMVyME8+lzJSRtiTNM7p3XAdwY8DtZT59zKOqV17Jzn1VMRQeZAPTjO73Sx/9khrf3geDZUDSyAZVr53MpqgF06NumzUSTo76gl8JLWczpaWe/AlvY1cyJ21UhFvJNq2lCrzrKyauL+Q0Q6EDtspLujFsROWgGvaVlZeScdiZ3UcOaPuKlHXw71VvwyDdrH3Y54FE6GerjnFdn1HEqEQ4lwKBEOJcKhRDiUCIcSUV3487MiV/H3fdz6C7yjRDiUCIcS4VAiHEqEQ4lwKBEOJcKhRDiUCIcS4VAiHEqEQ4lwKBEOJcKhRDiUCIcS4VAiLv1yy81f0rDreEeJcCgRDiXCoUQ4lAiHEuFQIira+QYN8V/ZNZ6DdC9rYEPc94Yz43WgH2pHTBHpDqiwsjZpbYn7/2WoqWEU+TMrK4/YyTtqT9z7keGjD/oDKqys4dCqbx99efcM31dW1tQYuMlQMzxY8Tf9eLCimZmZ2U0+AYg/YWTbM7U9AAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-205,28)">
+            <path d="M0,0 L95,0 L95,44 L0,44 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip31">
+                <path d="M-48,-17 L47,-17 L47,27 L-48,27 L-48,-17 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip31)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-157,45)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="27.7344" x="-13.8594" xml:space="preserve" y="3.5">Select</text>
+            </g>
+            <defs>
+              <clipPath id="clip32">
+                <path d="M-48,-27 L47,-27 L47,17 L-48,17 L-48,-27 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip32)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-157,55)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="39.4062" x="-19.7031" xml:space="preserve" y="3.5">Columns</text>
+            </g>
+            <defs>
+              <clipPath id="clip33">
+                <path d="M-3,-22 L92,-22 L92,22 L-3,22 L-3,-22 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip33)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-202,50)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="13.8594" x="0" xml:space="preserve" y="3.5">In1</text>
+            </g>
+            <defs>
+              <clipPath id="clip34">
+                <path d="M-92,-22 L3,-22 L3,22 L-92,22 L-92,-22 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip34)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-113,50)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="21.625" x="-21.625" xml:space="preserve" y="3.5">Out1</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-205,28)">
+              <path d="M0,0 L95,0 L95,44 L0,44 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:534">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-206,152)">
+            <image height="55" preserveAspectRatio="none" width="106" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAAA3CAYAAADkMd++AAAACXBIWXMAABJ0AAASdAHeZh94AAABlUlEQVR4nO3cPU/CUBiG4RtTHegAgy4sTv7/38TCIkMZYIBBh/ec9BMVyME8+lzJSRtiTNM7p3XAdwY8DtZT59zKOqV17Jzn1VMRQeZAPTjO73Sx/9khrf3geDZUDSyAZVr53MpqgF06NumzUSTo76gl8JLWczpaWe/AlvY1cyJ21UhFvJNq2lCrzrKyauL+Q0Q6EDtspLujFsROWgGvaVlZeScdiZ3UcOaPuKlHXw71VvwyDdrH3Y54FE6GerjnFdn1HEqEQ4lwKBEOJcKhRDiUCIcSUV3487MiV/H3fdz6C7yjRDiUCIcS4VAiHEqEQ4lwKBEOJcKhRDiUCIcS4VAiHEqEQ4lwKBEOJcKhRDiUCIcS4VAiLv1yy81f0rDreEeJcCgRDiXCoUQ4lAiHEuFQIira+QYN8V/ZNZ6DdC9rYEPc94Yz43WgH2pHTBHpDqiwsjZpbYn7/2WoqWEU+TMrK4/YyTtqT9z7keGjD/oDKqys4dCqbx99efcM31dW1tQYuMlQMzxY8Tf9eLCimZmZ2U0+AYg/YWTbM7U9AAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-205,153)">
+            <path d="M0,0 L95,0 L95,44 L0,44 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip36">
+                <path d="M-48,-17 L47,-17 L47,27 L-48,27 L-48,-17 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip36)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-157,170)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="27.7344" x="-13.8594" xml:space="preserve" y="3.5">Select</text>
+            </g>
+            <defs>
+              <clipPath id="clip37">
+                <path d="M-48,-27 L47,-27 L47,17 L-48,17 L-48,-27 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip37)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-157,180)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="39.4062" x="-19.7031" xml:space="preserve" y="3.5">Columns</text>
+            </g>
+            <defs>
+              <clipPath id="clip38">
+                <path d="M-3,-22 L92,-22 L92,22 L-3,22 L-3,-22 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip38)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-202,175)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="13.8594" x="0" xml:space="preserve" y="3.5">In1</text>
+            </g>
+            <defs>
+              <clipPath id="clip39">
+                <path d="M-92,-22 L3,-22 L3,22 L-92,22 L-92,-22 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip39)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-113,175)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="21.625" x="-21.625" xml:space="preserve" y="3.5">Out1</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-205,153)">
+              <path d="M0,0 L95,0 L95,44 L0,44 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:536">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-206,277)">
+            <image height="55" preserveAspectRatio="none" width="106" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAAA3CAYAAADkMd++AAAACXBIWXMAABJ0AAASdAHeZh94AAABlUlEQVR4nO3cPU/CUBiG4RtTHegAgy4sTv7/38TCIkMZYIBBh/ec9BMVyME8+lzJSRtiTNM7p3XAdwY8DtZT59zKOqV17Jzn1VMRQeZAPTjO73Sx/9khrf3geDZUDSyAZVr53MpqgF06NumzUSTo76gl8JLWczpaWe/AlvY1cyJ21UhFvJNq2lCrzrKyauL+Q0Q6EDtspLujFsROWgGvaVlZeScdiZ3UcOaPuKlHXw71VvwyDdrH3Y54FE6GerjnFdn1HEqEQ4lwKBEOJcKhRDiUCIcSUV3487MiV/H3fdz6C7yjRDiUCIcS4VAiHEqEQ4lwKBEOJcKhRDiUCIcS4VAiHEqEQ4lwKBEOJcKhRDiUCIcS4VAiLv1yy81f0rDreEeJcCgRDiXCoUQ4lAiHEuFQIira+QYN8V/ZNZ6DdC9rYEPc94Yz43WgH2pHTBHpDqiwsjZpbYn7/2WoqWEU+TMrK4/YyTtqT9z7keGjD/oDKqys4dCqbx99efcM31dW1tQYuMlQMzxY8Tf9eLCimZmZ2U0+AYg/YWTbM7U9AAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-205,278)">
+            <path d="M0,0 L95,0 L95,44 L0,44 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip41">
+                <path d="M-48,-17 L47,-17 L47,27 L-48,27 L-48,-17 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip41)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-157,295)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="27.7344" x="-13.8594" xml:space="preserve" y="3.5">Select</text>
+            </g>
+            <defs>
+              <clipPath id="clip42">
+                <path d="M-48,-27 L47,-27 L47,17 L-48,17 L-48,-27 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip42)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-157,305)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="39.4062" x="-19.7031" xml:space="preserve" y="3.5">Columns</text>
+            </g>
+            <defs>
+              <clipPath id="clip43">
+                <path d="M-3,-22 L92,-22 L92,22 L-3,22 L-3,-22 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip43)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-202,300)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="13.8594" x="0" xml:space="preserve" y="3.5">In1</text>
+            </g>
+            <defs>
+              <clipPath id="clip44">
+                <path d="M-92,-22 L3,-22 L3,22 L-92,22 L-92,-22 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip44)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-113,300)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="21.625" x="-21.625" xml:space="preserve" y="3.5">Out1</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-205,278)">
+              <path d="M0,0 L95,0 L95,44 L0,44 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:540">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-21,230)">
+            <image height="104" preserveAspectRatio="none" width="51" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAABoCAYAAABc6MgeAAAACXBIWXMAABJ0AAASdAHeZh94AAABkklEQVR4nO2cu27CUBAFx5GTAhdQJA1Nqvz/N6WhCYVdQAFFUuy9ws8QhIyOnDPS6loWQjvatTufAnju1UvrWoFzqlPrOleHkmh6BVS9c/WgZq9xTHXonZMyFbAGNqnytQI10KSzTvcGItCdzAZ4S/WaTgW+gD2XtT8T0xlQEs9IxUVm2yoFKqJHCJEjMakB7cmsiYlsgfdUCuSJnIiJ1Ey8nMbWLMt8zN7m38mr1RBrNyrz9MiO5sYyqlhGFcuosiiZ8sbfF7N0EXzf+weLmoxlVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKrd+DXj3F3tzsqjJWEYVy6hiGVVKLsE0NRGDUqETOgXwCeyI3momcpqgK9MQMULt9B0Fdqn2RI+/yowl7eR7CuSspjyZA9HfgP6aQTd9R4F+itbVNctT6D8/Cozlm43KFCwoec4Y84/5AXR8Ycbi2mkiAAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,231)">
+            <path d="M0,0 L40,0 L40,93 L0,93 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip46">
+                <path d="M-20,-41 L20,-41 L20,52 L-20,52 L-20,-41 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip46)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,272)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="27.1875" x="-13.5938" xml:space="preserve" y="3.5">Matrix</text>
+            </g>
+            <defs>
+              <clipPath id="clip47">
+                <path d="M-20,-51 L20,-51 L20,42 L-20,42 L-20,-51 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip47)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,282)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="33.8438" x="-16.9219" xml:space="preserve" y="3.5">Multiply</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-20,231)">
+              <path d="M0,0 L40,0 L40,93 L0,93 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:541">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,99,-35)">
+            <image height="389" preserveAspectRatio="none" width="46" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAGFCAYAAACCFcGuAAAACXBIWXMAABJ0AAASdAHeZh94AAACzElEQVR4nO3UMU/bUBhG4TeVyYAHGNqFpVP//2/qwpIMzuAM8UCHe68wjqlKS05l6Rzpk00w5MnHFbskd4vZz+7ppjqX2X2bN3UpwPsk/eJ6D2HnneuMi+u78D7JQ5LHOu2ebkhyqtehvnaFTt5u/DHJtzpf65XukOSY12M6pWz9qi7lTPd5hT/Nhq6vnqSgzyl/gavmG39I2fRTku916NqmLymbHvLOP4m1o9LgP27OXK8dj1PK0VmFfyFFn5lwOuF0wuk2C+8++Pzuk9735V9/wWY3LpxOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE04nnE44nXA64XTC6YTTCacTTiecTjidcDrhdMLphNMJpxNOJ5xOOJ1wOuF0wumE0wmnE063WXj3wedfbqL4iza7ceF0wumE03VJpiTnJEOSQ5I+yd1/8vxM8lwdQ3VNaw/O4ackxyT7+r3VH7hxz3WO1fNb+CXJmPIJ26bba3SHFHTb+FgtVy2PSurXY8onphvq+w75w6PStrs873TnOuPsugrfpRyP+exn93RTncvsvo2ZbaFfMxNkAC6BbIYAAAAASUVORK5CYII=" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,100,-34)">
+            <path d="M0,0 L35,0 L35,378 L0,378 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk*">
+            <defs>
+              <clipPath id="clip49">
+                <path d="M0,0 L36,0 L36,379 L0,379 L0,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip49)" fill="none" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,100,-34)">
+              <path d="M0,0 L36,0 L36,379 L0,379 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip54">
+                <path d="M0,-3 L61,-3 L61,55 L0,55 L0,-3 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip54)" fill="#ababab" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(0.57377,0,0,0.57377,100,140.656)">
+              <path d="M56.6427,6.69984 L56.6427,25.8713 L46.1855,32.8427 L46.1855,13.6713 L56.6427,6.69984 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip55">
+                <path d="M0,-3 L61,-3 L61,55 L0,55 L0,-3 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip55)" fill="#d9d9d9" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(0.57377,0,0,0.57377,100,140.656)">
+              <path d="M30.4998,6.69984 L56.6427,6.69984 L46.1855,13.6713 L21.7855,13.6713 L30.4998,6.69984 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip56">
+                <path d="M0,-3 L61,-3 L61,55 L0,55 L0,-3 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip56)" fill="#f2f2f2" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(0.57377,0,0,0.57377,100,140.656)">
+              <path d="M21.7855,32.8427 L46.1855,32.8427 L46.1855,13.6713 L21.7855,13.6713 L21.7855,32.8427 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip57">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip57)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M13.5,9.5 L27.5,9.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip58">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip58)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M27.5,20.5 L27.5,9.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip59">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip59)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M33.5,5.5 L27.5,9.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip60">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip60)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M13.5,20.5 L27.5,20.5 L33.5,16.5 L33.5,5.5 L18.5,5.5 L13.5,9.5 L13.5,20.5 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip61">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip61)" fill="none" opacity="1" stroke="#000000" stroke-dasharray="1,1" stroke-dashoffset="0" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M23.5,11.5 L27.5,9.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip62">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip62)" fill="none" opacity="1" stroke="#000000" stroke-dasharray="1,1" stroke-dashoffset="0" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M9.5,11.5 L13.5,9.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip63">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip63)" fill="none" opacity="1" stroke="#000000" stroke-dasharray="1,1" stroke-dashoffset="0" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M23.5,22.5 L27.5,20.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip64">
+                <path d="M16,-15 L77,-15 L77,43 L16,43 L16,-15 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip64)" fill="#ababab" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(0.57377,0,0,0.57377,90.8197,147.541)">
+              <path d="M55.2141,5.15698 L55.2141,24.3284 L46.4998,31.2998 L46.4998,13.8713 L55.2141,5.15698 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip65">
+                <path d="M16,-15 L77,-15 L77,43 L16,43 L16,-15 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip65)" fill="#d9d9d9" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(0.57377,0,0,0.57377,90.8197,147.541)">
+              <path d="M30.8141,5.15698 L55.2141,5.15698 L46.4998,13.8713 L20.357,13.8713 L30.8141,5.15698 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip66">
+                <path d="M16,-15 L77,-15 L77,43 L16,43 L16,-15 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip66)" fill="#f2f2f2" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(0.57377,0,0,0.57377,90.8197,147.541)">
+              <path d="M20.357,31.2998 L46.4998,31.2998 L46.4998,13.8713 L20.357,13.8713 L20.357,31.2998 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip67">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip67)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M3.5,16.5 L18.5,16.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip68">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip68)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M18.5,26.5 L18.5,16.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip69">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip69)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M23.5,11.5 L18.5,16.5" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip70">
+                <path d="M1,0 L36,0 L36,33 L1,33 L1,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip70)" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,98.9999,139)">
+              <path d="M3.5,26.5 L18.5,26.5 L23.5,22.5 L23.5,11.5 L9.5,11.5 L3.5,16.5 L3.5,26.5 z" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip81">
+                <path d="M-30,-360 L5,-360 L5,18 L-30,18 L-30,-360 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip81)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,130,326)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="5.54688" x="-5.54688" xml:space="preserve" y="1">2</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,100,-34)">
+              <path d="M0,0 L35,0 L35,378 L0,378 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:543">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-276,-11)">
+            <image height="41" preserveAspectRatio="none" width="176" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAAApCAYAAACV3qPVAAAACXBIWXMAABJ0AAASdAHeZh94AAABhUlEQVR4nO3dvW7CQBBF4UNEUuACiqShSZX3f6Y0NKEwBRRQJMXuCmNMEsTPZpTzSSNbFkJbXI1GlhhGwGOvnjr3Ug27XNvOfakDY1JQJ0DTu07udFipb5Nr3bueDHADTIFZrnIv1dACq3xt87Oj8MJhB54BL7me81Wq4QNYsh9jd6QufGRMmnkb9gGed0qqoSHlElJ4N6SOfKTbgaekzjsHXnNJNZTOuyV13pYTLxWGRogS4LebH1M6rYwNK9JIMRjgh3ueSLo2A6zQDLBCM8AKzQArNAOs0AywQjPACm185udHNzmF/qvPS7/ADqzQDLBCM8AKzQArNAOs0AywQjv3NdrFrz2ka7IDKzQDrNAMsEIzwArNACs0A6zQDLBCG7PffNKSfn/f4GZK1fUOLEh5bDmx2A8OA7wi7aPqrvSRaljkWpJy+W2Ah9b3lGdSDWW5X+nAa1Imj/RHCDhc6SPV0F+v+uMIUbptfx6WahhacD0Y4BH+xYD+nl//xYAkSZIkKZAvlS5hSJ8f2moAAAAASUVORK5CYII=" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-275,-10)">
+            <path d="M0,0 L165,0 L165,30 L0,30 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk*">
+            <defs>
+              <clipPath id="clip83">
+                <path d="M0,0 L166,0 L166,31 L0,31 L0,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip83)" fill="none" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-275,-10)">
+              <path d="M0,0 L166,0 L166,31 L0,31 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip88">
+                <path d="M-57,0 L87,0 L87,30 L-57,30 L-57,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip88)" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-207.5,-10)">
+              <path d="M-54.4844,17.5781 L-54.4844,12.3906 L-53.7031,12.3906 L-53.7031,13.1719 C-53.4948,12.8073 -53.3073,12.5677 -53.1406,12.4531 C-52.974,12.3385 -52.7865,12.2812 -52.5781,12.2812 C-52.276,12.2812 -51.974,12.375 -51.6719,12.5625 L-51.9688,13.375 C-52.1875,13.25 -52.4062,13.1875 -52.625,13.1875 C-52.8125,13.1875 -52.9844,13.2448 -53.1406,13.3594 C-53.2969,13.474 -53.4062,13.6354 -53.4688,13.8438 C-53.5625,14.1562 -53.6094,14.4948 -53.6094,14.8594 L-53.6094,17.5781 L-54.4844,17.5781 M-51.4844,14.9844 C-51.4844,14.026 -51.2135,13.3125 -50.6719,12.8438 C-50.2344,12.4688 -49.6927,12.2812 -49.0469,12.2812 C-48.3385,12.2812 -47.7578,12.513 -47.3047,12.9766 C-46.8516,13.4401 -46.625,14.0833 -46.625,14.9062 C-46.625,15.5729 -46.724,16.099 -46.9219,16.4844 C-47.1198,16.8698 -47.4115,17.1693 -47.7969,17.3828 C-48.1823,17.5964 -48.599,17.7031 -49.0469,17.7031 C-49.776,17.7031 -50.3646,17.4688 -50.8125,17 C-51.2604,16.5312 -51.4844,15.8594 -51.4844,14.9844 M-50.5781,14.9844 C-50.5781,15.651 -50.4323,16.1484 -50.1406,16.4766 C-49.849,16.8047 -49.4844,16.9688 -49.0469,16.9688 C-48.6094,16.9688 -48.2474,16.8021 -47.9609,16.4688 C-47.6745,16.1354 -47.5312,15.6302 -47.5312,14.9531 C-47.5312,14.3177 -47.6771,13.8333 -47.9688,13.5 C-48.2604,13.1667 -48.6198,13 -49.0469,13 C-49.4844,13 -49.849,13.1641 -50.1406,13.4922 C-50.4323,13.8203 -50.5781,14.3177 -50.5781,14.9844 M-43.6875,16.7969 L-43.5625,17.5625 C-43.8125,17.6146 -44.0312,17.6406 -44.2188,17.6406 C-44.5417,17.6406 -44.7917,17.5911 -44.9688,17.4922 C-45.1458,17.3932 -45.2682,17.2604 -45.3359,17.0938 C-45.4036,16.9271 -45.4375,16.5833 -45.4375,16.0625 L-45.4375,13.0781 L-46.0938,13.0781 L-46.0938,12.3906 L-45.4375,12.3906 L-45.4375,11.1094 L-44.5781,10.5781 L-44.5781,12.3906 L-43.6875,12.3906 L-43.6875,13.0781 L-44.5781,13.0781 L-44.5781,16.1094 C-44.5781,16.3594 -44.5625,16.5208 -44.5312,16.5938 C-44.5,16.6667 -44.4479,16.724 -44.375,16.7656 C-44.3021,16.8073 -44.2031,16.8281 -44.0781,16.8281 C-43.974,16.8281 -43.8438,16.8177 -43.6875,16.7969 M-39.4531,16.9375 C-39.776,17.2188 -40.0885,17.4167 -40.3906,17.5312 C-40.6927,17.6458 -41.0156,17.7031 -41.3594,17.7031 C-41.9323,17.7031 -42.3724,17.5625 -42.6797,17.2812 C-42.987,17 -43.1406,16.6406 -43.1406,16.2031 C-43.1406,15.9531 -43.0833,15.724 -42.9688,15.5156 C-42.8542,15.3073 -42.7031,15.138 -42.5156,15.0078 C-42.3281,14.8776 -42.1146,14.7812 -41.875,14.7188 C-41.7083,14.6771 -41.4479,14.6354 -41.0938,14.5938 C-40.3854,14.5104 -39.8646,14.4062 -39.5312,14.2812 C-39.5312,14.1667 -39.5312,14.0938 -39.5312,14.0625 C-39.5312,13.6979 -39.6146,13.4427 -39.7812,13.2969 C-40,13.099 -40.3333,13 -40.7812,13 C-41.1875,13 -41.4896,13.0729 -41.6875,13.2188 C-41.8854,13.3646 -42.0312,13.6198 -42.125,13.9844 L-42.9844,13.875 C-42.9115,13.5 -42.7839,13.2005 -42.6016,12.9766 C-42.4193,12.7526 -42.1589,12.5807 -41.8203,12.4609 C-41.4818,12.3411 -41.0885,12.2812 -40.6406,12.2812 C-40.2031,12.2812 -39.8464,12.3333 -39.5703,12.4375 C-39.2943,12.5417 -39.0911,12.6719 -38.9609,12.8281 C-38.8307,12.9844 -38.7396,13.1823 -38.6875,13.4219 C-38.6562,13.5677 -38.6406,13.8385 -38.6406,14.2344 L-38.6406,15.4062 C-38.6406,16.2188 -38.6224,16.7344 -38.5859,16.9531 C-38.5495,17.1719 -38.474,17.3802 -38.3594,17.5781 L-39.2812,17.5781 C-39.375,17.3906 -39.4323,17.1771 -39.4531,16.9375 M-39.5312,14.9688 C-39.8542,15.1042 -40.3333,15.2188 -40.9688,15.3125 C-41.3229,15.3646 -41.5755,15.4219 -41.7266,15.4844 C-41.8776,15.5469 -41.9948,15.6406 -42.0781,15.7656 C-42.1615,15.8906 -42.2031,16.0312 -42.2031,16.1875 C-42.2031,16.4167 -42.1146,16.6094 -41.9375,16.7656 C-41.7604,16.9219 -41.5,17 -41.1562,17 C-40.8125,17 -40.5104,16.9271 -40.25,16.7812 C-39.9896,16.6354 -39.7969,16.4323 -39.6719,16.1719 C-39.5781,15.974 -39.5312,15.6823 -39.5312,15.2969 L-39.5312,14.9688 M-35.375,16.7969 L-35.25,17.5625 C-35.5,17.6146 -35.7188,17.6406 -35.9062,17.6406 C-36.2292,17.6406 -36.4792,17.5911 -36.6562,17.4922 C-36.8333,17.3932 -36.9557,17.2604 -37.0234,17.0938 C-37.0911,16.9271 -37.125,16.5833 -37.125,16.0625 L-37.125,13.0781 L-37.7812,13.0781 L-37.7812,12.3906 L-37.125,12.3906 L-37.125,11.1094 L-36.2656,10.5781 L-36.2656,12.3906 L-35.375,12.3906 L-35.375,13.0781 L-36.2656,13.0781 L-36.2656,16.1094 C-36.2656,16.3594 -36.25,16.5208 -36.2188,16.5938 C-36.1875,16.6667 -36.1354,16.724 -36.0625,16.7656 C-35.9896,16.8073 -35.8906,16.8281 -35.7656,16.8281 C-35.6615,16.8281 -35.5312,16.8177 -35.375,16.7969 M-34.5156,11.4375 L-34.5156,10.4219 L-33.6406,10.4219 L-33.6406,11.4375 L-34.5156,11.4375 M-34.5156,17.5781 L-34.5156,12.3906 L-33.6406,12.3906 L-33.6406,17.5781 L-34.5156,17.5781 M-32.6406,14.9844 C-32.6406,14.026 -32.3698,13.3125 -31.8281,12.8438 C-31.3906,12.4688 -30.849,12.2812 -30.2031,12.2812 C-29.4948,12.2812 -28.9141,12.513 -28.4609,12.9766 C-28.0078,13.4401 -27.7812,14.0833 -27.7812,14.9062 C-27.7812,15.5729 -27.8802,16.099 -28.0781,16.4844 C-28.276,16.8698 -28.5677,17.1693 -28.9531,17.3828 C-29.3385,17.5964 -29.7552,17.7031 -30.2031,17.7031 C-30.9323,17.7031 -31.5208,17.4688 -31.9688,17 C-32.4167,16.5312 -32.6406,15.8594 -32.6406,14.9844 M-31.7344,14.9844 C-31.7344,15.651 -31.5885,16.1484 -31.2969,16.4766 C-31.0052,16.8047 -30.6406,16.9688 -30.2031,16.9688 C-29.7656,16.9688 -29.4036,16.8021 -29.1172,16.4688 C-28.8307,16.1354 -28.6875,15.6302 -28.6875,14.9531 C-28.6875,14.3177 -28.8333,13.8333 -29.125,13.5 C-29.4167,13.1667 -29.776,13 -30.2031,13 C-30.6406,13 -31.0052,13.1641 -31.2969,13.4922 C-31.5885,13.8203 -31.7344,14.3177 -31.7344,14.9844 M-26.7656,17.5781 L-26.7656,12.3906 L-25.9688,12.3906 L-25.9688,13.125 C-25.5938,12.5625 -25.0469,12.2812 -24.3281,12.2812 C-24.0156,12.2812 -23.7266,12.3359 -23.4609,12.4453 C-23.1953,12.5547 -22.9974,12.7005 -22.8672,12.8828 C-22.737,13.0651 -22.6458,13.2812 -22.5938,13.5312 C-22.5625,13.6979 -22.5469,13.9844 -22.5469,14.3906 L-22.5469,17.5781 L-23.4219,17.5781 L-23.4219,14.4219 C-23.4219,14.0677 -23.4557,13.8021 -23.5234,13.625 C-23.5911,13.4479 -23.7135,13.3047 -23.8906,13.1953 C-24.0677,13.0859 -24.2708,13.0312 -24.5,13.0312 C-24.875,13.0312 -25.2005,13.151 -25.4766,13.3906 C-25.7526,13.6302 -25.8906,14.0833 -25.8906,14.75 L-25.8906,17.5781 L-26.7656,17.5781 M-22.0312,19.5625 L-22.0312,18.9375 L-16.2031,18.9375 L-16.2031,19.5625 L-22.0312,19.5625 M-12.2812,15.6719 L-11.4219,15.7969 C-11.5156,16.3906 -11.7578,16.8568 -12.1484,17.1953 C-12.5391,17.5339 -13.0156,17.7031 -13.5781,17.7031 C-14.2865,17.7031 -14.8568,17.4688 -15.2891,17 C-15.7214,16.5312 -15.9375,15.8646 -15.9375,15 C-15.9375,14.4479 -15.8438,13.9609 -15.6562,13.5391 C-15.4688,13.1172 -15.1875,12.8021 -14.8125,12.5938 C-14.4375,12.3854 -14.026,12.2812 -13.5781,12.2812 C-13.0156,12.2812 -12.5547,12.4219 -12.1953,12.7031 C-11.8359,12.9844 -11.6042,13.3906 -11.5,13.9219 L-12.3594,14.0469 C-12.4427,13.7031 -12.5859,13.4427 -12.7891,13.2656 C-12.9922,13.0885 -13.2448,13 -13.5469,13 C-13.9844,13 -14.3411,13.1589 -14.6172,13.4766 C-14.8932,13.7943 -15.0312,14.2969 -15.0312,14.9844 C-15.0312,15.6823 -14.8984,16.1875 -14.6328,16.5 C-14.3672,16.8125 -14.0208,16.9688 -13.5938,16.9688 C-13.25,16.9688 -12.9609,16.8646 -12.7266,16.6562 C-12.4922,16.4479 -12.3438,16.1198 -12.2812,15.6719 M-7.28125,16.9375 C-7.60417,17.2188 -7.91667,17.4167 -8.21875,17.5312 C-8.52083,17.6458 -8.84375,17.7031 -9.1875,17.7031 C-9.76042,17.7031 -10.2005,17.5625 -10.5078,17.2812 C-10.8151,17 -10.9688,16.6406 -10.9688,16.2031 C-10.9688,15.9531 -10.9115,15.724 -10.7969,15.5156 C-10.6823,15.3073 -10.5312,15.138 -10.3438,15.0078 C-10.1562,14.8776 -9.94271,14.7812 -9.70312,14.7188 C-9.53646,14.6771 -9.27604,14.6354 -8.92188,14.5938 C-8.21354,14.5104 -7.69271,14.4062 -7.35938,14.2812 C-7.35938,14.1667 -7.35938,14.0938 -7.35938,14.0625 C-7.35938,13.6979 -7.44271,13.4427 -7.60938,13.2969 C-7.82812,13.099 -8.16146,13 -8.60938,13 C-9.01562,13 -9.31771,13.0729 -9.51562,13.2188 C-9.71354,13.3646 -9.85938,13.6198 -9.95312,13.9844 L-10.8125,13.875 C-10.7396,13.5 -10.612,13.2005 -10.4297,12.9766 C-10.2474,12.7526 -9.98698,12.5807 -9.64844,12.4609 C-9.3099,12.3411 -8.91667,12.2812 -8.46875,12.2812 C-8.03125,12.2812 -7.67448,12.3333 -7.39844,12.4375 C-7.1224,12.5417 -6.91927,12.6719 -6.78906,12.8281 C-6.65885,12.9844 -6.56771,13.1823 -6.51562,13.4219 C-6.48438,13.5677 -6.46875,13.8385 -6.46875,14.2344 L-6.46875,15.4062 C-6.46875,16.2188 -6.45052,16.7344 -6.41406,16.9531 C-6.3776,17.1719 -6.30208,17.3802 -6.1875,17.5781 L-7.10938,17.5781 C-7.20312,17.3906 -7.26042,17.1771 -7.28125,16.9375 M-7.35938,14.9688 C-7.68229,15.1042 -8.16146,15.2188 -8.79688,15.3125 C-9.15104,15.3646 -9.40365,15.4219 -9.55469,15.4844 C-9.70573,15.5469 -9.82292,15.6406 -9.90625,15.7656 C-9.98958,15.8906 -10.0312,16.0312 -10.0312,16.1875 C-10.0312,16.4167 -9.94271,16.6094 -9.76562,16.7656 C-9.58854,16.9219 -9.32812,17 -8.98438,17 C-8.64062,17 -8.33854,16.9271 -8.07812,16.7812 C-7.81771,16.6354 -7.625,16.4323 -7.5,16.1719 C-7.40625,15.974 -7.35938,15.6823 -7.35938,15.2969 L-7.35938,14.9688 M-5.14062,17.5781 L-5.14062,10.4219 L-4.26562,10.4219 L-4.26562,17.5781 L-5.14062,17.5781 M-2.89062,11.4375 L-2.89062,10.4219 L-2.01562,10.4219 L-2.01562,11.4375 L-2.89062,11.4375 M-2.89062,17.5781 L-2.89062,12.3906 L-2.01562,12.3906 L-2.01562,17.5781 L-2.89062,17.5781 M0.125,17.5781 L-0.6875,17.5781 L-0.6875,10.4219 L0.1875,10.4219 L0.1875,12.9688 C0.5625,12.5104 1.03646,12.2812 1.60938,12.2812 C1.93229,12.2812 2.23438,12.3438 2.51562,12.4688 C2.79688,12.5938 3.03125,12.7734 3.21875,13.0078 C3.40625,13.2422 3.55208,13.5234 3.65625,13.8516 C3.76042,14.1797 3.8125,14.5312 3.8125,14.9062 C3.8125,15.7917 3.59115,16.4792 3.14844,16.9688 C2.70573,17.4583 2.17708,17.7031 1.5625,17.7031 C0.958333,17.7031 0.479167,17.4427 0.125,16.9219 L0.125,17.5781 M0.109375,14.9531 C0.109375,15.5677 0.197917,16.0156 0.375,16.2969 C0.645833,16.7448 1.02083,16.9688 1.5,16.9688 C1.875,16.9688 2.20312,16.8021 2.48438,16.4688 C2.76562,16.1354 2.90625,15.6406 2.90625,14.9844 C2.90625,14.3073 2.77344,13.8073 2.50781,13.4844 C2.24219,13.1615 1.91667,13 1.53125,13 C1.14583,13 0.8125,13.1667 0.53125,13.5 C0.25,13.8333 0.109375,14.3177 0.109375,14.9531 M4.84375,17.5781 L4.84375,12.3906 L5.625,12.3906 L5.625,13.1719 C5.83333,12.8073 6.02083,12.5677 6.1875,12.4531 C6.35417,12.3385 6.54167,12.2812 6.75,12.2812 C7.05208,12.2812 7.35417,12.375 7.65625,12.5625 L7.35938,13.375 C7.14062,13.25 6.92188,13.1875 6.70312,13.1875 C6.51562,13.1875 6.34375,13.2448 6.1875,13.3594 C6.03125,13.474 5.92188,13.6354 5.85938,13.8438 C5.76562,14.1562 5.71875,14.4948 5.71875,14.8594 L5.71875,17.5781 L4.84375,17.5781 M11.5625,16.9375 C11.2396,17.2188 10.9271,17.4167 10.625,17.5312 C10.3229,17.6458 10,17.7031 9.65625,17.7031 C9.08333,17.7031 8.64323,17.5625 8.33594,17.2812 C8.02865,17 7.875,16.6406 7.875,16.2031 C7.875,15.9531 7.93229,15.724 8.04688,15.5156 C8.16146,15.3073 8.3125,15.138 8.5,15.0078 C8.6875,14.8776 8.90104,14.7812 9.14062,14.7188 C9.30729,14.6771 9.56771,14.6354 9.92188,14.5938 C10.6302,14.5104 11.151,14.4062 11.4844,14.2812 C11.4844,14.1667 11.4844,14.0938 11.4844,14.0625 C11.4844,13.6979 11.401,13.4427 11.2344,13.2969 C11.0156,13.099 10.6823,13 10.2344,13 C9.82812,13 9.52604,13.0729 9.32812,13.2188 C9.13021,13.3646 8.98438,13.6198 8.89062,13.9844 L8.03125,13.875 C8.10417,13.5 8.23177,13.2005 8.41406,12.9766 C8.59635,12.7526 8.85677,12.5807 9.19531,12.4609 C9.53385,12.3411 9.92708,12.2812 10.375,12.2812 C10.8125,12.2812 11.1693,12.3333 11.4453,12.4375 C11.7214,12.5417 11.9245,12.6719 12.0547,12.8281 C12.1849,12.9844 12.276,13.1823 12.3281,13.4219 C12.3594,13.5677 12.375,13.8385 12.375,14.2344 L12.375,15.4062 C12.375,16.2188 12.3932,16.7344 12.4297,16.9531 C12.4661,17.1719 12.5417,17.3802 12.6562,17.5781 L11.7344,17.5781 C11.6406,17.3906 11.5833,17.1771 11.5625,16.9375 M11.4844,14.9688 C11.1615,15.1042 10.6823,15.2188 10.0469,15.3125 C9.69271,15.3646 9.4401,15.4219 9.28906,15.4844 C9.13802,15.5469 9.02083,15.6406 8.9375,15.7656 C8.85417,15.8906 8.8125,16.0312 8.8125,16.1875 C8.8125,16.4167 8.90104,16.6094 9.07812,16.7656 C9.25521,16.9219 9.51562,17 9.85938,17 C10.2031,17 10.5052,16.9271 10.7656,16.7812 C11.026,16.6354 11.2188,16.4323 11.3438,16.1719 C11.4375,15.974 11.4844,15.6823 11.4844,15.2969 L11.4844,14.9688 M15.6406,16.7969 L15.7656,17.5625 C15.5156,17.6146 15.2969,17.6406 15.1094,17.6406 C14.7865,17.6406 14.5365,17.5911 14.3594,17.4922 C14.1823,17.3932 14.0599,17.2604 13.9922,17.0938 C13.9245,16.9271 13.8906,16.5833 13.8906,16.0625 L13.8906,13.0781 L13.2344,13.0781 L13.2344,12.3906 L13.8906,12.3906 L13.8906,11.1094 L14.75,10.5781 L14.75,12.3906 L15.6406,12.3906 L15.6406,13.0781 L14.75,13.0781 L14.75,16.1094 C14.75,16.3594 14.7656,16.5208 14.7969,16.5938 C14.8281,16.6667 14.8802,16.724 14.9531,16.7656 C15.026,16.8073 15.125,16.8281 15.25,16.8281 C15.3542,16.8281 15.4844,16.8177 15.6406,16.7969 M16.5,11.4375 L16.5,10.4219 L17.375,10.4219 L17.375,11.4375 L16.5,11.4375 M16.5,17.5781 L16.5,12.3906 L17.375,12.3906 L17.375,17.5781 L16.5,17.5781 M18.375,14.9844 C18.375,14.026 18.6458,13.3125 19.1875,12.8438 C19.625,12.4688 20.1667,12.2812 20.8125,12.2812 C21.5208,12.2812 22.1016,12.513 22.5547,12.9766 C23.0078,13.4401 23.2344,14.0833 23.2344,14.9062 C23.2344,15.5729 23.1354,16.099 22.9375,16.4844 C22.7396,16.8698 22.4479,17.1693 22.0625,17.3828 C21.6771,17.5964 21.2604,17.7031 20.8125,17.7031 C20.0833,17.7031 19.4948,17.4688 19.0469,17 C18.599,16.5312 18.375,15.8594 18.375,14.9844 M19.2812,14.9844 C19.2812,15.651 19.4271,16.1484 19.7188,16.4766 C20.0104,16.8047 20.375,16.9688 20.8125,16.9688 C21.25,16.9688 21.612,16.8021 21.8984,16.4688 C22.1849,16.1354 22.3281,15.6302 22.3281,14.9531 C22.3281,14.3177 22.1823,13.8333 21.8906,13.5 C21.599,13.1667 21.2396,13 20.8125,13 C20.375,13 20.0104,13.1641 19.7188,13.4922 C19.4271,13.8203 19.2812,14.3177 19.2812,14.9844 M24.25,17.5781 L24.25,12.3906 L25.0469,12.3906 L25.0469,13.125 C25.4219,12.5625 25.9688,12.2812 26.6875,12.2812 C27,12.2812 27.2891,12.3359 27.5547,12.4453 C27.8203,12.5547 28.0182,12.7005 28.1484,12.8828 C28.2786,13.0651 28.3698,13.2812 28.4219,13.5312 C28.4531,13.6979 28.4688,13.9844 28.4688,14.3906 L28.4688,17.5781 L27.5938,17.5781 L27.5938,14.4219 C27.5938,14.0677 27.5599,13.8021 27.4922,13.625 C27.4245,13.4479 27.3021,13.3047 27.125,13.1953 C26.9479,13.0859 26.7448,13.0312 26.5156,13.0312 C26.1406,13.0312 25.8151,13.151 25.5391,13.3906 C25.263,13.6302 25.125,14.0833 25.125,14.75 L25.125,17.5781 L24.25,17.5781 M28.9844,19.5625 L28.9844,18.9375 L34.8125,18.9375 L34.8125,19.5625 L28.9844,19.5625 M35.3438,17.5781 L35.3438,12.3906 L36.1406,12.3906 L36.1406,13.125 C36.2969,12.8646 36.5104,12.6589 36.7812,12.5078 C37.0521,12.3568 37.3594,12.2812 37.7031,12.2812 C38.0885,12.2812 38.4036,12.3594 38.6484,12.5156 C38.8932,12.6719 39.0677,12.8958 39.1719,13.1875 C39.5781,12.5833 40.1094,12.2812 40.7656,12.2812 C41.2865,12.2812 41.6849,12.4219 41.9609,12.7031 C42.237,12.9844 42.375,13.4219 42.375,14.0156 L42.375,17.5781 L41.5,17.5781 L41.5,14.3125 C41.5,13.9583 41.4714,13.7031 41.4141,13.5469 C41.3568,13.3906 41.2526,13.2656 41.1016,13.1719 C40.9505,13.0781 40.776,13.0312 40.5781,13.0312 C40.2135,13.0312 39.9115,13.1536 39.6719,13.3984 C39.4323,13.6432 39.3125,14.0312 39.3125,14.5625 L39.3125,17.5781 L38.4219,17.5781 L38.4219,14.2031 C38.4219,13.8177 38.3516,13.526 38.2109,13.3281 C38.0703,13.1302 37.8385,13.0312 37.5156,13.0312 C37.2656,13.0312 37.0365,13.0964 36.8281,13.2266 C36.6198,13.3568 36.4661,13.5469 36.3672,13.7969 C36.2682,14.0469 36.2188,14.4115 36.2188,14.8906 L36.2188,17.5781 L35.3438,17.5781 M47.0625,16.9375 C46.7396,17.2188 46.4271,17.4167 46.125,17.5312 C45.8229,17.6458 45.5,17.7031 45.1562,17.7031 C44.5833,17.7031 44.1432,17.5625 43.8359,17.2812 C43.5286,17 43.375,16.6406 43.375,16.2031 C43.375,15.9531 43.4323,15.724 43.5469,15.5156 C43.6615,15.3073 43.8125,15.138 44,15.0078 C44.1875,14.8776 44.401,14.7812 44.6406,14.7188 C44.8073,14.6771 45.0677,14.6354 45.4219,14.5938 C46.1302,14.5104 46.651,14.4062 46.9844,14.2812 C46.9844,14.1667 46.9844,14.0938 46.9844,14.0625 C46.9844,13.6979 46.901,13.4427 46.7344,13.2969 C46.5156,13.099 46.1823,13 45.7344,13 C45.3281,13 45.026,13.0729 44.8281,13.2188 C44.6302,13.3646 44.4844,13.6198 44.3906,13.9844 L43.5312,13.875 C43.6042,13.5 43.7318,13.2005 43.9141,12.9766 C44.0964,12.7526 44.3568,12.5807 44.6953,12.4609 C45.0339,12.3411 45.4271,12.2812 45.875,12.2812 C46.3125,12.2812 46.6693,12.3333 46.9453,12.4375 C47.2214,12.5417 47.4245,12.6719 47.5547,12.8281 C47.6849,12.9844 47.776,13.1823 47.8281,13.4219 C47.8594,13.5677 47.875,13.8385 47.875,14.2344 L47.875,15.4062 C47.875,16.2188 47.8932,16.7344 47.9297,16.9531 C47.9661,17.1719 48.0417,17.3802 48.1562,17.5781 L47.2344,17.5781 C47.1406,17.3906 47.0833,17.1771 47.0625,16.9375 M46.9844,14.9688 C46.6615,15.1042 46.1823,15.2188 45.5469,15.3125 C45.1927,15.3646 44.9401,15.4219 44.7891,15.4844 C44.638,15.5469 44.5208,15.6406 44.4375,15.7656 C44.3542,15.8906 44.3125,16.0312 44.3125,16.1875 C44.3125,16.4167 44.401,16.6094 44.5781,16.7656 C44.7552,16.9219 45.0156,17 45.3594,17 C45.7031,17 46.0052,16.9271 46.2656,16.7812 C46.526,16.6354 46.7188,16.4323 46.8438,16.1719 C46.9375,15.974 46.9844,15.6823 46.9844,15.2969 L46.9844,14.9688 M51.1406,16.7969 L51.2656,17.5625 C51.0156,17.6146 50.7969,17.6406 50.6094,17.6406 C50.2865,17.6406 50.0365,17.5911 49.8594,17.4922 C49.6823,17.3932 49.5599,17.2604 49.4922,17.0938 C49.4245,16.9271 49.3906,16.5833 49.3906,16.0625 L49.3906,13.0781 L48.7344,13.0781 L48.7344,12.3906 L49.3906,12.3906 L49.3906,11.1094 L50.25,10.5781 L50.25,12.3906 L51.1406,12.3906 L51.1406,13.0781 L50.25,13.0781 L50.25,16.1094 C50.25,16.3594 50.2656,16.5208 50.2969,16.5938 C50.3281,16.6667 50.3802,16.724 50.4531,16.7656 C50.526,16.8073 50.625,16.8281 50.75,16.8281 C50.8542,16.8281 50.9844,16.8177 51.1406,16.7969 M51.9844,17.5781 L51.9844,12.3906 L52.7656,12.3906 L52.7656,13.1719 C52.974,12.8073 53.1615,12.5677 53.3281,12.4531 C53.4948,12.3385 53.6823,12.2812 53.8906,12.2812 C54.1927,12.2812 54.4948,12.375 54.7969,12.5625 L54.5,13.375 C54.2812,13.25 54.0625,13.1875 53.8438,13.1875 C53.6562,13.1875 53.4844,13.2448 53.3281,13.3594 C53.1719,13.474 53.0625,13.6354 53,13.8438 C52.9062,14.1562 52.8594,14.4948 52.8594,14.8594 L52.8594,17.5781 L51.9844,17.5781 M55.3281,11.4375 L55.3281,10.4219 L56.2031,10.4219 L56.2031,11.4375 L55.3281,11.4375 M55.3281,17.5781 L55.3281,12.3906 L56.2031,12.3906 L56.2031,17.5781 L55.3281,17.5781 M56.9531,17.5781 L58.8438,14.875 L57.0938,12.3906 L58.1875,12.3906 L58.9844,13.6094 C59.1302,13.8385 59.25,14.0312 59.3438,14.1875 C59.4896,13.9688 59.6198,13.7812 59.7344,13.625 L60.6094,12.3906 L61.6719,12.3906 L59.875,14.8281 L61.7969,17.5781 L60.7188,17.5781 L59.6562,15.9688 L59.375,15.5312 L58.0156,17.5781 L56.9531,17.5781 M64.2188,19.6875 C63.7292,19.0729 63.3177,18.3542 62.9844,17.5312 C62.651,16.7083 62.4844,15.8594 62.4844,14.9844 C62.4844,14.2135 62.6094,13.474 62.8594,12.7656 C63.151,11.9323 63.6042,11.1094 64.2188,10.2969 L64.8438,10.2969 C64.4479,10.974 64.1875,11.4583 64.0625,11.75 C63.8646,12.1979 63.7083,12.6667 63.5938,13.1562 C63.4583,13.7604 63.3906,14.3698 63.3906,14.9844 C63.3906,16.5573 63.875,18.125 64.8438,19.6875 L64.2188,19.6875 M66.1094,13.3906 L66.1094,12.3906 L67.1094,12.3906 L67.1094,13.3906 L66.1094,13.3906 M66.1094,17.5781 L66.1094,16.5781 L67.1094,16.5781 L67.1094,17.5781 L66.1094,17.5781 M68.8594,17.5781 L68.8594,16.5781 L69.8594,16.5781 L69.8594,17.5781 C69.8594,17.9427 69.7943,18.2396 69.6641,18.4688 C69.5339,18.6979 69.3281,18.875 69.0469,19 L68.7969,18.625 C68.9844,18.5417 69.1224,18.4193 69.2109,18.2578 C69.2995,18.0964 69.349,17.8698 69.3594,17.5781 L68.8594,17.5781 M71.6406,13.3906 L71.6406,12.3906 L72.6406,12.3906 L72.6406,13.3906 L71.6406,13.3906 M71.6406,17.5781 L71.6406,16.5781 L72.6406,16.5781 L72.6406,17.5781 L71.6406,17.5781 M74.3906,17.5781 L74.3906,16.5781 L75.3906,16.5781 L75.3906,17.5781 C75.3906,17.9427 75.3255,18.2396 75.1953,18.4688 C75.0651,18.6979 74.8594,18.875 74.5781,19 L74.3281,18.625 C74.5156,18.5417 74.6536,18.4193 74.7422,18.2578 C74.8307,18.0964 74.8802,17.8698 74.8906,17.5781 L74.3906,17.5781 M79.9844,17.5781 L79.1094,17.5781 L79.1094,11.9844 C78.901,12.1823 78.625,12.3828 78.2812,12.5859 C77.9375,12.7891 77.6302,12.9375 77.3594,13.0312 L77.3594,12.1875 C77.849,11.9583 78.2786,11.6797 78.6484,11.3516 C79.0182,11.0234 79.276,10.7031 79.4219,10.3906 L79.9844,10.3906 L79.9844,17.5781 M83.0469,19.6875 L82.4219,19.6875 C83.3906,18.125 83.875,16.5573 83.875,14.9844 C83.875,14.3802 83.8073,13.776 83.6719,13.1719 C83.5573,12.6823 83.401,12.2135 83.2031,11.7656 C83.0781,11.474 82.8177,10.9844 82.4219,10.2969 L83.0469,10.2969 C83.6615,11.1094 84.1146,11.9323 84.4062,12.7656 C84.6562,13.474 84.7812,14.2135 84.7812,14.9844 C84.7812,15.8594 84.612,16.7083 84.2734,17.5312 C83.9349,18.3542 83.526,19.0729 83.0469,19.6875" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-275,-10)">
+              <path d="M0,0 L165,0 L165,30 L0,30 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:544">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-276,115)">
+            <image height="39" preserveAspectRatio="none" width="176" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAAAnCAYAAACv1MKlAAAACXBIWXMAABJ0AAASdAHeZh94AAABfUlEQVR4nO3cvW7CQBBF4UNEUuACiqShSZX3f6Y0NKEwBRRQJMXuCmNMEsTPZpTzSSNbFkJbXI0GJM8IeOzVU+deqmGXa9u5L3VgTArqBGh618mdDiv1bXKte9eTAW6AKTDLVe6lGlpgla9tfnYUXjjswDPgJddzvko1fABL9mPsjtSFj4xJM2/DPsDzTkk1NKRcQgrvhtSRj3Q78JTUeefAay6phtJ5t6TO23LiT4WhEaIE+O3mx5ROK2PDijRSDAb44Z4nkq7NACs0A6zQDLBCM8AKzQArNAOs0AywQhuf+fnRTU6h/+rz0i+wAys0A6zQDLBCM8AK7dwfcRcP3dI12YEVmgFWaAZYoRlghWaAFZoBVmgGWKGN2b9335Le/mxwL5rqegcWpDy2nFgrBYcBXpG2oXQXSkg1LHItSbn8NsBDyyPKM6mGslqqdOA1KZNH+iMEHC6UkGroL/f7cYQo3bY/D0s1DK1XHQzwCBdc6+/59YJrSZIkSVIgXyuMYUSe3PweAAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-275,116)">
+            <path d="M0,0 L165,0 L165,28 L0,28 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk*">
+            <defs>
+              <clipPath id="clip100">
+                <path d="M0,0 L166,0 L166,29 L0,29 L0,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip100)" fill="none" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-275,116)">
+              <path d="M0,0 L166,0 L166,29 L0,29 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip105">
+                <path d="M-57,1 L87,1 L87,29 L-57,29 L-57,1 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip105)" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-207.5,115)">
+              <path d="M-54.4844,17.5781 L-54.4844,12.3906 L-53.7031,12.3906 L-53.7031,13.1719 C-53.4948,12.8073 -53.3073,12.5677 -53.1406,12.4531 C-52.974,12.3385 -52.7865,12.2812 -52.5781,12.2812 C-52.276,12.2812 -51.974,12.375 -51.6719,12.5625 L-51.9688,13.375 C-52.1875,13.25 -52.4062,13.1875 -52.625,13.1875 C-52.8125,13.1875 -52.9844,13.2448 -53.1406,13.3594 C-53.2969,13.474 -53.4062,13.6354 -53.4688,13.8438 C-53.5625,14.1562 -53.6094,14.4948 -53.6094,14.8594 L-53.6094,17.5781 L-54.4844,17.5781 M-51.4844,14.9844 C-51.4844,14.026 -51.2135,13.3125 -50.6719,12.8438 C-50.2344,12.4688 -49.6927,12.2812 -49.0469,12.2812 C-48.3385,12.2812 -47.7578,12.513 -47.3047,12.9766 C-46.8516,13.4401 -46.625,14.0833 -46.625,14.9062 C-46.625,15.5729 -46.724,16.099 -46.9219,16.4844 C-47.1198,16.8698 -47.4115,17.1693 -47.7969,17.3828 C-48.1823,17.5964 -48.599,17.7031 -49.0469,17.7031 C-49.776,17.7031 -50.3646,17.4688 -50.8125,17 C-51.2604,16.5312 -51.4844,15.8594 -51.4844,14.9844 M-50.5781,14.9844 C-50.5781,15.651 -50.4323,16.1484 -50.1406,16.4766 C-49.849,16.8047 -49.4844,16.9688 -49.0469,16.9688 C-48.6094,16.9688 -48.2474,16.8021 -47.9609,16.4688 C-47.6745,16.1354 -47.5312,15.6302 -47.5312,14.9531 C-47.5312,14.3177 -47.6771,13.8333 -47.9688,13.5 C-48.2604,13.1667 -48.6198,13 -49.0469,13 C-49.4844,13 -49.849,13.1641 -50.1406,13.4922 C-50.4323,13.8203 -50.5781,14.3177 -50.5781,14.9844 M-43.6875,16.7969 L-43.5625,17.5625 C-43.8125,17.6146 -44.0312,17.6406 -44.2188,17.6406 C-44.5417,17.6406 -44.7917,17.5911 -44.9688,17.4922 C-45.1458,17.3932 -45.2682,17.2604 -45.3359,17.0938 C-45.4036,16.9271 -45.4375,16.5833 -45.4375,16.0625 L-45.4375,13.0781 L-46.0938,13.0781 L-46.0938,12.3906 L-45.4375,12.3906 L-45.4375,11.1094 L-44.5781,10.5781 L-44.5781,12.3906 L-43.6875,12.3906 L-43.6875,13.0781 L-44.5781,13.0781 L-44.5781,16.1094 C-44.5781,16.3594 -44.5625,16.5208 -44.5312,16.5938 C-44.5,16.6667 -44.4479,16.724 -44.375,16.7656 C-44.3021,16.8073 -44.2031,16.8281 -44.0781,16.8281 C-43.974,16.8281 -43.8438,16.8177 -43.6875,16.7969 M-39.4531,16.9375 C-39.776,17.2188 -40.0885,17.4167 -40.3906,17.5312 C-40.6927,17.6458 -41.0156,17.7031 -41.3594,17.7031 C-41.9323,17.7031 -42.3724,17.5625 -42.6797,17.2812 C-42.987,17 -43.1406,16.6406 -43.1406,16.2031 C-43.1406,15.9531 -43.0833,15.724 -42.9688,15.5156 C-42.8542,15.3073 -42.7031,15.138 -42.5156,15.0078 C-42.3281,14.8776 -42.1146,14.7812 -41.875,14.7188 C-41.7083,14.6771 -41.4479,14.6354 -41.0938,14.5938 C-40.3854,14.5104 -39.8646,14.4062 -39.5312,14.2812 C-39.5312,14.1667 -39.5312,14.0938 -39.5312,14.0625 C-39.5312,13.6979 -39.6146,13.4427 -39.7812,13.2969 C-40,13.099 -40.3333,13 -40.7812,13 C-41.1875,13 -41.4896,13.0729 -41.6875,13.2188 C-41.8854,13.3646 -42.0312,13.6198 -42.125,13.9844 L-42.9844,13.875 C-42.9115,13.5 -42.7839,13.2005 -42.6016,12.9766 C-42.4193,12.7526 -42.1589,12.5807 -41.8203,12.4609 C-41.4818,12.3411 -41.0885,12.2812 -40.6406,12.2812 C-40.2031,12.2812 -39.8464,12.3333 -39.5703,12.4375 C-39.2943,12.5417 -39.0911,12.6719 -38.9609,12.8281 C-38.8307,12.9844 -38.7396,13.1823 -38.6875,13.4219 C-38.6562,13.5677 -38.6406,13.8385 -38.6406,14.2344 L-38.6406,15.4062 C-38.6406,16.2188 -38.6224,16.7344 -38.5859,16.9531 C-38.5495,17.1719 -38.474,17.3802 -38.3594,17.5781 L-39.2812,17.5781 C-39.375,17.3906 -39.4323,17.1771 -39.4531,16.9375 M-39.5312,14.9688 C-39.8542,15.1042 -40.3333,15.2188 -40.9688,15.3125 C-41.3229,15.3646 -41.5755,15.4219 -41.7266,15.4844 C-41.8776,15.5469 -41.9948,15.6406 -42.0781,15.7656 C-42.1615,15.8906 -42.2031,16.0312 -42.2031,16.1875 C-42.2031,16.4167 -42.1146,16.6094 -41.9375,16.7656 C-41.7604,16.9219 -41.5,17 -41.1562,17 C-40.8125,17 -40.5104,16.9271 -40.25,16.7812 C-39.9896,16.6354 -39.7969,16.4323 -39.6719,16.1719 C-39.5781,15.974 -39.5312,15.6823 -39.5312,15.2969 L-39.5312,14.9688 M-35.375,16.7969 L-35.25,17.5625 C-35.5,17.6146 -35.7188,17.6406 -35.9062,17.6406 C-36.2292,17.6406 -36.4792,17.5911 -36.6562,17.4922 C-36.8333,17.3932 -36.9557,17.2604 -37.0234,17.0938 C-37.0911,16.9271 -37.125,16.5833 -37.125,16.0625 L-37.125,13.0781 L-37.7812,13.0781 L-37.7812,12.3906 L-37.125,12.3906 L-37.125,11.1094 L-36.2656,10.5781 L-36.2656,12.3906 L-35.375,12.3906 L-35.375,13.0781 L-36.2656,13.0781 L-36.2656,16.1094 C-36.2656,16.3594 -36.25,16.5208 -36.2188,16.5938 C-36.1875,16.6667 -36.1354,16.724 -36.0625,16.7656 C-35.9896,16.8073 -35.8906,16.8281 -35.7656,16.8281 C-35.6615,16.8281 -35.5312,16.8177 -35.375,16.7969 M-34.5156,11.4375 L-34.5156,10.4219 L-33.6406,10.4219 L-33.6406,11.4375 L-34.5156,11.4375 M-34.5156,17.5781 L-34.5156,12.3906 L-33.6406,12.3906 L-33.6406,17.5781 L-34.5156,17.5781 M-32.6406,14.9844 C-32.6406,14.026 -32.3698,13.3125 -31.8281,12.8438 C-31.3906,12.4688 -30.849,12.2812 -30.2031,12.2812 C-29.4948,12.2812 -28.9141,12.513 -28.4609,12.9766 C-28.0078,13.4401 -27.7812,14.0833 -27.7812,14.9062 C-27.7812,15.5729 -27.8802,16.099 -28.0781,16.4844 C-28.276,16.8698 -28.5677,17.1693 -28.9531,17.3828 C-29.3385,17.5964 -29.7552,17.7031 -30.2031,17.7031 C-30.9323,17.7031 -31.5208,17.4688 -31.9688,17 C-32.4167,16.5312 -32.6406,15.8594 -32.6406,14.9844 M-31.7344,14.9844 C-31.7344,15.651 -31.5885,16.1484 -31.2969,16.4766 C-31.0052,16.8047 -30.6406,16.9688 -30.2031,16.9688 C-29.7656,16.9688 -29.4036,16.8021 -29.1172,16.4688 C-28.8307,16.1354 -28.6875,15.6302 -28.6875,14.9531 C-28.6875,14.3177 -28.8333,13.8333 -29.125,13.5 C-29.4167,13.1667 -29.776,13 -30.2031,13 C-30.6406,13 -31.0052,13.1641 -31.2969,13.4922 C-31.5885,13.8203 -31.7344,14.3177 -31.7344,14.9844 M-26.7656,17.5781 L-26.7656,12.3906 L-25.9688,12.3906 L-25.9688,13.125 C-25.5938,12.5625 -25.0469,12.2812 -24.3281,12.2812 C-24.0156,12.2812 -23.7266,12.3359 -23.4609,12.4453 C-23.1953,12.5547 -22.9974,12.7005 -22.8672,12.8828 C-22.737,13.0651 -22.6458,13.2812 -22.5938,13.5312 C-22.5625,13.6979 -22.5469,13.9844 -22.5469,14.3906 L-22.5469,17.5781 L-23.4219,17.5781 L-23.4219,14.4219 C-23.4219,14.0677 -23.4557,13.8021 -23.5234,13.625 C-23.5911,13.4479 -23.7135,13.3047 -23.8906,13.1953 C-24.0677,13.0859 -24.2708,13.0312 -24.5,13.0312 C-24.875,13.0312 -25.2005,13.151 -25.4766,13.3906 C-25.7526,13.6302 -25.8906,14.0833 -25.8906,14.75 L-25.8906,17.5781 L-26.7656,17.5781 M-22.0312,19.5625 L-22.0312,18.9375 L-16.2031,18.9375 L-16.2031,19.5625 L-22.0312,19.5625 M-12.2812,15.6719 L-11.4219,15.7969 C-11.5156,16.3906 -11.7578,16.8568 -12.1484,17.1953 C-12.5391,17.5339 -13.0156,17.7031 -13.5781,17.7031 C-14.2865,17.7031 -14.8568,17.4688 -15.2891,17 C-15.7214,16.5312 -15.9375,15.8646 -15.9375,15 C-15.9375,14.4479 -15.8438,13.9609 -15.6562,13.5391 C-15.4688,13.1172 -15.1875,12.8021 -14.8125,12.5938 C-14.4375,12.3854 -14.026,12.2812 -13.5781,12.2812 C-13.0156,12.2812 -12.5547,12.4219 -12.1953,12.7031 C-11.8359,12.9844 -11.6042,13.3906 -11.5,13.9219 L-12.3594,14.0469 C-12.4427,13.7031 -12.5859,13.4427 -12.7891,13.2656 C-12.9922,13.0885 -13.2448,13 -13.5469,13 C-13.9844,13 -14.3411,13.1589 -14.6172,13.4766 C-14.8932,13.7943 -15.0312,14.2969 -15.0312,14.9844 C-15.0312,15.6823 -14.8984,16.1875 -14.6328,16.5 C-14.3672,16.8125 -14.0208,16.9688 -13.5938,16.9688 C-13.25,16.9688 -12.9609,16.8646 -12.7266,16.6562 C-12.4922,16.4479 -12.3438,16.1198 -12.2812,15.6719 M-7.28125,16.9375 C-7.60417,17.2188 -7.91667,17.4167 -8.21875,17.5312 C-8.52083,17.6458 -8.84375,17.7031 -9.1875,17.7031 C-9.76042,17.7031 -10.2005,17.5625 -10.5078,17.2812 C-10.8151,17 -10.9688,16.6406 -10.9688,16.2031 C-10.9688,15.9531 -10.9115,15.724 -10.7969,15.5156 C-10.6823,15.3073 -10.5312,15.138 -10.3438,15.0078 C-10.1562,14.8776 -9.94271,14.7812 -9.70312,14.7188 C-9.53646,14.6771 -9.27604,14.6354 -8.92188,14.5938 C-8.21354,14.5104 -7.69271,14.4062 -7.35938,14.2812 C-7.35938,14.1667 -7.35938,14.0938 -7.35938,14.0625 C-7.35938,13.6979 -7.44271,13.4427 -7.60938,13.2969 C-7.82812,13.099 -8.16146,13 -8.60938,13 C-9.01562,13 -9.31771,13.0729 -9.51562,13.2188 C-9.71354,13.3646 -9.85938,13.6198 -9.95312,13.9844 L-10.8125,13.875 C-10.7396,13.5 -10.612,13.2005 -10.4297,12.9766 C-10.2474,12.7526 -9.98698,12.5807 -9.64844,12.4609 C-9.3099,12.3411 -8.91667,12.2812 -8.46875,12.2812 C-8.03125,12.2812 -7.67448,12.3333 -7.39844,12.4375 C-7.1224,12.5417 -6.91927,12.6719 -6.78906,12.8281 C-6.65885,12.9844 -6.56771,13.1823 -6.51562,13.4219 C-6.48438,13.5677 -6.46875,13.8385 -6.46875,14.2344 L-6.46875,15.4062 C-6.46875,16.2188 -6.45052,16.7344 -6.41406,16.9531 C-6.3776,17.1719 -6.30208,17.3802 -6.1875,17.5781 L-7.10938,17.5781 C-7.20312,17.3906 -7.26042,17.1771 -7.28125,16.9375 M-7.35938,14.9688 C-7.68229,15.1042 -8.16146,15.2188 -8.79688,15.3125 C-9.15104,15.3646 -9.40365,15.4219 -9.55469,15.4844 C-9.70573,15.5469 -9.82292,15.6406 -9.90625,15.7656 C-9.98958,15.8906 -10.0312,16.0312 -10.0312,16.1875 C-10.0312,16.4167 -9.94271,16.6094 -9.76562,16.7656 C-9.58854,16.9219 -9.32812,17 -8.98438,17 C-8.64062,17 -8.33854,16.9271 -8.07812,16.7812 C-7.81771,16.6354 -7.625,16.4323 -7.5,16.1719 C-7.40625,15.974 -7.35938,15.6823 -7.35938,15.2969 L-7.35938,14.9688 M-5.14062,17.5781 L-5.14062,10.4219 L-4.26562,10.4219 L-4.26562,17.5781 L-5.14062,17.5781 M-2.89062,11.4375 L-2.89062,10.4219 L-2.01562,10.4219 L-2.01562,11.4375 L-2.89062,11.4375 M-2.89062,17.5781 L-2.89062,12.3906 L-2.01562,12.3906 L-2.01562,17.5781 L-2.89062,17.5781 M0.125,17.5781 L-0.6875,17.5781 L-0.6875,10.4219 L0.1875,10.4219 L0.1875,12.9688 C0.5625,12.5104 1.03646,12.2812 1.60938,12.2812 C1.93229,12.2812 2.23438,12.3438 2.51562,12.4688 C2.79688,12.5938 3.03125,12.7734 3.21875,13.0078 C3.40625,13.2422 3.55208,13.5234 3.65625,13.8516 C3.76042,14.1797 3.8125,14.5312 3.8125,14.9062 C3.8125,15.7917 3.59115,16.4792 3.14844,16.9688 C2.70573,17.4583 2.17708,17.7031 1.5625,17.7031 C0.958333,17.7031 0.479167,17.4427 0.125,16.9219 L0.125,17.5781 M0.109375,14.9531 C0.109375,15.5677 0.197917,16.0156 0.375,16.2969 C0.645833,16.7448 1.02083,16.9688 1.5,16.9688 C1.875,16.9688 2.20312,16.8021 2.48438,16.4688 C2.76562,16.1354 2.90625,15.6406 2.90625,14.9844 C2.90625,14.3073 2.77344,13.8073 2.50781,13.4844 C2.24219,13.1615 1.91667,13 1.53125,13 C1.14583,13 0.8125,13.1667 0.53125,13.5 C0.25,13.8333 0.109375,14.3177 0.109375,14.9531 M4.84375,17.5781 L4.84375,12.3906 L5.625,12.3906 L5.625,13.1719 C5.83333,12.8073 6.02083,12.5677 6.1875,12.4531 C6.35417,12.3385 6.54167,12.2812 6.75,12.2812 C7.05208,12.2812 7.35417,12.375 7.65625,12.5625 L7.35938,13.375 C7.14062,13.25 6.92188,13.1875 6.70312,13.1875 C6.51562,13.1875 6.34375,13.2448 6.1875,13.3594 C6.03125,13.474 5.92188,13.6354 5.85938,13.8438 C5.76562,14.1562 5.71875,14.4948 5.71875,14.8594 L5.71875,17.5781 L4.84375,17.5781 M11.5625,16.9375 C11.2396,17.2188 10.9271,17.4167 10.625,17.5312 C10.3229,17.6458 10,17.7031 9.65625,17.7031 C9.08333,17.7031 8.64323,17.5625 8.33594,17.2812 C8.02865,17 7.875,16.6406 7.875,16.2031 C7.875,15.9531 7.93229,15.724 8.04688,15.5156 C8.16146,15.3073 8.3125,15.138 8.5,15.0078 C8.6875,14.8776 8.90104,14.7812 9.14062,14.7188 C9.30729,14.6771 9.56771,14.6354 9.92188,14.5938 C10.6302,14.5104 11.151,14.4062 11.4844,14.2812 C11.4844,14.1667 11.4844,14.0938 11.4844,14.0625 C11.4844,13.6979 11.401,13.4427 11.2344,13.2969 C11.0156,13.099 10.6823,13 10.2344,13 C9.82812,13 9.52604,13.0729 9.32812,13.2188 C9.13021,13.3646 8.98438,13.6198 8.89062,13.9844 L8.03125,13.875 C8.10417,13.5 8.23177,13.2005 8.41406,12.9766 C8.59635,12.7526 8.85677,12.5807 9.19531,12.4609 C9.53385,12.3411 9.92708,12.2812 10.375,12.2812 C10.8125,12.2812 11.1693,12.3333 11.4453,12.4375 C11.7214,12.5417 11.9245,12.6719 12.0547,12.8281 C12.1849,12.9844 12.276,13.1823 12.3281,13.4219 C12.3594,13.5677 12.375,13.8385 12.375,14.2344 L12.375,15.4062 C12.375,16.2188 12.3932,16.7344 12.4297,16.9531 C12.4661,17.1719 12.5417,17.3802 12.6562,17.5781 L11.7344,17.5781 C11.6406,17.3906 11.5833,17.1771 11.5625,16.9375 M11.4844,14.9688 C11.1615,15.1042 10.6823,15.2188 10.0469,15.3125 C9.69271,15.3646 9.4401,15.4219 9.28906,15.4844 C9.13802,15.5469 9.02083,15.6406 8.9375,15.7656 C8.85417,15.8906 8.8125,16.0312 8.8125,16.1875 C8.8125,16.4167 8.90104,16.6094 9.07812,16.7656 C9.25521,16.9219 9.51562,17 9.85938,17 C10.2031,17 10.5052,16.9271 10.7656,16.7812 C11.026,16.6354 11.2188,16.4323 11.3438,16.1719 C11.4375,15.974 11.4844,15.6823 11.4844,15.2969 L11.4844,14.9688 M15.6406,16.7969 L15.7656,17.5625 C15.5156,17.6146 15.2969,17.6406 15.1094,17.6406 C14.7865,17.6406 14.5365,17.5911 14.3594,17.4922 C14.1823,17.3932 14.0599,17.2604 13.9922,17.0938 C13.9245,16.9271 13.8906,16.5833 13.8906,16.0625 L13.8906,13.0781 L13.2344,13.0781 L13.2344,12.3906 L13.8906,12.3906 L13.8906,11.1094 L14.75,10.5781 L14.75,12.3906 L15.6406,12.3906 L15.6406,13.0781 L14.75,13.0781 L14.75,16.1094 C14.75,16.3594 14.7656,16.5208 14.7969,16.5938 C14.8281,16.6667 14.8802,16.724 14.9531,16.7656 C15.026,16.8073 15.125,16.8281 15.25,16.8281 C15.3542,16.8281 15.4844,16.8177 15.6406,16.7969 M16.5,11.4375 L16.5,10.4219 L17.375,10.4219 L17.375,11.4375 L16.5,11.4375 M16.5,17.5781 L16.5,12.3906 L17.375,12.3906 L17.375,17.5781 L16.5,17.5781 M18.375,14.9844 C18.375,14.026 18.6458,13.3125 19.1875,12.8438 C19.625,12.4688 20.1667,12.2812 20.8125,12.2812 C21.5208,12.2812 22.1016,12.513 22.5547,12.9766 C23.0078,13.4401 23.2344,14.0833 23.2344,14.9062 C23.2344,15.5729 23.1354,16.099 22.9375,16.4844 C22.7396,16.8698 22.4479,17.1693 22.0625,17.3828 C21.6771,17.5964 21.2604,17.7031 20.8125,17.7031 C20.0833,17.7031 19.4948,17.4688 19.0469,17 C18.599,16.5312 18.375,15.8594 18.375,14.9844 M19.2812,14.9844 C19.2812,15.651 19.4271,16.1484 19.7188,16.4766 C20.0104,16.8047 20.375,16.9688 20.8125,16.9688 C21.25,16.9688 21.612,16.8021 21.8984,16.4688 C22.1849,16.1354 22.3281,15.6302 22.3281,14.9531 C22.3281,14.3177 22.1823,13.8333 21.8906,13.5 C21.599,13.1667 21.2396,13 20.8125,13 C20.375,13 20.0104,13.1641 19.7188,13.4922 C19.4271,13.8203 19.2812,14.3177 19.2812,14.9844 M24.25,17.5781 L24.25,12.3906 L25.0469,12.3906 L25.0469,13.125 C25.4219,12.5625 25.9688,12.2812 26.6875,12.2812 C27,12.2812 27.2891,12.3359 27.5547,12.4453 C27.8203,12.5547 28.0182,12.7005 28.1484,12.8828 C28.2786,13.0651 28.3698,13.2812 28.4219,13.5312 C28.4531,13.6979 28.4688,13.9844 28.4688,14.3906 L28.4688,17.5781 L27.5938,17.5781 L27.5938,14.4219 C27.5938,14.0677 27.5599,13.8021 27.4922,13.625 C27.4245,13.4479 27.3021,13.3047 27.125,13.1953 C26.9479,13.0859 26.7448,13.0312 26.5156,13.0312 C26.1406,13.0312 25.8151,13.151 25.5391,13.3906 C25.263,13.6302 25.125,14.0833 25.125,14.75 L25.125,17.5781 L24.25,17.5781 M28.9844,19.5625 L28.9844,18.9375 L34.8125,18.9375 L34.8125,19.5625 L28.9844,19.5625 M35.3438,17.5781 L35.3438,12.3906 L36.1406,12.3906 L36.1406,13.125 C36.2969,12.8646 36.5104,12.6589 36.7812,12.5078 C37.0521,12.3568 37.3594,12.2812 37.7031,12.2812 C38.0885,12.2812 38.4036,12.3594 38.6484,12.5156 C38.8932,12.6719 39.0677,12.8958 39.1719,13.1875 C39.5781,12.5833 40.1094,12.2812 40.7656,12.2812 C41.2865,12.2812 41.6849,12.4219 41.9609,12.7031 C42.237,12.9844 42.375,13.4219 42.375,14.0156 L42.375,17.5781 L41.5,17.5781 L41.5,14.3125 C41.5,13.9583 41.4714,13.7031 41.4141,13.5469 C41.3568,13.3906 41.2526,13.2656 41.1016,13.1719 C40.9505,13.0781 40.776,13.0312 40.5781,13.0312 C40.2135,13.0312 39.9115,13.1536 39.6719,13.3984 C39.4323,13.6432 39.3125,14.0312 39.3125,14.5625 L39.3125,17.5781 L38.4219,17.5781 L38.4219,14.2031 C38.4219,13.8177 38.3516,13.526 38.2109,13.3281 C38.0703,13.1302 37.8385,13.0312 37.5156,13.0312 C37.2656,13.0312 37.0365,13.0964 36.8281,13.2266 C36.6198,13.3568 36.4661,13.5469 36.3672,13.7969 C36.2682,14.0469 36.2188,14.4115 36.2188,14.8906 L36.2188,17.5781 L35.3438,17.5781 M47.0625,16.9375 C46.7396,17.2188 46.4271,17.4167 46.125,17.5312 C45.8229,17.6458 45.5,17.7031 45.1562,17.7031 C44.5833,17.7031 44.1432,17.5625 43.8359,17.2812 C43.5286,17 43.375,16.6406 43.375,16.2031 C43.375,15.9531 43.4323,15.724 43.5469,15.5156 C43.6615,15.3073 43.8125,15.138 44,15.0078 C44.1875,14.8776 44.401,14.7812 44.6406,14.7188 C44.8073,14.6771 45.0677,14.6354 45.4219,14.5938 C46.1302,14.5104 46.651,14.4062 46.9844,14.2812 C46.9844,14.1667 46.9844,14.0938 46.9844,14.0625 C46.9844,13.6979 46.901,13.4427 46.7344,13.2969 C46.5156,13.099 46.1823,13 45.7344,13 C45.3281,13 45.026,13.0729 44.8281,13.2188 C44.6302,13.3646 44.4844,13.6198 44.3906,13.9844 L43.5312,13.875 C43.6042,13.5 43.7318,13.2005 43.9141,12.9766 C44.0964,12.7526 44.3568,12.5807 44.6953,12.4609 C45.0339,12.3411 45.4271,12.2812 45.875,12.2812 C46.3125,12.2812 46.6693,12.3333 46.9453,12.4375 C47.2214,12.5417 47.4245,12.6719 47.5547,12.8281 C47.6849,12.9844 47.776,13.1823 47.8281,13.4219 C47.8594,13.5677 47.875,13.8385 47.875,14.2344 L47.875,15.4062 C47.875,16.2188 47.8932,16.7344 47.9297,16.9531 C47.9661,17.1719 48.0417,17.3802 48.1562,17.5781 L47.2344,17.5781 C47.1406,17.3906 47.0833,17.1771 47.0625,16.9375 M46.9844,14.9688 C46.6615,15.1042 46.1823,15.2188 45.5469,15.3125 C45.1927,15.3646 44.9401,15.4219 44.7891,15.4844 C44.638,15.5469 44.5208,15.6406 44.4375,15.7656 C44.3542,15.8906 44.3125,16.0312 44.3125,16.1875 C44.3125,16.4167 44.401,16.6094 44.5781,16.7656 C44.7552,16.9219 45.0156,17 45.3594,17 C45.7031,17 46.0052,16.9271 46.2656,16.7812 C46.526,16.6354 46.7188,16.4323 46.8438,16.1719 C46.9375,15.974 46.9844,15.6823 46.9844,15.2969 L46.9844,14.9688 M51.1406,16.7969 L51.2656,17.5625 C51.0156,17.6146 50.7969,17.6406 50.6094,17.6406 C50.2865,17.6406 50.0365,17.5911 49.8594,17.4922 C49.6823,17.3932 49.5599,17.2604 49.4922,17.0938 C49.4245,16.9271 49.3906,16.5833 49.3906,16.0625 L49.3906,13.0781 L48.7344,13.0781 L48.7344,12.3906 L49.3906,12.3906 L49.3906,11.1094 L50.25,10.5781 L50.25,12.3906 L51.1406,12.3906 L51.1406,13.0781 L50.25,13.0781 L50.25,16.1094 C50.25,16.3594 50.2656,16.5208 50.2969,16.5938 C50.3281,16.6667 50.3802,16.724 50.4531,16.7656 C50.526,16.8073 50.625,16.8281 50.75,16.8281 C50.8542,16.8281 50.9844,16.8177 51.1406,16.7969 M51.9844,17.5781 L51.9844,12.3906 L52.7656,12.3906 L52.7656,13.1719 C52.974,12.8073 53.1615,12.5677 53.3281,12.4531 C53.4948,12.3385 53.6823,12.2812 53.8906,12.2812 C54.1927,12.2812 54.4948,12.375 54.7969,12.5625 L54.5,13.375 C54.2812,13.25 54.0625,13.1875 53.8438,13.1875 C53.6562,13.1875 53.4844,13.2448 53.3281,13.3594 C53.1719,13.474 53.0625,13.6354 53,13.8438 C52.9062,14.1562 52.8594,14.4948 52.8594,14.8594 L52.8594,17.5781 L51.9844,17.5781 M55.3281,11.4375 L55.3281,10.4219 L56.2031,10.4219 L56.2031,11.4375 L55.3281,11.4375 M55.3281,17.5781 L55.3281,12.3906 L56.2031,12.3906 L56.2031,17.5781 L55.3281,17.5781 M56.9531,17.5781 L58.8438,14.875 L57.0938,12.3906 L58.1875,12.3906 L58.9844,13.6094 C59.1302,13.8385 59.25,14.0312 59.3438,14.1875 C59.4896,13.9688 59.6198,13.7812 59.7344,13.625 L60.6094,12.3906 L61.6719,12.3906 L59.875,14.8281 L61.7969,17.5781 L60.7188,17.5781 L59.6562,15.9688 L59.375,15.5312 L58.0156,17.5781 L56.9531,17.5781 M64.2188,19.6875 C63.7292,19.0729 63.3177,18.3542 62.9844,17.5312 C62.651,16.7083 62.4844,15.8594 62.4844,14.9844 C62.4844,14.2135 62.6094,13.474 62.8594,12.7656 C63.151,11.9323 63.6042,11.1094 64.2188,10.2969 L64.8438,10.2969 C64.4479,10.974 64.1875,11.4583 64.0625,11.75 C63.8646,12.1979 63.7083,12.6667 63.5938,13.1562 C63.4583,13.7604 63.3906,14.3698 63.3906,14.9844 C63.3906,16.5573 63.875,18.125 64.8438,19.6875 L64.2188,19.6875 M66.1094,13.3906 L66.1094,12.3906 L67.1094,12.3906 L67.1094,13.3906 L66.1094,13.3906 M66.1094,17.5781 L66.1094,16.5781 L67.1094,16.5781 L67.1094,17.5781 L66.1094,17.5781 M68.8594,17.5781 L68.8594,16.5781 L69.8594,16.5781 L69.8594,17.5781 C69.8594,17.9427 69.7943,18.2396 69.6641,18.4688 C69.5339,18.6979 69.3281,18.875 69.0469,19 L68.7969,18.625 C68.9844,18.5417 69.1224,18.4193 69.2109,18.2578 C69.2995,18.0964 69.349,17.8698 69.3594,17.5781 L68.8594,17.5781 M71.6406,13.3906 L71.6406,12.3906 L72.6406,12.3906 L72.6406,13.3906 L71.6406,13.3906 M71.6406,17.5781 L71.6406,16.5781 L72.6406,16.5781 L72.6406,17.5781 L71.6406,17.5781 M74.3906,17.5781 L74.3906,16.5781 L75.3906,16.5781 L75.3906,17.5781 C75.3906,17.9427 75.3255,18.2396 75.1953,18.4688 C75.0651,18.6979 74.8594,18.875 74.5781,19 L74.3281,18.625 C74.5156,18.5417 74.6536,18.4193 74.7422,18.2578 C74.8307,18.0964 74.8802,17.8698 74.8906,17.5781 L74.3906,17.5781 M81.2969,16.7344 L81.2969,17.5781 L76.5625,17.5781 C76.5625,17.3698 76.599,17.1667 76.6719,16.9688 C76.7969,16.6458 76.9896,16.3281 77.25,16.0156 C77.5104,15.7031 77.8958,15.3438 78.4062,14.9375 C79.1771,14.2917 79.7005,13.7839 79.9766,13.4141 C80.2526,13.0443 80.3906,12.6927 80.3906,12.3594 C80.3906,12.0052 80.2656,11.7109 80.0156,11.4766 C79.7656,11.2422 79.4427,11.125 79.0469,11.125 C78.6198,11.125 78.2786,11.25 78.0234,11.5 C77.7682,11.75 77.6406,12.099 77.6406,12.5469 L76.7344,12.4531 C76.7969,11.7865 77.0286,11.276 77.4297,10.9219 C77.8307,10.5677 78.375,10.3906 79.0625,10.3906 C79.75,10.3906 80.2943,10.5807 80.6953,10.9609 C81.0964,11.3411 81.2969,11.8125 81.2969,12.375 C81.2969,12.6667 81.237,12.9505 81.1172,13.2266 C80.9974,13.5026 80.8021,13.7943 80.5312,14.1016 C80.2604,14.4089 79.8073,14.8281 79.1719,15.3594 C78.651,15.7969 78.3151,16.0964 78.1641,16.2578 C78.013,16.4193 77.8906,16.5781 77.7969,16.7344 L81.2969,16.7344 M83.0469,19.6875 L82.4219,19.6875 C83.3906,18.125 83.875,16.5573 83.875,14.9844 C83.875,14.3802 83.8073,13.776 83.6719,13.1719 C83.5573,12.6823 83.401,12.2135 83.2031,11.7656 C83.0781,11.474 82.8177,10.9844 82.4219,10.2969 L83.0469,10.2969 C83.6615,11.1094 84.1146,11.9323 84.4062,12.7656 C84.6562,13.474 84.7812,14.2135 84.7812,14.9844 C84.7812,15.8594 84.612,16.7083 84.2734,17.5312 C83.9349,18.3542 83.526,19.0729 83.0469,19.6875" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-275,116)">
+              <path d="M0,0 L165,0 L165,28 L0,28 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:545">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-276,240)">
+            <image height="39" preserveAspectRatio="none" width="176" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAAAnCAYAAACv1MKlAAAACXBIWXMAABJ0AAASdAHeZh94AAABfUlEQVR4nO3cvW7CQBBF4UNEUuACiqShSZX3f6Y0NKEwBRRQJMXuCmNMEsTPZpTzSSNbFkJbXI0GJM8IeOzVU+deqmGXa9u5L3VgTArqBGh618mdDiv1bXKte9eTAW6AKTDLVe6lGlpgla9tfnYUXjjswDPgJddzvko1fABL9mPsjtSFj4xJM2/DPsDzTkk1NKRcQgrvhtSRj3Q78JTUeefAay6phtJ5t6TO23LiT4WhEaIE+O3mx5ROK2PDijRSDAb44Z4nkq7NACs0A6zQDLBCM8AKzQArNAOs0AywQhuf+fnRTU6h/+rz0i+wAys0A6zQDLBCM8AK7dwfcRcP3dI12YEVmgFWaAZYoRlghWaAFZoBVmgGWKGN2b9335Le/mxwL5rqegcWpDy2nFgrBYcBXpG2oXQXSkg1LHItSbn8NsBDyyPKM6mGslqqdOA1KZNH+iMEHC6UkGroL/f7cYQo3bY/D0s1DK1XHQzwCBdc6+/59YJrSZIkSVIgXyuMYUSe3PweAAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-275,241)">
+            <path d="M0,0 L165,0 L165,28 L0,28 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk*">
+            <defs>
+              <clipPath id="clip117">
+                <path d="M0,0 L166,0 L166,29 L0,29 L0,0 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip117)" fill="none" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-275,241)">
+              <path d="M0,0 L166,0 L166,29 L0,29 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <defs>
+              <clipPath id="clip122">
+                <path d="M-57,1 L87,1 L87,29 L-57,29 L-57,1 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip122)" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-207.5,240)">
+              <path d="M-54.4844,17.5781 L-54.4844,12.3906 L-53.7031,12.3906 L-53.7031,13.1719 C-53.4948,12.8073 -53.3073,12.5677 -53.1406,12.4531 C-52.974,12.3385 -52.7865,12.2812 -52.5781,12.2812 C-52.276,12.2812 -51.974,12.375 -51.6719,12.5625 L-51.9688,13.375 C-52.1875,13.25 -52.4062,13.1875 -52.625,13.1875 C-52.8125,13.1875 -52.9844,13.2448 -53.1406,13.3594 C-53.2969,13.474 -53.4062,13.6354 -53.4688,13.8438 C-53.5625,14.1562 -53.6094,14.4948 -53.6094,14.8594 L-53.6094,17.5781 L-54.4844,17.5781 M-51.4844,14.9844 C-51.4844,14.026 -51.2135,13.3125 -50.6719,12.8438 C-50.2344,12.4688 -49.6927,12.2812 -49.0469,12.2812 C-48.3385,12.2812 -47.7578,12.513 -47.3047,12.9766 C-46.8516,13.4401 -46.625,14.0833 -46.625,14.9062 C-46.625,15.5729 -46.724,16.099 -46.9219,16.4844 C-47.1198,16.8698 -47.4115,17.1693 -47.7969,17.3828 C-48.1823,17.5964 -48.599,17.7031 -49.0469,17.7031 C-49.776,17.7031 -50.3646,17.4688 -50.8125,17 C-51.2604,16.5312 -51.4844,15.8594 -51.4844,14.9844 M-50.5781,14.9844 C-50.5781,15.651 -50.4323,16.1484 -50.1406,16.4766 C-49.849,16.8047 -49.4844,16.9688 -49.0469,16.9688 C-48.6094,16.9688 -48.2474,16.8021 -47.9609,16.4688 C-47.6745,16.1354 -47.5312,15.6302 -47.5312,14.9531 C-47.5312,14.3177 -47.6771,13.8333 -47.9688,13.5 C-48.2604,13.1667 -48.6198,13 -49.0469,13 C-49.4844,13 -49.849,13.1641 -50.1406,13.4922 C-50.4323,13.8203 -50.5781,14.3177 -50.5781,14.9844 M-43.6875,16.7969 L-43.5625,17.5625 C-43.8125,17.6146 -44.0312,17.6406 -44.2188,17.6406 C-44.5417,17.6406 -44.7917,17.5911 -44.9688,17.4922 C-45.1458,17.3932 -45.2682,17.2604 -45.3359,17.0938 C-45.4036,16.9271 -45.4375,16.5833 -45.4375,16.0625 L-45.4375,13.0781 L-46.0938,13.0781 L-46.0938,12.3906 L-45.4375,12.3906 L-45.4375,11.1094 L-44.5781,10.5781 L-44.5781,12.3906 L-43.6875,12.3906 L-43.6875,13.0781 L-44.5781,13.0781 L-44.5781,16.1094 C-44.5781,16.3594 -44.5625,16.5208 -44.5312,16.5938 C-44.5,16.6667 -44.4479,16.724 -44.375,16.7656 C-44.3021,16.8073 -44.2031,16.8281 -44.0781,16.8281 C-43.974,16.8281 -43.8438,16.8177 -43.6875,16.7969 M-39.4531,16.9375 C-39.776,17.2188 -40.0885,17.4167 -40.3906,17.5312 C-40.6927,17.6458 -41.0156,17.7031 -41.3594,17.7031 C-41.9323,17.7031 -42.3724,17.5625 -42.6797,17.2812 C-42.987,17 -43.1406,16.6406 -43.1406,16.2031 C-43.1406,15.9531 -43.0833,15.724 -42.9688,15.5156 C-42.8542,15.3073 -42.7031,15.138 -42.5156,15.0078 C-42.3281,14.8776 -42.1146,14.7812 -41.875,14.7188 C-41.7083,14.6771 -41.4479,14.6354 -41.0938,14.5938 C-40.3854,14.5104 -39.8646,14.4062 -39.5312,14.2812 C-39.5312,14.1667 -39.5312,14.0938 -39.5312,14.0625 C-39.5312,13.6979 -39.6146,13.4427 -39.7812,13.2969 C-40,13.099 -40.3333,13 -40.7812,13 C-41.1875,13 -41.4896,13.0729 -41.6875,13.2188 C-41.8854,13.3646 -42.0312,13.6198 -42.125,13.9844 L-42.9844,13.875 C-42.9115,13.5 -42.7839,13.2005 -42.6016,12.9766 C-42.4193,12.7526 -42.1589,12.5807 -41.8203,12.4609 C-41.4818,12.3411 -41.0885,12.2812 -40.6406,12.2812 C-40.2031,12.2812 -39.8464,12.3333 -39.5703,12.4375 C-39.2943,12.5417 -39.0911,12.6719 -38.9609,12.8281 C-38.8307,12.9844 -38.7396,13.1823 -38.6875,13.4219 C-38.6562,13.5677 -38.6406,13.8385 -38.6406,14.2344 L-38.6406,15.4062 C-38.6406,16.2188 -38.6224,16.7344 -38.5859,16.9531 C-38.5495,17.1719 -38.474,17.3802 -38.3594,17.5781 L-39.2812,17.5781 C-39.375,17.3906 -39.4323,17.1771 -39.4531,16.9375 M-39.5312,14.9688 C-39.8542,15.1042 -40.3333,15.2188 -40.9688,15.3125 C-41.3229,15.3646 -41.5755,15.4219 -41.7266,15.4844 C-41.8776,15.5469 -41.9948,15.6406 -42.0781,15.7656 C-42.1615,15.8906 -42.2031,16.0312 -42.2031,16.1875 C-42.2031,16.4167 -42.1146,16.6094 -41.9375,16.7656 C-41.7604,16.9219 -41.5,17 -41.1562,17 C-40.8125,17 -40.5104,16.9271 -40.25,16.7812 C-39.9896,16.6354 -39.7969,16.4323 -39.6719,16.1719 C-39.5781,15.974 -39.5312,15.6823 -39.5312,15.2969 L-39.5312,14.9688 M-35.375,16.7969 L-35.25,17.5625 C-35.5,17.6146 -35.7188,17.6406 -35.9062,17.6406 C-36.2292,17.6406 -36.4792,17.5911 -36.6562,17.4922 C-36.8333,17.3932 -36.9557,17.2604 -37.0234,17.0938 C-37.0911,16.9271 -37.125,16.5833 -37.125,16.0625 L-37.125,13.0781 L-37.7812,13.0781 L-37.7812,12.3906 L-37.125,12.3906 L-37.125,11.1094 L-36.2656,10.5781 L-36.2656,12.3906 L-35.375,12.3906 L-35.375,13.0781 L-36.2656,13.0781 L-36.2656,16.1094 C-36.2656,16.3594 -36.25,16.5208 -36.2188,16.5938 C-36.1875,16.6667 -36.1354,16.724 -36.0625,16.7656 C-35.9896,16.8073 -35.8906,16.8281 -35.7656,16.8281 C-35.6615,16.8281 -35.5312,16.8177 -35.375,16.7969 M-34.5156,11.4375 L-34.5156,10.4219 L-33.6406,10.4219 L-33.6406,11.4375 L-34.5156,11.4375 M-34.5156,17.5781 L-34.5156,12.3906 L-33.6406,12.3906 L-33.6406,17.5781 L-34.5156,17.5781 M-32.6406,14.9844 C-32.6406,14.026 -32.3698,13.3125 -31.8281,12.8438 C-31.3906,12.4688 -30.849,12.2812 -30.2031,12.2812 C-29.4948,12.2812 -28.9141,12.513 -28.4609,12.9766 C-28.0078,13.4401 -27.7812,14.0833 -27.7812,14.9062 C-27.7812,15.5729 -27.8802,16.099 -28.0781,16.4844 C-28.276,16.8698 -28.5677,17.1693 -28.9531,17.3828 C-29.3385,17.5964 -29.7552,17.7031 -30.2031,17.7031 C-30.9323,17.7031 -31.5208,17.4688 -31.9688,17 C-32.4167,16.5312 -32.6406,15.8594 -32.6406,14.9844 M-31.7344,14.9844 C-31.7344,15.651 -31.5885,16.1484 -31.2969,16.4766 C-31.0052,16.8047 -30.6406,16.9688 -30.2031,16.9688 C-29.7656,16.9688 -29.4036,16.8021 -29.1172,16.4688 C-28.8307,16.1354 -28.6875,15.6302 -28.6875,14.9531 C-28.6875,14.3177 -28.8333,13.8333 -29.125,13.5 C-29.4167,13.1667 -29.776,13 -30.2031,13 C-30.6406,13 -31.0052,13.1641 -31.2969,13.4922 C-31.5885,13.8203 -31.7344,14.3177 -31.7344,14.9844 M-26.7656,17.5781 L-26.7656,12.3906 L-25.9688,12.3906 L-25.9688,13.125 C-25.5938,12.5625 -25.0469,12.2812 -24.3281,12.2812 C-24.0156,12.2812 -23.7266,12.3359 -23.4609,12.4453 C-23.1953,12.5547 -22.9974,12.7005 -22.8672,12.8828 C-22.737,13.0651 -22.6458,13.2812 -22.5938,13.5312 C-22.5625,13.6979 -22.5469,13.9844 -22.5469,14.3906 L-22.5469,17.5781 L-23.4219,17.5781 L-23.4219,14.4219 C-23.4219,14.0677 -23.4557,13.8021 -23.5234,13.625 C-23.5911,13.4479 -23.7135,13.3047 -23.8906,13.1953 C-24.0677,13.0859 -24.2708,13.0312 -24.5,13.0312 C-24.875,13.0312 -25.2005,13.151 -25.4766,13.3906 C-25.7526,13.6302 -25.8906,14.0833 -25.8906,14.75 L-25.8906,17.5781 L-26.7656,17.5781 M-22.0312,19.5625 L-22.0312,18.9375 L-16.2031,18.9375 L-16.2031,19.5625 L-22.0312,19.5625 M-12.2812,15.6719 L-11.4219,15.7969 C-11.5156,16.3906 -11.7578,16.8568 -12.1484,17.1953 C-12.5391,17.5339 -13.0156,17.7031 -13.5781,17.7031 C-14.2865,17.7031 -14.8568,17.4688 -15.2891,17 C-15.7214,16.5312 -15.9375,15.8646 -15.9375,15 C-15.9375,14.4479 -15.8438,13.9609 -15.6562,13.5391 C-15.4688,13.1172 -15.1875,12.8021 -14.8125,12.5938 C-14.4375,12.3854 -14.026,12.2812 -13.5781,12.2812 C-13.0156,12.2812 -12.5547,12.4219 -12.1953,12.7031 C-11.8359,12.9844 -11.6042,13.3906 -11.5,13.9219 L-12.3594,14.0469 C-12.4427,13.7031 -12.5859,13.4427 -12.7891,13.2656 C-12.9922,13.0885 -13.2448,13 -13.5469,13 C-13.9844,13 -14.3411,13.1589 -14.6172,13.4766 C-14.8932,13.7943 -15.0312,14.2969 -15.0312,14.9844 C-15.0312,15.6823 -14.8984,16.1875 -14.6328,16.5 C-14.3672,16.8125 -14.0208,16.9688 -13.5938,16.9688 C-13.25,16.9688 -12.9609,16.8646 -12.7266,16.6562 C-12.4922,16.4479 -12.3438,16.1198 -12.2812,15.6719 M-7.28125,16.9375 C-7.60417,17.2188 -7.91667,17.4167 -8.21875,17.5312 C-8.52083,17.6458 -8.84375,17.7031 -9.1875,17.7031 C-9.76042,17.7031 -10.2005,17.5625 -10.5078,17.2812 C-10.8151,17 -10.9688,16.6406 -10.9688,16.2031 C-10.9688,15.9531 -10.9115,15.724 -10.7969,15.5156 C-10.6823,15.3073 -10.5312,15.138 -10.3438,15.0078 C-10.1562,14.8776 -9.94271,14.7812 -9.70312,14.7188 C-9.53646,14.6771 -9.27604,14.6354 -8.92188,14.5938 C-8.21354,14.5104 -7.69271,14.4062 -7.35938,14.2812 C-7.35938,14.1667 -7.35938,14.0938 -7.35938,14.0625 C-7.35938,13.6979 -7.44271,13.4427 -7.60938,13.2969 C-7.82812,13.099 -8.16146,13 -8.60938,13 C-9.01562,13 -9.31771,13.0729 -9.51562,13.2188 C-9.71354,13.3646 -9.85938,13.6198 -9.95312,13.9844 L-10.8125,13.875 C-10.7396,13.5 -10.612,13.2005 -10.4297,12.9766 C-10.2474,12.7526 -9.98698,12.5807 -9.64844,12.4609 C-9.3099,12.3411 -8.91667,12.2812 -8.46875,12.2812 C-8.03125,12.2812 -7.67448,12.3333 -7.39844,12.4375 C-7.1224,12.5417 -6.91927,12.6719 -6.78906,12.8281 C-6.65885,12.9844 -6.56771,13.1823 -6.51562,13.4219 C-6.48438,13.5677 -6.46875,13.8385 -6.46875,14.2344 L-6.46875,15.4062 C-6.46875,16.2188 -6.45052,16.7344 -6.41406,16.9531 C-6.3776,17.1719 -6.30208,17.3802 -6.1875,17.5781 L-7.10938,17.5781 C-7.20312,17.3906 -7.26042,17.1771 -7.28125,16.9375 M-7.35938,14.9688 C-7.68229,15.1042 -8.16146,15.2188 -8.79688,15.3125 C-9.15104,15.3646 -9.40365,15.4219 -9.55469,15.4844 C-9.70573,15.5469 -9.82292,15.6406 -9.90625,15.7656 C-9.98958,15.8906 -10.0312,16.0312 -10.0312,16.1875 C-10.0312,16.4167 -9.94271,16.6094 -9.76562,16.7656 C-9.58854,16.9219 -9.32812,17 -8.98438,17 C-8.64062,17 -8.33854,16.9271 -8.07812,16.7812 C-7.81771,16.6354 -7.625,16.4323 -7.5,16.1719 C-7.40625,15.974 -7.35938,15.6823 -7.35938,15.2969 L-7.35938,14.9688 M-5.14062,17.5781 L-5.14062,10.4219 L-4.26562,10.4219 L-4.26562,17.5781 L-5.14062,17.5781 M-2.89062,11.4375 L-2.89062,10.4219 L-2.01562,10.4219 L-2.01562,11.4375 L-2.89062,11.4375 M-2.89062,17.5781 L-2.89062,12.3906 L-2.01562,12.3906 L-2.01562,17.5781 L-2.89062,17.5781 M0.125,17.5781 L-0.6875,17.5781 L-0.6875,10.4219 L0.1875,10.4219 L0.1875,12.9688 C0.5625,12.5104 1.03646,12.2812 1.60938,12.2812 C1.93229,12.2812 2.23438,12.3438 2.51562,12.4688 C2.79688,12.5938 3.03125,12.7734 3.21875,13.0078 C3.40625,13.2422 3.55208,13.5234 3.65625,13.8516 C3.76042,14.1797 3.8125,14.5312 3.8125,14.9062 C3.8125,15.7917 3.59115,16.4792 3.14844,16.9688 C2.70573,17.4583 2.17708,17.7031 1.5625,17.7031 C0.958333,17.7031 0.479167,17.4427 0.125,16.9219 L0.125,17.5781 M0.109375,14.9531 C0.109375,15.5677 0.197917,16.0156 0.375,16.2969 C0.645833,16.7448 1.02083,16.9688 1.5,16.9688 C1.875,16.9688 2.20312,16.8021 2.48438,16.4688 C2.76562,16.1354 2.90625,15.6406 2.90625,14.9844 C2.90625,14.3073 2.77344,13.8073 2.50781,13.4844 C2.24219,13.1615 1.91667,13 1.53125,13 C1.14583,13 0.8125,13.1667 0.53125,13.5 C0.25,13.8333 0.109375,14.3177 0.109375,14.9531 M4.84375,17.5781 L4.84375,12.3906 L5.625,12.3906 L5.625,13.1719 C5.83333,12.8073 6.02083,12.5677 6.1875,12.4531 C6.35417,12.3385 6.54167,12.2812 6.75,12.2812 C7.05208,12.2812 7.35417,12.375 7.65625,12.5625 L7.35938,13.375 C7.14062,13.25 6.92188,13.1875 6.70312,13.1875 C6.51562,13.1875 6.34375,13.2448 6.1875,13.3594 C6.03125,13.474 5.92188,13.6354 5.85938,13.8438 C5.76562,14.1562 5.71875,14.4948 5.71875,14.8594 L5.71875,17.5781 L4.84375,17.5781 M11.5625,16.9375 C11.2396,17.2188 10.9271,17.4167 10.625,17.5312 C10.3229,17.6458 10,17.7031 9.65625,17.7031 C9.08333,17.7031 8.64323,17.5625 8.33594,17.2812 C8.02865,17 7.875,16.6406 7.875,16.2031 C7.875,15.9531 7.93229,15.724 8.04688,15.5156 C8.16146,15.3073 8.3125,15.138 8.5,15.0078 C8.6875,14.8776 8.90104,14.7812 9.14062,14.7188 C9.30729,14.6771 9.56771,14.6354 9.92188,14.5938 C10.6302,14.5104 11.151,14.4062 11.4844,14.2812 C11.4844,14.1667 11.4844,14.0938 11.4844,14.0625 C11.4844,13.6979 11.401,13.4427 11.2344,13.2969 C11.0156,13.099 10.6823,13 10.2344,13 C9.82812,13 9.52604,13.0729 9.32812,13.2188 C9.13021,13.3646 8.98438,13.6198 8.89062,13.9844 L8.03125,13.875 C8.10417,13.5 8.23177,13.2005 8.41406,12.9766 C8.59635,12.7526 8.85677,12.5807 9.19531,12.4609 C9.53385,12.3411 9.92708,12.2812 10.375,12.2812 C10.8125,12.2812 11.1693,12.3333 11.4453,12.4375 C11.7214,12.5417 11.9245,12.6719 12.0547,12.8281 C12.1849,12.9844 12.276,13.1823 12.3281,13.4219 C12.3594,13.5677 12.375,13.8385 12.375,14.2344 L12.375,15.4062 C12.375,16.2188 12.3932,16.7344 12.4297,16.9531 C12.4661,17.1719 12.5417,17.3802 12.6562,17.5781 L11.7344,17.5781 C11.6406,17.3906 11.5833,17.1771 11.5625,16.9375 M11.4844,14.9688 C11.1615,15.1042 10.6823,15.2188 10.0469,15.3125 C9.69271,15.3646 9.4401,15.4219 9.28906,15.4844 C9.13802,15.5469 9.02083,15.6406 8.9375,15.7656 C8.85417,15.8906 8.8125,16.0312 8.8125,16.1875 C8.8125,16.4167 8.90104,16.6094 9.07812,16.7656 C9.25521,16.9219 9.51562,17 9.85938,17 C10.2031,17 10.5052,16.9271 10.7656,16.7812 C11.026,16.6354 11.2188,16.4323 11.3438,16.1719 C11.4375,15.974 11.4844,15.6823 11.4844,15.2969 L11.4844,14.9688 M15.6406,16.7969 L15.7656,17.5625 C15.5156,17.6146 15.2969,17.6406 15.1094,17.6406 C14.7865,17.6406 14.5365,17.5911 14.3594,17.4922 C14.1823,17.3932 14.0599,17.2604 13.9922,17.0938 C13.9245,16.9271 13.8906,16.5833 13.8906,16.0625 L13.8906,13.0781 L13.2344,13.0781 L13.2344,12.3906 L13.8906,12.3906 L13.8906,11.1094 L14.75,10.5781 L14.75,12.3906 L15.6406,12.3906 L15.6406,13.0781 L14.75,13.0781 L14.75,16.1094 C14.75,16.3594 14.7656,16.5208 14.7969,16.5938 C14.8281,16.6667 14.8802,16.724 14.9531,16.7656 C15.026,16.8073 15.125,16.8281 15.25,16.8281 C15.3542,16.8281 15.4844,16.8177 15.6406,16.7969 M16.5,11.4375 L16.5,10.4219 L17.375,10.4219 L17.375,11.4375 L16.5,11.4375 M16.5,17.5781 L16.5,12.3906 L17.375,12.3906 L17.375,17.5781 L16.5,17.5781 M18.375,14.9844 C18.375,14.026 18.6458,13.3125 19.1875,12.8438 C19.625,12.4688 20.1667,12.2812 20.8125,12.2812 C21.5208,12.2812 22.1016,12.513 22.5547,12.9766 C23.0078,13.4401 23.2344,14.0833 23.2344,14.9062 C23.2344,15.5729 23.1354,16.099 22.9375,16.4844 C22.7396,16.8698 22.4479,17.1693 22.0625,17.3828 C21.6771,17.5964 21.2604,17.7031 20.8125,17.7031 C20.0833,17.7031 19.4948,17.4688 19.0469,17 C18.599,16.5312 18.375,15.8594 18.375,14.9844 M19.2812,14.9844 C19.2812,15.651 19.4271,16.1484 19.7188,16.4766 C20.0104,16.8047 20.375,16.9688 20.8125,16.9688 C21.25,16.9688 21.612,16.8021 21.8984,16.4688 C22.1849,16.1354 22.3281,15.6302 22.3281,14.9531 C22.3281,14.3177 22.1823,13.8333 21.8906,13.5 C21.599,13.1667 21.2396,13 20.8125,13 C20.375,13 20.0104,13.1641 19.7188,13.4922 C19.4271,13.8203 19.2812,14.3177 19.2812,14.9844 M24.25,17.5781 L24.25,12.3906 L25.0469,12.3906 L25.0469,13.125 C25.4219,12.5625 25.9688,12.2812 26.6875,12.2812 C27,12.2812 27.2891,12.3359 27.5547,12.4453 C27.8203,12.5547 28.0182,12.7005 28.1484,12.8828 C28.2786,13.0651 28.3698,13.2812 28.4219,13.5312 C28.4531,13.6979 28.4688,13.9844 28.4688,14.3906 L28.4688,17.5781 L27.5938,17.5781 L27.5938,14.4219 C27.5938,14.0677 27.5599,13.8021 27.4922,13.625 C27.4245,13.4479 27.3021,13.3047 27.125,13.1953 C26.9479,13.0859 26.7448,13.0312 26.5156,13.0312 C26.1406,13.0312 25.8151,13.151 25.5391,13.3906 C25.263,13.6302 25.125,14.0833 25.125,14.75 L25.125,17.5781 L24.25,17.5781 M28.9844,19.5625 L28.9844,18.9375 L34.8125,18.9375 L34.8125,19.5625 L28.9844,19.5625 M35.3438,17.5781 L35.3438,12.3906 L36.1406,12.3906 L36.1406,13.125 C36.2969,12.8646 36.5104,12.6589 36.7812,12.5078 C37.0521,12.3568 37.3594,12.2812 37.7031,12.2812 C38.0885,12.2812 38.4036,12.3594 38.6484,12.5156 C38.8932,12.6719 39.0677,12.8958 39.1719,13.1875 C39.5781,12.5833 40.1094,12.2812 40.7656,12.2812 C41.2865,12.2812 41.6849,12.4219 41.9609,12.7031 C42.237,12.9844 42.375,13.4219 42.375,14.0156 L42.375,17.5781 L41.5,17.5781 L41.5,14.3125 C41.5,13.9583 41.4714,13.7031 41.4141,13.5469 C41.3568,13.3906 41.2526,13.2656 41.1016,13.1719 C40.9505,13.0781 40.776,13.0312 40.5781,13.0312 C40.2135,13.0312 39.9115,13.1536 39.6719,13.3984 C39.4323,13.6432 39.3125,14.0312 39.3125,14.5625 L39.3125,17.5781 L38.4219,17.5781 L38.4219,14.2031 C38.4219,13.8177 38.3516,13.526 38.2109,13.3281 C38.0703,13.1302 37.8385,13.0312 37.5156,13.0312 C37.2656,13.0312 37.0365,13.0964 36.8281,13.2266 C36.6198,13.3568 36.4661,13.5469 36.3672,13.7969 C36.2682,14.0469 36.2188,14.4115 36.2188,14.8906 L36.2188,17.5781 L35.3438,17.5781 M47.0625,16.9375 C46.7396,17.2188 46.4271,17.4167 46.125,17.5312 C45.8229,17.6458 45.5,17.7031 45.1562,17.7031 C44.5833,17.7031 44.1432,17.5625 43.8359,17.2812 C43.5286,17 43.375,16.6406 43.375,16.2031 C43.375,15.9531 43.4323,15.724 43.5469,15.5156 C43.6615,15.3073 43.8125,15.138 44,15.0078 C44.1875,14.8776 44.401,14.7812 44.6406,14.7188 C44.8073,14.6771 45.0677,14.6354 45.4219,14.5938 C46.1302,14.5104 46.651,14.4062 46.9844,14.2812 C46.9844,14.1667 46.9844,14.0938 46.9844,14.0625 C46.9844,13.6979 46.901,13.4427 46.7344,13.2969 C46.5156,13.099 46.1823,13 45.7344,13 C45.3281,13 45.026,13.0729 44.8281,13.2188 C44.6302,13.3646 44.4844,13.6198 44.3906,13.9844 L43.5312,13.875 C43.6042,13.5 43.7318,13.2005 43.9141,12.9766 C44.0964,12.7526 44.3568,12.5807 44.6953,12.4609 C45.0339,12.3411 45.4271,12.2812 45.875,12.2812 C46.3125,12.2812 46.6693,12.3333 46.9453,12.4375 C47.2214,12.5417 47.4245,12.6719 47.5547,12.8281 C47.6849,12.9844 47.776,13.1823 47.8281,13.4219 C47.8594,13.5677 47.875,13.8385 47.875,14.2344 L47.875,15.4062 C47.875,16.2188 47.8932,16.7344 47.9297,16.9531 C47.9661,17.1719 48.0417,17.3802 48.1562,17.5781 L47.2344,17.5781 C47.1406,17.3906 47.0833,17.1771 47.0625,16.9375 M46.9844,14.9688 C46.6615,15.1042 46.1823,15.2188 45.5469,15.3125 C45.1927,15.3646 44.9401,15.4219 44.7891,15.4844 C44.638,15.5469 44.5208,15.6406 44.4375,15.7656 C44.3542,15.8906 44.3125,16.0312 44.3125,16.1875 C44.3125,16.4167 44.401,16.6094 44.5781,16.7656 C44.7552,16.9219 45.0156,17 45.3594,17 C45.7031,17 46.0052,16.9271 46.2656,16.7812 C46.526,16.6354 46.7188,16.4323 46.8438,16.1719 C46.9375,15.974 46.9844,15.6823 46.9844,15.2969 L46.9844,14.9688 M51.1406,16.7969 L51.2656,17.5625 C51.0156,17.6146 50.7969,17.6406 50.6094,17.6406 C50.2865,17.6406 50.0365,17.5911 49.8594,17.4922 C49.6823,17.3932 49.5599,17.2604 49.4922,17.0938 C49.4245,16.9271 49.3906,16.5833 49.3906,16.0625 L49.3906,13.0781 L48.7344,13.0781 L48.7344,12.3906 L49.3906,12.3906 L49.3906,11.1094 L50.25,10.5781 L50.25,12.3906 L51.1406,12.3906 L51.1406,13.0781 L50.25,13.0781 L50.25,16.1094 C50.25,16.3594 50.2656,16.5208 50.2969,16.5938 C50.3281,16.6667 50.3802,16.724 50.4531,16.7656 C50.526,16.8073 50.625,16.8281 50.75,16.8281 C50.8542,16.8281 50.9844,16.8177 51.1406,16.7969 M51.9844,17.5781 L51.9844,12.3906 L52.7656,12.3906 L52.7656,13.1719 C52.974,12.8073 53.1615,12.5677 53.3281,12.4531 C53.4948,12.3385 53.6823,12.2812 53.8906,12.2812 C54.1927,12.2812 54.4948,12.375 54.7969,12.5625 L54.5,13.375 C54.2812,13.25 54.0625,13.1875 53.8438,13.1875 C53.6562,13.1875 53.4844,13.2448 53.3281,13.3594 C53.1719,13.474 53.0625,13.6354 53,13.8438 C52.9062,14.1562 52.8594,14.4948 52.8594,14.8594 L52.8594,17.5781 L51.9844,17.5781 M55.3281,11.4375 L55.3281,10.4219 L56.2031,10.4219 L56.2031,11.4375 L55.3281,11.4375 M55.3281,17.5781 L55.3281,12.3906 L56.2031,12.3906 L56.2031,17.5781 L55.3281,17.5781 M56.9531,17.5781 L58.8438,14.875 L57.0938,12.3906 L58.1875,12.3906 L58.9844,13.6094 C59.1302,13.8385 59.25,14.0312 59.3438,14.1875 C59.4896,13.9688 59.6198,13.7812 59.7344,13.625 L60.6094,12.3906 L61.6719,12.3906 L59.875,14.8281 L61.7969,17.5781 L60.7188,17.5781 L59.6562,15.9688 L59.375,15.5312 L58.0156,17.5781 L56.9531,17.5781 M64.2188,19.6875 C63.7292,19.0729 63.3177,18.3542 62.9844,17.5312 C62.651,16.7083 62.4844,15.8594 62.4844,14.9844 C62.4844,14.2135 62.6094,13.474 62.8594,12.7656 C63.151,11.9323 63.6042,11.1094 64.2188,10.2969 L64.8438,10.2969 C64.4479,10.974 64.1875,11.4583 64.0625,11.75 C63.8646,12.1979 63.7083,12.6667 63.5938,13.1562 C63.4583,13.7604 63.3906,14.3698 63.3906,14.9844 C63.3906,16.5573 63.875,18.125 64.8438,19.6875 L64.2188,19.6875 M66.1094,13.3906 L66.1094,12.3906 L67.1094,12.3906 L67.1094,13.3906 L66.1094,13.3906 M66.1094,17.5781 L66.1094,16.5781 L67.1094,16.5781 L67.1094,17.5781 L66.1094,17.5781 M68.8594,17.5781 L68.8594,16.5781 L69.8594,16.5781 L69.8594,17.5781 C69.8594,17.9427 69.7943,18.2396 69.6641,18.4688 C69.5339,18.6979 69.3281,18.875 69.0469,19 L68.7969,18.625 C68.9844,18.5417 69.1224,18.4193 69.2109,18.2578 C69.2995,18.0964 69.349,17.8698 69.3594,17.5781 L68.8594,17.5781 M71.6406,13.3906 L71.6406,12.3906 L72.6406,12.3906 L72.6406,13.3906 L71.6406,13.3906 M71.6406,17.5781 L71.6406,16.5781 L72.6406,16.5781 L72.6406,17.5781 L71.6406,17.5781 M74.3906,17.5781 L74.3906,16.5781 L75.3906,16.5781 L75.3906,17.5781 C75.3906,17.9427 75.3255,18.2396 75.1953,18.4688 C75.0651,18.6979 74.8594,18.875 74.5781,19 L74.3281,18.625 C74.5156,18.5417 74.6536,18.4193 74.7422,18.2578 C74.8307,18.0964 74.8802,17.8698 74.8906,17.5781 L74.3906,17.5781 M76.6875,15.6875 L77.5625,15.5781 C77.6667,16.0677 77.8385,16.4245 78.0781,16.6484 C78.3177,16.8724 78.6146,16.9844 78.9688,16.9844 C79.3854,16.9844 79.7344,16.8411 80.0156,16.5547 C80.2969,16.2682 80.4375,15.9115 80.4375,15.4844 C80.4375,15.0781 80.3073,14.7448 80.0469,14.4844 C79.7865,14.224 79.4531,14.0938 79.0469,14.0938 C78.8802,14.0938 78.6719,14.125 78.4219,14.1875 L78.5156,13.4219 C78.5781,13.4219 78.625,13.4219 78.6562,13.4219 C79.0312,13.4219 79.3698,13.3255 79.6719,13.1328 C79.974,12.9401 80.125,12.6406 80.125,12.2344 C80.125,11.9115 80.0156,11.6432 79.7969,11.4297 C79.5781,11.2161 79.2969,11.1094 78.9531,11.1094 C78.6094,11.1094 78.3229,11.2161 78.0938,11.4297 C77.8646,11.6432 77.7188,11.9688 77.6562,12.4062 L76.7812,12.25 C76.8854,11.6562 77.1276,11.1979 77.5078,10.875 C77.888,10.5521 78.3594,10.3906 78.9219,10.3906 C79.3177,10.3906 79.6797,10.474 80.0078,10.6406 C80.3359,10.8073 80.5859,11.0365 80.7578,11.3281 C80.9297,11.6198 81.0156,11.9271 81.0156,12.25 C81.0156,12.5625 80.9349,12.8438 80.7734,13.0938 C80.612,13.3438 80.3646,13.5469 80.0312,13.7031 C80.4583,13.7969 80.7891,13.9974 81.0234,14.3047 C81.2578,14.612 81.375,15 81.375,15.4688 C81.375,16.0938 81.1458,16.6224 80.6875,17.0547 C80.2292,17.487 79.6562,17.7031 78.9688,17.7031 C78.3333,17.7031 77.8099,17.5156 77.3984,17.1406 C76.987,16.7656 76.75,16.2812 76.6875,15.6875 M83.0469,19.6875 L82.4219,19.6875 C83.3906,18.125 83.875,16.5573 83.875,14.9844 C83.875,14.3802 83.8073,13.776 83.6719,13.1719 C83.5573,12.6823 83.401,12.2135 83.2031,11.7656 C83.0781,11.474 82.8177,10.9844 82.4219,10.2969 L83.0469,10.2969 C83.6615,11.1094 84.1146,11.9323 84.4062,12.7656 C84.6562,13.474 84.7812,14.2135 84.7812,14.9844 C84.7812,15.8594 84.612,16.7083 84.2734,17.5312 C83.9349,18.3542 83.526,19.0729 83.0469,19.6875" fill-rule="nonzero" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-275,241)">
+              <path d="M0,0 L165,0 L165,28 L0,28 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:619">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-21,105)">
+            <image height="104" preserveAspectRatio="none" width="51" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAABoCAYAAABc6MgeAAAACXBIWXMAABJ0AAASdAHeZh94AAABkklEQVR4nO2cu27CUBAFx5GTAhdQJA1Nqvz/N6WhCYVdQAFFUuy9ws8QhIyOnDPS6loWQjvatTufAnju1UvrWoFzqlPrOleHkmh6BVS9c/WgZq9xTHXonZMyFbAGNqnytQI10KSzTvcGItCdzAZ4S/WaTgW+gD2XtT8T0xlQEs9IxUVm2yoFKqJHCJEjMakB7cmsiYlsgfdUCuSJnIiJ1Ey8nMbWLMt8zN7m38mr1RBrNyrz9MiO5sYyqlhGFcuosiiZ8sbfF7N0EXzf+weLmoxlVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKrd+DXj3F3tzsqjJWEYVy6hiGVVKLsE0NRGDUqETOgXwCeyI3momcpqgK9MQMULt9B0Fdqn2RI+/yowl7eR7CuSspjyZA9HfgP6aQTd9R4F+itbVNctT6D8/Cozlm43KFCwoec4Y84/5AXR8Ycbi2mkiAAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,106)">
+            <path d="M0,0 L40,0 L40,93 L0,93 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip134">
+                <path d="M-20,-41 L20,-41 L20,52 L-20,52 L-20,-41 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip134)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,147)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="27.1875" x="-13.5938" xml:space="preserve" y="3.5">Matrix</text>
+            </g>
+            <defs>
+              <clipPath id="clip135">
+                <path d="M-20,-51 L20,-51 L20,42 L-20,42 L-20,-51 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip135)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,157)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="33.8438" x="-16.9219" xml:space="preserve" y="3.5">Multiply</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-20,106)">
+              <path d="M0,0 L40,0 L40,93 L0,93 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g data-tags="blk">
+        <!--RAWSTRING-->
+        <g id="Main_Sim:593:189:92:620">
+          <g clip-path="none" fill="none" opacity="0.65098" stroke="#000000" stroke-linecap="square" stroke-linejoin="bevel" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-21,-20)">
+            <image height="104" preserveAspectRatio="none" width="51" x="0" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAABoCAYAAABc6MgeAAAACXBIWXMAABJ0AAASdAHeZh94AAABkklEQVR4nO2cu27CUBAFx5GTAhdQJA1Nqvz/N6WhCYVdQAFFUuy9ws8QhIyOnDPS6loWQjvatTufAnju1UvrWoFzqlPrOleHkmh6BVS9c/WgZq9xTHXonZMyFbAGNqnytQI10KSzTvcGItCdzAZ4S/WaTgW+gD2XtT8T0xlQEs9IxUVm2yoFKqJHCJEjMakB7cmsiYlsgfdUCuSJnIiJ1Ey8nMbWLMt8zN7m38mr1RBrNyrz9MiO5sYyqlhGFcuosiiZ8sbfF7N0EXzf+weLmoxlVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKpZRxTKqWEYVy6hiGVUso4plVLGMKrd+DXj3F3tzsqjJWEYVy6hiGVVKLsE0NRGDUqETOgXwCeyI3momcpqgK9MQMULt9B0Fdqn2RI+/yowl7eR7CuSspjyZA9HfgP6aQTd9R4F+itbVNctT6D8/Cozlm43KFCwoec4Y84/5AXR8Ycbi2mkiAAAAAElFTkSuQmCC" y="0"/>
+          </g>
+          <g clip-path="none" fill="#ffffff" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,-19)">
+            <path d="M0,0 L40,0 L40,93 L0,93 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk">
+            <defs>
+              <clipPath id="clip137">
+                <path d="M-20,-41 L20,-41 L20,52 L-20,52 L-20,-41 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip137)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,22)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="27.1875" x="-13.5938" xml:space="preserve" y="3.5">Matrix</text>
+            </g>
+            <defs>
+              <clipPath id="clip138">
+                <path d="M-20,-51 L20,-51 L20,42 L-20,42 L-20,-51 z"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#clip138)" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,32)">
+              <text fill="#000000" fill-opacity="1" font-family="Arial" font-size="10" font-style="normal" font-weight="400" stroke="none" textLength="33.8438" x="-16.9219" xml:space="preserve" y="3.5">Multiply</text>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+          <g data-tags="blk frame">
+            <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,-20,-19)">
+              <path d="M0,0 L40,0 L40,93 L0,93 L0,0 z" fill-rule="evenodd" vector-effect="none"/>
+            </g>
+            <!--RAWSTRING-->
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:541#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,360,155)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M135,155 L352,155" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:540#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,100,280)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M20,280 L92,280" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:619#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,100,155)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M20,155 L92,155" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:620#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,100,30)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M20,30 L92,30" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:545#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,255)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-110,255 L-28,255" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:544#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,130)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-110,130 L-28,130" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:536#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,300)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-110,300 L-28,300" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:534#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,175)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-110,175 L-28,175" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:543#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,5)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-110,5 L-28,5" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:532#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-20,50)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-110,50 L-28,50" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:239#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-455,175 L-335,175" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-205,175)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-335,175 L-213,175" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-205,300)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-335,175 L-335,300 L-213,300" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-205,50)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M-335,175 L-335,50 L-213,50" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,-335,175)">
+          <path d="M2.5,0 C2.5,1.38071 1.38071,2.5 0,2.5 C-1.38071,2.5 -2.5,1.38071 -2.5,0 C-2.5,-1.38071 -1.38071,-2.5 0,-2.5 C1.38071,-2.5 2.5,-1.38071 2.5,0 z" fill-rule="evenodd" vector-effect="none"/>
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:243#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(1,0,0,1,500,155)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M380,155 L492,155" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+      <g id="Main_Sim:593:189:92:244#out:1">
+        <!--RAWSTRING-->
+        <g data-tags="PathIntersectionsEnabledTag">
+          <g clip-path="none" fill="#000000" fill-opacity="1" opacity="1" stroke="none" stroke-opacity="0" transform="matrix(6.12323e-17,-1,1,6.12323e-17,370,165)">
+            <path d="M0,0 L-8,-4 L-8,4 L0,0 z" fill-rule="nonzero" vector-effect="none"/>
+          </g>
+          <g clip-path="none" fill="none" opacity="1" stroke="#000000" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="2" stroke-opacity="1" stroke-width="1" transform="matrix(1,0,0,1,0,0)">
+            <path d="M305,180 L370,180 L370,173" fill-rule="evenodd" vector-effect="none"/>
+          </g>
+          <!--RAWSTRING-->
+        </g>
+        <!--RAWSTRING-->
+      </g>
+      <!--RAWSTRING-->
+    </g>
+  </g>
+  <!--generated on windows @ 2021-10-26 16:30:46 Pacific Daylight Time-->
+</svg>

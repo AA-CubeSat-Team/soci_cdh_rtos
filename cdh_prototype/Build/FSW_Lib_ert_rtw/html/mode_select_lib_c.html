@@ -1,0 +1,180 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - mode_select_lib.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('mode_select_lib_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../mode_select_lib.c" target="rtwreport_document_frame" id="linkToText_plain">mode_select_lib.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: mode_select_lib.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Tue Oct 26 16:29:45 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * Target selection: ert.tlc</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Embedded hardware selection: NXP-&gt;Cortex-M4</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Code generation objectives:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *    1. Execution efficiency</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *    2. RAM efficiency</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Validation result: Not run</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;mode_select_lib.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a>
+</span><span><a class="LN" name="24">   24   </a><span class="CT">/* Include model header file for global data */</span>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib.h&quot;</font>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib_private.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_roundd_snf.h&quot;</font>
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a><span class="CT">/* Output and update for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/mode_select_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="30">   30   </a><a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> <a name="fcn_mode_select_lib">mode_select_lib</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_telecom[6], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_eclipse,
+</span><span><a class="LN" name="31">   31   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> rtu_ss_valid, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_sc_above_targ, <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="32">   32   </a>  rtu_body_rates_radps[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_MET_utc_s, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_MET_soar_utc_s,
+</span><span><a class="LN" name="33">   33   </a>  <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_RWA_rpm[4], <span class="DT">const</span> <a href="mode_select_lib_h.html#type_ConstB_mode_select_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_ConstB_mode_select_lib');" target="_self"><font color="#1122aa">ConstB_mode_select_lib</font></a> *localC,
+</span><span><a class="LN" name="34">   34   </a>  <a href="mode_select_lib_h.html#type_DW_mode_select_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_mode_select_lib');" target="_self"><font color="#1122aa">DW_mode_select_lib</font></a> *localDW)
+</span><span><a class="LN" name="35">   35   </a><b>{</b>
+</span><span><a class="LN" name="36">   36   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> rty_gnc_mode_0;
+</span><span><a class="LN" name="37">   37   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Subtract1[3];
+</span><span><a class="LN" name="38">   38   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_p;
+</span><span><a class="LN" name="39">   39   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tmp[4];
+</span><span><a class="LN" name="40">   40   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="41">   41   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tmp_0;
+</span><span><a class="LN" name="42">   42   </a>
+</span><span><a class="LN" name="43">   43   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:126')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Matrix Multiply1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="44">   44   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:122')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/A_wheel2body </i></font></a>'</span>
+</span><span><a class="LN" name="45">   45   </a><span class="CT">   *  Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:132')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/rpm2radps</i></font></a>'</span>
+</span><span><a class="LN" name="46">   46   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="47">   47   </a>  <span class="KW">for</span> (i = 0; i &lt; 4; i++) <b>{</b>
+</span><span><a class="LN" name="48">   48   </a>    tmp_0 = localC-&gt;CreateDiagonalMatrix[i + 12] * (0.10471975511965977 *
+</span><span><a class="LN" name="49">   49   </a>      rtu_RWA_rpm[3]) + (localC-&gt;CreateDiagonalMatrix[i + 8] *
+</span><span><a class="LN" name="50">   50   </a>                         (0.10471975511965977 * rtu_RWA_rpm[2]) +
+</span><span><a class="LN" name="51">   51   </a>                         (localC-&gt;CreateDiagonalMatrix[i + 4] *
+</span><span><a class="LN" name="52">   52   </a>                          (0.10471975511965977 * rtu_RWA_rpm[1]) +
+</span><span><a class="LN" name="53">   53   </a>                          0.10471975511965977 * rtu_RWA_rpm[0] *
+</span><span><a class="LN" name="54">   54   </a>                          localC-&gt;CreateDiagonalMatrix[i]));
+</span><span><a class="LN" name="55">   55   </a>    tmp[i] = tmp_0;
+</span><span><a class="LN" name="56">   56   </a>  <b>}</b>
+</span><span><a class="LN" name="57">   57   </a>
+</span><span><a class="LN" name="58">   58   </a>  <span class="KW">for</span> (i = 0; i &lt; 3; i++) <b>{</b>
+</span><span><a class="LN" name="59">   59   </a>    tmp_0 = rtCP_A_wheel2body_Value_h[i + 9] * tmp[3] +
+</span><span><a class="LN" name="60">   60   </a>      (rtCP_A_wheel2body_Value_h[i + 6] * tmp[2] + (rtCP_A_wheel2body_Value_h[i
+</span><span><a class="LN" name="61">   61   </a>        + 3] * tmp[1] + rtCP_A_wheel2body_Value_h[i] * tmp[0]));
+</span><span><a class="LN" name="62">   62   </a>
+</span><span><a class="LN" name="63">   63   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:128')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Subtract1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="64">   64   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:122')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/A_wheel2body </i></font></a>'</span>
+</span><span><a class="LN" name="65">   65   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:130')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/scParams.J </i></font></a>'</span>
+</span><span><a class="LN" name="66">   66   </a><span class="CT">     *  Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:125')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Matrix Multiply</i></font></a>'</span>
+</span><span><a class="LN" name="67">   67   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="68">   68   </a>    rtb_Subtract1[i] = ((rtCP_scParamsJ_Value_h[i + 3] * rtu_body_rates_radps[1]
+</span><span><a class="LN" name="69">   69   </a>                         + rtCP_scParamsJ_Value_h[i] * rtu_body_rates_radps[0])
+</span><span><a class="LN" name="70">   70   </a>                        + rtCP_scParamsJ_Value_h[i + 6] * rtu_body_rates_radps[2])
+</span><span><a class="LN" name="71">   71   </a>      + tmp_0;
+</span><span><a class="LN" name="72">   72   </a>  <b>}</b>
+</span><span><a class="LN" name="73">   73   </a>
+</span><span><a class="LN" name="74">   74   </a>  <span class="CT">/* End of Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:126')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Matrix Multiply1</i></font></a>' */</span>
+</span><span><a class="LN" name="75">   75   </a>
+</span><span><a class="LN" name="76">   76   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:133')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="77">   77   </a>  rtb_Sqrt_p = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_Subtract1);
+</span><span><a class="LN" name="78">   78   </a>
+</span><span><a class="LN" name="79">   79   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:133')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="80">   80   </a>
+</span><span><a class="LN" name="81">   81   </a>  <span class="CT">/* Relay: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:134')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Relay3</i></font></a>' */</span>
+</span><span><a class="LN" name="82">   82   </a>  <span class="KW">if</span> (rtb_Sqrt_p &gt;= 0.00236570528450198) <b>{</b>
+</span><span><a class="LN" name="83">   83   </a>    localDW-&gt;Relay3_Mode = true;
+</span><span><a class="LN" name="84">   84   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="85">   85   </a>    <span class="KW">if</span> (rtb_Sqrt_p &lt;= 0.00118285264225099) <b>{</b>
+</span><span><a class="LN" name="86">   86   </a>      localDW-&gt;Relay3_Mode = false;
+</span><span><a class="LN" name="87">   87   </a>    <b>}</b>
+</span><span><a class="LN" name="88">   88   </a>  <b>}</b>
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:117')" name="code2model"><font color="#117755"><i>&lt;S9&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="91">   91   </a>  rtb_Sqrt_p = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtu_body_rates_radps);
+</span><span><a class="LN" name="92">   92   </a>
+</span><span><a class="LN" name="93">   93   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:117')" name="code2model"><font color="#117755"><i>&lt;S9&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="94">   94   </a>
+</span><span><a class="LN" name="95">   95   </a>  <span class="CT">/* Relay: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:16')" name="code2model"><font color="#117755"><i>&lt;S9&gt;/Relay</i></font></a>' */</span>
+</span><span><a class="LN" name="96">   96   </a>  <span class="KW">if</span> (rtb_Sqrt_p &gt;= 0.26179938779914941) <b>{</b>
+</span><span><a class="LN" name="97">   97   </a>    localDW-&gt;Relay_Mode = true;
+</span><span><a class="LN" name="98">   98   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="99">   99   </a>    <span class="KW">if</span> (rtb_Sqrt_p &lt;= 0.0087266462599716477) <b>{</b>
+</span><span><a class="LN" name="100">  100   </a>      localDW-&gt;Relay_Mode = false;
+</span><span><a class="LN" name="101">  101   </a>    <b>}</b>
+</span><span><a class="LN" name="102">  102   </a>  <b>}</b>
+</span><span><a class="LN" name="103">  103   </a>
+</span><span><a class="LN" name="104">  104   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:107')" name="code2model"><font color="#117755"><i>&lt;S383&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="105">  105   </a>  rtb_Sqrt_p = rtu_MET_utc_s - rtu_MET_soar_utc_s;
+</span><span><a class="LN" name="106">  106   </a>
+</span><span><a class="LN" name="107">  107   </a>  <span class="CT">/* MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:13')" name="code2model"><font color="#117755"><i>&lt;S9&gt;/mode_select</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="108">  108   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:108:3')" name="code2model"><font color="#117755"><i>&lt;S387&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="109">  109   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:109:3')" name="code2model"><font color="#117755"><i>&lt;S388&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="110">  110   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:116:3')" name="code2model"><font color="#117755"><i>&lt;S389&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="111">  111   </a><span class="CT">   *  Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:110')" name="code2model"><font color="#117755"><i>&lt;S383&gt;/AND</i></font></a>'</span>
+</span><span><a class="LN" name="112">  112   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:108:2')" name="code2model"><font color="#117755"><i>&lt;S387&gt;/Compare</i></font></a>'</span>
+</span><span><a class="LN" name="113">  113   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:109:2')" name="code2model"><font color="#117755"><i>&lt;S388&gt;/Compare</i></font></a>'</span>
+</span><span><a class="LN" name="114">  114   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:116:2')" name="code2model"><font color="#117755"><i>&lt;S389&gt;/Compare</i></font></a>'</span>
+</span><span><a class="LN" name="115">  115   </a><span class="CT">   *  Relay: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:134')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Relay3</i></font></a>'</span>
+</span><span><a class="LN" name="116">  116   </a><span class="CT">   *  Relay: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:16')" name="code2model"><font color="#117755"><i>&lt;S9&gt;/Relay</i></font></a>'</span>
+</span><span><a class="LN" name="117">  117   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="118">  118   </a>  <span class="KW">if</span> (rtu_telecom[1] != 0.0) <b>{</b>
+</span><span><a class="LN" name="119">  119   </a>    rty_gnc_mode_0 = 0U;
+</span><span><a class="LN" name="120">  120   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtu_telecom[0] != 0.0) <b>{</b>
+</span><span><a class="LN" name="121">  121   </a>    tmp_0 = <a href="../../slprj/ert/_sharedutils/html/rt_roundd_snf_c.html#fcn_rt_roundd_snf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rt_roundd_snf');" target="_self"><font color="#1122aa">rt_roundd_snf</font></a>(rtu_telecom[0]);
+</span><span><a class="LN" name="122">  122   </a>    <span class="KW">if</span> (tmp_0 &lt; 256.0) <b>{</b>
+</span><span><a class="LN" name="123">  123   </a>      <span class="KW">if</span> (tmp_0 &gt;= 0.0) <b>{</b>
+</span><span><a class="LN" name="124">  124   </a>        rty_gnc_mode_0 = (<a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a>)tmp_0;
+</span><span><a class="LN" name="125">  125   </a>      <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="126">  126   </a>        rty_gnc_mode_0 = 0U;
+</span><span><a class="LN" name="127">  127   </a>      <b>}</b>
+</span><span><a class="LN" name="128">  128   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="129">  129   </a>      rty_gnc_mode_0 = MAX_uint8_T;
+</span><span><a class="LN" name="130">  130   </a>    <b>}</b>
+</span><span><a class="LN" name="131">  131   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtu_telecom[2] != 0.0) <b>{</b>
+</span><span><a class="LN" name="132">  132   </a>    rty_gnc_mode_0 = 1U;
+</span><span><a class="LN" name="133">  133   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (!(rtu_telecom[3] != 0.0)) <b>{</b>
+</span><span><a class="LN" name="134">  134   </a>    rty_gnc_mode_0 = 2U;
+</span><span><a class="LN" name="135">  135   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (localDW-&gt;Relay_Mode || localDW-&gt;Relay3_Mode) <b>{</b>
+</span><span><a class="LN" name="136">  136   </a>    rty_gnc_mode_0 = 3U;
+</span><span><a class="LN" name="137">  137   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> ((!rtu_eclipse) &amp;&amp; (rtu_ss_valid &lt; 2)) <b>{</b>
+</span><span><a class="LN" name="138">  138   </a>    rty_gnc_mode_0 = 5U;
+</span><span><a class="LN" name="139">  139   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> ((rtu_telecom[5] != 0.0) &amp;&amp; ((rtb_Sqrt_p &gt;= 0.0) &amp;&amp; (rtb_Sqrt_p &lt;
+</span><span><a class="LN" name="140">  140   </a>               25.0) &amp;&amp; (rtu_MET_soar_utc_s != 0.0))) <b>{</b>
+</span><span><a class="LN" name="141">  141   </a>    rty_gnc_mode_0 = 8U;
+</span><span><a class="LN" name="142">  142   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtu_telecom[4] != 0.0) <b>{</b>
+</span><span><a class="LN" name="143">  143   </a>    <span class="KW">if</span> (rtu_sc_above_targ) <b>{</b>
+</span><span><a class="LN" name="144">  144   </a>      rty_gnc_mode_0 = 7U;
+</span><span><a class="LN" name="145">  145   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="146">  146   </a>      rty_gnc_mode_0 = 6U;
+</span><span><a class="LN" name="147">  147   </a>    <b>}</b>
+</span><span><a class="LN" name="148">  148   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="149">  149   </a>    rty_gnc_mode_0 = 6U;
+</span><span><a class="LN" name="150">  150   </a>  <b>}</b>
+</span><span><a class="LN" name="151">  151   </a>
+</span><span><a class="LN" name="152">  152   </a>  <span class="CT">/* End of MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:13')" name="code2model"><font color="#117755"><i>&lt;S9&gt;/mode_select</i></font></a>' */</span>
+</span><span><a class="LN" name="153">  153   </a>  <span class="KW">return</span> rty_gnc_mode_0;
+</span><span><a class="LN" name="154">  154   </a><b>}</b>
+</span><span><a class="LN" name="155">  155   </a>
+</span><span><a class="LN" name="156">  156   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="157">  157   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="158">  158   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="159">  159   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="160">  160   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="161">  161   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

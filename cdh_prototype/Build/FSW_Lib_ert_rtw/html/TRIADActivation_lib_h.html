@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - TRIADActivation_lib.h</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('TRIADActivation_lib_h_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../TRIADActivation_lib.h" target="rtwreport_document_frame" id="linkToText_plain">TRIADActivation_lib.h</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: TRIADActivation_lib.h</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Tue Oct 26 16:29:45 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * Target selection: ert.tlc</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Embedded hardware selection: NXP-&gt;Cortex-M4</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Code generation objectives:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *    1. Execution efficiency</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *    2. RAM efficiency</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Validation result: Not run</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">ifndef</span> RTW_HEADER_TRIADActivation_lib_h_
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">define</span> RTW_HEADER_TRIADActivation_lib_h_
+</span><span><a class="LN" name="24">   24   </a><font color="#992211">#</font><span class="PP">ifndef</span> FSW_Lib_COMMON_INCLUDES_
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font> <span class="PP">define</span> FSW_Lib_COMMON_INCLUDES_
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;zero_crossing_types.h&quot;</font>
+</span><span><a class="LN" name="28">   28   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">/* FSW_Lib_COMMON_INCLUDES_ */</span>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib_types.h&quot;</font>
+</span><span><a class="LN" name="32">   32   </a>
+</span><span><a class="LN" name="33">   33   </a><span class="CT">/* Block signals and states (default storage) for system '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:742')" name="code2model"><font color="#117755"><i>&lt;S3&gt;/TRIADActivation_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="34">   34   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
+</span><span><a class="LN" name="35">   35   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> Delay_DSTATE[10];          <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:229:742:187:4')" name="code2model"><font color="#117755"><i>&lt;S159&gt;/Delay</i></font></a>' */</span>
+</span><span><a class="LN" name="36">   36   </a><b>}</b> <a name="type_DW_TRIADActivation_lib">DW_TRIADActivation_lib</a>;
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a><span class="DT">extern</span> <span class="DT">void</span> <a href="TRIADActivation_lib_c.html#fcn_TRIADActivation_lib_Init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_TRIADActivation_lib_Init');" target="_self"><font color="#1122aa">TRIADActivation_lib_Init</font></a>(<a href="#type_DW_TRIADActivation_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_TRIADActivation_lib');" target="_self"><font color="#1122aa">DW_TRIADActivation_lib</font></a> *localDW);
+</span><span><a class="LN" name="39">   39   </a><span class="DT">extern</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> <a href="TRIADActivation_lib_c.html#fcn_TRIADActivation_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_TRIADActivation_lib');" target="_self"><font color="#1122aa">TRIADActivation_lib</font></a>(<a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_TriadGroundCmd, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="40">   40   </a>  rtu_gyro_valid, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_sunsensor_valid, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_mag_valid,
+</span><span><a class="LN" name="41">   41   </a>  <a href="#type_DW_TRIADActivation_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_TRIADActivation_lib');" target="_self"><font color="#1122aa">DW_TRIADActivation_lib</font></a> *localDW);
+</span><span><a class="LN" name="42">   42   </a>
+</span><span><a class="LN" name="43">   43   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">/* RTW_HEADER_TRIADActivation_lib_h_ */</span>
+</span><span><a class="LN" name="44">   44   </a>
+</span><span><a class="LN" name="45">   45   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="46">   46   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="47">   47   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="48">   48   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="49">   49   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="50">   50   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

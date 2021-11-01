@@ -1,0 +1,136 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - xzlarf_tQsI3TnT.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('xzlarf_tQsI3TnT_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../xzlarf_tQsI3TnT.c" target="rtwreport_document_frame" id="linkToText_plain">xzlarf_tQsI3TnT.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: xzlarf_tQsI3TnT.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xzlarf_tQsI3TnT.h&quot;</font>
+</span><span><a class="LN" name="17">   17   </a>
+</span><span><a class="LN" name="18">   18   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:271:46:187:36')" name="code2model"><font color="#117755"><i>&lt;S438&gt;/INITIALIZE</i></font></a>' */</span>
+</span><span><a class="LN" name="19">   19   </a><span class="DT">void</span> <a name="fcn_xzlarf_tQsI3TnT">xzlarf_tQsI3TnT</a>(<a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> m, <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> n, <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> iv0, <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tau, <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> C[16],
+</span><span><a class="LN" name="20">   20   </a>                     <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ic0, <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> work[4])
+</span><span><a class="LN" name="21">   21   </a><b>{</b>
+</span><span><a class="LN" name="22">   22   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> lastv;
+</span><span><a class="LN" name="23">   23   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> lastc;
+</span><span><a class="LN" name="24">   24   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> coltop;
+</span><span><a class="LN" name="25">   25   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> ix;
+</span><span><a class="LN" name="26">   26   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> c;
+</span><span><a class="LN" name="27">   27   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> iac;
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> d;
+</span><span><a class="LN" name="29">   29   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> b_ia;
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> jy;
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> exitg1;
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> exitg2;
+</span><span><a class="LN" name="33">   33   </a>  <span class="KW">if</span> (tau != 0.0) <b>{</b>
+</span><span><a class="LN" name="34">   34   </a>    lastv = m;
+</span><span><a class="LN" name="35">   35   </a>    lastc = iv0 + m;
+</span><span><a class="LN" name="36">   36   </a>    <span class="KW">while</span> ((lastv &gt; 0) &amp;&amp; (C[lastc - 2] == 0.0)) <b>{</b>
+</span><span><a class="LN" name="37">   37   </a>      lastv--;
+</span><span><a class="LN" name="38">   38   </a>      lastc--;
+</span><span><a class="LN" name="39">   39   </a>    <b>}</b>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a>    lastc = n - 1;
+</span><span><a class="LN" name="42">   42   </a>    exitg2 = false;
+</span><span><a class="LN" name="43">   43   </a>    <span class="KW">while</span> ((!exitg2) &amp;&amp; (lastc + 1 &gt; 0)) <b>{</b>
+</span><span><a class="LN" name="44">   44   </a>      coltop = (lastc &lt;&lt; 2) + ic0;
+</span><span><a class="LN" name="45">   45   </a>      jy = coltop;
+</span><span><a class="LN" name="46">   46   </a>      <span class="KW">do</span> <b>{</b>
+</span><span><a class="LN" name="47">   47   </a>        exitg1 = 0;
+</span><span><a class="LN" name="48">   48   </a>        <span class="KW">if</span> (jy &lt;= (coltop + lastv) - 1) <b>{</b>
+</span><span><a class="LN" name="49">   49   </a>          <span class="KW">if</span> (C[jy - 1] != 0.0) <b>{</b>
+</span><span><a class="LN" name="50">   50   </a>            exitg1 = 1;
+</span><span><a class="LN" name="51">   51   </a>          <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="52">   52   </a>            jy++;
+</span><span><a class="LN" name="53">   53   </a>          <b>}</b>
+</span><span><a class="LN" name="54">   54   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="55">   55   </a>          lastc--;
+</span><span><a class="LN" name="56">   56   </a>          exitg1 = 2;
+</span><span><a class="LN" name="57">   57   </a>        <b>}</b>
+</span><span><a class="LN" name="58">   58   </a>      <b>}</b> <span class="KW">while</span> (exitg1 == 0);
+</span><span><a class="LN" name="59">   59   </a>
+</span><span><a class="LN" name="60">   60   </a>      <span class="KW">if</span> (exitg1 == 1) <b>{</b>
+</span><span><a class="LN" name="61">   61   </a>        exitg2 = true;
+</span><span><a class="LN" name="62">   62   </a>      <b>}</b>
+</span><span><a class="LN" name="63">   63   </a>    <b>}</b>
+</span><span><a class="LN" name="64">   64   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="65">   65   </a>    lastv = 0;
+</span><span><a class="LN" name="66">   66   </a>    lastc = -1;
+</span><span><a class="LN" name="67">   67   </a>  <b>}</b>
+</span><span><a class="LN" name="68">   68   </a>
+</span><span><a class="LN" name="69">   69   </a>  <span class="KW">if</span> (lastv &gt; 0) <b>{</b>
+</span><span><a class="LN" name="70">   70   </a>    <span class="KW">if</span> (lastc + 1 != 0) <b>{</b>
+</span><span><a class="LN" name="71">   71   </a>      <span class="KW">for</span> (coltop = 0; coltop &lt;= lastc; coltop++) <b>{</b>
+</span><span><a class="LN" name="72">   72   </a>        work[coltop] = 0.0;
+</span><span><a class="LN" name="73">   73   </a>      <b>}</b>
+</span><span><a class="LN" name="74">   74   </a>
+</span><span><a class="LN" name="75">   75   </a>      coltop = 0;
+</span><span><a class="LN" name="76">   76   </a>      jy = (lastc &lt;&lt; 2) + ic0;
+</span><span><a class="LN" name="77">   77   </a>      <span class="KW">for</span> (iac = ic0; iac &lt;= jy; iac += 4) <b>{</b>
+</span><span><a class="LN" name="78">   78   </a>        ix = iv0;
+</span><span><a class="LN" name="79">   79   </a>        c = 0.0;
+</span><span><a class="LN" name="80">   80   </a>        d = (iac + lastv) - 1;
+</span><span><a class="LN" name="81">   81   </a>        <span class="KW">for</span> (b_ia = iac; b_ia &lt;= d; b_ia++) <b>{</b>
+</span><span><a class="LN" name="82">   82   </a>          c += C[b_ia - 1] * C[ix - 1];
+</span><span><a class="LN" name="83">   83   </a>          ix++;
+</span><span><a class="LN" name="84">   84   </a>        <b>}</b>
+</span><span><a class="LN" name="85">   85   </a>
+</span><span><a class="LN" name="86">   86   </a>        work[coltop] += c;
+</span><span><a class="LN" name="87">   87   </a>        coltop++;
+</span><span><a class="LN" name="88">   88   </a>      <b>}</b>
+</span><span><a class="LN" name="89">   89   </a>    <b>}</b>
+</span><span><a class="LN" name="90">   90   </a>
+</span><span><a class="LN" name="91">   91   </a>    <span class="KW">if</span> (!(-tau == 0.0)) <b>{</b>
+</span><span><a class="LN" name="92">   92   </a>      coltop = ic0 - 1;
+</span><span><a class="LN" name="93">   93   </a>      jy = 0;
+</span><span><a class="LN" name="94">   94   </a>      <span class="KW">for</span> (iac = 0; iac &lt;= lastc; iac++) <b>{</b>
+</span><span><a class="LN" name="95">   95   </a>        <span class="KW">if</span> (work[jy] != 0.0) <b>{</b>
+</span><span><a class="LN" name="96">   96   </a>          c = work[jy] * -tau;
+</span><span><a class="LN" name="97">   97   </a>          ix = iv0;
+</span><span><a class="LN" name="98">   98   </a>          d = lastv + coltop;
+</span><span><a class="LN" name="99">   99   </a>          <span class="KW">for</span> (b_ia = coltop; b_ia &lt; d; b_ia++) <b>{</b>
+</span><span><a class="LN" name="100">  100   </a>            C[b_ia] += C[ix - 1] * c;
+</span><span><a class="LN" name="101">  101   </a>            ix++;
+</span><span><a class="LN" name="102">  102   </a>          <b>}</b>
+</span><span><a class="LN" name="103">  103   </a>        <b>}</b>
+</span><span><a class="LN" name="104">  104   </a>
+</span><span><a class="LN" name="105">  105   </a>        jy++;
+</span><span><a class="LN" name="106">  106   </a>        coltop += 4;
+</span><span><a class="LN" name="107">  107   </a>      <b>}</b>
+</span><span><a class="LN" name="108">  108   </a>    <b>}</b>
+</span><span><a class="LN" name="109">  109   </a>  <b>}</b>
+</span><span><a class="LN" name="110">  110   </a><b>}</b>
+</span><span><a class="LN" name="111">  111   </a>
+</span><span><a class="LN" name="112">  112   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="113">  113   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="114">  114   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="115">  115   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="116">  116   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="117">  117   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

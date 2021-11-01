@@ -28,6 +28,7 @@
 #include "gnc_task.h"
 #include "com_task.h"
 #include "semc_sdram.h"
+#include "FSW_lib_types.h"
 
 /*******************************************************************************
  * Definitions
@@ -67,6 +68,29 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
+
+    /* Unused arguments */
+	//(void)(argc);
+	//(void)(argv);
+
+	/* Initialize model */
+	FSW_Lib_initialize();
+
+	/* Attach rt_OneStep to a timer or interrupt service routine with
+	* period 0.0125 seconds (the model's base sample time) here.  The
+	* call syntax for rt_OneStep is
+	*
+	*  rt_OneStep();
+	*/
+	printf("Warning: The simulation will run forever. "
+		 "Generated ERT main won't simulate model step behavior. "
+		 "To change this behavior select the 'MAT-file logging' option.\n");
+	fflush((NULL));
+	while (rtmGetErrorStatus(rtM) == (NULL)) {
+	/*  Perform other application tasks here */
+	}
+
+  /* Disable rt_OneStep() here */
 
     APP_PrintRunFrequency(0);
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1

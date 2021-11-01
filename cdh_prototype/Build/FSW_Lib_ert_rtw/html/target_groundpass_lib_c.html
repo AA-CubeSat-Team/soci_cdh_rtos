@@ -1,0 +1,416 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - target_groundpass_lib.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('target_groundpass_lib_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../target_groundpass_lib.c" target="rtwreport_document_frame" id="linkToText_plain">target_groundpass_lib.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: target_groundpass_lib.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Tue Oct 26 16:29:45 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * Target selection: ert.tlc</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Embedded hardware selection: NXP-&gt;Cortex-M4</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Code generation objectives:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *    1. Execution efficiency</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *    2. RAM efficiency</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Validation result: Not run</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;target_groundpass_lib.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a>
+</span><span><a class="LN" name="24">   24   </a><span class="CT">/* Include model header file for global data */</span>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib.h&quot;</font>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib_private.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_atan2d_snf.h&quot;</font>
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a><span class="CT">/* Output and update for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189')" name="code2model"><font color="#117755"><i>&lt;S288&gt;/target_groundpass_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="30">   30   </a><span class="DT">void</span> <a name="fcn_target_groundpass_lib">target_groundpass_lib</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_r_ecef_m[3], <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="31">   31   </a>  rtu_targ_ecef_m[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *rty_sc_above_target, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> *rty_elev_sez_rad,
+</span><span><a class="LN" name="32">   32   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sc2target_ecef_unit[3], <span class="DT">const</span> <a href="target_groundpass_lib_h.html#type_ConstB_target_groundpass_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_ConstB_target_groundpass_lib');" target="_self"><font color="#1122aa">ConstB_target_groundpass_lib</font></a> *localC)
+</span><span><a class="LN" name="33">   33   </a><b>{</b>
+</span><span><a class="LN" name="34">   34   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sum_mj[3];
+</span><span><a class="LN" name="35">   35   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_MathFunction_b[3];
+</span><span><a class="LN" name="36">   36   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_kp;
+</span><span><a class="LN" name="37">   37   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="38">   38   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c_idx_3;
+</span><span><a class="LN" name="39">   39   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c5_idx_3;
+</span><span><a class="LN" name="40">   40   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c_idx_0;
+</span><span><a class="LN" name="41">   41   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c_idx_1;
+</span><span><a class="LN" name="42">   42   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c_idx_2;
+</span><span><a class="LN" name="43">   43   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="44">   44   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c5_idx_1;
+</span><span><a class="LN" name="45">   45   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_c5_idx_2;
+</span><span><a class="LN" name="46">   46   </a>
+</span><span><a class="LN" name="47">   47   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:8')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="48">   48   </a>  rtb_Switch_c5_idx_0 = rtu_targ_ecef_m[0] - rtu_r_ecef_m[0];
+</span><span><a class="LN" name="49">   49   </a>
+</span><span><a class="LN" name="50">   50   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:34')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Math Function</i></font></a>' */</span>
+</span><span><a class="LN" name="51">   51   </a>  rtb_MathFunction_b[0] = rtb_Switch_c5_idx_0 * rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="52">   52   </a>
+</span><span><a class="LN" name="53">   53   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:8')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="54">   54   </a>  rtb_Sum_mj[0] = rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="55">   55   </a>  rtb_Switch_c5_idx_0 = rtu_targ_ecef_m[1] - rtu_r_ecef_m[1];
+</span><span><a class="LN" name="56">   56   </a>
+</span><span><a class="LN" name="57">   57   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:34')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Math Function</i></font></a>' */</span>
+</span><span><a class="LN" name="58">   58   </a>  rtb_MathFunction_b[1] = rtb_Switch_c5_idx_0 * rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="59">   59   </a>
+</span><span><a class="LN" name="60">   60   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:8')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="61">   61   </a>  rtb_Sum_mj[1] = rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="62">   62   </a>  rtb_Switch_c5_idx_0 = rtu_targ_ecef_m[2] - rtu_r_ecef_m[2];
+</span><span><a class="LN" name="63">   63   </a>
+</span><span><a class="LN" name="64">   64   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:39')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Sum of Elements</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="65">   65   </a><span class="CT">   *  Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:34')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Math Function</i></font></a>'</span>
+</span><span><a class="LN" name="66">   66   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="67">   67   </a>  rtb_Sqrt_kp = rtb_MathFunction_b[0];
+</span><span><a class="LN" name="68">   68   </a>  rtb_Sqrt_kp += rtb_MathFunction_b[1];
+</span><span><a class="LN" name="69">   69   </a>  rtb_Sqrt_kp += rtb_Switch_c5_idx_0 * rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="70">   70   </a>
+</span><span><a class="LN" name="71">   71   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:35')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Math Function1</i></font></a>'</span>
+</span><span><a class="LN" name="72">   72   </a><span class="CT">   *</span>
+</span><span><a class="LN" name="73">   73   </a><span class="CT">   * About '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:35')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Math Function1</i></font></a>':</span>
+</span><span><a class="LN" name="74">   74   </a><span class="CT">   *  Operator: sqrt</span>
+</span><span><a class="LN" name="75">   75   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="76">   76   </a>  <span class="KW">if</span> (rtb_Sqrt_kp &lt; 0.0) <b>{</b>
+</span><span><a class="LN" name="77">   77   </a>    rtb_Sqrt_kp = -sqrt(fabs(rtb_Sqrt_kp));
+</span><span><a class="LN" name="78">   78   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="79">   79   </a>    rtb_Sqrt_kp = sqrt(rtb_Sqrt_kp);
+</span><span><a class="LN" name="80">   80   </a>  <b>}</b>
+</span><span><a class="LN" name="81">   81   </a>
+</span><span><a class="LN" name="82">   82   </a>  <span class="CT">/* End of Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:35')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Math Function1</i></font></a>' */</span>
+</span><span><a class="LN" name="83">   83   </a>
+</span><span><a class="LN" name="84">   84   </a>  <span class="CT">/* Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:40')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Switch</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="85">   85   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:30')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="86">   86   </a><span class="CT">   *  Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:38')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Product</i></font></a>'</span>
+</span><span><a class="LN" name="87">   87   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="88">   88   </a>  <span class="KW">if</span> (rtb_Sqrt_kp &gt; 0.0) <b>{</b>
+</span><span><a class="LN" name="89">   89   </a>    rtb_Switch_c_idx_0 = rtb_Sum_mj[0];
+</span><span><a class="LN" name="90">   90   </a>    rtb_Switch_c_idx_1 = rtb_Sum_mj[1];
+</span><span><a class="LN" name="91">   91   </a>    rtb_Switch_c_idx_2 = rtb_Switch_c5_idx_0;
+</span><span><a class="LN" name="92">   92   </a>    rtb_Switch_c_idx_3 = rtb_Sqrt_kp;
+</span><span><a class="LN" name="93">   93   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="94">   94   </a>    rtb_Switch_c_idx_0 = rtb_Sum_mj[0] * 0.0;
+</span><span><a class="LN" name="95">   95   </a>    rtb_Switch_c_idx_1 = rtb_Sum_mj[1] * 0.0;
+</span><span><a class="LN" name="96">   96   </a>    rtb_Switch_c_idx_2 = rtb_Switch_c5_idx_0 * 0.0;
+</span><span><a class="LN" name="97">   97   </a>    rtb_Switch_c_idx_3 = 1.0;
+</span><span><a class="LN" name="98">   98   </a>  <b>}</b>
+</span><span><a class="LN" name="99">   99   </a>
+</span><span><a class="LN" name="100">  100   </a>  <span class="CT">/* End of Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:40')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Switch</i></font></a>' */</span>
+</span><span><a class="LN" name="101">  101   </a>
+</span><span><a class="LN" name="102">  102   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:11')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Product</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="103">  103   </a><span class="CT">   *  Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:71')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Gain</i></font></a>'</span>
+</span><span><a class="LN" name="104">  104   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="105">  105   </a>  <span class="KW">for</span> (i = 0; i &lt; 3; i++) <b>{</b>
+</span><span><a class="LN" name="106">  106   </a>    rtb_MathFunction_b[i] = localC-&gt;VectorConcatenate[i + 6] *
+</span><span><a class="LN" name="107">  107   </a>      -rtb_Switch_c5_idx_0 + (localC-&gt;VectorConcatenate[i + 3] * -rtb_Sum_mj[1]
+</span><span><a class="LN" name="108">  108   </a>      + localC-&gt;VectorConcatenate[i] * -rtb_Sum_mj[0]);
+</span><span><a class="LN" name="109">  109   </a>  <b>}</b>
+</span><span><a class="LN" name="110">  110   </a>
+</span><span><a class="LN" name="111">  111   </a>  <span class="CT">/* End of Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:11')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Product</i></font></a>' */</span>
+</span><span><a class="LN" name="112">  112   </a>
+</span><span><a class="LN" name="113">  113   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:39')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Sum of Elements</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="114">  114   </a><span class="CT">   *  Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:34')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Math Function</i></font></a>'</span>
+</span><span><a class="LN" name="115">  115   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="116">  116   </a>  rtb_Sqrt_kp = rtb_MathFunction_b[0] * rtb_MathFunction_b[0];
+</span><span><a class="LN" name="117">  117   </a>  rtb_Sqrt_kp += rtb_MathFunction_b[1] * rtb_MathFunction_b[1];
+</span><span><a class="LN" name="118">  118   </a>  rtb_Sqrt_kp += rtb_MathFunction_b[2] * rtb_MathFunction_b[2];
+</span><span><a class="LN" name="119">  119   </a>
+</span><span><a class="LN" name="120">  120   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:35')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Math Function1</i></font></a>'</span>
+</span><span><a class="LN" name="121">  121   </a><span class="CT">   *</span>
+</span><span><a class="LN" name="122">  122   </a><span class="CT">   * About '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:35')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Math Function1</i></font></a>':</span>
+</span><span><a class="LN" name="123">  123   </a><span class="CT">   *  Operator: sqrt</span>
+</span><span><a class="LN" name="124">  124   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="125">  125   </a>  <span class="KW">if</span> (rtb_Sqrt_kp &lt; 0.0) <b>{</b>
+</span><span><a class="LN" name="126">  126   </a>    rtb_Sqrt_kp = -sqrt(fabs(rtb_Sqrt_kp));
+</span><span><a class="LN" name="127">  127   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="128">  128   </a>    rtb_Sqrt_kp = sqrt(rtb_Sqrt_kp);
+</span><span><a class="LN" name="129">  129   </a>  <b>}</b>
+</span><span><a class="LN" name="130">  130   </a>
+</span><span><a class="LN" name="131">  131   </a>  <span class="CT">/* End of Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:35')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Math Function1</i></font></a>' */</span>
+</span><span><a class="LN" name="132">  132   </a>
+</span><span><a class="LN" name="133">  133   </a>  <span class="CT">/* Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:40')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Switch</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="134">  134   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:30')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="135">  135   </a><span class="CT">   *  Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:38')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Product</i></font></a>'</span>
+</span><span><a class="LN" name="136">  136   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="137">  137   </a>  <span class="KW">if</span> (rtb_Sqrt_kp &gt; 0.0) <b>{</b>
+</span><span><a class="LN" name="138">  138   </a>    rtb_Switch_c5_idx_0 = rtb_MathFunction_b[0];
+</span><span><a class="LN" name="139">  139   </a>    rtb_Switch_c5_idx_1 = rtb_MathFunction_b[1];
+</span><span><a class="LN" name="140">  140   </a>    rtb_Switch_c5_idx_2 = rtb_MathFunction_b[2];
+</span><span><a class="LN" name="141">  141   </a>    rtb_Switch_c5_idx_3 = rtb_Sqrt_kp;
+</span><span><a class="LN" name="142">  142   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="143">  143   </a>    rtb_Switch_c5_idx_0 = rtb_MathFunction_b[0] * 0.0;
+</span><span><a class="LN" name="144">  144   </a>    rtb_Switch_c5_idx_1 = rtb_MathFunction_b[1] * 0.0;
+</span><span><a class="LN" name="145">  145   </a>    rtb_Switch_c5_idx_2 = rtb_MathFunction_b[2] * 0.0;
+</span><span><a class="LN" name="146">  146   </a>    rtb_Switch_c5_idx_3 = 1.0;
+</span><span><a class="LN" name="147">  147   </a>  <b>}</b>
+</span><span><a class="LN" name="148">  148   </a>
+</span><span><a class="LN" name="149">  149   </a>  <span class="CT">/* End of Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:40')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Switch</i></font></a>' */</span>
+</span><span><a class="LN" name="150">  150   </a>
+</span><span><a class="LN" name="151">  151   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:32')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="152">  152   </a>  rtb_Sum_mj[0] = rtb_Switch_c5_idx_0 / rtb_Switch_c5_idx_3;
+</span><span><a class="LN" name="153">  153   </a>
+</span><span><a class="LN" name="154">  154   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:32')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="155">  155   </a>  rty_sc2target_ecef_unit[0] = rtb_Switch_c_idx_0 / rtb_Switch_c_idx_3;
+</span><span><a class="LN" name="156">  156   </a>
+</span><span><a class="LN" name="157">  157   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:32')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="158">  158   </a>  rtb_Sum_mj[1] = rtb_Switch_c5_idx_1 / rtb_Switch_c5_idx_3;
+</span><span><a class="LN" name="159">  159   </a>
+</span><span><a class="LN" name="160">  160   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:32')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="161">  161   </a>  rty_sc2target_ecef_unit[1] = rtb_Switch_c_idx_1 / rtb_Switch_c_idx_3;
+</span><span><a class="LN" name="162">  162   </a>
+</span><span><a class="LN" name="163">  163   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:64:32')" name="code2model"><font color="#117755"><i>&lt;S338&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="164">  164   </a>  rtb_Sum_mj[2] = rtb_Switch_c5_idx_2 / rtb_Switch_c5_idx_3;
+</span><span><a class="LN" name="165">  165   </a>
+</span><span><a class="LN" name="166">  166   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:17:32')" name="code2model"><font color="#117755"><i>&lt;S337&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="167">  167   </a>  rty_sc2target_ecef_unit[2] = rtb_Switch_c_idx_2 / rtb_Switch_c_idx_3;
+</span><span><a class="LN" name="168">  168   </a>
+</span><span><a class="LN" name="169">  169   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:12')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="170">  170   </a>  rtb_Sqrt_kp = <a href="twonorm_c.html#fcn_twonorm_f" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm_f');" target="_self"><font color="#1122aa">twonorm_f</font></a>(&amp;rtb_Sum_mj[0]);
+</span><span><a class="LN" name="171">  171   </a>
+</span><span><a class="LN" name="172">  172   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:12')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="173">  173   </a>
+</span><span><a class="LN" name="174">  174   </a>  <span class="CT">/* Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:62')" name="code2model"><font color="#117755"><i>&lt;S294&gt;/Atan2</i></font></a>' */</span>
+</span><span><a class="LN" name="175">  175   </a>  *rty_elev_sez_rad = <a href="../../slprj/ert/_sharedutils/html/rt_atan2d_snf_c.html#fcn_rt_atan2d_snf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rt_atan2d_snf');" target="_self"><font color="#1122aa">rt_atan2d_snf</font></a>(rtb_Sum_mj[2], rtb_Sqrt_kp);
+</span><span><a class="LN" name="176">  176   </a>
+</span><span><a class="LN" name="177">  177   </a>  <span class="CT">/* RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:16:2')" name="code2model"><font color="#117755"><i>&lt;S336&gt;/Compare</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="178">  178   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:16:3')" name="code2model"><font color="#117755"><i>&lt;S336&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="179">  179   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="180">  180   </a>  *rty_sc_above_target = (*rty_elev_sez_rad &gt;= 0.17453292519943295);
+</span><span><a class="LN" name="181">  181   </a><b>}</b>
+</span><span><a class="LN" name="182">  182   </a>
+</span><span><a class="LN" name="183">  183   </a><span class="CT">/* Output and update for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191')" name="code2model"><font color="#117755"><i>&lt;S288&gt;/target_groundpass_lib1</i></font></a>' */</span>
+</span><span><a class="LN" name="184">  184   </a><span class="DT">void</span> <a name="fcn_target_groundpass_lib1">target_groundpass_lib1</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_r_ecef_m[3], <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="185">  185   </a>  rtu_targ_ecef_m[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_targ_gd_lat_deg, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_targ_lon_deg,
+</span><span><a class="LN" name="186">  186   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *rty_sc_above_target, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> *rty_elev_sez_rad, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="187">  187   </a>  rty_sc2target_ecef_unit[3])
+</span><span><a class="LN" name="188">  188   </a><b>{</b>
+</span><span><a class="LN" name="189">  189   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sum_mk[3];
+</span><span><a class="LN" name="190">  190   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_MathFunction_br[3];
+</span><span><a class="LN" name="191">  191   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_SinCos_o1;
+</span><span><a class="LN" name="192">  192   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_SinCos1_o1;
+</span><span><a class="LN" name="193">  193   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VectorConcatenate[9];
+</span><span><a class="LN" name="194">  194   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_gw;
+</span><span><a class="LN" name="195">  195   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="196">  196   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_lp_idx_3;
+</span><span><a class="LN" name="197">  197   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_lp_idx_0;
+</span><span><a class="LN" name="198">  198   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_lp_idx_1;
+</span><span><a class="LN" name="199">  199   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_lp_idx_2;
+</span><span><a class="LN" name="200">  200   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="201">  201   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Switch_n0_idx_2;
+</span><span><a class="LN" name="202">  202   </a>
+</span><span><a class="LN" name="203">  203   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:8')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="204">  204   </a>  rtb_Switch_n0_idx_0 = rtu_targ_ecef_m[0] - rtu_r_ecef_m[0];
+</span><span><a class="LN" name="205">  205   </a>
+</span><span><a class="LN" name="206">  206   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:34')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Math Function</i></font></a>' */</span>
+</span><span><a class="LN" name="207">  207   </a>  rtb_MathFunction_br[0] = rtb_Switch_n0_idx_0 * rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="208">  208   </a>
+</span><span><a class="LN" name="209">  209   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:8')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="210">  210   </a>  rtb_Sum_mk[0] = rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="211">  211   </a>  rtb_Switch_n0_idx_0 = rtu_targ_ecef_m[1] - rtu_r_ecef_m[1];
+</span><span><a class="LN" name="212">  212   </a>
+</span><span><a class="LN" name="213">  213   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:34')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Math Function</i></font></a>' */</span>
+</span><span><a class="LN" name="214">  214   </a>  rtb_MathFunction_br[1] = rtb_Switch_n0_idx_0 * rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="215">  215   </a>
+</span><span><a class="LN" name="216">  216   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:8')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="217">  217   </a>  rtb_Sum_mk[1] = rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="218">  218   </a>  rtb_Switch_n0_idx_0 = rtu_targ_ecef_m[2] - rtu_r_ecef_m[2];
+</span><span><a class="LN" name="219">  219   </a>
+</span><span><a class="LN" name="220">  220   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:39')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Sum of Elements</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="221">  221   </a><span class="CT">   *  Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:34')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Math Function</i></font></a>'</span>
+</span><span><a class="LN" name="222">  222   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="223">  223   </a>  rtb_SinCos_o1 = (rtb_MathFunction_br[0] + rtb_MathFunction_br[1]) +
+</span><span><a class="LN" name="224">  224   </a>    rtb_Switch_n0_idx_0 * rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="225">  225   </a>
+</span><span><a class="LN" name="226">  226   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:35')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Math Function1</i></font></a>'</span>
+</span><span><a class="LN" name="227">  227   </a><span class="CT">   *</span>
+</span><span><a class="LN" name="228">  228   </a><span class="CT">   * About '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:35')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Math Function1</i></font></a>':</span>
+</span><span><a class="LN" name="229">  229   </a><span class="CT">   *  Operator: sqrt</span>
+</span><span><a class="LN" name="230">  230   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="231">  231   </a>  <span class="KW">if</span> (rtb_SinCos_o1 &lt; 0.0) <b>{</b>
+</span><span><a class="LN" name="232">  232   </a>    rtb_SinCos_o1 = -sqrt(fabs(rtb_SinCos_o1));
+</span><span><a class="LN" name="233">  233   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="234">  234   </a>    rtb_SinCos_o1 = sqrt(rtb_SinCos_o1);
+</span><span><a class="LN" name="235">  235   </a>  <b>}</b>
+</span><span><a class="LN" name="236">  236   </a>
+</span><span><a class="LN" name="237">  237   </a>  <span class="CT">/* End of Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:35')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Math Function1</i></font></a>' */</span>
+</span><span><a class="LN" name="238">  238   </a>
+</span><span><a class="LN" name="239">  239   </a>  <span class="CT">/* Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:40')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Switch</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="240">  240   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:30')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="241">  241   </a><span class="CT">   *  Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:38')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Product</i></font></a>'</span>
+</span><span><a class="LN" name="242">  242   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="243">  243   </a>  <span class="KW">if</span> (rtb_SinCos_o1 &gt; 0.0) <b>{</b>
+</span><span><a class="LN" name="244">  244   </a>    rtb_Switch_lp_idx_0 = rtb_Sum_mk[0];
+</span><span><a class="LN" name="245">  245   </a>    rtb_Switch_lp_idx_1 = rtb_Sum_mk[1];
+</span><span><a class="LN" name="246">  246   </a>    rtb_Switch_lp_idx_2 = rtb_Switch_n0_idx_0;
+</span><span><a class="LN" name="247">  247   </a>    rtb_Switch_lp_idx_3 = rtb_SinCos_o1;
+</span><span><a class="LN" name="248">  248   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="249">  249   </a>    rtb_Switch_lp_idx_0 = rtb_Sum_mk[0] * 0.0;
+</span><span><a class="LN" name="250">  250   </a>    rtb_Switch_lp_idx_1 = rtb_Sum_mk[1] * 0.0;
+</span><span><a class="LN" name="251">  251   </a>    rtb_Switch_lp_idx_2 = rtb_Switch_n0_idx_0 * 0.0;
+</span><span><a class="LN" name="252">  252   </a>    rtb_Switch_lp_idx_3 = 1.0;
+</span><span><a class="LN" name="253">  253   </a>  <b>}</b>
+</span><span><a class="LN" name="254">  254   </a>
+</span><span><a class="LN" name="255">  255   </a>  <span class="CT">/* End of Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:40')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Switch</i></font></a>' */</span>
+</span><span><a class="LN" name="256">  256   </a>
+</span><span><a class="LN" name="257">  257   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:60')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/deg2rad1</i></font></a>' */</span>
+</span><span><a class="LN" name="258">  258   </a>  rtb_SinCos_o1 = 0.017453292519943295 * rtu_targ_gd_lat_deg;
+</span><span><a class="LN" name="259">  259   </a>
+</span><span><a class="LN" name="260">  260   </a>  <span class="CT">/* Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:34')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos</i></font></a>' */</span>
+</span><span><a class="LN" name="261">  261   </a>  rtb_Switch_n0_idx_2 = cos(rtb_SinCos_o1);
+</span><span><a class="LN" name="262">  262   </a>  rtb_SinCos_o1 = sin(rtb_SinCos_o1);
+</span><span><a class="LN" name="263">  263   </a>
+</span><span><a class="LN" name="264">  264   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:61')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/deg2rad2</i></font></a>' */</span>
+</span><span><a class="LN" name="265">  265   </a>  rtb_SinCos1_o1 = 0.017453292519943295 * rtu_targ_lon_deg;
+</span><span><a class="LN" name="266">  266   </a>
+</span><span><a class="LN" name="267">  267   </a>  <span class="CT">/* Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:35')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos1</i></font></a>' */</span>
+</span><span><a class="LN" name="268">  268   </a>  rtb_Sqrt_gw = cos(rtb_SinCos1_o1);
+</span><span><a class="LN" name="269">  269   </a>  rtb_SinCos1_o1 = sin(rtb_SinCos1_o1);
+</span><span><a class="LN" name="270">  270   </a>
+</span><span><a class="LN" name="271">  271   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:36')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Product</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="272">  272   </a><span class="CT">   *  Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:35')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos1</i></font></a>'</span>
+</span><span><a class="LN" name="273">  273   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="274">  274   </a>  rtb_VectorConcatenate[0] = rtb_SinCos_o1 * rtb_Sqrt_gw;
+</span><span><a class="LN" name="275">  275   </a>
+</span><span><a class="LN" name="276">  276   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:49')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Gain1</i></font></a>' */</span>
+</span><span><a class="LN" name="277">  277   </a>  rtb_VectorConcatenate[1] = -rtb_SinCos1_o1;
+</span><span><a class="LN" name="278">  278   </a>
+</span><span><a class="LN" name="279">  279   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:53')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Product2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="280">  280   </a><span class="CT">   *  Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:34')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos</i></font></a>'</span>
+</span><span><a class="LN" name="281">  281   </a><span class="CT">   *  Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:35')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos1</i></font></a>'</span>
+</span><span><a class="LN" name="282">  282   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="283">  283   </a>  rtb_VectorConcatenate[2] = rtb_Switch_n0_idx_2 * rtb_Sqrt_gw;
+</span><span><a class="LN" name="284">  284   </a>
+</span><span><a class="LN" name="285">  285   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:43')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Product1</i></font></a>' */</span>
+</span><span><a class="LN" name="286">  286   </a>  rtb_VectorConcatenate[3] = rtb_SinCos_o1 * rtb_SinCos1_o1;
+</span><span><a class="LN" name="287">  287   </a>
+</span><span><a class="LN" name="288">  288   </a>  <span class="CT">/* SignalConversion: '&lt;S347&gt;/ConcatBufferAtVector ConcatenateIn5' incorporates:</span>
+</span><span><a class="LN" name="289">  289   </a><span class="CT">   *  Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:35')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos1</i></font></a>'</span>
+</span><span><a class="LN" name="290">  290   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="291">  291   </a>  rtb_VectorConcatenate[4] = rtb_Sqrt_gw;
+</span><span><a class="LN" name="292">  292   </a>
+</span><span><a class="LN" name="293">  293   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:56')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Product3</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="294">  294   </a><span class="CT">   *  Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:34')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos</i></font></a>'</span>
+</span><span><a class="LN" name="295">  295   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="296">  296   </a>  rtb_VectorConcatenate[5] = rtb_Switch_n0_idx_2 * rtb_SinCos1_o1;
+</span><span><a class="LN" name="297">  297   </a>
+</span><span><a class="LN" name="298">  298   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:47')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Gain</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="299">  299   </a><span class="CT">   *  Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:34')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/SinCos</i></font></a>'</span>
+</span><span><a class="LN" name="300">  300   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="301">  301   </a>  rtb_VectorConcatenate[6] = -rtb_Switch_n0_idx_2;
+</span><span><a class="LN" name="302">  302   </a>
+</span><span><a class="LN" name="303">  303   </a>  <span class="CT">/* SignalConversion: '&lt;S347&gt;/ConcatBufferAtVector ConcatenateIn8' incorporates:</span>
+</span><span><a class="LN" name="304">  304   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:52')" name="code2model"><font color="#117755"><i>&lt;S345&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="305">  305   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="306">  306   </a>  rtb_VectorConcatenate[7] = 0.0;
+</span><span><a class="LN" name="307">  307   </a>
+</span><span><a class="LN" name="308">  308   </a>  <span class="CT">/* SignalConversion: '&lt;S347&gt;/ConcatBufferAtVector ConcatenateIn9' */</span>
+</span><span><a class="LN" name="309">  309   </a>  rtb_VectorConcatenate[8] = rtb_SinCos_o1;
+</span><span><a class="LN" name="310">  310   </a>
+</span><span><a class="LN" name="311">  311   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:11')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Product</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="312">  312   </a><span class="CT">   *  Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:71')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Gain</i></font></a>'</span>
+</span><span><a class="LN" name="313">  313   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="314">  314   </a>  <span class="KW">for</span> (i = 0; i &lt; 3; i++) <b>{</b>
+</span><span><a class="LN" name="315">  315   </a>    rtb_MathFunction_br[i] = rtb_VectorConcatenate[i + 6] * -rtb_Switch_n0_idx_0
+</span><span><a class="LN" name="316">  316   </a>      + (rtb_VectorConcatenate[i + 3] * -rtb_Sum_mk[1] + rtb_VectorConcatenate[i]
+</span><span><a class="LN" name="317">  317   </a>         * -rtb_Sum_mk[0]);
+</span><span><a class="LN" name="318">  318   </a>  <b>}</b>
+</span><span><a class="LN" name="319">  319   </a>
+</span><span><a class="LN" name="320">  320   </a>  <span class="CT">/* End of Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:11')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Product</i></font></a>' */</span>
+</span><span><a class="LN" name="321">  321   </a>
+</span><span><a class="LN" name="322">  322   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:39')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Sum of Elements</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="323">  323   </a><span class="CT">   *  Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:34')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Math Function</i></font></a>'</span>
+</span><span><a class="LN" name="324">  324   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="325">  325   </a>  rtb_Sqrt_gw = rtb_MathFunction_br[0] * rtb_MathFunction_br[0];
+</span><span><a class="LN" name="326">  326   </a>  rtb_Sqrt_gw += rtb_MathFunction_br[1] * rtb_MathFunction_br[1];
+</span><span><a class="LN" name="327">  327   </a>  rtb_Sqrt_gw += rtb_MathFunction_br[2] * rtb_MathFunction_br[2];
+</span><span><a class="LN" name="328">  328   </a>
+</span><span><a class="LN" name="329">  329   </a>  <span class="CT">/* Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:35')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Math Function1</i></font></a>'</span>
+</span><span><a class="LN" name="330">  330   </a><span class="CT">   *</span>
+</span><span><a class="LN" name="331">  331   </a><span class="CT">   * About '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:35')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Math Function1</i></font></a>':</span>
+</span><span><a class="LN" name="332">  332   </a><span class="CT">   *  Operator: sqrt</span>
+</span><span><a class="LN" name="333">  333   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="334">  334   </a>  <span class="KW">if</span> (rtb_Sqrt_gw &lt; 0.0) <b>{</b>
+</span><span><a class="LN" name="335">  335   </a>    rtb_Sqrt_gw = -sqrt(fabs(rtb_Sqrt_gw));
+</span><span><a class="LN" name="336">  336   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="337">  337   </a>    rtb_Sqrt_gw = sqrt(rtb_Sqrt_gw);
+</span><span><a class="LN" name="338">  338   </a>  <b>}</b>
+</span><span><a class="LN" name="339">  339   </a>
+</span><span><a class="LN" name="340">  340   </a>  <span class="CT">/* End of Math: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:35')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Math Function1</i></font></a>' */</span>
+</span><span><a class="LN" name="341">  341   </a>
+</span><span><a class="LN" name="342">  342   </a>  <span class="CT">/* Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:40')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Switch</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="343">  343   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:30')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="344">  344   </a><span class="CT">   *  Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:38')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Product</i></font></a>'</span>
+</span><span><a class="LN" name="345">  345   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="346">  346   </a>  <span class="KW">if</span> (rtb_Sqrt_gw &gt; 0.0) <b>{</b>
+</span><span><a class="LN" name="347">  347   </a>    rtb_Switch_n0_idx_0 = rtb_MathFunction_br[0];
+</span><span><a class="LN" name="348">  348   </a>    rtb_SinCos_o1 = rtb_MathFunction_br[1];
+</span><span><a class="LN" name="349">  349   </a>    rtb_Switch_n0_idx_2 = rtb_MathFunction_br[2];
+</span><span><a class="LN" name="350">  350   </a>    rtb_SinCos1_o1 = rtb_Sqrt_gw;
+</span><span><a class="LN" name="351">  351   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="352">  352   </a>    rtb_Switch_n0_idx_0 = rtb_MathFunction_br[0] * 0.0;
+</span><span><a class="LN" name="353">  353   </a>    rtb_SinCos_o1 = rtb_MathFunction_br[1] * 0.0;
+</span><span><a class="LN" name="354">  354   </a>    rtb_Switch_n0_idx_2 = rtb_MathFunction_br[2] * 0.0;
+</span><span><a class="LN" name="355">  355   </a>    rtb_SinCos1_o1 = 1.0;
+</span><span><a class="LN" name="356">  356   </a>  <b>}</b>
+</span><span><a class="LN" name="357">  357   </a>
+</span><span><a class="LN" name="358">  358   </a>  <span class="CT">/* End of Switch: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:40')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Switch</i></font></a>' */</span>
+</span><span><a class="LN" name="359">  359   </a>
+</span><span><a class="LN" name="360">  360   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:32')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="361">  361   </a>  rtb_Sum_mk[0] = rtb_Switch_n0_idx_0 / rtb_SinCos1_o1;
+</span><span><a class="LN" name="362">  362   </a>
+</span><span><a class="LN" name="363">  363   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:32')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="364">  364   </a>  rty_sc2target_ecef_unit[0] = rtb_Switch_lp_idx_0 / rtb_Switch_lp_idx_3;
+</span><span><a class="LN" name="365">  365   </a>
+</span><span><a class="LN" name="366">  366   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:32')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="367">  367   </a>  rtb_Sum_mk[1] = rtb_SinCos_o1 / rtb_SinCos1_o1;
+</span><span><a class="LN" name="368">  368   </a>
+</span><span><a class="LN" name="369">  369   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:32')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="370">  370   </a>  rty_sc2target_ecef_unit[1] = rtb_Switch_lp_idx_1 / rtb_Switch_lp_idx_3;
+</span><span><a class="LN" name="371">  371   </a>
+</span><span><a class="LN" name="372">  372   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:64:32')" name="code2model"><font color="#117755"><i>&lt;S344&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="373">  373   </a>  rtb_Sum_mk[2] = rtb_Switch_n0_idx_2 / rtb_SinCos1_o1;
+</span><span><a class="LN" name="374">  374   </a>
+</span><span><a class="LN" name="375">  375   </a>  <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:17:32')" name="code2model"><font color="#117755"><i>&lt;S343&gt;/Divide</i></font></a>' */</span>
+</span><span><a class="LN" name="376">  376   </a>  rty_sc2target_ecef_unit[2] = rtb_Switch_lp_idx_2 / rtb_Switch_lp_idx_3;
+</span><span><a class="LN" name="377">  377   </a>
+</span><span><a class="LN" name="378">  378   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:12')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="379">  379   </a>  rtb_Sqrt_gw = <a href="twonorm_c.html#fcn_twonorm_f" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm_f');" target="_self"><font color="#1122aa">twonorm_f</font></a>(&amp;rtb_Sum_mk[0]);
+</span><span><a class="LN" name="380">  380   </a>
+</span><span><a class="LN" name="381">  381   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:12')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="382">  382   </a>
+</span><span><a class="LN" name="383">  383   </a>  <span class="CT">/* Trigonometry: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:62')" name="code2model"><font color="#117755"><i>&lt;S295&gt;/Atan2</i></font></a>' */</span>
+</span><span><a class="LN" name="384">  384   </a>  *rty_elev_sez_rad = <a href="../../slprj/ert/_sharedutils/html/rt_atan2d_snf_c.html#fcn_rt_atan2d_snf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rt_atan2d_snf');" target="_self"><font color="#1122aa">rt_atan2d_snf</font></a>(rtb_Sum_mk[2], rtb_Sqrt_gw);
+</span><span><a class="LN" name="385">  385   </a>
+</span><span><a class="LN" name="386">  386   </a>  <span class="CT">/* RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:16:2')" name="code2model"><font color="#117755"><i>&lt;S342&gt;/Compare</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="387">  387   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:191:16:3')" name="code2model"><font color="#117755"><i>&lt;S342&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="388">  388   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="389">  389   </a>  *rty_sc_above_target = (*rty_elev_sez_rad &gt;= 0.17453292519943295);
+</span><span><a class="LN" name="390">  390   </a><b>}</b>
+</span><span><a class="LN" name="391">  391   </a>
+</span><span><a class="LN" name="392">  392   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="393">  393   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="394">  394   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="395">  395   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="396">  396   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="397">  397   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

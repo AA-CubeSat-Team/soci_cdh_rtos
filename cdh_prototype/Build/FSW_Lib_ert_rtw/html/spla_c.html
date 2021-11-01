@@ -1,0 +1,184 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - spla.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('spla_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/spla.c" target="rtwreport_document_frame" id="linkToText_plain">spla.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="22">   22   </a><span class="CT"> * Sparse linear algebra library for solver, i.e. no memory manager</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * such as malloc is accessed by this module.</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="25">   25   </a>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;spla.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="29">   29   </a>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a><span class="CT">/* </span>
+</span><span><a class="LN" name="32">   32   </a><span class="CT"> * Sparse matrix-vector multiply for operations</span>
+</span><span><a class="LN" name="33">   33   </a><span class="CT"> * </span>
+</span><span><a class="LN" name="34">   34   </a><span class="CT"> *		y  =  A*x  (if a &gt; 0 && newVector == 1)</span>
+</span><span><a class="LN" name="35">   35   </a><span class="CT"> *		y +=  A*x  (if a &gt; 0 && newVector == 0)</span>
+</span><span><a class="LN" name="36">   36   </a><span class="CT"> *		y  = -A*x  (if a &lt; 0 && newVector == 1)</span>
+</span><span><a class="LN" name="37">   37   </a><span class="CT"> *		y -=  A*x  (if a &lt; 0 && newVector == 0)</span>
+</span><span><a class="LN" name="38">   38   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="39">   39   </a><span class="CT"> * where A is a sparse matrix and both x and y are assumed to be dense.</span>
+</span><span><a class="LN" name="40">   40   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="41">   41   </a><span class="DT">void</span> <a name="fcn_sparseMV">sparseMV</a>(spmat* A, pfloat* x, pfloat* y, idxint a, idxint newVector)
+</span><span><a class="LN" name="42">   42   </a><b>{</b>
+</span><span><a class="LN" name="43">   43   </a>	idxint i, j;
+</span><span><a class="LN" name="44">   44   </a>	<span class="CT">/* fill y with zeros in case A happens to not have any zero rows */</span>
+</span><span><a class="LN" name="45">   45   </a>	<span class="KW">if</span>( newVector &gt; 0 )<b>{</b> <span class="KW">for</span>( i=0; i&lt;A-&gt;m; i++ )<b>{</b> y[i] = 0; <b>}</b> <b>}</b>
+</span><span><a class="LN" name="46">   46   </a>	
+</span><span><a class="LN" name="47">   47   </a>  <span class="CT">/* if there are no entries in A, just do nothing */</span>
+</span><span><a class="LN" name="48">   48   </a>  <span class="KW">if</span>( A-&gt;nnz == 0 ) <span class="KW">return</span>;
+</span><span><a class="LN" name="49">   49   </a>  
+</span><span><a class="LN" name="50">   50   </a>	<span class="KW">if</span>( a &gt; 0 )<b>{</b>
+</span><span><a class="LN" name="51">   51   </a>		<span class="CT">/* Add A*x */</span>
+</span><span><a class="LN" name="52">   52   </a>		<span class="KW">for</span>( j=0; j&lt;A-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="53">   53   </a>			<span class="KW">for</span>( i=A-&gt;jc[j]; i &lt; A-&gt;jc[j+1]; i++ )<b>{</b>
+</span><span><a class="LN" name="54">   54   </a>				y[A-&gt;ir[i]] += A-&gt;pr[i]*x[j];
+</span><span><a class="LN" name="55">   55   </a>			<b>}</b>
+</span><span><a class="LN" name="56">   56   </a>		<b>}</b>
+</span><span><a class="LN" name="57">   57   </a>	<b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="58">   58   </a>		<span class="CT">/* Subtract A*x */</span>
+</span><span><a class="LN" name="59">   59   </a>		<span class="KW">for</span>( j=0; j&lt;A-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="60">   60   </a>			<span class="KW">for</span>( i=A-&gt;jc[j]; i &lt; A-&gt;jc[j+1]; i++ )<b>{</b>
+</span><span><a class="LN" name="61">   61   </a>				y[A-&gt;ir[i]] -= A-&gt;pr[i]*x[j];
+</span><span><a class="LN" name="62">   62   </a>			<b>}</b>
+</span><span><a class="LN" name="63">   63   </a>		<b>}</b>
+</span><span><a class="LN" name="64">   64   </a>	<b>}</b>
+</span><span><a class="LN" name="65">   65   </a><b>}</b>
+</span><span><a class="LN" name="66">   66   </a>
+</span><span><a class="LN" name="67">   67   </a>
+</span><span><a class="LN" name="68">   68   </a><span class="CT">/* </span>
+</span><span><a class="LN" name="69">   69   </a><span class="CT"> * Sparse matrix-transpose-vector multiply with subtraction.</span>
+</span><span><a class="LN" name="70">   70   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="71">   71   </a><span class="CT"> * If newVector &gt; 0, then this computes y = -A'*x,</span>
+</span><span><a class="LN" name="72">   72   </a><span class="CT"> *                           otherwise  y -= A'*x,</span>
+</span><span><a class="LN" name="73">   73   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="74">   74   </a><span class="CT"> * where A is a sparse matrix and both x and y are assumed to be dense.</span>
+</span><span><a class="LN" name="75">   75   </a><span class="CT"> * If skipDiagonal == 1, then the contributions of diagonal elements are</span>
+</span><span><a class="LN" name="76">   76   </a><span class="CT"> * not counted.</span>
+</span><span><a class="LN" name="77">   77   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="78">   78   </a><span class="CT"> * NOTE: The product is calculating without explicitly forming the</span>
+</span><span><a class="LN" name="79">   79   </a><span class="CT"> *       transpose.</span>
+</span><span><a class="LN" name="80">   80   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="81">   81   </a><span class="DT">void</span> <a name="fcn_sparseMtVm">sparseMtVm</a>(spmat* A, pfloat* x, pfloat* y, idxint newVector, idxint skipDiagonal)
+</span><span><a class="LN" name="82">   82   </a><b>{</b>
+</span><span><a class="LN" name="83">   83   </a>	idxint i, j, k;
+</span><span><a class="LN" name="84">   84   </a>	<span class="CT">/* fill y with zeros in case A happens to not have any zero rows */</span>
+</span><span><a class="LN" name="85">   85   </a>	<span class="KW">if</span>( newVector &gt; 0 )<b>{</b> <span class="KW">for</span>( j=0; j&lt;A-&gt;n; j++ )<b>{</b> y[j] = 0; <b>}</b> <b>}</b>
+</span><span><a class="LN" name="86">   86   </a>  
+</span><span><a class="LN" name="87">   87   </a>  <span class="CT">/* if there are no entries in A, just do nothing */</span>
+</span><span><a class="LN" name="88">   88   </a>  <span class="KW">if</span>( A-&gt;nnz == 0 ) <span class="KW">return</span>;
+</span><span><a class="LN" name="89">   89   </a>	
+</span><span><a class="LN" name="90">   90   </a>	<span class="KW">if</span>( skipDiagonal )<b>{</b>
+</span><span><a class="LN" name="91">   91   </a>		<span class="CT">/* Subtract A'*x */</span>	
+</span><span><a class="LN" name="92">   92   </a>		<span class="KW">for</span>( j=0; j&lt;A-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="93">   93   </a>			<span class="KW">for</span>( k=A-&gt;jc[j]; k &lt; A-&gt;jc[j+1]; k++ )<b>{</b>		
+</span><span><a class="LN" name="94">   94   </a>				i = A-&gt;ir[k];
+</span><span><a class="LN" name="95">   95   </a>				y[j] -= i==j? 0 : A-&gt;pr[k]*x[i];
+</span><span><a class="LN" name="96">   96   </a>			<b>}</b>
+</span><span><a class="LN" name="97">   97   </a>		<b>}</b>
+</span><span><a class="LN" name="98">   98   </a>	<b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="99">   99   </a>		<span class="CT">/* Subtract A'*x */</span>	
+</span><span><a class="LN" name="100">  100   </a>		<span class="KW">for</span>( j=0; j&lt;A-&gt;n; j++ )<b>{</b>
+</span><span><a class="LN" name="101">  101   </a>			<span class="KW">for</span>( k=A-&gt;jc[j]; k &lt; A-&gt;jc[j+1]; k++ )<b>{</b>			
+</span><span><a class="LN" name="102">  102   </a>				y[j] -= A-&gt;pr[k]*x[A-&gt;ir[k]];
+</span><span><a class="LN" name="103">  103   </a>			<b>}</b>
+</span><span><a class="LN" name="104">  104   </a>		<b>}</b>
+</span><span><a class="LN" name="105">  105   </a>	<b>}</b>
+</span><span><a class="LN" name="106">  106   </a><b>}</b>
+</span><span><a class="LN" name="107">  107   </a>
+</span><span><a class="LN" name="108">  108   </a>
+</span><span><a class="LN" name="109">  109   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="110">  110   </a><span class="CT"> * Vector addition y += x of size n. </span>
+</span><span><a class="LN" name="111">  111   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="112">  112   </a><span class="DT">void</span> <a name="fcn_vadd">vadd</a>(idxint n, pfloat* x, pfloat* y)
+</span><span><a class="LN" name="113">  113   </a><b>{</b>
+</span><span><a class="LN" name="114">  114   </a>	idxint i;
+</span><span><a class="LN" name="115">  115   </a>	<span class="KW">for</span>( i=0; i&lt;n; i++)<b>{</b> y[i] += x[i]; <b>}</b>
+</span><span><a class="LN" name="116">  116   </a><b>}</b>
+</span><span><a class="LN" name="117">  117   </a>
+</span><span><a class="LN" name="118">  118   </a>
+</span><span><a class="LN" name="119">  119   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="120">  120   </a><span class="CT"> * Vector subtraction with scaling: y -= a*x of size n. </span>
+</span><span><a class="LN" name="121">  121   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="122">  122   </a><span class="DT">void</span> <a name="fcn_vsubscale">vsubscale</a>(idxint n, pfloat a, pfloat* x, pfloat* y)
+</span><span><a class="LN" name="123">  123   </a><b>{</b>
+</span><span><a class="LN" name="124">  124   </a>	idxint i;
+</span><span><a class="LN" name="125">  125   </a>	<span class="KW">for</span>( i=0; i&lt;n; i++)<b>{</b> y[i] -= a*x[i]; <b>}</b>
+</span><span><a class="LN" name="126">  126   </a><b>}</b>
+</span><span><a class="LN" name="127">  127   </a>
+</span><span><a class="LN" name="128">  128   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="129">  129   </a><span class="CT"> * 2-norm of a vector.</span>
+</span><span><a class="LN" name="130">  130   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="131">  131   </a>pfloat <a name="fcn_norm2">norm2</a>(pfloat* v, idxint n)
+</span><span><a class="LN" name="132">  132   </a><b>{</b>
+</span><span><a class="LN" name="133">  133   </a>	idxint i;
+</span><span><a class="LN" name="134">  134   </a>	pfloat normsquare = 0;
+</span><span><a class="LN" name="135">  135   </a>	<span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b> normsquare += v[i]*v[i]; <b>}</b>
+</span><span><a class="LN" name="136">  136   </a>	<span class="KW">return</span> sqrt(normsquare);
+</span><span><a class="LN" name="137">  137   </a><b>}</b>
+</span><span><a class="LN" name="138">  138   </a>
+</span><span><a class="LN" name="139">  139   </a>
+</span><span><a class="LN" name="140">  140   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="141">  141   </a><span class="CT"> * infinity norm of a vector.</span>
+</span><span><a class="LN" name="142">  142   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="143">  143   </a>pfloat <a name="fcn_norminf">norminf</a>(pfloat* v, idxint n)
+</span><span><a class="LN" name="144">  144   </a><b>{</b>
+</span><span><a class="LN" name="145">  145   </a>	idxint i;
+</span><span><a class="LN" name="146">  146   </a>	pfloat norm = 0;
+</span><span><a class="LN" name="147">  147   </a>    pfloat mv;
+</span><span><a class="LN" name="148">  148   </a>	<span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b>
+</span><span><a class="LN" name="149">  149   </a>        <span class="KW">if</span>( v[i] &gt; norm )<b>{</b> norm = v[i]; <b>}</b>
+</span><span><a class="LN" name="150">  150   </a>        mv = -v[i];
+</span><span><a class="LN" name="151">  151   </a>        <span class="KW">if</span>( mv &gt; norm)<b>{</b> norm = mv; <b>}</b>
+</span><span><a class="LN" name="152">  152   </a>    <b>}</b>
+</span><span><a class="LN" name="153">  153   </a>	<span class="KW">return</span> norm;
+</span><span><a class="LN" name="154">  154   </a><b>}</b>
+</span><span><a class="LN" name="155">  155   </a>
+</span><span><a class="LN" name="156">  156   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="157">  157   </a><span class="CT"> * ECOS dot product z = x'*y of size n.</span>
+</span><span><a class="LN" name="158">  158   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="159">  159   </a>pfloat <a name="fcn_eddot">eddot</a>(idxint n, pfloat* x, pfloat* y)
+</span><span><a class="LN" name="160">  160   </a><b>{</b>
+</span><span><a class="LN" name="161">  161   </a>	pfloat z = 0; idxint i;
+</span><span><a class="LN" name="162">  162   </a>	<span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b> z += x[i]*y[i]; <b>}</b>
+</span><span><a class="LN" name="163">  163   </a>	<span class="KW">return</span> z;
+</span><span><a class="LN" name="164">  164   </a><b>}</b>
+</span><span><a class="LN" name="165">  165   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

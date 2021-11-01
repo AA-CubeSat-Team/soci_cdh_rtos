@@ -1,0 +1,226 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - amd_postorder.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('amd_postorder_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/amd_postorder.c" target="rtwreport_document_frame" id="linkToText_plain">amd_postorder.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">/* === AMD_postorder ======================================================= */</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="4">    4   </a>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">/* AMD, Copyright (c) Timothy A. Davis,					     */</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT">/* Patrick R. Amestoy, and Iain S. Duff.  See ../README.txt for License.     */</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">/* email: DrTimothyAldenDavis@gmail.com                                      */</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="10">   10   </a>
+</span><span><a class="LN" name="11">   11   </a><span class="CT">/* Perform a postordering (via depth-first search) of an assembly tree. */</span>
+</span><span><a class="LN" name="12">   12   </a>
+</span><span><a class="LN" name="13">   13   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;amd_internal.h&quot;</font>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a>GLOBAL <span class="DT">void</span> <a name="fcn_AMD_postorder">AMD_postorder</a>
+</span><span><a class="LN" name="16">   16   </a>(
+</span><span><a class="LN" name="17">   17   </a>    <span class="CT">/* inputs, not modified on output: */</span>
+</span><span><a class="LN" name="18">   18   </a>    Int nn,		<span class="CT">/* nodes are in the range 0..nn-1 */</span>
+</span><span><a class="LN" name="19">   19   </a>    Int Parent [ ],	<span class="CT">/* Parent [j] is the parent of j, or EMPTY if root */</span>
+</span><span><a class="LN" name="20">   20   </a>    Int Nv [ ],		<span class="CT">/* Nv [j] &gt; 0 number of pivots represented by node j,</span>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">			 * or zero if j is not a node. */</span>
+</span><span><a class="LN" name="22">   22   </a>    Int Fsize [ ],	<span class="CT">/* Fsize [j]: size of node j */</span>
+</span><span><a class="LN" name="23">   23   </a>
+</span><span><a class="LN" name="24">   24   </a>    <span class="CT">/* output, not defined on input: */</span>
+</span><span><a class="LN" name="25">   25   </a>    Int Order [ ],	<span class="CT">/* output post-order */</span>
+</span><span><a class="LN" name="26">   26   </a>
+</span><span><a class="LN" name="27">   27   </a>    <span class="CT">/* workspaces of size nn: */</span>
+</span><span><a class="LN" name="28">   28   </a>    Int Child [ ],
+</span><span><a class="LN" name="29">   29   </a>    Int Sibling [ ],
+</span><span><a class="LN" name="30">   30   </a>    Int Stack [ ]
+</span><span><a class="LN" name="31">   31   </a>)
+</span><span><a class="LN" name="32">   32   </a><b>{</b>
+</span><span><a class="LN" name="33">   33   </a>    Int i, j, k, parent, frsize, f, fprev, maxfrsize, bigfprev, bigf, fnext ;
+</span><span><a class="LN" name="34">   34   </a>
+</span><span><a class="LN" name="35">   35   </a>    <span class="KW">for</span> (j = 0 ; j &lt; nn ; j++)
+</span><span><a class="LN" name="36">   36   </a>    <b>{</b>
+</span><span><a class="LN" name="37">   37   </a>	Child [j] = EMPTY ;
+</span><span><a class="LN" name="38">   38   </a>	Sibling [j] = EMPTY ;
+</span><span><a class="LN" name="39">   39   </a>    <b>}</b>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="42">   42   </a>    <span class="CT">/* place the children in link lists - bigger elements tend to be last */</span>
+</span><span><a class="LN" name="43">   43   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="44">   44   </a>
+</span><span><a class="LN" name="45">   45   </a>    <span class="KW">for</span> (j = nn-1 ; j &gt;= 0 ; j--)
+</span><span><a class="LN" name="46">   46   </a>    <b>{</b>
+</span><span><a class="LN" name="47">   47   </a>	<span class="KW">if</span> (Nv [j] &gt; 0)
+</span><span><a class="LN" name="48">   48   </a>	<b>{</b>
+</span><span><a class="LN" name="49">   49   </a>	    <span class="CT">/* this is an element */</span>
+</span><span><a class="LN" name="50">   50   </a>	    parent = Parent [j] ;
+</span><span><a class="LN" name="51">   51   </a>	    <span class="KW">if</span> (parent != EMPTY)
+</span><span><a class="LN" name="52">   52   </a>	    <b>{</b>
+</span><span><a class="LN" name="53">   53   </a>		<span class="CT">/* place the element in link list of the children its parent */</span>
+</span><span><a class="LN" name="54">   54   </a>		<span class="CT">/* bigger elements will tend to be at the end of the list */</span>
+</span><span><a class="LN" name="55">   55   </a>		Sibling [j] = Child [parent] ;
+</span><span><a class="LN" name="56">   56   </a>		Child [parent] = j ;
+</span><span><a class="LN" name="57">   57   </a>	    <b>}</b>
+</span><span><a class="LN" name="58">   58   </a>	<b>}</b>
+</span><span><a class="LN" name="59">   59   </a>    <b>}</b>
+</span><span><a class="LN" name="60">   60   </a>
+</span><span><a class="LN" name="61">   61   </a><font color="#992211">#</font><span class="PP">ifndef</span> NDEBUG
+</span><span><a class="LN" name="62">   62   </a>    <b>{</b>
+</span><span><a class="LN" name="63">   63   </a>	Int nels, ff, nchild ;
+</span><span><a class="LN" name="64">   64   </a>	AMD_DEBUG1 ((<font color="#1122ff">&quot;\n\n================================ AMD_postorder:\n&quot;</font>));
+</span><span><a class="LN" name="65">   65   </a>	nels = 0 ;
+</span><span><a class="LN" name="66">   66   </a>	<span class="KW">for</span> (j = 0 ; j &lt; nn ; j++)
+</span><span><a class="LN" name="67">   67   </a>	<b>{</b>
+</span><span><a class="LN" name="68">   68   </a>	    <span class="KW">if</span> (Nv [j] &gt; 0)
+</span><span><a class="LN" name="69">   69   </a>	    <b>{</b>
+</span><span><a class="LN" name="70">   70   </a>		AMD_DEBUG1 (( <font color="#1122ff">&quot;&quot;</font>ID<font color="#1122ff">&quot; :  nels &quot;</font>ID<font color="#1122ff">&quot; npiv &quot;</font>ID<font color="#1122ff">&quot; size &quot;</font>ID
+</span><span><a class="LN" name="71">   71   </a>		    <font color="#1122ff">&quot; parent &quot;</font>ID<font color="#1122ff">&quot; maxfr &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, j, nels,
+</span><span><a class="LN" name="72">   72   </a>		    Nv [j], Fsize [j], Parent [j], Fsize [j])) ;
+</span><span><a class="LN" name="73">   73   </a>		<span class="CT">/* this is an element */</span>
+</span><span><a class="LN" name="74">   74   </a>		<span class="CT">/* dump the link list of children */</span>
+</span><span><a class="LN" name="75">   75   </a>		nchild = 0 ;
+</span><span><a class="LN" name="76">   76   </a>		AMD_DEBUG1 ((<font color="#1122ff">&quot;    Children: &quot;</font>)) ;
+</span><span><a class="LN" name="77">   77   </a>		<span class="KW">for</span> (ff = Child [j] ; ff != EMPTY ; ff = Sibling [ff])
+</span><span><a class="LN" name="78">   78   </a>		<b>{</b>
+</span><span><a class="LN" name="79">   79   </a>		    AMD_DEBUG1 ((ID<font color="#1122ff">&quot; &quot;</font>, ff)) ;
+</span><span><a class="LN" name="80">   80   </a>		    ASSERT (Parent [ff] == j) ;
+</span><span><a class="LN" name="81">   81   </a>		    nchild++ ;
+</span><span><a class="LN" name="82">   82   </a>		    ASSERT (nchild &lt; nn) ;
+</span><span><a class="LN" name="83">   83   </a>		<b>}</b>
+</span><span><a class="LN" name="84">   84   </a>		AMD_DEBUG1 ((<font color="#1122ff">&quot;\n&quot;</font>)) ;
+</span><span><a class="LN" name="85">   85   </a>		parent = Parent [j] ;
+</span><span><a class="LN" name="86">   86   </a>		<span class="KW">if</span> (parent != EMPTY)
+</span><span><a class="LN" name="87">   87   </a>		<b>{</b>
+</span><span><a class="LN" name="88">   88   </a>		    ASSERT (Nv [parent] &gt; 0) ;
+</span><span><a class="LN" name="89">   89   </a>		<b>}</b>
+</span><span><a class="LN" name="90">   90   </a>		nels++ ;
+</span><span><a class="LN" name="91">   91   </a>	    <b>}</b>
+</span><span><a class="LN" name="92">   92   </a>	<b>}</b>
+</span><span><a class="LN" name="93">   93   </a>    <b>}</b>
+</span><span><a class="LN" name="94">   94   </a>    AMD_DEBUG1 ((<font color="#1122ff">&quot;\n\nGo through the children of each node, and put\n&quot;</font>
+</span><span><a class="LN" name="95">   95   </a>		 <font color="#1122ff">&quot;the biggest child last in each list:\n&quot;</font>)) ;
+</span><span><a class="LN" name="96">   96   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="97">   97   </a>
+</span><span><a class="LN" name="98">   98   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="99">   99   </a>    <span class="CT">/* place the largest child last in the list of children for each node */</span>
+</span><span><a class="LN" name="100">  100   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="101">  101   </a>
+</span><span><a class="LN" name="102">  102   </a>    <span class="KW">for</span> (i = 0 ; i &lt; nn ; i++)
+</span><span><a class="LN" name="103">  103   </a>    <b>{</b>
+</span><span><a class="LN" name="104">  104   </a>	<span class="KW">if</span> (Nv [i] &gt; 0 &amp;&amp; Child [i] != EMPTY)
+</span><span><a class="LN" name="105">  105   </a>	<b>{</b>
+</span><span><a class="LN" name="106">  106   </a>
+</span><span><a class="LN" name="107">  107   </a><font color="#992211">#</font><span class="PP">ifndef</span> NDEBUG
+</span><span><a class="LN" name="108">  108   </a>	    Int nchild ;
+</span><span><a class="LN" name="109">  109   </a>	    AMD_DEBUG1 ((<font color="#1122ff">&quot;Before partial sort, element &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, i)) ;
+</span><span><a class="LN" name="110">  110   </a>	    nchild = 0 ;
+</span><span><a class="LN" name="111">  111   </a>	    <span class="KW">for</span> (f = Child [i] ; f != EMPTY ; f = Sibling [f])
+</span><span><a class="LN" name="112">  112   </a>	    <b>{</b>
+</span><span><a class="LN" name="113">  113   </a>		ASSERT (f &gt;= 0 &amp;&amp; f &lt; nn) ;
+</span><span><a class="LN" name="114">  114   </a>		AMD_DEBUG1 ((<font color="#1122ff">&quot;      f: &quot;</font>ID<font color="#1122ff">&quot;  size: &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, f, Fsize [f])) ;
+</span><span><a class="LN" name="115">  115   </a>		nchild++ ;
+</span><span><a class="LN" name="116">  116   </a>		ASSERT (nchild &lt;= nn) ;
+</span><span><a class="LN" name="117">  117   </a>	    <b>}</b>
+</span><span><a class="LN" name="118">  118   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="119">  119   </a>
+</span><span><a class="LN" name="120">  120   </a>	    <span class="CT">/* find the biggest element in the child list */</span>
+</span><span><a class="LN" name="121">  121   </a>	    fprev = EMPTY ;
+</span><span><a class="LN" name="122">  122   </a>	    maxfrsize = EMPTY ;
+</span><span><a class="LN" name="123">  123   </a>	    bigfprev = EMPTY ;
+</span><span><a class="LN" name="124">  124   </a>	    bigf = EMPTY ;
+</span><span><a class="LN" name="125">  125   </a>	    <span class="KW">for</span> (f = Child [i] ; f != EMPTY ; f = Sibling [f])
+</span><span><a class="LN" name="126">  126   </a>	    <b>{</b>
+</span><span><a class="LN" name="127">  127   </a>		ASSERT (f &gt;= 0 &amp;&amp; f &lt; nn) ;
+</span><span><a class="LN" name="128">  128   </a>		frsize = Fsize [f] ;
+</span><span><a class="LN" name="129">  129   </a>		<span class="KW">if</span> (frsize &gt;= maxfrsize)
+</span><span><a class="LN" name="130">  130   </a>		<b>{</b>
+</span><span><a class="LN" name="131">  131   </a>		    <span class="CT">/* this is the biggest seen so far */</span>
+</span><span><a class="LN" name="132">  132   </a>		    maxfrsize = frsize ;
+</span><span><a class="LN" name="133">  133   </a>		    bigfprev = fprev ;
+</span><span><a class="LN" name="134">  134   </a>		    bigf = f ;
+</span><span><a class="LN" name="135">  135   </a>		<b>}</b>
+</span><span><a class="LN" name="136">  136   </a>		fprev = f ;
+</span><span><a class="LN" name="137">  137   </a>	    <b>}</b>
+</span><span><a class="LN" name="138">  138   </a>	    ASSERT (bigf != EMPTY) ;
+</span><span><a class="LN" name="139">  139   </a>
+</span><span><a class="LN" name="140">  140   </a>	    fnext = Sibling [bigf] ;
+</span><span><a class="LN" name="141">  141   </a>
+</span><span><a class="LN" name="142">  142   </a>	    AMD_DEBUG1 ((<font color="#1122ff">&quot;bigf &quot;</font>ID<font color="#1122ff">&quot; maxfrsize &quot;</font>ID<font color="#1122ff">&quot; bigfprev &quot;</font>ID<font color="#1122ff">&quot; fnext &quot;</font>ID
+</span><span><a class="LN" name="143">  143   </a>		<font color="#1122ff">&quot; fprev &quot;</font> ID<font color="#1122ff">&quot;\n&quot;</font>, bigf, maxfrsize, bigfprev, fnext, fprev)) ;
+</span><span><a class="LN" name="144">  144   </a>
+</span><span><a class="LN" name="145">  145   </a>	    <span class="KW">if</span> (fnext != EMPTY)
+</span><span><a class="LN" name="146">  146   </a>	    <b>{</b>
+</span><span><a class="LN" name="147">  147   </a>		<span class="CT">/* if fnext is EMPTY then bigf is already at the end of list */</span>
+</span><span><a class="LN" name="148">  148   </a>
+</span><span><a class="LN" name="149">  149   </a>		<span class="KW">if</span> (bigfprev == EMPTY)
+</span><span><a class="LN" name="150">  150   </a>		<b>{</b>
+</span><span><a class="LN" name="151">  151   </a>		    <span class="CT">/* delete bigf from the element of the list */</span>
+</span><span><a class="LN" name="152">  152   </a>		    Child [i] = fnext ;
+</span><span><a class="LN" name="153">  153   </a>		<b>}</b>
+</span><span><a class="LN" name="154">  154   </a>		<span class="KW">else</span>
+</span><span><a class="LN" name="155">  155   </a>		<b>{</b>
+</span><span><a class="LN" name="156">  156   </a>		    <span class="CT">/* delete bigf from the middle of the list */</span>
+</span><span><a class="LN" name="157">  157   </a>		    Sibling [bigfprev] = fnext ;
+</span><span><a class="LN" name="158">  158   </a>		<b>}</b>
+</span><span><a class="LN" name="159">  159   </a>
+</span><span><a class="LN" name="160">  160   </a>		<span class="CT">/* put bigf at the end of the list */</span>
+</span><span><a class="LN" name="161">  161   </a>		Sibling [bigf] = EMPTY ;
+</span><span><a class="LN" name="162">  162   </a>		ASSERT (Child [i] != EMPTY) ;
+</span><span><a class="LN" name="163">  163   </a>		ASSERT (fprev != bigf) ;
+</span><span><a class="LN" name="164">  164   </a>		ASSERT (fprev != EMPTY) ;
+</span><span><a class="LN" name="165">  165   </a>		Sibling [fprev] = bigf ;
+</span><span><a class="LN" name="166">  166   </a>	    <b>}</b>
+</span><span><a class="LN" name="167">  167   </a>
+</span><span><a class="LN" name="168">  168   </a><font color="#992211">#</font><span class="PP">ifndef</span> NDEBUG
+</span><span><a class="LN" name="169">  169   </a>	    AMD_DEBUG1 ((<font color="#1122ff">&quot;After partial sort, element &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, i)) ;
+</span><span><a class="LN" name="170">  170   </a>	    <span class="KW">for</span> (f = Child [i] ; f != EMPTY ; f = Sibling [f])
+</span><span><a class="LN" name="171">  171   </a>	    <b>{</b>
+</span><span><a class="LN" name="172">  172   </a>		ASSERT (f &gt;= 0 &amp;&amp; f &lt; nn) ;
+</span><span><a class="LN" name="173">  173   </a>		AMD_DEBUG1 ((<font color="#1122ff">&quot;        &quot;</font>ID<font color="#1122ff">&quot;  &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, f, Fsize [f])) ;
+</span><span><a class="LN" name="174">  174   </a>		ASSERT (Nv [f] &gt; 0) ;
+</span><span><a class="LN" name="175">  175   </a>		nchild-- ;
+</span><span><a class="LN" name="176">  176   </a>	    <b>}</b>
+</span><span><a class="LN" name="177">  177   </a>	    ASSERT (nchild == 0) ;
+</span><span><a class="LN" name="178">  178   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="179">  179   </a>
+</span><span><a class="LN" name="180">  180   </a>	<b>}</b>
+</span><span><a class="LN" name="181">  181   </a>    <b>}</b>
+</span><span><a class="LN" name="182">  182   </a>
+</span><span><a class="LN" name="183">  183   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="184">  184   </a>    <span class="CT">/* postorder the assembly tree */</span>
+</span><span><a class="LN" name="185">  185   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="186">  186   </a>
+</span><span><a class="LN" name="187">  187   </a>    <span class="KW">for</span> (i = 0 ; i &lt; nn ; i++)
+</span><span><a class="LN" name="188">  188   </a>    <b>{</b>
+</span><span><a class="LN" name="189">  189   </a>	Order [i] = EMPTY ;
+</span><span><a class="LN" name="190">  190   </a>    <b>}</b>
+</span><span><a class="LN" name="191">  191   </a>
+</span><span><a class="LN" name="192">  192   </a>    k = 0 ;
+</span><span><a class="LN" name="193">  193   </a>
+</span><span><a class="LN" name="194">  194   </a>    <span class="KW">for</span> (i = 0 ; i &lt; nn ; i++)
+</span><span><a class="LN" name="195">  195   </a>    <b>{</b>
+</span><span><a class="LN" name="196">  196   </a>	<span class="KW">if</span> (Parent [i] == EMPTY &amp;&amp; Nv [i] &gt; 0)
+</span><span><a class="LN" name="197">  197   </a>	<b>{</b>
+</span><span><a class="LN" name="198">  198   </a>	    AMD_DEBUG1 ((<font color="#1122ff">&quot;Root of assembly tree &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, i)) ;
+</span><span><a class="LN" name="199">  199   </a>	    k = <a href="amd_post_tree_c.html#fcn_AMD_post_tree" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_AMD_post_tree');" target="_self"><font color="#1122aa">AMD_post_tree</font></a> (i, k, Child, Sibling, Order, Stack
+</span><span><a class="LN" name="200">  200   </a><font color="#992211">#</font><span class="PP">ifndef</span> NDEBUG
+</span><span><a class="LN" name="201">  201   </a>		, nn
+</span><span><a class="LN" name="202">  202   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="203">  203   </a>		) ;
+</span><span><a class="LN" name="204">  204   </a>	<b>}</b>
+</span><span><a class="LN" name="205">  205   </a>    <b>}</b>
+</span><span><a class="LN" name="206">  206   </a><b>}</b>
+</span><span><a class="LN" name="207">  207   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - equil.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('equil_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/equil.c" target="rtwreport_document_frame" id="linkToText_plain">equil.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a><span class="CT">/* Equilibration module (c) Eric Chu, March 2014 */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a>
+</span><span><a class="LN" name="24">   24   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> EQUILIBRATE &amp;&amp; EQUILIBRATE &gt; 0
+</span><span><a class="LN" name="25">   25   </a>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;equil.h&quot;</font>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;spla.h&quot;</font>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a><span class="DT">void</span> <a name="fcn_max_rows">max_rows</a>(pfloat *E, <span class="DT">const</span> spmat *mat)
+</span><span><a class="LN" name="32">   32   </a><b>{</b>
+</span><span><a class="LN" name="33">   33   </a>    <span class="CT">/* assumes mat is not null */</span>
+</span><span><a class="LN" name="34">   34   </a>    idxint i, j, row;
+</span><span><a class="LN" name="35">   35   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b> <span class="CT">/* cols */</span>
+</span><span><a class="LN" name="36">   36   </a>      <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="37">   37   </a>        row = mat-&gt;ir[j];
+</span><span><a class="LN" name="38">   38   </a>        E[row] = MAX(fabs(mat-&gt;pr[j]), E[row]);
+</span><span><a class="LN" name="39">   39   </a>      <b>}</b>
+</span><span><a class="LN" name="40">   40   </a>    <b>}</b>
+</span><span><a class="LN" name="41">   41   </a><b>}</b>
+</span><span><a class="LN" name="42">   42   </a>
+</span><span><a class="LN" name="43">   43   </a><span class="DT">void</span> <a name="fcn_max_cols">max_cols</a>(pfloat *E, <span class="DT">const</span> spmat *mat)
+</span><span><a class="LN" name="44">   44   </a><b>{</b>
+</span><span><a class="LN" name="45">   45   </a>    <span class="CT">/* assumes mat is not null */</span>
+</span><span><a class="LN" name="46">   46   </a>    idxint i, j;
+</span><span><a class="LN" name="47">   47   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b> <span class="CT">/* cols */</span>
+</span><span><a class="LN" name="48">   48   </a>      <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="49">   49   </a>        E[i] = MAX(fabs(mat-&gt;pr[j]), E[i]);
+</span><span><a class="LN" name="50">   50   </a>      <b>}</b>
+</span><span><a class="LN" name="51">   51   </a>    <b>}</b>
+</span><span><a class="LN" name="52">   52   </a><b>}</b>
+</span><span><a class="LN" name="53">   53   </a>
+</span><span><a class="LN" name="54">   54   </a><span class="DT">void</span> <a name="fcn_sum_sq_rows">sum_sq_rows</a>(pfloat *E, <span class="DT">const</span> spmat *mat)
+</span><span><a class="LN" name="55">   55   </a><b>{</b>
+</span><span><a class="LN" name="56">   56   </a>    <span class="CT">/* assumes mat is not null */</span>
+</span><span><a class="LN" name="57">   57   </a>    idxint i, j, row;
+</span><span><a class="LN" name="58">   58   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b> <span class="CT">/* cols */</span>
+</span><span><a class="LN" name="59">   59   </a>      <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="60">   60   </a>        row = mat-&gt;ir[j];
+</span><span><a class="LN" name="61">   61   </a>        E[row] += (mat-&gt;pr[j] * mat-&gt;pr[j]);
+</span><span><a class="LN" name="62">   62   </a>      <b>}</b>
+</span><span><a class="LN" name="63">   63   </a>    <b>}</b>
+</span><span><a class="LN" name="64">   64   </a><b>}</b>
+</span><span><a class="LN" name="65">   65   </a>
+</span><span><a class="LN" name="66">   66   </a><span class="DT">void</span> <a name="fcn_sum_sq_cols">sum_sq_cols</a>(pfloat *E, <span class="DT">const</span> spmat *mat)
+</span><span><a class="LN" name="67">   67   </a><b>{</b>
+</span><span><a class="LN" name="68">   68   </a>    <span class="CT">/* assumes mat is not null */</span>
+</span><span><a class="LN" name="69">   69   </a>    idxint i, j;
+</span><span><a class="LN" name="70">   70   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b> <span class="CT">/* cols */</span>
+</span><span><a class="LN" name="71">   71   </a>      <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="72">   72   </a>        E[i] += (mat-&gt;pr[j] * mat-&gt;pr[j]);
+</span><span><a class="LN" name="73">   73   </a>      <b>}</b>
+</span><span><a class="LN" name="74">   74   </a>    <b>}</b>
+</span><span><a class="LN" name="75">   75   </a><b>}</b>
+</span><span><a class="LN" name="76">   76   </a>
+</span><span><a class="LN" name="77">   77   </a><span class="DT">void</span> <a name="fcn_equilibrate_rows">equilibrate_rows</a>(<span class="DT">const</span> pfloat *E, spmat *mat)
+</span><span><a class="LN" name="78">   78   </a><b>{</b>
+</span><span><a class="LN" name="79">   79   </a>    idxint i, j, row;
+</span><span><a class="LN" name="80">   80   </a>
+</span><span><a class="LN" name="81">   81   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b>
+</span><span><a class="LN" name="82">   82   </a>        <span class="CT">/* equilibrate the rows of a matrix */</span>
+</span><span><a class="LN" name="83">   83   </a>        <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="84">   84   </a>            row = mat-&gt;ir[j];
+</span><span><a class="LN" name="85">   85   </a>            mat-&gt;pr[j] /= E[row];
+</span><span><a class="LN" name="86">   86   </a>        <b>}</b>
+</span><span><a class="LN" name="87">   87   </a>    <b>}</b>
+</span><span><a class="LN" name="88">   88   </a><b>}</b>
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a><span class="DT">void</span> <a name="fcn_equilibrate_cols">equilibrate_cols</a>(<span class="DT">const</span> pfloat *E, spmat *mat)
+</span><span><a class="LN" name="91">   91   </a><b>{</b>
+</span><span><a class="LN" name="92">   92   </a>    idxint i, j;
+</span><span><a class="LN" name="93">   93   </a>
+</span><span><a class="LN" name="94">   94   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b>
+</span><span><a class="LN" name="95">   95   </a>        <span class="CT">/* equilibrate the columns of a matrix */</span>
+</span><span><a class="LN" name="96">   96   </a>        <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="97">   97   </a>            mat-&gt;pr[j] /= E[i];
+</span><span><a class="LN" name="98">   98   </a>        <b>}</b>
+</span><span><a class="LN" name="99">   99   </a>    <b>}</b>
+</span><span><a class="LN" name="100">  100   </a><b>}</b>
+</span><span><a class="LN" name="101">  101   </a>
+</span><span><a class="LN" name="102">  102   </a><span class="DT">void</span> <a name="fcn_restore">restore</a>(<span class="DT">const</span> pfloat *D, <span class="DT">const</span> pfloat *E, spmat *mat)
+</span><span><a class="LN" name="103">  103   </a><b>{</b>
+</span><span><a class="LN" name="104">  104   </a>    idxint i, j, row;
+</span><span><a class="LN" name="105">  105   </a>
+</span><span><a class="LN" name="106">  106   </a>    <span class="KW">for</span>(i = 0; i &lt; mat-&gt;n; i++) <b>{</b>
+</span><span><a class="LN" name="107">  107   </a>        <span class="CT">/* equilibrate the rows of a matrix */</span>
+</span><span><a class="LN" name="108">  108   </a>        <span class="KW">for</span>(j = mat-&gt;jc[i]; j &lt; mat-&gt;jc[i+1]; j++) <b>{</b>
+</span><span><a class="LN" name="109">  109   </a>            row = mat-&gt;ir[j];
+</span><span><a class="LN" name="110">  110   </a>            mat-&gt;pr[j] *= (D[row] * E[i]);
+</span><span><a class="LN" name="111">  111   </a>        <b>}</b>
+</span><span><a class="LN" name="112">  112   </a>    <b>}</b>
+</span><span><a class="LN" name="113">  113   </a><b>}</b>
+</span><span><a class="LN" name="114">  114   </a>
+</span><span><a class="LN" name="115">  115   </a><span class="DT">void</span> <a name="fcn_use_alternating_norm_equilibration">use_alternating_norm_equilibration</a>(pwork *w)
+</span><span><a class="LN" name="116">  116   </a><b>{</b>
+</span><span><a class="LN" name="117">  117   </a>    idxint i, j, ind;
+</span><span><a class="LN" name="118">  118   </a>    idxint num_cols = w-&gt;A ? w-&gt;A-&gt;n : w-&gt;G-&gt;n;
+</span><span><a class="LN" name="119">  119   </a>    idxint num_A_rows = w-&gt;A ? w-&gt;A-&gt;m : 0;
+</span><span><a class="LN" name="120">  120   </a>    idxint num_G_rows = w-&gt;G-&gt;m;
+</span><span><a class="LN" name="121">  121   </a>    pfloat sum;
+</span><span><a class="LN" name="122">  122   </a>
+</span><span><a class="LN" name="123">  123   </a>    <span class="CT">/* initialize equilibration vector to 0 */</span>
+</span><span><a class="LN" name="124">  124   </a>    <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="125">  125   </a>        w-&gt;xequil[i] = 0.0;
+</span><span><a class="LN" name="126">  126   </a>    <b>}</b>
+</span><span><a class="LN" name="127">  127   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="128">  128   </a>        w-&gt;Aequil[i] = 0.0;
+</span><span><a class="LN" name="129">  129   </a>    <b>}</b>
+</span><span><a class="LN" name="130">  130   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="131">  131   </a>        w-&gt;Gequil[i] = 0.0;
+</span><span><a class="LN" name="132">  132   </a>    <b>}</b>
+</span><span><a class="LN" name="133">  133   </a>
+</span><span><a class="LN" name="134">  134   </a>    <span class="CT">/* compute norm across rows of A */</span>
+</span><span><a class="LN" name="135">  135   </a>    <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="136">  136   </a>        <a href="#fcn_sum_sq_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sum_sq_rows');" target="_self"><font color="#1122aa">sum_sq_rows</font></a>(w-&gt;Aequil, w-&gt;A);
+</span><span><a class="LN" name="137">  137   </a>    <span class="CT">/* compute norm across rows of G */</span>
+</span><span><a class="LN" name="138">  138   </a>    <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="139">  139   </a>        <a href="#fcn_sum_sq_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sum_sq_rows');" target="_self"><font color="#1122aa">sum_sq_rows</font></a>(w-&gt;Gequil, w-&gt;G);
+</span><span><a class="LN" name="140">  140   </a>
+</span><span><a class="LN" name="141">  141   </a>    <span class="CT">/* now collapse cones together by taking average norm square */</span>
+</span><span><a class="LN" name="142">  142   </a>    ind = w-&gt;C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="143">  143   </a>    <span class="KW">for</span>(i = 0; i &lt; w-&gt;C-&gt;nsoc; i++) <b>{</b>
+</span><span><a class="LN" name="144">  144   </a>      sum = 0.0;
+</span><span><a class="LN" name="145">  145   </a>      <span class="KW">for</span>(j = 0; j &lt; w-&gt;C-&gt;soc[i].p; j++) <b>{</b>
+</span><span><a class="LN" name="146">  146   </a>        sum += w-&gt;Gequil[ind + j];
+</span><span><a class="LN" name="147">  147   </a>      <b>}</b>
+</span><span><a class="LN" name="148">  148   </a>      <span class="KW">for</span>(j = 0; j &lt; w-&gt;C-&gt;soc[i].p; j++) <b>{</b>
+</span><span><a class="LN" name="149">  149   </a>        w-&gt;Gequil[ind + j] = sum / w-&gt;C-&gt;soc[i].p;
+</span><span><a class="LN" name="150">  150   </a>      <b>}</b>
+</span><span><a class="LN" name="151">  151   </a>      ind += w-&gt;C-&gt;soc[i].p;
+</span><span><a class="LN" name="152">  152   </a>    <b>}</b>
+</span><span><a class="LN" name="153">  153   </a>
+</span><span><a class="LN" name="154">  154   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="155">  155   </a>    <span class="KW">for</span>(i = 0; i &lt; w-&gt;C-&gt;nexc; i++) <b>{</b>
+</span><span><a class="LN" name="156">  156   </a>      sum = 0.0;
+</span><span><a class="LN" name="157">  157   </a>      <span class="KW">for</span>(j = 0; j &lt; 3; j++) <b>{</b>
+</span><span><a class="LN" name="158">  158   </a>        sum += w-&gt;Gequil[ind + j];
+</span><span><a class="LN" name="159">  159   </a>      <b>}</b>
+</span><span><a class="LN" name="160">  160   </a>      <span class="KW">for</span>(j = 0; j &lt; 3; j++) <b>{</b>
+</span><span><a class="LN" name="161">  161   </a>        w-&gt;Gequil[ind + j] = sum / 3.0;
+</span><span><a class="LN" name="162">  162   </a>      <b>}</b>
+</span><span><a class="LN" name="163">  163   </a>      ind += 3;
+</span><span><a class="LN" name="164">  164   </a>    <b>}</b>
+</span><span><a class="LN" name="165">  165   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="166">  166   </a>
+</span><span><a class="LN" name="167">  167   </a>    <span class="CT">/* get the norm */</span>
+</span><span><a class="LN" name="168">  168   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="169">  169   </a>      w-&gt;Aequil[i] = fabs(w-&gt;Aequil[i]) &lt; 1e-6 ? 1.0 : sqrt(w-&gt;Aequil[i]);
+</span><span><a class="LN" name="170">  170   </a>    <b>}</b>
+</span><span><a class="LN" name="171">  171   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="172">  172   </a>      w-&gt;Gequil[i] = fabs(w-&gt;Gequil[i]) &lt; 1e-6 ? 1.0 : sqrt(w-&gt;Gequil[i]);
+</span><span><a class="LN" name="173">  173   </a>    <b>}</b>
+</span><span><a class="LN" name="174">  174   </a>
+</span><span><a class="LN" name="175">  175   </a>    <span class="CT">/* now scale A */</span>
+</span><span><a class="LN" name="176">  176   </a>    <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="177">  177   </a>        <a href="#fcn_equilibrate_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_rows');" target="_self"><font color="#1122aa">equilibrate_rows</font></a>(w-&gt;Aequil, w-&gt;A);
+</span><span><a class="LN" name="178">  178   </a>    <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="179">  179   </a>        <a href="#fcn_equilibrate_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_rows');" target="_self"><font color="#1122aa">equilibrate_rows</font></a>(w-&gt;Gequil, w-&gt;G);
+</span><span><a class="LN" name="180">  180   </a>
+</span><span><a class="LN" name="181">  181   </a>    <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="182">  182   </a>        <a href="#fcn_sum_sq_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sum_sq_cols');" target="_self"><font color="#1122aa">sum_sq_cols</font></a>(w-&gt;xequil, w-&gt;A);
+</span><span><a class="LN" name="183">  183   </a>    <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="184">  184   </a>        <a href="#fcn_sum_sq_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sum_sq_cols');" target="_self"><font color="#1122aa">sum_sq_cols</font></a>(w-&gt;xequil, w-&gt;G);
+</span><span><a class="LN" name="185">  185   </a>
+</span><span><a class="LN" name="186">  186   </a>    <span class="CT">/* get the norm */</span>
+</span><span><a class="LN" name="187">  187   </a>    <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="188">  188   </a>        w-&gt;xequil[i] = fabs(w-&gt;xequil[i]) &lt; 1e-6 ? 1.0 : sqrt(w-&gt;xequil[i]);
+</span><span><a class="LN" name="189">  189   </a>    <b>}</b>
+</span><span><a class="LN" name="190">  190   </a>    <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="191">  191   </a>        <a href="#fcn_equilibrate_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_cols');" target="_self"><font color="#1122aa">equilibrate_cols</font></a>(w-&gt;xequil, w-&gt;A);
+</span><span><a class="LN" name="192">  192   </a>    <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="193">  193   </a>        <a href="#fcn_equilibrate_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_cols');" target="_self"><font color="#1122aa">equilibrate_cols</font></a>(w-&gt;xequil, w-&gt;G);
+</span><span><a class="LN" name="194">  194   </a>
+</span><span><a class="LN" name="195">  195   </a>    <span class="CT">/* the c vector is scaled in the ECOS_solve function</span>
+</span><span><a class="LN" name="196">  196   </a><span class="CT">    for(i = 0; i &lt; num_cols; i++) {</span>
+</span><span><a class="LN" name="197">  197   </a><span class="CT">        w-&gt;c[i] /= w-&gt;xequil[i];</span>
+</span><span><a class="LN" name="198">  198   </a><span class="CT">    }  */</span>
+</span><span><a class="LN" name="199">  199   </a>
+</span><span><a class="LN" name="200">  200   </a>    <span class="CT">/* equilibrate the b vector */</span>
+</span><span><a class="LN" name="201">  201   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="202">  202   </a>        w-&gt;b[i] /= w-&gt;Aequil[i];
+</span><span><a class="LN" name="203">  203   </a>    <b>}</b>
+</span><span><a class="LN" name="204">  204   </a>    <span class="CT">/* equilibrate the h vector */</span>
+</span><span><a class="LN" name="205">  205   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="206">  206   </a>        w-&gt;h[i] /= w-&gt;Gequil[i];
+</span><span><a class="LN" name="207">  207   </a>    <b>}</b>
+</span><span><a class="LN" name="208">  208   </a><b>}</b>
+</span><span><a class="LN" name="209">  209   </a>
+</span><span><a class="LN" name="210">  210   </a><span class="DT">void</span> <a name="fcn_use_ruiz_equilibration">use_ruiz_equilibration</a>(pwork *w)
+</span><span><a class="LN" name="211">  211   </a><b>{</b>
+</span><span><a class="LN" name="212">  212   </a>    idxint i, j, ind, iter;
+</span><span><a class="LN" name="213">  213   </a>    idxint num_cols = w-&gt;A ? w-&gt;A-&gt;n : w-&gt;G-&gt;n;
+</span><span><a class="LN" name="214">  214   </a>    idxint num_A_rows = w-&gt;A ? w-&gt;A-&gt;m : 0;
+</span><span><a class="LN" name="215">  215   </a>    idxint num_G_rows = w-&gt;G-&gt;m;
+</span><span><a class="LN" name="216">  216   </a>    pfloat *xtmp = calloc(num_cols, <span class="KW">sizeof</span>(pfloat));
+</span><span><a class="LN" name="217">  217   </a>    pfloat *Atmp = calloc(num_A_rows, <span class="KW">sizeof</span>(pfloat));
+</span><span><a class="LN" name="218">  218   </a>    pfloat *Gtmp = calloc(num_G_rows, <span class="KW">sizeof</span>(pfloat));
+</span><span><a class="LN" name="219">  219   </a>    pfloat total;
+</span><span><a class="LN" name="220">  220   </a>
+</span><span><a class="LN" name="221">  221   </a>    <span class="CT">/* initialize equilibration vector to 1 */</span>
+</span><span><a class="LN" name="222">  222   </a>    <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="223">  223   </a>        w-&gt;xequil[i] = 1.0;
+</span><span><a class="LN" name="224">  224   </a>    <b>}</b>
+</span><span><a class="LN" name="225">  225   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="226">  226   </a>        w-&gt;Aequil[i] = 1.0;
+</span><span><a class="LN" name="227">  227   </a>    <b>}</b>
+</span><span><a class="LN" name="228">  228   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="229">  229   </a>        w-&gt;Gequil[i] = 1.0;
+</span><span><a class="LN" name="230">  230   </a>    <b>}</b>
+</span><span><a class="LN" name="231">  231   </a>
+</span><span><a class="LN" name="232">  232   </a>    <span class="CT">/* iterative equilibration */</span>
+</span><span><a class="LN" name="233">  233   </a>    <span class="KW">for</span>(iter = 0; iter &lt; EQUIL_ITERS; iter++) <b>{</b>
+</span><span><a class="LN" name="234">  234   </a>        <span class="CT">/* each iteration updates w-&gt;A and w-&gt;G */</span>
+</span><span><a class="LN" name="235">  235   </a>
+</span><span><a class="LN" name="236">  236   </a>        <span class="CT">/* zero out the temp vectors */</span>
+</span><span><a class="LN" name="237">  237   </a>        <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="238">  238   </a>            xtmp[i] = 0.0;
+</span><span><a class="LN" name="239">  239   </a>        <b>}</b>
+</span><span><a class="LN" name="240">  240   </a>        <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="241">  241   </a>            Atmp[i] = 0.0;
+</span><span><a class="LN" name="242">  242   </a>        <b>}</b>
+</span><span><a class="LN" name="243">  243   </a>        <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="244">  244   </a>            Gtmp[i] = 0.0;
+</span><span><a class="LN" name="245">  245   </a>        <b>}</b>
+</span><span><a class="LN" name="246">  246   </a>
+</span><span><a class="LN" name="247">  247   </a>        <span class="CT">/* compute norm across columns of A, G */</span>
+</span><span><a class="LN" name="248">  248   </a>        <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="249">  249   </a>            <a href="#fcn_max_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_max_cols');" target="_self"><font color="#1122aa">max_cols</font></a>(xtmp, w-&gt;A);
+</span><span><a class="LN" name="250">  250   </a>        <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="251">  251   </a>            <a href="#fcn_max_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_max_cols');" target="_self"><font color="#1122aa">max_cols</font></a>(xtmp, w-&gt;G);
+</span><span><a class="LN" name="252">  252   </a>
+</span><span><a class="LN" name="253">  253   </a>        <span class="CT">/* compute norm across rows of A */</span>
+</span><span><a class="LN" name="254">  254   </a>        <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="255">  255   </a>            <a href="#fcn_max_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_max_rows');" target="_self"><font color="#1122aa">max_rows</font></a>(Atmp, w-&gt;A);
+</span><span><a class="LN" name="256">  256   </a>
+</span><span><a class="LN" name="257">  257   </a>        <span class="CT">/* compute norm across rows of G */</span>
+</span><span><a class="LN" name="258">  258   </a>        <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="259">  259   </a>            <a href="#fcn_max_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_max_rows');" target="_self"><font color="#1122aa">max_rows</font></a>(Gtmp, w-&gt;G);
+</span><span><a class="LN" name="260">  260   </a>
+</span><span><a class="LN" name="261">  261   </a>        <span class="CT">/* now collapse cones together by using total over the group */</span>
+</span><span><a class="LN" name="262">  262   </a>        <span class="CT">/* ECHU: not sure what the right thing to do here is */</span>
+</span><span><a class="LN" name="263">  263   </a>        ind = w-&gt;C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="264">  264   </a>        <span class="KW">for</span>(i = 0; i &lt; w-&gt;C-&gt;nsoc; i++) <b>{</b>
+</span><span><a class="LN" name="265">  265   </a>          total = 0.0;
+</span><span><a class="LN" name="266">  266   </a>          <span class="KW">for</span>(j = 0; j &lt; w-&gt;C-&gt;soc[i].p; j++) <b>{</b>
+</span><span><a class="LN" name="267">  267   </a>            total += Gtmp[ind + j];
+</span><span><a class="LN" name="268">  268   </a>          <b>}</b>
+</span><span><a class="LN" name="269">  269   </a>          <span class="KW">for</span>(j = 0; j &lt; w-&gt;C-&gt;soc[i].p; j++) <b>{</b>
+</span><span><a class="LN" name="270">  270   </a>            Gtmp[ind + j] = total;
+</span><span><a class="LN" name="271">  271   </a>          <b>}</b>
+</span><span><a class="LN" name="272">  272   </a>          ind += w-&gt;C-&gt;soc[i].p;
+</span><span><a class="LN" name="273">  273   </a>        <b>}</b>
+</span><span><a class="LN" name="274">  274   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="275">  275   </a>       <span class="CT">/*Do the same for the exponential cones*/</span>
+</span><span><a class="LN" name="276">  276   </a>       <span class="KW">for</span>(i = 0; i &lt; w-&gt;C-&gt;nexc; i++) <b>{</b>
+</span><span><a class="LN" name="277">  277   </a>         total = 0.0;
+</span><span><a class="LN" name="278">  278   </a>         <span class="KW">for</span>(j = 0; j &lt; 3; j++) <b>{</b>
+</span><span><a class="LN" name="279">  279   </a>           total += Gtmp[ind + j];
+</span><span><a class="LN" name="280">  280   </a>         <b>}</b>
+</span><span><a class="LN" name="281">  281   </a>         <span class="KW">for</span>(j = 0; j &lt; 3; j++) <b>{</b>
+</span><span><a class="LN" name="282">  282   </a>           Gtmp[ind + j] = total;
+</span><span><a class="LN" name="283">  283   </a>         <b>}</b>
+</span><span><a class="LN" name="284">  284   </a>         ind += 3;
+</span><span><a class="LN" name="285">  285   </a>       <b>}</b>
+</span><span><a class="LN" name="286">  286   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="287">  287   </a>
+</span><span><a class="LN" name="288">  288   </a>
+</span><span><a class="LN" name="289">  289   </a>        <span class="CT">/* take the sqrt */</span>
+</span><span><a class="LN" name="290">  290   </a>        <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="291">  291   </a>          xtmp[i] = fabs(xtmp[i]) &lt; 1e-6 ? 1.0 : sqrt(xtmp[i]);
+</span><span><a class="LN" name="292">  292   </a>        <b>}</b>
+</span><span><a class="LN" name="293">  293   </a>        <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="294">  294   </a>          Atmp[i] = fabs(Atmp[i]) &lt; 1e-6 ? 1.0 : sqrt(Atmp[i]);
+</span><span><a class="LN" name="295">  295   </a>        <b>}</b>
+</span><span><a class="LN" name="296">  296   </a>        <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="297">  297   </a>          Gtmp[i] = fabs(Gtmp[i]) &lt; 1e-6 ? 1.0 : sqrt(Gtmp[i]);
+</span><span><a class="LN" name="298">  298   </a>        <b>}</b>
+</span><span><a class="LN" name="299">  299   </a>
+</span><span><a class="LN" name="300">  300   </a>        <span class="CT">/* equilibrate the matrices */</span>
+</span><span><a class="LN" name="301">  301   </a>        <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="302">  302   </a>            <a href="#fcn_equilibrate_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_rows');" target="_self"><font color="#1122aa">equilibrate_rows</font></a>(Atmp, w-&gt;A);
+</span><span><a class="LN" name="303">  303   </a>        <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="304">  304   </a>            <a href="#fcn_equilibrate_rows" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_rows');" target="_self"><font color="#1122aa">equilibrate_rows</font></a>(Gtmp, w-&gt;G);
+</span><span><a class="LN" name="305">  305   </a>
+</span><span><a class="LN" name="306">  306   </a>        <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="307">  307   </a>            <a href="#fcn_equilibrate_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_cols');" target="_self"><font color="#1122aa">equilibrate_cols</font></a>(xtmp, w-&gt;A);
+</span><span><a class="LN" name="308">  308   </a>        <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="309">  309   </a>            <a href="#fcn_equilibrate_cols" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_equilibrate_cols');" target="_self"><font color="#1122aa">equilibrate_cols</font></a>(xtmp, w-&gt;G);
+</span><span><a class="LN" name="310">  310   </a>
+</span><span><a class="LN" name="311">  311   </a>        <span class="CT">/* update the equilibration matrix */</span>
+</span><span><a class="LN" name="312">  312   </a>        <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="313">  313   </a>          w-&gt;xequil[i] *= xtmp[i];
+</span><span><a class="LN" name="314">  314   </a>        <b>}</b>
+</span><span><a class="LN" name="315">  315   </a>        <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="316">  316   </a>          w-&gt;Aequil[i] *= Atmp[i];
+</span><span><a class="LN" name="317">  317   </a>        <b>}</b>
+</span><span><a class="LN" name="318">  318   </a>        <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="319">  319   </a>          w-&gt;Gequil[i] *= Gtmp[i];
+</span><span><a class="LN" name="320">  320   </a>        <b>}</b>
+</span><span><a class="LN" name="321">  321   </a>    <b>}</b>
+</span><span><a class="LN" name="322">  322   </a>
+</span><span><a class="LN" name="323">  323   </a>    <span class="CT">/* the c vector is scaled in the ECOS_solve function</span>
+</span><span><a class="LN" name="324">  324   </a><span class="CT">    for(i = 0; i &lt; num_cols; i++) {</span>
+</span><span><a class="LN" name="325">  325   </a><span class="CT">        w-&gt;c[i] /= w-&gt;xequil[i];</span>
+</span><span><a class="LN" name="326">  326   </a><span class="CT">    } */</span>
+</span><span><a class="LN" name="327">  327   </a>
+</span><span><a class="LN" name="328">  328   </a>    <span class="CT">/* equilibrate the b vector */</span>
+</span><span><a class="LN" name="329">  329   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="330">  330   </a>        w-&gt;b[i] /= w-&gt;Aequil[i];
+</span><span><a class="LN" name="331">  331   </a>    <b>}</b>
+</span><span><a class="LN" name="332">  332   </a>    <span class="CT">/* equilibrate the h vector */</span>
+</span><span><a class="LN" name="333">  333   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="334">  334   </a>        w-&gt;h[i] /= w-&gt;Gequil[i];
+</span><span><a class="LN" name="335">  335   </a>    <b>}</b>
+</span><span><a class="LN" name="336">  336   </a>
+</span><span><a class="LN" name="337">  337   </a>    free(xtmp);
+</span><span><a class="LN" name="338">  338   </a>    free(Atmp);
+</span><span><a class="LN" name="339">  339   </a>    free(Gtmp);
+</span><span><a class="LN" name="340">  340   </a><b>}</b>
+</span><span><a class="LN" name="341">  341   </a>
+</span><span><a class="LN" name="342">  342   </a><span class="CT">/* equilibrate */</span>
+</span><span><a class="LN" name="343">  343   </a><span class="DT">void</span> <a name="fcn_set_equilibration">set_equilibration</a>(pwork *w)
+</span><span><a class="LN" name="344">  344   </a><b>{</b>
+</span><span><a class="LN" name="345">  345   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span>(RUIZ_EQUIL)
+</span><span><a class="LN" name="346">  346   </a>    <a href="#fcn_use_ruiz_equilibration" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_use_ruiz_equilibration');" target="_self"><font color="#1122aa">use_ruiz_equilibration</font></a>(w);
+</span><span><a class="LN" name="347">  347   </a><font color="#992211">#</font><span class="PP">elif</span> <span class="PP">defined</span>(ALTERNATING_EQUIL)
+</span><span><a class="LN" name="348">  348   </a>    <a href="#fcn_use_alternating_norm_equilibration" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_use_alternating_norm_equilibration');" target="_self"><font color="#1122aa">use_alternating_norm_equilibration</font></a>(w);
+</span><span><a class="LN" name="349">  349   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="350">  350   </a>    <span class="CT">/* use identity equilibration */</span>
+</span><span><a class="LN" name="351">  351   </a>    idxint i;
+</span><span><a class="LN" name="352">  352   </a>    idxint num_cols = w-&gt;A ? w-&gt;A-&gt;n : w-&gt;G-&gt;n;
+</span><span><a class="LN" name="353">  353   </a>    idxint num_A_rows = w-&gt;A ? w-&gt;A-&gt;m : 0;
+</span><span><a class="LN" name="354">  354   </a>    idxint num_G_rows = w-&gt;G-&gt;m;
+</span><span><a class="LN" name="355">  355   </a>
+</span><span><a class="LN" name="356">  356   </a>    <span class="CT">/* initialize equilibration vector to 1 */</span>
+</span><span><a class="LN" name="357">  357   </a>    <span class="KW">for</span>(i = 0; i &lt; num_cols; i++) <b>{</b>
+</span><span><a class="LN" name="358">  358   </a>        w-&gt;xequil[i] = 1.0;
+</span><span><a class="LN" name="359">  359   </a>    <b>}</b>
+</span><span><a class="LN" name="360">  360   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="361">  361   </a>        w-&gt;Aequil[i] = 1.0;
+</span><span><a class="LN" name="362">  362   </a>    <b>}</b>
+</span><span><a class="LN" name="363">  363   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="364">  364   </a>        w-&gt;Gequil[i] = 1.0;
+</span><span><a class="LN" name="365">  365   </a>    <b>}</b>
+</span><span><a class="LN" name="366">  366   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="367">  367   </a><b>}</b>
+</span><span><a class="LN" name="368">  368   </a><span class="CT">/* invert the equilibration job */</span>
+</span><span><a class="LN" name="369">  369   </a><span class="DT">void</span> <a name="fcn_unset_equilibration">unset_equilibration</a>(pwork *w)
+</span><span><a class="LN" name="370">  370   </a><b>{</b>
+</span><span><a class="LN" name="371">  371   </a>    idxint i;
+</span><span><a class="LN" name="372">  372   </a>    <span class="CT">/* idxint num_cols = w-&gt;A ? w-&gt;A-&gt;n : w-&gt;G-&gt;n; */</span>
+</span><span><a class="LN" name="373">  373   </a>    idxint num_A_rows = w-&gt;A ? w-&gt;A-&gt;m : 0;
+</span><span><a class="LN" name="374">  374   </a>    idxint num_G_rows = w-&gt;G-&gt;m;
+</span><span><a class="LN" name="375">  375   </a>
+</span><span><a class="LN" name="376">  376   </a>    <span class="KW">if</span>(w-&gt;A)
+</span><span><a class="LN" name="377">  377   </a>        <a href="#fcn_restore" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restore');" target="_self"><font color="#1122aa">restore</font></a>(w-&gt;Aequil, w-&gt;xequil, w-&gt;A);
+</span><span><a class="LN" name="378">  378   </a>    <span class="KW">if</span>(num_G_rows &gt; 0)
+</span><span><a class="LN" name="379">  379   </a>        <a href="#fcn_restore" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_restore');" target="_self"><font color="#1122aa">restore</font></a>(w-&gt;Gequil, w-&gt;xequil, w-&gt;G);
+</span><span><a class="LN" name="380">  380   </a>
+</span><span><a class="LN" name="381">  381   </a>    <span class="CT">/* the c vector is unequilibrated in the ECOS_solve function</span>
+</span><span><a class="LN" name="382">  382   </a><span class="CT">        for(i = 0; i &lt; num_cols; i++) {</span>
+</span><span><a class="LN" name="383">  383   </a><span class="CT">        w-&gt;c[i] *= w-&gt;xequil[i];</span>
+</span><span><a class="LN" name="384">  384   </a><span class="CT">    }*/</span>
+</span><span><a class="LN" name="385">  385   </a>
+</span><span><a class="LN" name="386">  386   </a>    <span class="CT">/* unequilibrate the b vector */</span>
+</span><span><a class="LN" name="387">  387   </a>    <span class="KW">for</span>(i = 0; i &lt; num_A_rows; i++) <b>{</b>
+</span><span><a class="LN" name="388">  388   </a>        w-&gt;b[i] *= w-&gt;Aequil[i];
+</span><span><a class="LN" name="389">  389   </a>    <b>}</b>
+</span><span><a class="LN" name="390">  390   </a>    <span class="CT">/* unequilibrate the h vector */</span>
+</span><span><a class="LN" name="391">  391   </a>    <span class="KW">for</span>(i = 0; i &lt; num_G_rows; i++) <b>{</b>
+</span><span><a class="LN" name="392">  392   </a>        w-&gt;h[i] *= w-&gt;Gequil[i];
+</span><span><a class="LN" name="393">  393   </a>    <b>}</b>
+</span><span><a class="LN" name="394">  394   </a><b>}</b>
+</span><span><a class="LN" name="395">  395   </a>
+</span><span><a class="LN" name="396">  396   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="397">  397   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

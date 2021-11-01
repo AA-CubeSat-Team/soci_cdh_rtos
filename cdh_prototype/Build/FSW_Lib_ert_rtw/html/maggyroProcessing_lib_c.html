@@ -1,0 +1,1074 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - maggyroProcessing_lib.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('maggyroProcessing_lib_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../maggyroProcessing_lib.c" target="rtwreport_document_frame" id="linkToText_plain">maggyroProcessing_lib.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: maggyroProcessing_lib.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Tue Oct 26 16:29:45 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * Target selection: ert.tlc</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Embedded hardware selection: NXP-&gt;Cortex-M4</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Code generation objectives:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *    1. Execution efficiency</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *    2. RAM efficiency</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Validation result: Not run</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;maggyroProcessing_lib.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a>
+</span><span><a class="LN" name="24">   24   </a><span class="CT">/* Include model header file for global data */</span>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib.h&quot;</font>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib_private.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="29">   29   </a><span class="CT"> * System initialize for action system:</span>
+</span><span><a class="LN" name="30">   30   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:203')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/ThreeValid_MVS</i></font></a>'</span>
+</span><span><a class="LN" name="31">   31   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:203')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/ThreeValid_MVS</i></font></a>'</span>
+</span><span><a class="LN" name="32">   32   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="33">   33   </a><span class="DT">void</span> <a name="fcn_ThreeValid_MVS_Init">ThreeValid_MVS_Init</a>(<a href="maggyroProcessing_lib_h.html#type_DW_ThreeValid_MVS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_ThreeValid_MVS');" target="_self"><font color="#1122aa">DW_ThreeValid_MVS</font></a> *localDW)
+</span><span><a class="LN" name="34">   34   </a><b>{</b>
+</span><span><a class="LN" name="35">   35   </a>  <span class="CT">/* InitializeConditions for S-Function (sdspmdn2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:701')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Median</i></font></a>' */</span>
+</span><span><a class="LN" name="36">   36   </a>  localDW-&gt;Median_Index[0] = 0U;
+</span><span><a class="LN" name="37">   37   </a>  localDW-&gt;Median_Index[1] = 3U;
+</span><span><a class="LN" name="38">   38   </a>  localDW-&gt;Median_Index[2] = 6U;
+</span><span><a class="LN" name="39">   39   </a><b>}</b>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="42">   42   </a><span class="CT"> * Output and update for action system:</span>
+</span><span><a class="LN" name="43">   43   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:203')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/ThreeValid_MVS</i></font></a>'</span>
+</span><span><a class="LN" name="44">   44   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:203')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/ThreeValid_MVS</i></font></a>'</span>
+</span><span><a class="LN" name="45">   45   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="46">   46   </a><span class="DT">void</span> <a name="fcn_ThreeValid_MVS">ThreeValid_MVS</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sensor_meas_body_all[9], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="47">   47   </a>                    rty_sensor_meas_body[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *rty_sensor_meas_valid,
+</span><span><a class="LN" name="48">   48   </a>                    <a href="maggyroProcessing_lib_h.html#type_DW_ThreeValid_MVS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_ThreeValid_MVS');" target="_self"><font color="#1122aa">DW_ThreeValid_MVS</font></a> *localDW, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_max_err)
+</span><span><a class="LN" name="49">   49   </a><b>{</b>
+</span><span><a class="LN" name="50">   50   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> c;
+</span><span><a class="LN" name="51">   51   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> j;
+</span><span><a class="LN" name="52">   52   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint32_T');" target="_self"><font color="#1122aa">uint32_T</font></a> i0;
+</span><span><a class="LN" name="53">   53   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_uint32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint32_T');" target="_self"><font color="#1122aa">uint32_T</font></a> i1;
+</span><span><a class="LN" name="54">   54   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> j1;
+</span><span><a class="LN" name="55">   55   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_d;
+</span><span><a class="LN" name="56">   56   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_dk;
+</span><span><a class="LN" name="57">   57   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_o;
+</span><span><a class="LN" name="58">   58   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector[3];
+</span><span><a class="LN" name="59">   59   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Median[3];
+</span><span><a class="LN" name="60">   60   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector2_ky[3];
+</span><span><a class="LN" name="61">   61   </a>
+</span><span><a class="LN" name="62">   62   </a>  <span class="CT">/* S-Function (sdspmdn2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:701')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Median</i></font></a>' */</span>
+</span><span><a class="LN" name="63">   63   </a>  c = 0;
+</span><span><a class="LN" name="64">   64   </a>  <span class="KW">for</span> (j = 0; j &lt; 3; j++) <b>{</b>
+</span><span><a class="LN" name="65">   65   </a>    i0 = localDW-&gt;Median_Index[0];
+</span><span><a class="LN" name="66">   66   </a>    rtb_Sqrt_d = rtu_sensor_meas_body_all[localDW-&gt;Median_Index[0] + j];
+</span><span><a class="LN" name="67">   67   </a>    i1 = localDW-&gt;Median_Index[1U];
+</span><span><a class="LN" name="68">   68   </a>    rtb_Sqrt_dk = rtu_sensor_meas_body_all[localDW-&gt;Median_Index[1U] + j];
+</span><span><a class="LN" name="69">   69   </a>    <span class="KW">if</span> (rtb_Sqrt_d &gt; rtb_Sqrt_dk) <b>{</b>
+</span><span><a class="LN" name="70">   70   </a>      localDW-&gt;Median_Index[1U] = localDW-&gt;Median_Index[0];
+</span><span><a class="LN" name="71">   71   </a>      localDW-&gt;Median_Index[0U] = i1;
+</span><span><a class="LN" name="72">   72   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="73">   73   </a>      rtb_Sqrt_d = rtb_Sqrt_dk;
+</span><span><a class="LN" name="74">   74   </a>      i0 = localDW-&gt;Median_Index[1U];
+</span><span><a class="LN" name="75">   75   </a>    <b>}</b>
+</span><span><a class="LN" name="76">   76   </a>
+</span><span><a class="LN" name="77">   77   </a>    i1 = localDW-&gt;Median_Index[2U];
+</span><span><a class="LN" name="78">   78   </a>    rtb_Sqrt_dk = rtu_sensor_meas_body_all[localDW-&gt;Median_Index[2U] + j];
+</span><span><a class="LN" name="79">   79   </a>    <span class="KW">if</span> (rtb_Sqrt_d &gt; rtb_Sqrt_dk) <b>{</b>
+</span><span><a class="LN" name="80">   80   </a>      localDW-&gt;Median_Index[2U] = i0;
+</span><span><a class="LN" name="81">   81   </a>      <span class="KW">if</span> (rtu_sensor_meas_body_all[localDW-&gt;Median_Index[0U] + j] &gt; rtb_Sqrt_dk)
+</span><span><a class="LN" name="82">   82   </a>      <b>{</b>
+</span><span><a class="LN" name="83">   83   </a>        localDW-&gt;Median_Index[1U] = localDW-&gt;Median_Index[0U];
+</span><span><a class="LN" name="84">   84   </a>        j1 = 1;
+</span><span><a class="LN" name="85">   85   </a>      <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="86">   86   </a>        j1 = 2;
+</span><span><a class="LN" name="87">   87   </a>
+</span><span><a class="LN" name="88">   88   </a>        <span class="CT">/* set loop index to break loop */</span>
+</span><span><a class="LN" name="89">   89   </a>      <b>}</b>
+</span><span><a class="LN" name="90">   90   </a>
+</span><span><a class="LN" name="91">   91   </a>      localDW-&gt;Median_Index[j1 - 1U] = i1;
+</span><span><a class="LN" name="92">   92   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="93">   93   </a>      rtb_Sqrt_d = rtb_Sqrt_dk;
+</span><span><a class="LN" name="94">   94   </a>    <b>}</b>
+</span><span><a class="LN" name="95">   95   </a>
+</span><span><a class="LN" name="96">   96   </a>    rtb_Median[c] = rtu_sensor_meas_body_all[localDW-&gt;Median_Index[1] + j];
+</span><span><a class="LN" name="97">   97   </a>    c++;
+</span><span><a class="LN" name="98">   98   </a>  <b>}</b>
+</span><span><a class="LN" name="99">   99   </a>
+</span><span><a class="LN" name="100">  100   </a>  <span class="CT">/* End of S-Function (sdspmdn2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:701')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Median</i></font></a>' */</span>
+</span><span><a class="LN" name="101">  101   </a>
+</span><span><a class="LN" name="102">  102   </a>  <span class="CT">/* SignalConversion: '&lt;S26&gt;/OutportBufferForsensor_meas_body' */</span>
+</span><span><a class="LN" name="103">  103   </a>  rty_sensor_meas_body[0] = rtb_Median[0];
+</span><span><a class="LN" name="104">  104   </a>
+</span><span><a class="LN" name="105">  105   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:706')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="106">  106   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:711')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector</i></font></a>'</span>
+</span><span><a class="LN" name="107">  107   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:713')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="108">  108   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="109">  109   </a>  rtb_Median[0] = rtu_sensor_meas_body_all[0] - rtu_sensor_meas_body_all[6];
+</span><span><a class="LN" name="110">  110   </a>
+</span><span><a class="LN" name="111">  111   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:703')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="112">  112   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:711')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector</i></font></a>'</span>
+</span><span><a class="LN" name="113">  113   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:712')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="114">  114   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="115">  115   </a>  rtb_VariableSelector[0] = rtu_sensor_meas_body_all[0] -
+</span><span><a class="LN" name="116">  116   </a>    rtu_sensor_meas_body_all[3];
+</span><span><a class="LN" name="117">  117   </a>
+</span><span><a class="LN" name="118">  118   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:709')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="119">  119   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:712')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="120">  120   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:713')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="121">  121   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="122">  122   </a>  rtb_VariableSelector2_ky[0] = rtu_sensor_meas_body_all[3] -
+</span><span><a class="LN" name="123">  123   </a>    rtu_sensor_meas_body_all[6];
+</span><span><a class="LN" name="124">  124   </a>
+</span><span><a class="LN" name="125">  125   </a>  <span class="CT">/* SignalConversion: '&lt;S26&gt;/OutportBufferForsensor_meas_body' */</span>
+</span><span><a class="LN" name="126">  126   </a>  rty_sensor_meas_body[1] = rtb_Median[1];
+</span><span><a class="LN" name="127">  127   </a>
+</span><span><a class="LN" name="128">  128   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:706')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="129">  129   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:711')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector</i></font></a>'</span>
+</span><span><a class="LN" name="130">  130   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:713')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="131">  131   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="132">  132   </a>  rtb_Median[1] = rtu_sensor_meas_body_all[1] - rtu_sensor_meas_body_all[7];
+</span><span><a class="LN" name="133">  133   </a>
+</span><span><a class="LN" name="134">  134   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:703')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="135">  135   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:711')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector</i></font></a>'</span>
+</span><span><a class="LN" name="136">  136   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:712')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="137">  137   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="138">  138   </a>  rtb_VariableSelector[1] = rtu_sensor_meas_body_all[1] -
+</span><span><a class="LN" name="139">  139   </a>    rtu_sensor_meas_body_all[4];
+</span><span><a class="LN" name="140">  140   </a>
+</span><span><a class="LN" name="141">  141   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:709')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="142">  142   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:712')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="143">  143   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:713')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="144">  144   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="145">  145   </a>  rtb_VariableSelector2_ky[1] = rtu_sensor_meas_body_all[4] -
+</span><span><a class="LN" name="146">  146   </a>    rtu_sensor_meas_body_all[7];
+</span><span><a class="LN" name="147">  147   </a>
+</span><span><a class="LN" name="148">  148   </a>  <span class="CT">/* SignalConversion: '&lt;S26&gt;/OutportBufferForsensor_meas_body' */</span>
+</span><span><a class="LN" name="149">  149   </a>  rty_sensor_meas_body[2] = rtb_Median[2];
+</span><span><a class="LN" name="150">  150   </a>
+</span><span><a class="LN" name="151">  151   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:706')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="152">  152   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:711')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector</i></font></a>'</span>
+</span><span><a class="LN" name="153">  153   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:713')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="154">  154   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="155">  155   </a>  rtb_Median[2] = rtu_sensor_meas_body_all[2] - rtu_sensor_meas_body_all[8];
+</span><span><a class="LN" name="156">  156   </a>
+</span><span><a class="LN" name="157">  157   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:703')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="158">  158   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:711')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector</i></font></a>'</span>
+</span><span><a class="LN" name="159">  159   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:712')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="160">  160   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="161">  161   </a>  rtb_VariableSelector[2] = rtu_sensor_meas_body_all[2] -
+</span><span><a class="LN" name="162">  162   </a>    rtu_sensor_meas_body_all[5];
+</span><span><a class="LN" name="163">  163   </a>
+</span><span><a class="LN" name="164">  164   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:709')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Subtract2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="165">  165   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:712')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="166">  166   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:713')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="167">  167   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="168">  168   </a>  rtb_VariableSelector2_ky[2] = rtu_sensor_meas_body_all[5] -
+</span><span><a class="LN" name="169">  169   </a>    rtu_sensor_meas_body_all[8];
+</span><span><a class="LN" name="170">  170   </a>
+</span><span><a class="LN" name="171">  171   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:704')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="172">  172   </a>  rtb_Sqrt_d = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector);
+</span><span><a class="LN" name="173">  173   </a>
+</span><span><a class="LN" name="174">  174   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:704')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="175">  175   </a>
+</span><span><a class="LN" name="176">  176   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:707')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="177">  177   </a>  rtb_Sqrt_dk = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_Median);
+</span><span><a class="LN" name="178">  178   </a>
+</span><span><a class="LN" name="179">  179   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:707')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="180">  180   </a>
+</span><span><a class="LN" name="181">  181   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:710')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/twonorm2</i></font></a>' */</span>
+</span><span><a class="LN" name="182">  182   </a>  rtb_Sqrt_o = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector2_ky);
+</span><span><a class="LN" name="183">  183   </a>
+</span><span><a class="LN" name="184">  184   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:710')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/twonorm2</i></font></a>' */</span>
+</span><span><a class="LN" name="185">  185   </a>
+</span><span><a class="LN" name="186">  186   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:714')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/OR</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="187">  187   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:702:3')" name="code2model"><font color="#117755"><i>&lt;S46&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="188">  188   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:705:3')" name="code2model"><font color="#117755"><i>&lt;S47&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="189">  189   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:708:3')" name="code2model"><font color="#117755"><i>&lt;S48&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="190">  190   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:702:2')" name="code2model"><font color="#117755"><i>&lt;S46&gt;/Compare</i></font></a>'</span>
+</span><span><a class="LN" name="191">  191   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:705:2')" name="code2model"><font color="#117755"><i>&lt;S47&gt;/Compare</i></font></a>'</span>
+</span><span><a class="LN" name="192">  192   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:708:2')" name="code2model"><font color="#117755"><i>&lt;S48&gt;/Compare</i></font></a>'</span>
+</span><span><a class="LN" name="193">  193   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="194">  194   </a>  *rty_sensor_meas_valid = ((rtb_Sqrt_d &lt;= rtp_max_err) || (rtb_Sqrt_dk &lt;=
+</span><span><a class="LN" name="195">  195   </a>    rtp_max_err) || (rtb_Sqrt_o &lt;= rtp_max_err));
+</span><span><a class="LN" name="196">  196   </a><b>}</b>
+</span><span><a class="LN" name="197">  197   </a>
+</span><span><a class="LN" name="198">  198   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="199">  199   </a><span class="CT"> * Output and update for action system:</span>
+</span><span><a class="LN" name="200">  200   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:161')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/TwoValid</i></font></a>'</span>
+</span><span><a class="LN" name="201">  201   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:161')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/TwoValid</i></font></a>'</span>
+</span><span><a class="LN" name="202">  202   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="203">  203   </a><span class="DT">void</span> <a name="fcn_TwoValid">TwoValid</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sensor_meas_body_all[9], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="204">  204   </a>              rtu_sensor_valid_all, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_sensor_valid_all_o, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="205">  205   </a>              rtu_sensor_valid_all_c, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sensor_meas_body[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *
+</span><span><a class="LN" name="206">  206   </a>              rty_sensor_meas_valid, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_max_err)
+</span><span><a class="LN" name="207">  207   </a><b>{</b>
+</span><span><a class="LN" name="208">  208   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_i;
+</span><span><a class="LN" name="209">  209   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector6_h[3];
+</span><span><a class="LN" name="210">  210   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Subtract_f[3];
+</span><span><a class="LN" name="211">  211   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Subtract_n[3];
+</span><span><a class="LN" name="212">  212   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector8_k_idx_2;
+</span><span><a class="LN" name="213">  213   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Merge_j_idx_2;
+</span><span><a class="LN" name="214">  214   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector8_k_idx_1;
+</span><span><a class="LN" name="215">  215   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Merge_j_idx_1;
+</span><span><a class="LN" name="216">  216   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector8_k_idx_0;
+</span><span><a class="LN" name="217">  217   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Merge_j_idx_0;
+</span><span><a class="LN" name="218">  218   </a>
+</span><span><a class="LN" name="219">  219   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>' */</span>
+</span><span><a class="LN" name="220">  220   </a>  rtb_VariableSelector8_k_idx_0 = rtu_sensor_meas_body_all[6];
+</span><span><a class="LN" name="221">  221   </a>  rtb_VariableSelector8_k_idx_1 = rtu_sensor_meas_body_all[7];
+</span><span><a class="LN" name="222">  222   </a>  rtb_VariableSelector8_k_idx_2 = rtu_sensor_meas_body_all[8];
+</span><span><a class="LN" name="223">  223   </a>
+</span><span><a class="LN" name="224">  224   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:191')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If4</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="225">  225   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:180')" name="code2model"><font color="#117755"><i>&lt;S55&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="226">  226   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="227">  227   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="228">  228   </a>  <span class="KW">if</span> (rtu_sensor_valid_all) <b>{</b>
+</span><span><a class="LN" name="229">  229   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:179')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem6</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="230">  230   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:181')" name="code2model"><font color="#117755"><i>&lt;S55&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="231">  231   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="232">  232   </a>    rtb_Merge_j_idx_0 = rtu_sensor_meas_body_all[0];
+</span><span><a class="LN" name="233">  233   </a>    rtb_Merge_j_idx_1 = rtu_sensor_meas_body_all[1];
+</span><span><a class="LN" name="234">  234   </a>    rtb_Merge_j_idx_2 = rtu_sensor_meas_body_all[2];
+</span><span><a class="LN" name="235">  235   </a>
+</span><span><a class="LN" name="236">  236   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:179')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem6</i></font></a>' */</span>
+</span><span><a class="LN" name="237">  237   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="238">  238   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:171')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem14</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="239">  239   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:172')" name="code2model"><font color="#117755"><i>&lt;S53&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="240">  240   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="241">  241   </a>    <span class="CT">/* SignalConversion: '&lt;S53&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="242">  242   </a>    rtb_Merge_j_idx_0 = 0.0;
+</span><span><a class="LN" name="243">  243   </a>
+</span><span><a class="LN" name="244">  244   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:326')" name="code2model"><font color="#117755"><i>&lt;S53&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="245">  245   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="246">  246   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>'</span>
+</span><span><a class="LN" name="247">  247   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="248">  248   </a>    rtb_Subtract_f[0] = rtu_sensor_meas_body_all[3] - rtu_sensor_meas_body_all[6];
+</span><span><a class="LN" name="249">  249   </a>
+</span><span><a class="LN" name="250">  250   </a>    <span class="CT">/* SignalConversion: '&lt;S53&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="251">  251   </a>    rtb_Merge_j_idx_1 = 0.0;
+</span><span><a class="LN" name="252">  252   </a>
+</span><span><a class="LN" name="253">  253   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:326')" name="code2model"><font color="#117755"><i>&lt;S53&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="254">  254   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="255">  255   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>'</span>
+</span><span><a class="LN" name="256">  256   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="257">  257   </a>    rtb_Subtract_f[1] = rtu_sensor_meas_body_all[4] - rtu_sensor_meas_body_all[7];
+</span><span><a class="LN" name="258">  258   </a>
+</span><span><a class="LN" name="259">  259   </a>    <span class="CT">/* SignalConversion: '&lt;S53&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="260">  260   </a>    rtb_Merge_j_idx_2 = 0.0;
+</span><span><a class="LN" name="261">  261   </a>
+</span><span><a class="LN" name="262">  262   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:326')" name="code2model"><font color="#117755"><i>&lt;S53&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="263">  263   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="264">  264   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>'</span>
+</span><span><a class="LN" name="265">  265   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="266">  266   </a>    rtb_Subtract_f[2] = rtu_sensor_meas_body_all[5] - rtu_sensor_meas_body_all[8];
+</span><span><a class="LN" name="267">  267   </a>
+</span><span><a class="LN" name="268">  268   </a>    <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:328')" name="code2model"><font color="#117755"><i>&lt;S53&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="269">  269   </a>    rtb_Sqrt_i = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_Subtract_f);
+</span><span><a class="LN" name="270">  270   </a>
+</span><span><a class="LN" name="271">  271   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:328')" name="code2model"><font color="#117755"><i>&lt;S53&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="272">  272   </a>
+</span><span><a class="LN" name="273">  273   </a>    <span class="CT">/* RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:506:2')" name="code2model"><font color="#117755"><i>&lt;S60&gt;/Compare</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="274">  274   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:506:3')" name="code2model"><font color="#117755"><i>&lt;S60&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="275">  275   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="276">  276   </a>    *rty_sensor_meas_valid = (rtb_Sqrt_i &lt;= rtp_max_err);
+</span><span><a class="LN" name="277">  277   </a>
+</span><span><a class="LN" name="278">  278   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:171')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem14</i></font></a>' */</span>
+</span><span><a class="LN" name="279">  279   </a>  <b>}</b>
+</span><span><a class="LN" name="280">  280   </a>
+</span><span><a class="LN" name="281">  281   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:191')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If4</i></font></a>' */</span>
+</span><span><a class="LN" name="282">  282   </a>
+</span><span><a class="LN" name="283">  283   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:192')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If5</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="284">  284   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:184')" name="code2model"><font color="#117755"><i>&lt;S56&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="285">  285   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="286">  286   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="287">  287   </a>  <span class="KW">if</span> (rtu_sensor_valid_all_o) <b>{</b>
+</span><span><a class="LN" name="288">  288   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:183')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem8</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="289">  289   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:185')" name="code2model"><font color="#117755"><i>&lt;S56&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="290">  290   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="291">  291   </a>    rtb_Subtract_f[0] = rtu_sensor_meas_body_all[3];
+</span><span><a class="LN" name="292">  292   </a>    rtb_Subtract_f[1] = rtu_sensor_meas_body_all[4];
+</span><span><a class="LN" name="293">  293   </a>    rtb_Subtract_f[2] = rtu_sensor_meas_body_all[5];
+</span><span><a class="LN" name="294">  294   </a>
+</span><span><a class="LN" name="295">  295   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:183')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem8</i></font></a>' */</span>
+</span><span><a class="LN" name="296">  296   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="297">  297   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:167')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="298">  298   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:168')" name="code2model"><font color="#117755"><i>&lt;S52&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="299">  299   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="300">  300   </a>    <span class="CT">/* SignalConversion: '&lt;S52&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="301">  301   </a>    rtb_Subtract_f[0] = 0.0;
+</span><span><a class="LN" name="302">  302   </a>
+</span><span><a class="LN" name="303">  303   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:340')" name="code2model"><font color="#117755"><i>&lt;S52&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="304">  304   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="305">  305   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>'</span>
+</span><span><a class="LN" name="306">  306   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="307">  307   </a>    rtb_Subtract_n[0] = rtu_sensor_meas_body_all[0] - rtu_sensor_meas_body_all[6];
+</span><span><a class="LN" name="308">  308   </a>
+</span><span><a class="LN" name="309">  309   </a>    <span class="CT">/* SignalConversion: '&lt;S52&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="310">  310   </a>    rtb_Subtract_f[1] = 0.0;
+</span><span><a class="LN" name="311">  311   </a>
+</span><span><a class="LN" name="312">  312   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:340')" name="code2model"><font color="#117755"><i>&lt;S52&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="313">  313   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="314">  314   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>'</span>
+</span><span><a class="LN" name="315">  315   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="316">  316   </a>    rtb_Subtract_n[1] = rtu_sensor_meas_body_all[1] - rtu_sensor_meas_body_all[7];
+</span><span><a class="LN" name="317">  317   </a>
+</span><span><a class="LN" name="318">  318   </a>    <span class="CT">/* SignalConversion: '&lt;S52&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="319">  319   </a>    rtb_Subtract_f[2] = 0.0;
+</span><span><a class="LN" name="320">  320   </a>
+</span><span><a class="LN" name="321">  321   </a>    <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:340')" name="code2model"><font color="#117755"><i>&lt;S52&gt;/Subtract</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="322">  322   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="323">  323   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:200')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector8</i></font></a>'</span>
+</span><span><a class="LN" name="324">  324   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="325">  325   </a>    rtb_Subtract_n[2] = rtu_sensor_meas_body_all[2] - rtu_sensor_meas_body_all[8];
+</span><span><a class="LN" name="326">  326   </a>
+</span><span><a class="LN" name="327">  327   </a>    <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:508')" name="code2model"><font color="#117755"><i>&lt;S52&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="328">  328   </a>    rtb_Sqrt_i = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_Subtract_n);
+</span><span><a class="LN" name="329">  329   </a>
+</span><span><a class="LN" name="330">  330   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:508')" name="code2model"><font color="#117755"><i>&lt;S52&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="331">  331   </a>
+</span><span><a class="LN" name="332">  332   </a>    <span class="CT">/* RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:507:2')" name="code2model"><font color="#117755"><i>&lt;S58&gt;/Compare</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="333">  333   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:507:3')" name="code2model"><font color="#117755"><i>&lt;S58&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="334">  334   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="335">  335   </a>    *rty_sensor_meas_valid = (rtb_Sqrt_i &lt;= rtp_max_err);
+</span><span><a class="LN" name="336">  336   </a>
+</span><span><a class="LN" name="337">  337   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:167')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem1</i></font></a>' */</span>
+</span><span><a class="LN" name="338">  338   </a>  <b>}</b>
+</span><span><a class="LN" name="339">  339   </a>
+</span><span><a class="LN" name="340">  340   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:192')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If5</i></font></a>' */</span>
+</span><span><a class="LN" name="341">  341   </a>
+</span><span><a class="LN" name="342">  342   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:193')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If6</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="343">  343   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="344">  344   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="345">  345   </a><span class="CT">   *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:347')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/Subtract</i></font></a>'</span>
+</span><span><a class="LN" name="346">  346   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="347">  347   </a>  <span class="KW">if</span> (!rtu_sensor_valid_all_c) <b>{</b>
+</span><span><a class="LN" name="348">  348   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:175')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="349">  349   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:176')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="350">  350   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="351">  351   </a>    <span class="CT">/* SignalConversion: '&lt;S54&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="352">  352   </a>    rtb_VariableSelector8_k_idx_0 = 0.0;
+</span><span><a class="LN" name="353">  353   </a>    rtb_VariableSelector6_h[0] = rtu_sensor_meas_body_all[0] -
+</span><span><a class="LN" name="354">  354   </a>      rtu_sensor_meas_body_all[3];
+</span><span><a class="LN" name="355">  355   </a>
+</span><span><a class="LN" name="356">  356   </a>    <span class="CT">/* SignalConversion: '&lt;S54&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' incorporates:</span>
+</span><span><a class="LN" name="357">  357   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="358">  358   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="359">  359   </a><span class="CT">     *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:347')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/Subtract</i></font></a>'</span>
+</span><span><a class="LN" name="360">  360   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="361">  361   </a>    rtb_VariableSelector8_k_idx_1 = 0.0;
+</span><span><a class="LN" name="362">  362   </a>    rtb_VariableSelector6_h[1] = rtu_sensor_meas_body_all[1] -
+</span><span><a class="LN" name="363">  363   </a>      rtu_sensor_meas_body_all[4];
+</span><span><a class="LN" name="364">  364   </a>
+</span><span><a class="LN" name="365">  365   </a>    <span class="CT">/* SignalConversion: '&lt;S54&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' incorporates:</span>
+</span><span><a class="LN" name="366">  366   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="367">  367   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="368">  368   </a><span class="CT">     *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:347')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/Subtract</i></font></a>'</span>
+</span><span><a class="LN" name="369">  369   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="370">  370   </a>    rtb_VariableSelector8_k_idx_2 = 0.0;
+</span><span><a class="LN" name="371">  371   </a>    rtb_VariableSelector6_h[2] = rtu_sensor_meas_body_all[2] -
+</span><span><a class="LN" name="372">  372   </a>      rtu_sensor_meas_body_all[5];
+</span><span><a class="LN" name="373">  373   </a>
+</span><span><a class="LN" name="374">  374   </a>    <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:510')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="375">  375   </a>    rtb_Sqrt_i = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector6_h);
+</span><span><a class="LN" name="376">  376   </a>
+</span><span><a class="LN" name="377">  377   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:510')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/twonorm</i></font></a>' */</span>
+</span><span><a class="LN" name="378">  378   </a>
+</span><span><a class="LN" name="379">  379   </a>    <span class="CT">/* RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:509:2')" name="code2model"><font color="#117755"><i>&lt;S62&gt;/Compare</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="380">  380   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:509:3')" name="code2model"><font color="#117755"><i>&lt;S62&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="381">  381   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:198')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector6</i></font></a>'</span>
+</span><span><a class="LN" name="382">  382   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:199')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Variable Selector7</i></font></a>'</span>
+</span><span><a class="LN" name="383">  383   </a><span class="CT">     *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:347')" name="code2model"><font color="#117755"><i>&lt;S54&gt;/Subtract</i></font></a>'</span>
+</span><span><a class="LN" name="384">  384   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="385">  385   </a>    *rty_sensor_meas_valid = (rtb_Sqrt_i &lt;= rtp_max_err);
+</span><span><a class="LN" name="386">  386   </a>
+</span><span><a class="LN" name="387">  387   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:175')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If Action Subsystem2</i></font></a>' */</span>
+</span><span><a class="LN" name="388">  388   </a>  <b>}</b>
+</span><span><a class="LN" name="389">  389   </a>
+</span><span><a class="LN" name="390">  390   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:193')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/If6</i></font></a>' */</span>
+</span><span><a class="LN" name="391">  391   </a>
+</span><span><a class="LN" name="392">  392   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:166')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Gain1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="393">  393   </a><span class="CT">   *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:197')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Sum1</i></font></a>'</span>
+</span><span><a class="LN" name="394">  394   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="395">  395   </a>  rty_sensor_meas_body[0] = ((rtb_Merge_j_idx_0 + rtb_Subtract_f[0]) +
+</span><span><a class="LN" name="396">  396   </a>    rtb_VariableSelector8_k_idx_0) * 0.5;
+</span><span><a class="LN" name="397">  397   </a>  rty_sensor_meas_body[1] = ((rtb_Merge_j_idx_1 + rtb_Subtract_f[1]) +
+</span><span><a class="LN" name="398">  398   </a>    rtb_VariableSelector8_k_idx_1) * 0.5;
+</span><span><a class="LN" name="399">  399   </a>  rty_sensor_meas_body[2] = ((rtb_Merge_j_idx_2 + rtb_Subtract_f[2]) +
+</span><span><a class="LN" name="400">  400   </a>    rtb_VariableSelector8_k_idx_2) * 0.5;
+</span><span><a class="LN" name="401">  401   </a><b>}</b>
+</span><span><a class="LN" name="402">  402   </a>
+</span><span><a class="LN" name="403">  403   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="404">  404   </a><span class="CT"> * Output and update for action system:</span>
+</span><span><a class="LN" name="405">  405   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:129')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem14</i></font></a>'</span>
+</span><span><a class="LN" name="406">  406   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:125')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem1</i></font></a>'</span>
+</span><span><a class="LN" name="407">  407   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:133')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem2</i></font></a>'</span>
+</span><span><a class="LN" name="408">  408   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:129')" name="code2model"><font color="#117755"><i>&lt;S66&gt;/If Action Subsystem14</i></font></a>'</span>
+</span><span><a class="LN" name="409">  409   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:125')" name="code2model"><font color="#117755"><i>&lt;S66&gt;/If Action Subsystem1</i></font></a>'</span>
+</span><span><a class="LN" name="410">  410   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:133')" name="code2model"><font color="#117755"><i>&lt;S66&gt;/If Action Subsystem2</i></font></a>'</span>
+</span><span><a class="LN" name="411">  411   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="412">  412   </a><span class="DT">void</span> <a name="fcn_IfActionSubsystem14">IfActionSubsystem14</a>(<a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_nullOut[3])
+</span><span><a class="LN" name="413">  413   </a><b>{</b>
+</span><span><a class="LN" name="414">  414   </a>  <span class="CT">/* SignalConversion: '&lt;S29&gt;/OutportBuffer_InsertedFor_nullOut_at_inport_0' */</span>
+</span><span><a class="LN" name="415">  415   </a>  rty_nullOut[0] = 0.0;
+</span><span><a class="LN" name="416">  416   </a>  rty_nullOut[1] = 0.0;
+</span><span><a class="LN" name="417">  417   </a>  rty_nullOut[2] = 0.0;
+</span><span><a class="LN" name="418">  418   </a><b>}</b>
+</span><span><a class="LN" name="419">  419   </a>
+</span><span><a class="LN" name="420">  420   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="421">  421   </a><span class="CT"> * Output and update for action system:</span>
+</span><span><a class="LN" name="422">  422   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:119')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/OneValid</i></font></a>'</span>
+</span><span><a class="LN" name="423">  423   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:119')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/OneValid</i></font></a>'</span>
+</span><span><a class="LN" name="424">  424   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="425">  425   </a><span class="DT">void</span> <a name="fcn_OneValid">OneValid</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sensor_meas_body_all[9], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="426">  426   </a>              rtu_sensor_valid_all, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_sensor_valid_all_c, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="427">  427   </a>              rtu_sensor_valid_all_n, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sensor_meas_body[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *
+</span><span><a class="LN" name="428">  428   </a>              rty_sensor_valid)
+</span><span><a class="LN" name="429">  429   </a><b>{</b>
+</span><span><a class="LN" name="430">  430   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector6_e[3];
+</span><span><a class="LN" name="431">  431   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector7_g[3];
+</span><span><a class="LN" name="432">  432   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector8_l[3];
+</span><span><a class="LN" name="433">  433   </a>
+</span><span><a class="LN" name="434">  434   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:156')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Variable Selector6</i></font></a>' */</span>
+</span><span><a class="LN" name="435">  435   </a>  rtb_VariableSelector6_e[0] = rtu_sensor_meas_body_all[0];
+</span><span><a class="LN" name="436">  436   </a>  rtb_VariableSelector6_e[1] = rtu_sensor_meas_body_all[1];
+</span><span><a class="LN" name="437">  437   </a>  rtb_VariableSelector6_e[2] = rtu_sensor_meas_body_all[2];
+</span><span><a class="LN" name="438">  438   </a>
+</span><span><a class="LN" name="439">  439   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:149')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If4</i></font></a>' */</span>
+</span><span><a class="LN" name="440">  440   </a>  <span class="KW">if</span> (!rtu_sensor_valid_all) <b>{</b>
+</span><span><a class="LN" name="441">  441   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:129')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem14</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="442">  442   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:130')" name="code2model"><font color="#117755"><i>&lt;S29&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="443">  443   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="444">  444   </a>    <a href="#fcn_IfActionSubsystem14" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem14');" target="_self"><font color="#1122aa">IfActionSubsystem14</font></a>(rtb_VariableSelector6_e);
+</span><span><a class="LN" name="445">  445   </a>
+</span><span><a class="LN" name="446">  446   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:129')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem14</i></font></a>' */</span>
+</span><span><a class="LN" name="447">  447   </a>  <b>}</b>
+</span><span><a class="LN" name="448">  448   </a>
+</span><span><a class="LN" name="449">  449   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:149')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If4</i></font></a>' */</span>
+</span><span><a class="LN" name="450">  450   </a>
+</span><span><a class="LN" name="451">  451   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:157')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Variable Selector7</i></font></a>' */</span>
+</span><span><a class="LN" name="452">  452   </a>  rtb_VariableSelector7_g[0] = rtu_sensor_meas_body_all[3];
+</span><span><a class="LN" name="453">  453   </a>  rtb_VariableSelector7_g[1] = rtu_sensor_meas_body_all[4];
+</span><span><a class="LN" name="454">  454   </a>  rtb_VariableSelector7_g[2] = rtu_sensor_meas_body_all[5];
+</span><span><a class="LN" name="455">  455   </a>
+</span><span><a class="LN" name="456">  456   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:150')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If5</i></font></a>' */</span>
+</span><span><a class="LN" name="457">  457   </a>  <span class="KW">if</span> (!rtu_sensor_valid_all_c) <b>{</b>
+</span><span><a class="LN" name="458">  458   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:125')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="459">  459   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:126')" name="code2model"><font color="#117755"><i>&lt;S28&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="460">  460   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="461">  461   </a>    <a href="#fcn_IfActionSubsystem14" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem14');" target="_self"><font color="#1122aa">IfActionSubsystem14</font></a>(rtb_VariableSelector7_g);
+</span><span><a class="LN" name="462">  462   </a>
+</span><span><a class="LN" name="463">  463   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:125')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem1</i></font></a>' */</span>
+</span><span><a class="LN" name="464">  464   </a>  <b>}</b>
+</span><span><a class="LN" name="465">  465   </a>
+</span><span><a class="LN" name="466">  466   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:150')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If5</i></font></a>' */</span>
+</span><span><a class="LN" name="467">  467   </a>
+</span><span><a class="LN" name="468">  468   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:158')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Variable Selector8</i></font></a>' */</span>
+</span><span><a class="LN" name="469">  469   </a>  rtb_VariableSelector8_l[0] = rtu_sensor_meas_body_all[6];
+</span><span><a class="LN" name="470">  470   </a>  rtb_VariableSelector8_l[1] = rtu_sensor_meas_body_all[7];
+</span><span><a class="LN" name="471">  471   </a>  rtb_VariableSelector8_l[2] = rtu_sensor_meas_body_all[8];
+</span><span><a class="LN" name="472">  472   </a>
+</span><span><a class="LN" name="473">  473   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:151')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If6</i></font></a>' */</span>
+</span><span><a class="LN" name="474">  474   </a>  <span class="KW">if</span> (!rtu_sensor_valid_all_n) <b>{</b>
+</span><span><a class="LN" name="475">  475   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:133')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="476">  476   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:134')" name="code2model"><font color="#117755"><i>&lt;S30&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="477">  477   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="478">  478   </a>    <a href="#fcn_IfActionSubsystem14" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem14');" target="_self"><font color="#1122aa">IfActionSubsystem14</font></a>(rtb_VariableSelector8_l);
+</span><span><a class="LN" name="479">  479   </a>
+</span><span><a class="LN" name="480">  480   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:133')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If Action Subsystem2</i></font></a>' */</span>
+</span><span><a class="LN" name="481">  481   </a>  <b>}</b>
+</span><span><a class="LN" name="482">  482   </a>
+</span><span><a class="LN" name="483">  483   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:151')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/If6</i></font></a>' */</span>
+</span><span><a class="LN" name="484">  484   </a>
+</span><span><a class="LN" name="485">  485   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:124')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Gain1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="486">  486   </a><span class="CT">   *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:155')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Sum1</i></font></a>'</span>
+</span><span><a class="LN" name="487">  487   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="488">  488   </a>  rty_sensor_meas_body[0] = (rtb_VariableSelector6_e[0] +
+</span><span><a class="LN" name="489">  489   </a>    rtb_VariableSelector7_g[0]) + rtb_VariableSelector8_l[0];
+</span><span><a class="LN" name="490">  490   </a>  rty_sensor_meas_body[1] = (rtb_VariableSelector6_e[1] +
+</span><span><a class="LN" name="491">  491   </a>    rtb_VariableSelector7_g[1]) + rtb_VariableSelector8_l[1];
+</span><span><a class="LN" name="492">  492   </a>  rty_sensor_meas_body[2] = (rtb_VariableSelector6_e[2] +
+</span><span><a class="LN" name="493">  493   </a>    rtb_VariableSelector7_g[2]) + rtb_VariableSelector8_l[2];
+</span><span><a class="LN" name="494">  494   </a>
+</span><span><a class="LN" name="495">  495   </a>  <span class="CT">/* SignalConversion: '&lt;S24&gt;/OutportBuffer_InsertedFor_sensor_valid_at_inport_0' incorporates:</span>
+</span><span><a class="LN" name="496">  496   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:123')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="497">  497   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="498">  498   </a>  *rty_sensor_valid = true;
+</span><span><a class="LN" name="499">  499   </a><b>}</b>
+</span><span><a class="LN" name="500">  500   </a>
+</span><span><a class="LN" name="501">  501   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="502">  502   </a><span class="CT"> * Output and update for action system:</span>
+</span><span><a class="LN" name="503">  503   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:108')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/NoneValid</i></font></a>'</span>
+</span><span><a class="LN" name="504">  504   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:108')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/NoneValid</i></font></a>'</span>
+</span><span><a class="LN" name="505">  505   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="506">  506   </a><span class="DT">void</span> <a name="fcn_NoneValid">NoneValid</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sensor_meas_body_all[9], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="507">  507   </a>               rty_sensor_meas_body[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *rty_sensor_valid)
+</span><span><a class="LN" name="508">  508   </a><b>{</b>
+</span><span><a class="LN" name="509">  509   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:112')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Gain</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="510">  510   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:114')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Variable Selector3</i></font></a>'</span>
+</span><span><a class="LN" name="511">  511   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:115')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Variable Selector4</i></font></a>'</span>
+</span><span><a class="LN" name="512">  512   </a><span class="CT">   *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:116')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Variable Selector5</i></font></a>'</span>
+</span><span><a class="LN" name="513">  513   </a><span class="CT">   *  Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:113')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Sum</i></font></a>'</span>
+</span><span><a class="LN" name="514">  514   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="515">  515   </a>  rty_sensor_meas_body[0] = ((rtu_sensor_meas_body_all[0] +
+</span><span><a class="LN" name="516">  516   </a>    rtu_sensor_meas_body_all[3]) + rtu_sensor_meas_body_all[6]) *
+</span><span><a class="LN" name="517">  517   </a>    0.33333333333333331;
+</span><span><a class="LN" name="518">  518   </a>  rty_sensor_meas_body[1] = ((rtu_sensor_meas_body_all[1] +
+</span><span><a class="LN" name="519">  519   </a>    rtu_sensor_meas_body_all[4]) + rtu_sensor_meas_body_all[7]) *
+</span><span><a class="LN" name="520">  520   </a>    0.33333333333333331;
+</span><span><a class="LN" name="521">  521   </a>  rty_sensor_meas_body[2] = ((rtu_sensor_meas_body_all[2] +
+</span><span><a class="LN" name="522">  522   </a>    rtu_sensor_meas_body_all[5]) + rtu_sensor_meas_body_all[8]) *
+</span><span><a class="LN" name="523">  523   </a>    0.33333333333333331;
+</span><span><a class="LN" name="524">  524   </a>
+</span><span><a class="LN" name="525">  525   </a>  <span class="CT">/* SignalConversion: '&lt;S23&gt;/OutportBuffer_InsertedFor_sensor_valid_at_inport_0' incorporates:</span>
+</span><span><a class="LN" name="526">  526   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:111')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="527">  527   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="528">  528   </a>  *rty_sensor_valid = false;
+</span><span><a class="LN" name="529">  529   </a><b>}</b>
+</span><span><a class="LN" name="530">  530   </a>
+</span><span><a class="LN" name="531">  531   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="532">  532   </a><span class="CT"> * Output and update for action system:</span>
+</span><span><a class="LN" name="533">  533   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:73')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem2</i></font></a>'</span>
+</span><span><a class="LN" name="534">  534   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:81')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem4</i></font></a>'</span>
+</span><span><a class="LN" name="535">  535   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:69')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem14</i></font></a>'</span>
+</span><span><a class="LN" name="536">  536   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:73')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem2</i></font></a>'</span>
+</span><span><a class="LN" name="537">  537   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:81')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem4</i></font></a>'</span>
+</span><span><a class="LN" name="538">  538   </a><span class="CT"> *    '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:69')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem14</i></font></a>'</span>
+</span><span><a class="LN" name="539">  539   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="540">  540   </a><span class="DT">void</span> <a name="fcn_IfActionSubsystem2">IfActionSubsystem2</a>(<a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *rty_Out1)
+</span><span><a class="LN" name="541">  541   </a><b>{</b>
+</span><span><a class="LN" name="542">  542   </a>  <span class="CT">/* SignalConversion: '&lt;S40&gt;/OutportBuffer_InsertedFor_Out1_at_inport_0' incorporates:</span>
+</span><span><a class="LN" name="543">  543   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:75')" name="code2model"><font color="#117755"><i>&lt;S40&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="544">  544   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="545">  545   </a>  *rty_Out1 = false;
+</span><span><a class="LN" name="546">  546   </a><b>}</b>
+</span><span><a class="LN" name="547">  547   </a>
+</span><span><a class="LN" name="548">  548   </a><span class="CT">/* System initialize for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92')" name="code2model"><font color="#117755"><i>&lt;S2&gt;/maggyroProcessing_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="549">  549   </a><span class="DT">void</span> <a name="fcn_maggyroProcessing_lib_Init">maggyroProcessing_lib_Init</a>(<a href="maggyroProcessing_lib_h.html#type_DW_maggyroProcessing_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_maggyroProcessing_lib');" target="_self"><font color="#1122aa">DW_maggyroProcessing_lib</font></a> *localDW)
+</span><span><a class="LN" name="550">  550   </a><b>{</b>
+</span><span><a class="LN" name="551">  551   </a>  <span class="CT">/* SystemInitialize for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:203')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/ThreeValid_MVS</i></font></a>' */</span>
+</span><span><a class="LN" name="552">  552   </a>  <a href="#fcn_ThreeValid_MVS_Init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ThreeValid_MVS_Init');" target="_self"><font color="#1122aa">ThreeValid_MVS_Init</font></a>(&amp;localDW-&gt;ThreeValid_MVS_l);
+</span><span><a class="LN" name="553">  553   </a>
+</span><span><a class="LN" name="554">  554   </a>  <span class="CT">/* End of SystemInitialize for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:203')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/ThreeValid_MVS</i></font></a>' */</span>
+</span><span><a class="LN" name="555">  555   </a><b>}</b>
+</span><span><a class="LN" name="556">  556   </a>
+</span><span><a class="LN" name="557">  557   </a><span class="CT">/* Output and update for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92')" name="code2model"><font color="#117755"><i>&lt;S2&gt;/maggyroProcessing_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="558">  558   </a><span class="DT">void</span> <a name="fcn_maggyroProcessing_lib">maggyroProcessing_lib</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sensor_meas_data[9], <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="559">  559   </a>  rtu_sensor_meas_valid[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sensor_meas_body[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a>
+</span><span><a class="LN" name="560">  560   </a>  *rty_sensor_valid, <a href="maggyroProcessing_lib_h.html#type_DW_maggyroProcessing_lib" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_maggyroProcessing_lib');" target="_self"><font color="#1122aa">DW_maggyroProcessing_lib</font></a> *localDW, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_max_err,
+</span><span><a class="LN" name="561">  561   </a>  <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_offset_calibration_matrix[9], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="562">  562   </a>  rtp_static_range_max_value, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_Gain)
+</span><span><a class="LN" name="563">  563   </a><b>{</b>
+</span><span><a class="LN" name="564">  564   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VectorConcatenate[9];
+</span><span><a class="LN" name="565">  565   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_lj;
+</span><span><a class="LN" name="566">  566   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_conjunction;
+</span><span><a class="LN" name="567">  567   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_conjunction_l;
+</span><span><a class="LN" name="568">  568   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_conjunction_h;
+</span><span><a class="LN" name="569">  569   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Merge_dq[3];
+</span><span><a class="LN" name="570">  570   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_Merge_m;
+</span><span><a class="LN" name="571">  571   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_Merge1_c;
+</span><span><a class="LN" name="572">  572   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_Merge2;
+</span><span><a class="LN" name="573">  573   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector6[3];
+</span><span><a class="LN" name="574">  574   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector7[3];
+</span><span><a class="LN" name="575">  575   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector8[3];
+</span><span><a class="LN" name="576">  576   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="577">  577   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> tmp;
+</span><span><a class="LN" name="578">  578   </a>
+</span><span><a class="LN" name="579">  579   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:532')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Variable Selector</i></font></a>' */</span>
+</span><span><a class="LN" name="580">  580   </a>  rtb_Merge_dq[0] = rtu_sensor_meas_data[0];
+</span><span><a class="LN" name="581">  581   </a>  rtb_Merge_dq[1] = rtu_sensor_meas_data[1];
+</span><span><a class="LN" name="582">  582   </a>  rtb_Merge_dq[2] = rtu_sensor_meas_data[2];
+</span><span><a class="LN" name="583">  583   </a>  <span class="KW">for</span> (i = 0; i &lt; 3; i++) <b>{</b>
+</span><span><a class="LN" name="584">  584   </a>    <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:620')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Matrix Multiply3</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="585">  585   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:543')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="586">  586   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="587">  587   </a>    rtb_VectorConcatenate[i] = 0.0;
+</span><span><a class="LN" name="588">  588   </a>    rtb_VectorConcatenate[i] += rtCP_Constant_Value_j[i] * rtb_Merge_dq[0];
+</span><span><a class="LN" name="589">  589   </a>    rtb_VectorConcatenate[i] += rtCP_Constant_Value_j[i + 3] * rtb_Merge_dq[1];
+</span><span><a class="LN" name="590">  590   </a>    rtb_VectorConcatenate[i] += rtCP_Constant_Value_j[i + 6] * rtb_Merge_dq[2];
+</span><span><a class="LN" name="591">  591   </a>
+</span><span><a class="LN" name="592">  592   </a>    <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:540')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Matrix Multiply2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="593">  593   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:545')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Constant2</i></font></a>'</span>
+</span><span><a class="LN" name="594">  594   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:536')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="595">  595   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="596">  596   </a>    rtb_VectorConcatenate[6 + i] = 0.0;
+</span><span><a class="LN" name="597">  597   </a>    rtb_VectorConcatenate[6 + i] += rtCP_Constant2_Value[i] *
+</span><span><a class="LN" name="598">  598   </a>      rtu_sensor_meas_data[6];
+</span><span><a class="LN" name="599">  599   </a>    rtb_VectorConcatenate[6 + i] += rtCP_Constant2_Value[i + 3] *
+</span><span><a class="LN" name="600">  600   </a>      rtu_sensor_meas_data[7];
+</span><span><a class="LN" name="601">  601   </a>    rtb_VectorConcatenate[6 + i] += rtCP_Constant2_Value[i + 6] *
+</span><span><a class="LN" name="602">  602   </a>      rtu_sensor_meas_data[8];
+</span><span><a class="LN" name="603">  603   </a>
+</span><span><a class="LN" name="604">  604   </a>    <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:619')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Matrix Multiply1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="605">  605   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:544')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Constant1</i></font></a>'</span>
+</span><span><a class="LN" name="606">  606   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:534')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="607">  607   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="608">  608   </a>    rtb_VectorConcatenate[3 + i] = 0.0;
+</span><span><a class="LN" name="609">  609   </a>    rtb_VectorConcatenate[3 + i] += rtCP_Constant1_Value_d[i] *
+</span><span><a class="LN" name="610">  610   </a>      rtu_sensor_meas_data[3];
+</span><span><a class="LN" name="611">  611   </a>    rtb_VectorConcatenate[3 + i] += rtCP_Constant1_Value_d[i + 3] *
+</span><span><a class="LN" name="612">  612   </a>      rtu_sensor_meas_data[4];
+</span><span><a class="LN" name="613">  613   </a>    rtb_VectorConcatenate[3 + i] += rtCP_Constant1_Value_d[i + 6] *
+</span><span><a class="LN" name="614">  614   </a>      rtu_sensor_meas_data[5];
+</span><span><a class="LN" name="615">  615   </a>  <b>}</b>
+</span><span><a class="LN" name="616">  616   </a>
+</span><span><a class="LN" name="617">  617   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:243')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Sum</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="618">  618   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:244')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/mag_offset</i></font></a>'</span>
+</span><span><a class="LN" name="619">  619   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="620">  620   </a>  <span class="KW">for</span> (i = 0; i &lt; 9; i++) <b>{</b>
+</span><span><a class="LN" name="621">  621   </a>    rtb_VectorConcatenate[i] += rtp_offset_calibration_matrix[i];
+</span><span><a class="LN" name="622">  622   </a>  <b>}</b>
+</span><span><a class="LN" name="623">  623   </a>
+</span><span><a class="LN" name="624">  624   </a>  <span class="CT">/* End of Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:243')" name="code2model"><font color="#117755"><i>&lt;S22&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="625">  625   </a>
+</span><span><a class="LN" name="626">  626   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:235')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/Variable Selector6</i></font></a>' */</span>
+</span><span><a class="LN" name="627">  627   </a>  rtb_VariableSelector6[0] = rtb_VectorConcatenate[0];
+</span><span><a class="LN" name="628">  628   </a>  rtb_VariableSelector6[1] = rtb_VectorConcatenate[1];
+</span><span><a class="LN" name="629">  629   </a>  rtb_VariableSelector6[2] = rtb_VectorConcatenate[2];
+</span><span><a class="LN" name="630">  630   </a>
+</span><span><a class="LN" name="631">  631   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:236')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/Variable Selector7</i></font></a>' */</span>
+</span><span><a class="LN" name="632">  632   </a>  rtb_VariableSelector7[0] = rtb_VectorConcatenate[3];
+</span><span><a class="LN" name="633">  633   </a>  rtb_VariableSelector7[1] = rtb_VectorConcatenate[4];
+</span><span><a class="LN" name="634">  634   </a>  rtb_VariableSelector7[2] = rtb_VectorConcatenate[5];
+</span><span><a class="LN" name="635">  635   </a>
+</span><span><a class="LN" name="636">  636   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:237')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/Variable Selector8</i></font></a>' */</span>
+</span><span><a class="LN" name="637">  637   </a>  rtb_VariableSelector8[0] = rtb_VectorConcatenate[6];
+</span><span><a class="LN" name="638">  638   </a>  rtb_VariableSelector8[1] = rtb_VectorConcatenate[7];
+</span><span><a class="LN" name="639">  639   </a>  rtb_VariableSelector8[2] = rtb_VectorConcatenate[8];
+</span><span><a class="LN" name="640">  640   </a>
+</span><span><a class="LN" name="641">  641   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:494')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="642">  642   </a>  rtb_Sqrt_lj = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector6);
+</span><span><a class="LN" name="643">  643   </a>
+</span><span><a class="LN" name="644">  644   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:494')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="645">  645   </a>
+</span><span><a class="LN" name="646">  646   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:58:3')" name="code2model"><font color="#117755"><i>&lt;S34&gt;/conjunction</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="647">  647   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:58:5')" name="code2model"><font color="#117755"><i>&lt;S34&gt;/max_val</i></font></a>'</span>
+</span><span><a class="LN" name="648">  648   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:58:7')" name="code2model"><font color="#117755"><i>&lt;S34&gt;/min_val</i></font></a>'</span>
+</span><span><a class="LN" name="649">  649   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:58:4')" name="code2model"><font color="#117755"><i>&lt;S34&gt;/max_relop</i></font></a>'</span>
+</span><span><a class="LN" name="650">  650   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:58:6')" name="code2model"><font color="#117755"><i>&lt;S34&gt;/min_relop</i></font></a>'</span>
+</span><span><a class="LN" name="651">  651   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="652">  652   </a>  rtb_conjunction = ((0.0 &lt;= rtb_Sqrt_lj) &amp;&amp; (rtb_Sqrt_lj &lt;=
+</span><span><a class="LN" name="653">  653   </a>    rtp_static_range_max_value));
+</span><span><a class="LN" name="654">  654   </a>
+</span><span><a class="LN" name="655">  655   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:87')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If4</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="656">  656   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:62')" name="code2model"><font color="#117755"><i>&lt;S37&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="657">  657   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="658">  658   </a>  <span class="KW">if</span> (rtb_conjunction) <b>{</b>
+</span><span><a class="LN" name="659">  659   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:61')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="660">  660   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:63')" name="code2model"><font color="#117755"><i>&lt;S37&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="661">  661   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="662">  662   </a>    rtb_Merge_m = rtu_sensor_meas_valid[0];
+</span><span><a class="LN" name="663">  663   </a>
+</span><span><a class="LN" name="664">  664   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:61')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem</i></font></a>' */</span>
+</span><span><a class="LN" name="665">  665   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="666">  666   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:69')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem14</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="667">  667   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:70')" name="code2model"><font color="#117755"><i>&lt;S39&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="668">  668   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="669">  669   </a>    <a href="#fcn_IfActionSubsystem2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem2');" target="_self"><font color="#1122aa">IfActionSubsystem2</font></a>(&amp;rtb_Merge_m);
+</span><span><a class="LN" name="670">  670   </a>
+</span><span><a class="LN" name="671">  671   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:69')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem14</i></font></a>' */</span>
+</span><span><a class="LN" name="672">  672   </a>  <b>}</b>
+</span><span><a class="LN" name="673">  673   </a>
+</span><span><a class="LN" name="674">  674   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:87')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If4</i></font></a>' */</span>
+</span><span><a class="LN" name="675">  675   </a>
+</span><span><a class="LN" name="676">  676   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:495')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/twonorm2</i></font></a>' */</span>
+</span><span><a class="LN" name="677">  677   </a>  rtb_Sqrt_lj = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector7);
+</span><span><a class="LN" name="678">  678   </a>
+</span><span><a class="LN" name="679">  679   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:495')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/twonorm2</i></font></a>' */</span>
+</span><span><a class="LN" name="680">  680   </a>
+</span><span><a class="LN" name="681">  681   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:247:3')" name="code2model"><font color="#117755"><i>&lt;S35&gt;/conjunction</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="682">  682   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:247:5')" name="code2model"><font color="#117755"><i>&lt;S35&gt;/max_val</i></font></a>'</span>
+</span><span><a class="LN" name="683">  683   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:247:7')" name="code2model"><font color="#117755"><i>&lt;S35&gt;/min_val</i></font></a>'</span>
+</span><span><a class="LN" name="684">  684   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:247:4')" name="code2model"><font color="#117755"><i>&lt;S35&gt;/max_relop</i></font></a>'</span>
+</span><span><a class="LN" name="685">  685   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:247:6')" name="code2model"><font color="#117755"><i>&lt;S35&gt;/min_relop</i></font></a>'</span>
+</span><span><a class="LN" name="686">  686   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="687">  687   </a>  rtb_conjunction_l = ((0.0 &lt;= rtb_Sqrt_lj) &amp;&amp; (rtb_Sqrt_lj &lt;=
+</span><span><a class="LN" name="688">  688   </a>    rtp_static_range_max_value));
+</span><span><a class="LN" name="689">  689   </a>
+</span><span><a class="LN" name="690">  690   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:85')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="691">  691   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:66')" name="code2model"><font color="#117755"><i>&lt;S38&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="692">  692   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="693">  693   </a>  <span class="KW">if</span> (rtb_conjunction_l) <b>{</b>
+</span><span><a class="LN" name="694">  694   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:65')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="695">  695   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:67')" name="code2model"><font color="#117755"><i>&lt;S38&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="696">  696   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="697">  697   </a>    rtb_Merge1_c = rtu_sensor_meas_valid[1];
+</span><span><a class="LN" name="698">  698   </a>
+</span><span><a class="LN" name="699">  699   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:65')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem1</i></font></a>' */</span>
+</span><span><a class="LN" name="700">  700   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="701">  701   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:73')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="702">  702   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:74')" name="code2model"><font color="#117755"><i>&lt;S40&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="703">  703   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="704">  704   </a>    <a href="#fcn_IfActionSubsystem2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem2');" target="_self"><font color="#1122aa">IfActionSubsystem2</font></a>(&amp;rtb_Merge1_c);
+</span><span><a class="LN" name="705">  705   </a>
+</span><span><a class="LN" name="706">  706   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:73')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem2</i></font></a>' */</span>
+</span><span><a class="LN" name="707">  707   </a>  <b>}</b>
+</span><span><a class="LN" name="708">  708   </a>
+</span><span><a class="LN" name="709">  709   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:85')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If1</i></font></a>' */</span>
+</span><span><a class="LN" name="710">  710   </a>
+</span><span><a class="LN" name="711">  711   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:496')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/twonorm3</i></font></a>' */</span>
+</span><span><a class="LN" name="712">  712   </a>  rtb_Sqrt_lj = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector8);
+</span><span><a class="LN" name="713">  713   </a>
+</span><span><a class="LN" name="714">  714   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:496')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/twonorm3</i></font></a>' */</span>
+</span><span><a class="LN" name="715">  715   </a>
+</span><span><a class="LN" name="716">  716   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:60:3')" name="code2model"><font color="#117755"><i>&lt;S36&gt;/conjunction</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="717">  717   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:60:5')" name="code2model"><font color="#117755"><i>&lt;S36&gt;/max_val</i></font></a>'</span>
+</span><span><a class="LN" name="718">  718   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:60:7')" name="code2model"><font color="#117755"><i>&lt;S36&gt;/min_val</i></font></a>'</span>
+</span><span><a class="LN" name="719">  719   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:60:4')" name="code2model"><font color="#117755"><i>&lt;S36&gt;/max_relop</i></font></a>'</span>
+</span><span><a class="LN" name="720">  720   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:60:6')" name="code2model"><font color="#117755"><i>&lt;S36&gt;/min_relop</i></font></a>'</span>
+</span><span><a class="LN" name="721">  721   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="722">  722   </a>  rtb_conjunction_h = ((0.0 &lt;= rtb_Sqrt_lj) &amp;&amp; (rtb_Sqrt_lj &lt;=
+</span><span><a class="LN" name="723">  723   </a>    rtp_static_range_max_value));
+</span><span><a class="LN" name="724">  724   </a>
+</span><span><a class="LN" name="725">  725   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:86')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="726">  726   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:78')" name="code2model"><font color="#117755"><i>&lt;S41&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="727">  727   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="728">  728   </a>  <span class="KW">if</span> (rtb_conjunction_h) <b>{</b>
+</span><span><a class="LN" name="729">  729   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:77')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem3</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="730">  730   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:79')" name="code2model"><font color="#117755"><i>&lt;S41&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="731">  731   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="732">  732   </a>    rtb_Merge2 = rtu_sensor_meas_valid[2];
+</span><span><a class="LN" name="733">  733   </a>
+</span><span><a class="LN" name="734">  734   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:77')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem3</i></font></a>' */</span>
+</span><span><a class="LN" name="735">  735   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="736">  736   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:81')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem4</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="737">  737   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:82')" name="code2model"><font color="#117755"><i>&lt;S42&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="738">  738   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="739">  739   </a>    <a href="#fcn_IfActionSubsystem2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem2');" target="_self"><font color="#1122aa">IfActionSubsystem2</font></a>(&amp;rtb_Merge2);
+</span><span><a class="LN" name="740">  740   </a>
+</span><span><a class="LN" name="741">  741   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:81')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If Action Subsystem4</i></font></a>' */</span>
+</span><span><a class="LN" name="742">  742   </a>  <b>}</b>
+</span><span><a class="LN" name="743">  743   </a>
+</span><span><a class="LN" name="744">  744   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:86')" name="code2model"><font color="#117755"><i>&lt;S25&gt;/If2</i></font></a>' */</span>
+</span><span><a class="LN" name="745">  745   </a>
+</span><span><a class="LN" name="746">  746   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:107')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/If</i></font></a>' */</span>
+</span><span><a class="LN" name="747">  747   </a>  tmp = (rtb_Merge_m &amp;&amp; rtb_Merge1_c);
+</span><span><a class="LN" name="748">  748   </a>  <span class="KW">if</span> (tmp &amp;&amp; rtb_Merge2) <b>{</b>
+</span><span><a class="LN" name="749">  749   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:203')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/ThreeValid_MVS</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="750">  750   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:205')" name="code2model"><font color="#117755"><i>&lt;S26&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="751">  751   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="752">  752   </a>    <a href="#fcn_ThreeValid_MVS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ThreeValid_MVS');" target="_self"><font color="#1122aa">ThreeValid_MVS</font></a>(rtb_VectorConcatenate, rtb_Merge_dq, rty_sensor_valid,
+</span><span><a class="LN" name="753">  753   </a>                   &amp;localDW-&gt;ThreeValid_MVS_l, rtp_max_err);
+</span><span><a class="LN" name="754">  754   </a>
+</span><span><a class="LN" name="755">  755   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:203')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/ThreeValid_MVS</i></font></a>' */</span>
+</span><span><a class="LN" name="756">  756   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (tmp || (rtb_Merge1_c &amp;&amp; rtb_Merge2) || (rtb_Merge2 &amp;&amp; rtb_Merge_m))
+</span><span><a class="LN" name="757">  757   </a>  <b>{</b>
+</span><span><a class="LN" name="758">  758   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:161')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/TwoValid</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="759">  759   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:164')" name="code2model"><font color="#117755"><i>&lt;S27&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="760">  760   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="761">  761   </a>    <a href="#fcn_TwoValid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_TwoValid');" target="_self"><font color="#1122aa">TwoValid</font></a>(rtb_VectorConcatenate, rtb_Merge_m, rtb_Merge1_c, rtb_Merge2,
+</span><span><a class="LN" name="762">  762   </a>             rtb_Merge_dq, rty_sensor_valid, rtp_max_err);
+</span><span><a class="LN" name="763">  763   </a>
+</span><span><a class="LN" name="764">  764   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:161')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/TwoValid</i></font></a>' */</span>
+</span><span><a class="LN" name="765">  765   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtb_Merge_m || rtb_Merge1_c || rtb_Merge2) <b>{</b>
+</span><span><a class="LN" name="766">  766   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:119')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/OneValid</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="767">  767   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:122')" name="code2model"><font color="#117755"><i>&lt;S24&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="768">  768   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="769">  769   </a>    <a href="#fcn_OneValid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_OneValid');" target="_self"><font color="#1122aa">OneValid</font></a>(rtb_VectorConcatenate, rtb_Merge_m, rtb_Merge1_c, rtb_Merge2,
+</span><span><a class="LN" name="770">  770   </a>             rtb_Merge_dq, rty_sensor_valid);
+</span><span><a class="LN" name="771">  771   </a>
+</span><span><a class="LN" name="772">  772   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:119')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/OneValid</i></font></a>' */</span>
+</span><span><a class="LN" name="773">  773   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="774">  774   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:108')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/NoneValid</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="775">  775   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:110')" name="code2model"><font color="#117755"><i>&lt;S23&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="776">  776   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="777">  777   </a>    <a href="#fcn_NoneValid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_NoneValid');" target="_self"><font color="#1122aa">NoneValid</font></a>(rtb_VectorConcatenate, rtb_Merge_dq, rty_sensor_valid);
+</span><span><a class="LN" name="778">  778   </a>
+</span><span><a class="LN" name="779">  779   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:108')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/NoneValid</i></font></a>' */</span>
+</span><span><a class="LN" name="780">  780   </a>  <b>}</b>
+</span><span><a class="LN" name="781">  781   </a>
+</span><span><a class="LN" name="782">  782   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:107')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/If</i></font></a>' */</span>
+</span><span><a class="LN" name="783">  783   </a>
+</span><span><a class="LN" name="784">  784   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:700')" name="code2model"><font color="#117755"><i>&lt;S12&gt;/UnitConversion</i></font></a>' */</span>
+</span><span><a class="LN" name="785">  785   </a>  rty_sensor_meas_body[0] = rtp_Gain * rtb_Merge_dq[0];
+</span><span><a class="LN" name="786">  786   </a>  rty_sensor_meas_body[1] = rtp_Gain * rtb_Merge_dq[1];
+</span><span><a class="LN" name="787">  787   </a>  rty_sensor_meas_body[2] = rtp_Gain * rtb_Merge_dq[2];
+</span><span><a class="LN" name="788">  788   </a>
+</span><span><a class="LN" name="789">  789   </a>  <span class="CT">/* Assertion: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:60:2')" name="code2model"><font color="#117755"><i>&lt;S36&gt;/Assertion</i></font></a>' */</span>
+</span><span><a class="LN" name="790">  790   </a>  utAssert(rtb_conjunction_h);
+</span><span><a class="LN" name="791">  791   </a>
+</span><span><a class="LN" name="792">  792   </a>  <span class="CT">/* Assertion: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:247:2')" name="code2model"><font color="#117755"><i>&lt;S35&gt;/Assertion</i></font></a>' */</span>
+</span><span><a class="LN" name="793">  793   </a>  utAssert(rtb_conjunction_l);
+</span><span><a class="LN" name="794">  794   </a>
+</span><span><a class="LN" name="795">  795   </a>  <span class="CT">/* Assertion: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:92:58:2')" name="code2model"><font color="#117755"><i>&lt;S34&gt;/Assertion</i></font></a>' */</span>
+</span><span><a class="LN" name="796">  796   </a>  utAssert(rtb_conjunction);
+</span><span><a class="LN" name="797">  797   </a><b>}</b>
+</span><span><a class="LN" name="798">  798   </a>
+</span><span><a class="LN" name="799">  799   </a><span class="CT">/* System initialize for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99')" name="code2model"><font color="#117755"><i>&lt;S2&gt;/maggyroProcessing_lib1</i></font></a>' */</span>
+</span><span><a class="LN" name="800">  800   </a><span class="DT">void</span> <a name="fcn_maggyroProcessing_lib1_Init">maggyroProcessing_lib1_Init</a>(<a href="maggyroProcessing_lib_h.html#type_DW_maggyroProcessing_lib_p" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_maggyroProcessing_lib_p');" target="_self"><font color="#1122aa">DW_maggyroProcessing_lib_p</font></a> *localDW)
+</span><span><a class="LN" name="801">  801   </a><b>{</b>
+</span><span><a class="LN" name="802">  802   </a>  <span class="CT">/* SystemInitialize for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:203')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/ThreeValid_MVS</i></font></a>' */</span>
+</span><span><a class="LN" name="803">  803   </a>  <a href="#fcn_ThreeValid_MVS_Init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ThreeValid_MVS_Init');" target="_self"><font color="#1122aa">ThreeValid_MVS_Init</font></a>(&amp;localDW-&gt;ThreeValid_MVS_i);
+</span><span><a class="LN" name="804">  804   </a>
+</span><span><a class="LN" name="805">  805   </a>  <span class="CT">/* End of SystemInitialize for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:203')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/ThreeValid_MVS</i></font></a>' */</span>
+</span><span><a class="LN" name="806">  806   </a><b>}</b>
+</span><span><a class="LN" name="807">  807   </a>
+</span><span><a class="LN" name="808">  808   </a><span class="CT">/* Output and update for atomic system: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99')" name="code2model"><font color="#117755"><i>&lt;S2&gt;/maggyroProcessing_lib1</i></font></a>' */</span>
+</span><span><a class="LN" name="809">  809   </a><span class="DT">void</span> <a name="fcn_maggyroProcessing_lib1">maggyroProcessing_lib1</a>(<span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtu_sensor_meas_data[9], <span class="DT">const</span>
+</span><span><a class="LN" name="810">  810   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtu_sensor_meas_valid[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rty_sensor_meas_body[3], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> *
+</span><span><a class="LN" name="811">  811   </a>  rty_sensor_valid, <a href="maggyroProcessing_lib_h.html#type_DW_maggyroProcessing_lib_p" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_maggyroProcessing_lib_p');" target="_self"><font color="#1122aa">DW_maggyroProcessing_lib_p</font></a> *localDW, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_max_err,
+</span><span><a class="LN" name="812">  812   </a>  <span class="DT">const</span> <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_offset_calibration_matrix[9], <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>
+</span><span><a class="LN" name="813">  813   </a>  rtp_static_range_max_value, <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtp_Gain)
+</span><span><a class="LN" name="814">  814   </a><b>{</b>
+</span><span><a class="LN" name="815">  815   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VectorConcatenate[9];
+</span><span><a class="LN" name="816">  816   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sqrt_b;
+</span><span><a class="LN" name="817">  817   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_conjunction;
+</span><span><a class="LN" name="818">  818   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_conjunction_m;
+</span><span><a class="LN" name="819">  819   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_conjunction_d;
+</span><span><a class="LN" name="820">  820   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Merge_ez[3];
+</span><span><a class="LN" name="821">  821   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_Merge_ec;
+</span><span><a class="LN" name="822">  822   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_Merge1_a;
+</span><span><a class="LN" name="823">  823   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> rtb_Merge2;
+</span><span><a class="LN" name="824">  824   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector6[3];
+</span><span><a class="LN" name="825">  825   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector7[3];
+</span><span><a class="LN" name="826">  826   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_VariableSelector8[3];
+</span><span><a class="LN" name="827">  827   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="828">  828   </a>  <a href="../../slprj/ert/_sharedutils/html/rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> tmp;
+</span><span><a class="LN" name="829">  829   </a>
+</span><span><a class="LN" name="830">  830   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:532')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Variable Selector</i></font></a>' */</span>
+</span><span><a class="LN" name="831">  831   </a>  rtb_Merge_ez[0] = rtu_sensor_meas_data[0];
+</span><span><a class="LN" name="832">  832   </a>  rtb_Merge_ez[1] = rtu_sensor_meas_data[1];
+</span><span><a class="LN" name="833">  833   </a>  rtb_Merge_ez[2] = rtu_sensor_meas_data[2];
+</span><span><a class="LN" name="834">  834   </a>  <span class="KW">for</span> (i = 0; i &lt; 3; i++) <b>{</b>
+</span><span><a class="LN" name="835">  835   </a>    <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:620')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Matrix Multiply3</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="836">  836   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:543')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="837">  837   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="838">  838   </a>    rtb_VectorConcatenate[i] = 0.0;
+</span><span><a class="LN" name="839">  839   </a>    rtb_VectorConcatenate[i] += rtCP_Constant_Value_nl[i] * rtb_Merge_ez[0];
+</span><span><a class="LN" name="840">  840   </a>    rtb_VectorConcatenate[i] += rtCP_Constant_Value_nl[i + 3] * rtb_Merge_ez[1];
+</span><span><a class="LN" name="841">  841   </a>    rtb_VectorConcatenate[i] += rtCP_Constant_Value_nl[i + 6] * rtb_Merge_ez[2];
+</span><span><a class="LN" name="842">  842   </a>
+</span><span><a class="LN" name="843">  843   </a>    <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:540')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Matrix Multiply2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="844">  844   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:545')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Constant2</i></font></a>'</span>
+</span><span><a class="LN" name="845">  845   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:536')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Variable Selector2</i></font></a>'</span>
+</span><span><a class="LN" name="846">  846   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="847">  847   </a>    rtb_VectorConcatenate[6 + i] = 0.0;
+</span><span><a class="LN" name="848">  848   </a>    rtb_VectorConcatenate[6 + i] += rtCP_Constant2_Value_m[i] *
+</span><span><a class="LN" name="849">  849   </a>      rtu_sensor_meas_data[6];
+</span><span><a class="LN" name="850">  850   </a>    rtb_VectorConcatenate[6 + i] += rtCP_Constant2_Value_m[i + 3] *
+</span><span><a class="LN" name="851">  851   </a>      rtu_sensor_meas_data[7];
+</span><span><a class="LN" name="852">  852   </a>    rtb_VectorConcatenate[6 + i] += rtCP_Constant2_Value_m[i + 6] *
+</span><span><a class="LN" name="853">  853   </a>      rtu_sensor_meas_data[8];
+</span><span><a class="LN" name="854">  854   </a>
+</span><span><a class="LN" name="855">  855   </a>    <span class="CT">/* Product: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:619')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Matrix Multiply1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="856">  856   </a><span class="CT">     *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:544')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Constant1</i></font></a>'</span>
+</span><span><a class="LN" name="857">  857   </a><span class="CT">     *  S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:534')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Variable Selector1</i></font></a>'</span>
+</span><span><a class="LN" name="858">  858   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="859">  859   </a>    rtb_VectorConcatenate[3 + i] = 0.0;
+</span><span><a class="LN" name="860">  860   </a>    rtb_VectorConcatenate[3 + i] += rtCP_Constant1_Value_i[i] *
+</span><span><a class="LN" name="861">  861   </a>      rtu_sensor_meas_data[3];
+</span><span><a class="LN" name="862">  862   </a>    rtb_VectorConcatenate[3 + i] += rtCP_Constant1_Value_i[i + 3] *
+</span><span><a class="LN" name="863">  863   </a>      rtu_sensor_meas_data[4];
+</span><span><a class="LN" name="864">  864   </a>    rtb_VectorConcatenate[3 + i] += rtCP_Constant1_Value_i[i + 6] *
+</span><span><a class="LN" name="865">  865   </a>      rtu_sensor_meas_data[5];
+</span><span><a class="LN" name="866">  866   </a>  <b>}</b>
+</span><span><a class="LN" name="867">  867   </a>
+</span><span><a class="LN" name="868">  868   </a>  <span class="CT">/* Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:243')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Sum</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="869">  869   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:244')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/mag_offset</i></font></a>'</span>
+</span><span><a class="LN" name="870">  870   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="871">  871   </a>  <span class="KW">for</span> (i = 0; i &lt; 9; i++) <b>{</b>
+</span><span><a class="LN" name="872">  872   </a>    rtb_VectorConcatenate[i] += rtp_offset_calibration_matrix[i];
+</span><span><a class="LN" name="873">  873   </a>  <b>}</b>
+</span><span><a class="LN" name="874">  874   </a>
+</span><span><a class="LN" name="875">  875   </a>  <span class="CT">/* End of Sum: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:243')" name="code2model"><font color="#117755"><i>&lt;S64&gt;/Sum</i></font></a>' */</span>
+</span><span><a class="LN" name="876">  876   </a>
+</span><span><a class="LN" name="877">  877   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:235')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/Variable Selector6</i></font></a>' */</span>
+</span><span><a class="LN" name="878">  878   </a>  rtb_VariableSelector6[0] = rtb_VectorConcatenate[0];
+</span><span><a class="LN" name="879">  879   </a>  rtb_VariableSelector6[1] = rtb_VectorConcatenate[1];
+</span><span><a class="LN" name="880">  880   </a>  rtb_VariableSelector6[2] = rtb_VectorConcatenate[2];
+</span><span><a class="LN" name="881">  881   </a>
+</span><span><a class="LN" name="882">  882   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:236')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/Variable Selector7</i></font></a>' */</span>
+</span><span><a class="LN" name="883">  883   </a>  rtb_VariableSelector7[0] = rtb_VectorConcatenate[3];
+</span><span><a class="LN" name="884">  884   </a>  rtb_VariableSelector7[1] = rtb_VectorConcatenate[4];
+</span><span><a class="LN" name="885">  885   </a>  rtb_VariableSelector7[2] = rtb_VectorConcatenate[5];
+</span><span><a class="LN" name="886">  886   </a>
+</span><span><a class="LN" name="887">  887   </a>  <span class="CT">/* S-Function (sdspperm2): '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:237')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/Variable Selector8</i></font></a>' */</span>
+</span><span><a class="LN" name="888">  888   </a>  rtb_VariableSelector8[0] = rtb_VectorConcatenate[6];
+</span><span><a class="LN" name="889">  889   </a>  rtb_VariableSelector8[1] = rtb_VectorConcatenate[7];
+</span><span><a class="LN" name="890">  890   </a>  rtb_VariableSelector8[2] = rtb_VectorConcatenate[8];
+</span><span><a class="LN" name="891">  891   </a>
+</span><span><a class="LN" name="892">  892   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:494')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="893">  893   </a>  rtb_Sqrt_b = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector6);
+</span><span><a class="LN" name="894">  894   </a>
+</span><span><a class="LN" name="895">  895   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:494')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/twonorm1</i></font></a>' */</span>
+</span><span><a class="LN" name="896">  896   </a>
+</span><span><a class="LN" name="897">  897   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:58:3')" name="code2model"><font color="#117755"><i>&lt;S76&gt;/conjunction</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="898">  898   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:58:5')" name="code2model"><font color="#117755"><i>&lt;S76&gt;/max_val</i></font></a>'</span>
+</span><span><a class="LN" name="899">  899   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:58:7')" name="code2model"><font color="#117755"><i>&lt;S76&gt;/min_val</i></font></a>'</span>
+</span><span><a class="LN" name="900">  900   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:58:4')" name="code2model"><font color="#117755"><i>&lt;S76&gt;/max_relop</i></font></a>'</span>
+</span><span><a class="LN" name="901">  901   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:58:6')" name="code2model"><font color="#117755"><i>&lt;S76&gt;/min_relop</i></font></a>'</span>
+</span><span><a class="LN" name="902">  902   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="903">  903   </a>  rtb_conjunction = ((0.0 &lt;= rtb_Sqrt_b) &amp;&amp; (rtb_Sqrt_b &lt;=
+</span><span><a class="LN" name="904">  904   </a>    rtp_static_range_max_value));
+</span><span><a class="LN" name="905">  905   </a>
+</span><span><a class="LN" name="906">  906   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:87')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If4</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="907">  907   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:62')" name="code2model"><font color="#117755"><i>&lt;S79&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="908">  908   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="909">  909   </a>  <span class="KW">if</span> (rtb_conjunction) <b>{</b>
+</span><span><a class="LN" name="910">  910   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:61')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="911">  911   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:63')" name="code2model"><font color="#117755"><i>&lt;S79&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="912">  912   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="913">  913   </a>    rtb_Merge_ec = rtu_sensor_meas_valid[0];
+</span><span><a class="LN" name="914">  914   </a>
+</span><span><a class="LN" name="915">  915   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:61')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem</i></font></a>' */</span>
+</span><span><a class="LN" name="916">  916   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="917">  917   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:69')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem14</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="918">  918   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:70')" name="code2model"><font color="#117755"><i>&lt;S81&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="919">  919   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="920">  920   </a>    <a href="#fcn_IfActionSubsystem2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem2');" target="_self"><font color="#1122aa">IfActionSubsystem2</font></a>(&amp;rtb_Merge_ec);
+</span><span><a class="LN" name="921">  921   </a>
+</span><span><a class="LN" name="922">  922   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:69')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem14</i></font></a>' */</span>
+</span><span><a class="LN" name="923">  923   </a>  <b>}</b>
+</span><span><a class="LN" name="924">  924   </a>
+</span><span><a class="LN" name="925">  925   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:87')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If4</i></font></a>' */</span>
+</span><span><a class="LN" name="926">  926   </a>
+</span><span><a class="LN" name="927">  927   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:495')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/twonorm2</i></font></a>' */</span>
+</span><span><a class="LN" name="928">  928   </a>  rtb_Sqrt_b = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector7);
+</span><span><a class="LN" name="929">  929   </a>
+</span><span><a class="LN" name="930">  930   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:495')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/twonorm2</i></font></a>' */</span>
+</span><span><a class="LN" name="931">  931   </a>
+</span><span><a class="LN" name="932">  932   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:247:3')" name="code2model"><font color="#117755"><i>&lt;S77&gt;/conjunction</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="933">  933   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:247:5')" name="code2model"><font color="#117755"><i>&lt;S77&gt;/max_val</i></font></a>'</span>
+</span><span><a class="LN" name="934">  934   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:247:7')" name="code2model"><font color="#117755"><i>&lt;S77&gt;/min_val</i></font></a>'</span>
+</span><span><a class="LN" name="935">  935   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:247:4')" name="code2model"><font color="#117755"><i>&lt;S77&gt;/max_relop</i></font></a>'</span>
+</span><span><a class="LN" name="936">  936   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:247:6')" name="code2model"><font color="#117755"><i>&lt;S77&gt;/min_relop</i></font></a>'</span>
+</span><span><a class="LN" name="937">  937   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="938">  938   </a>  rtb_conjunction_m = ((0.0 &lt;= rtb_Sqrt_b) &amp;&amp; (rtb_Sqrt_b &lt;=
+</span><span><a class="LN" name="939">  939   </a>    rtp_static_range_max_value));
+</span><span><a class="LN" name="940">  940   </a>
+</span><span><a class="LN" name="941">  941   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:85')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="942">  942   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:66')" name="code2model"><font color="#117755"><i>&lt;S80&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="943">  943   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="944">  944   </a>  <span class="KW">if</span> (rtb_conjunction_m) <b>{</b>
+</span><span><a class="LN" name="945">  945   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:65')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem1</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="946">  946   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:67')" name="code2model"><font color="#117755"><i>&lt;S80&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="947">  947   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="948">  948   </a>    rtb_Merge1_a = rtu_sensor_meas_valid[1];
+</span><span><a class="LN" name="949">  949   </a>
+</span><span><a class="LN" name="950">  950   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:65')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem1</i></font></a>' */</span>
+</span><span><a class="LN" name="951">  951   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="952">  952   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:73')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="953">  953   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:74')" name="code2model"><font color="#117755"><i>&lt;S82&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="954">  954   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="955">  955   </a>    <a href="#fcn_IfActionSubsystem2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem2');" target="_self"><font color="#1122aa">IfActionSubsystem2</font></a>(&amp;rtb_Merge1_a);
+</span><span><a class="LN" name="956">  956   </a>
+</span><span><a class="LN" name="957">  957   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:73')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem2</i></font></a>' */</span>
+</span><span><a class="LN" name="958">  958   </a>  <b>}</b>
+</span><span><a class="LN" name="959">  959   </a>
+</span><span><a class="LN" name="960">  960   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:85')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If1</i></font></a>' */</span>
+</span><span><a class="LN" name="961">  961   </a>
+</span><span><a class="LN" name="962">  962   </a>  <span class="CT">/* Outputs for Atomic SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:496')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/twonorm3</i></font></a>' */</span>
+</span><span><a class="LN" name="963">  963   </a>  rtb_Sqrt_b = <a href="twonorm_c.html#fcn_twonorm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_twonorm');" target="_self"><font color="#1122aa">twonorm</font></a>(rtb_VariableSelector8);
+</span><span><a class="LN" name="964">  964   </a>
+</span><span><a class="LN" name="965">  965   </a>  <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:496')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/twonorm3</i></font></a>' */</span>
+</span><span><a class="LN" name="966">  966   </a>
+</span><span><a class="LN" name="967">  967   </a>  <span class="CT">/* Logic: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:60:3')" name="code2model"><font color="#117755"><i>&lt;S78&gt;/conjunction</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="968">  968   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:60:5')" name="code2model"><font color="#117755"><i>&lt;S78&gt;/max_val</i></font></a>'</span>
+</span><span><a class="LN" name="969">  969   </a><span class="CT">   *  Constant: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:60:7')" name="code2model"><font color="#117755"><i>&lt;S78&gt;/min_val</i></font></a>'</span>
+</span><span><a class="LN" name="970">  970   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:60:4')" name="code2model"><font color="#117755"><i>&lt;S78&gt;/max_relop</i></font></a>'</span>
+</span><span><a class="LN" name="971">  971   </a><span class="CT">   *  RelationalOperator: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:60:6')" name="code2model"><font color="#117755"><i>&lt;S78&gt;/min_relop</i></font></a>'</span>
+</span><span><a class="LN" name="972">  972   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="973">  973   </a>  rtb_conjunction_d = ((0.0 &lt;= rtb_Sqrt_b) &amp;&amp; (rtb_Sqrt_b &lt;=
+</span><span><a class="LN" name="974">  974   </a>    rtp_static_range_max_value));
+</span><span><a class="LN" name="975">  975   </a>
+</span><span><a class="LN" name="976">  976   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:86')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If2</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="977">  977   </a><span class="CT">   *  Inport: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:78')" name="code2model"><font color="#117755"><i>&lt;S83&gt;/In1</i></font></a>'</span>
+</span><span><a class="LN" name="978">  978   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="979">  979   </a>  <span class="KW">if</span> (rtb_conjunction_d) <b>{</b>
+</span><span><a class="LN" name="980">  980   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:77')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem3</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="981">  981   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:79')" name="code2model"><font color="#117755"><i>&lt;S83&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="982">  982   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="983">  983   </a>    rtb_Merge2 = rtu_sensor_meas_valid[2];
+</span><span><a class="LN" name="984">  984   </a>
+</span><span><a class="LN" name="985">  985   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:77')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem3</i></font></a>' */</span>
+</span><span><a class="LN" name="986">  986   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="987">  987   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:81')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem4</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="988">  988   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:82')" name="code2model"><font color="#117755"><i>&lt;S84&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="989">  989   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="990">  990   </a>    <a href="#fcn_IfActionSubsystem2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_IfActionSubsystem2');" target="_self"><font color="#1122aa">IfActionSubsystem2</font></a>(&amp;rtb_Merge2);
+</span><span><a class="LN" name="991">  991   </a>
+</span><span><a class="LN" name="992">  992   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:81')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If Action Subsystem4</i></font></a>' */</span>
+</span><span><a class="LN" name="993">  993   </a>  <b>}</b>
+</span><span><a class="LN" name="994">  994   </a>
+</span><span><a class="LN" name="995">  995   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:86')" name="code2model"><font color="#117755"><i>&lt;S67&gt;/If2</i></font></a>' */</span>
+</span><span><a class="LN" name="996">  996   </a>
+</span><span><a class="LN" name="997">  997   </a>  <span class="CT">/* If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:107')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/If</i></font></a>' */</span>
+</span><span><a class="LN" name="998">  998   </a>  tmp = (rtb_Merge_ec &amp;&amp; rtb_Merge1_a);
+</span><span><a class="LN" name="999">  999   </a>  <span class="KW">if</span> (tmp &amp;&amp; rtb_Merge2) <b>{</b>
+</span><span><a class="LN" name="1000"> 1000   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:203')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/ThreeValid_MVS</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="1001"> 1001   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:205')" name="code2model"><font color="#117755"><i>&lt;S68&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="1002"> 1002   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="1003"> 1003   </a>    <a href="#fcn_ThreeValid_MVS" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ThreeValid_MVS');" target="_self"><font color="#1122aa">ThreeValid_MVS</font></a>(rtb_VectorConcatenate, rtb_Merge_ez, rty_sensor_valid,
+</span><span><a class="LN" name="1004"> 1004   </a>                   &amp;localDW-&gt;ThreeValid_MVS_i, rtp_max_err);
+</span><span><a class="LN" name="1005"> 1005   </a>
+</span><span><a class="LN" name="1006"> 1006   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:203')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/ThreeValid_MVS</i></font></a>' */</span>
+</span><span><a class="LN" name="1007"> 1007   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (tmp || (rtb_Merge1_a &amp;&amp; rtb_Merge2) || (rtb_Merge2 &amp;&amp; rtb_Merge_ec))
+</span><span><a class="LN" name="1008"> 1008   </a>  <b>{</b>
+</span><span><a class="LN" name="1009"> 1009   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:161')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/TwoValid</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="1010"> 1010   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:164')" name="code2model"><font color="#117755"><i>&lt;S69&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="1011"> 1011   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="1012"> 1012   </a>    <a href="#fcn_TwoValid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_TwoValid');" target="_self"><font color="#1122aa">TwoValid</font></a>(rtb_VectorConcatenate, rtb_Merge_ec, rtb_Merge1_a, rtb_Merge2,
+</span><span><a class="LN" name="1013"> 1013   </a>             rtb_Merge_ez, rty_sensor_valid, rtp_max_err);
+</span><span><a class="LN" name="1014"> 1014   </a>
+</span><span><a class="LN" name="1015"> 1015   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:161')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/TwoValid</i></font></a>' */</span>
+</span><span><a class="LN" name="1016"> 1016   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtb_Merge_ec || rtb_Merge1_a || rtb_Merge2) <b>{</b>
+</span><span><a class="LN" name="1017"> 1017   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:119')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/OneValid</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="1018"> 1018   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:122')" name="code2model"><font color="#117755"><i>&lt;S66&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="1019"> 1019   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="1020"> 1020   </a>    <a href="#fcn_OneValid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_OneValid');" target="_self"><font color="#1122aa">OneValid</font></a>(rtb_VectorConcatenate, rtb_Merge_ec, rtb_Merge1_a, rtb_Merge2,
+</span><span><a class="LN" name="1021"> 1021   </a>             rtb_Merge_ez, rty_sensor_valid);
+</span><span><a class="LN" name="1022"> 1022   </a>
+</span><span><a class="LN" name="1023"> 1023   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:119')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/OneValid</i></font></a>' */</span>
+</span><span><a class="LN" name="1024"> 1024   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="1025"> 1025   </a>    <span class="CT">/* Outputs for IfAction SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:108')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/NoneValid</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="1026"> 1026   </a><span class="CT">     *  ActionPort: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:110')" name="code2model"><font color="#117755"><i>&lt;S65&gt;/Action Port</i></font></a>'</span>
+</span><span><a class="LN" name="1027"> 1027   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="1028"> 1028   </a>    <a href="#fcn_NoneValid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_NoneValid');" target="_self"><font color="#1122aa">NoneValid</font></a>(rtb_VectorConcatenate, rtb_Merge_ez, rty_sensor_valid);
+</span><span><a class="LN" name="1029"> 1029   </a>
+</span><span><a class="LN" name="1030"> 1030   </a>    <span class="CT">/* End of Outputs for SubSystem: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:108')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/NoneValid</i></font></a>' */</span>
+</span><span><a class="LN" name="1031"> 1031   </a>  <b>}</b>
+</span><span><a class="LN" name="1032"> 1032   </a>
+</span><span><a class="LN" name="1033"> 1033   </a>  <span class="CT">/* End of If: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:107')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/If</i></font></a>' */</span>
+</span><span><a class="LN" name="1034"> 1034   </a>
+</span><span><a class="LN" name="1035"> 1035   </a>  <span class="CT">/* Gain: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:700')" name="code2model"><font color="#117755"><i>&lt;S13&gt;/UnitConversion</i></font></a>' */</span>
+</span><span><a class="LN" name="1036"> 1036   </a>  rty_sensor_meas_body[0] = rtp_Gain * rtb_Merge_ez[0];
+</span><span><a class="LN" name="1037"> 1037   </a>  rty_sensor_meas_body[1] = rtp_Gain * rtb_Merge_ez[1];
+</span><span><a class="LN" name="1038"> 1038   </a>  rty_sensor_meas_body[2] = rtp_Gain * rtb_Merge_ez[2];
+</span><span><a class="LN" name="1039"> 1039   </a>
+</span><span><a class="LN" name="1040"> 1040   </a>  <span class="CT">/* Assertion: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:60:2')" name="code2model"><font color="#117755"><i>&lt;S78&gt;/Assertion</i></font></a>' */</span>
+</span><span><a class="LN" name="1041"> 1041   </a>  utAssert(rtb_conjunction_d);
+</span><span><a class="LN" name="1042"> 1042   </a>
+</span><span><a class="LN" name="1043"> 1043   </a>  <span class="CT">/* Assertion: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:247:2')" name="code2model"><font color="#117755"><i>&lt;S77&gt;/Assertion</i></font></a>' */</span>
+</span><span><a class="LN" name="1044"> 1044   </a>  utAssert(rtb_conjunction_m);
+</span><span><a class="LN" name="1045"> 1045   </a>
+</span><span><a class="LN" name="1046"> 1046   </a>  <span class="CT">/* Assertion: '<a href="matlab:coder.internal.code2model('Main_Sim:593:189:99:58:2')" name="code2model"><font color="#117755"><i>&lt;S76&gt;/Assertion</i></font></a>' */</span>
+</span><span><a class="LN" name="1047"> 1047   </a>  utAssert(rtb_conjunction);
+</span><span><a class="LN" name="1048"> 1048   </a><b>}</b>
+</span><span><a class="LN" name="1049"> 1049   </a>
+</span><span><a class="LN" name="1050"> 1050   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="1051"> 1051   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="1052"> 1052   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="1053"> 1053   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="1054"> 1054   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="1055"> 1055   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

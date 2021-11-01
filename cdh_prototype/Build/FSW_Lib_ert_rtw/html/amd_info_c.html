@@ -1,0 +1,139 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - amd_info.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('amd_info_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/amd_info.c" target="rtwreport_document_frame" id="linkToText_plain">amd_info.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">/* === AMD_info ============================================================ */</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="4">    4   </a>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">/* AMD, Copyright (c) Timothy A. Davis,					     */</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT">/* Patrick R. Amestoy, and Iain S. Duff.  See ../README.txt for License.     */</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">/* email: DrTimothyAldenDavis@gmail.com                                      */</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="10">   10   </a>
+</span><span><a class="LN" name="11">   11   </a><span class="CT">/* User-callable.  Prints the output statistics for AMD.  See amd.h</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * for details.  If the Info array is not present, nothing is printed.</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;amd_internal.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">define</span> PRI(format,x) <b>{</b> <span class="PP">if</span> (x &gt;= 0) <b>{</b> PRINTF ((format, x)) ; <b>}</b><b>}</b>
+</span><span><a class="LN" name="18">   18   </a>
+</span><span><a class="LN" name="19">   19   </a>GLOBAL <span class="DT">void</span> <a name="fcn_AMD_info">AMD_info</a>
+</span><span><a class="LN" name="20">   20   </a>(
+</span><span><a class="LN" name="21">   21   </a>    <span class="DT">double</span> Info [ ]
+</span><span><a class="LN" name="22">   22   </a>)
+</span><span><a class="LN" name="23">   23   </a><b>{</b>
+</span><span><a class="LN" name="24">   24   </a>    <span class="DT">double</span> n, ndiv, nmultsubs_ldl, nmultsubs_lu, lnz, lnzd ;
+</span><span><a class="LN" name="25">   25   </a>
+</span><span><a class="LN" name="26">   26   </a>    PRINTF ((<font color="#1122ff">&quot;\nAMD version %d.%d.%d, %s, results:\n&quot;</font>,
+</span><span><a class="LN" name="27">   27   </a>	AMD_MAIN_VERSION, AMD_SUB_VERSION, AMD_SUBSUB_VERSION, AMD_DATE)) ;
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a>    <span class="KW">if</span> (!Info)
+</span><span><a class="LN" name="30">   30   </a>    <b>{</b>
+</span><span><a class="LN" name="31">   31   </a>	<span class="KW">return</span> ;
+</span><span><a class="LN" name="32">   32   </a>    <b>}</b>
+</span><span><a class="LN" name="33">   33   </a>
+</span><span><a class="LN" name="34">   34   </a>    n = Info [AMD_N] ;
+</span><span><a class="LN" name="35">   35   </a>    ndiv = Info [AMD_NDIV] ;
+</span><span><a class="LN" name="36">   36   </a>    nmultsubs_ldl = Info [AMD_NMULTSUBS_LDL] ;
+</span><span><a class="LN" name="37">   37   </a>    nmultsubs_lu = Info [AMD_NMULTSUBS_LU] ;
+</span><span><a class="LN" name="38">   38   </a>    lnz = Info [AMD_LNZ] ;
+</span><span><a class="LN" name="39">   39   </a>    lnzd = (n &gt;= 0 &amp;&amp; lnz &gt;= 0) ? (n + lnz) : (-1) ;
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a>    <span class="CT">/* AMD return status */</span>
+</span><span><a class="LN" name="42">   42   </a>    PRINTF ((<font color="#1122ff">&quot;    status: &quot;</font>)) ;
+</span><span><a class="LN" name="43">   43   </a>    <span class="KW">if</span> (Info [AMD_STATUS] == AMD_OK)
+</span><span><a class="LN" name="44">   44   </a>    <b>{</b>
+</span><span><a class="LN" name="45">   45   </a>	PRINTF ((<font color="#1122ff">&quot;OK\n&quot;</font>)) ;
+</span><span><a class="LN" name="46">   46   </a>    <b>}</b>
+</span><span><a class="LN" name="47">   47   </a>    <span class="KW">else</span> <span class="KW">if</span> (Info [AMD_STATUS] == AMD_OUT_OF_MEMORY)
+</span><span><a class="LN" name="48">   48   </a>    <b>{</b>
+</span><span><a class="LN" name="49">   49   </a>	PRINTF ((<font color="#1122ff">&quot;out of memory\n&quot;</font>)) ;
+</span><span><a class="LN" name="50">   50   </a>    <b>}</b>
+</span><span><a class="LN" name="51">   51   </a>    <span class="KW">else</span> <span class="KW">if</span> (Info [AMD_STATUS] == AMD_INVALID)
+</span><span><a class="LN" name="52">   52   </a>    <b>{</b>
+</span><span><a class="LN" name="53">   53   </a>	PRINTF ((<font color="#1122ff">&quot;invalid matrix\n&quot;</font>)) ;
+</span><span><a class="LN" name="54">   54   </a>    <b>}</b>
+</span><span><a class="LN" name="55">   55   </a>    <span class="KW">else</span> <span class="KW">if</span> (Info [AMD_STATUS] == AMD_OK_BUT_JUMBLED)
+</span><span><a class="LN" name="56">   56   </a>    <b>{</b>
+</span><span><a class="LN" name="57">   57   </a>	PRINTF ((<font color="#1122ff">&quot;OK, but jumbled\n&quot;</font>)) ;
+</span><span><a class="LN" name="58">   58   </a>    <b>}</b>
+</span><span><a class="LN" name="59">   59   </a>    <span class="KW">else</span>
+</span><span><a class="LN" name="60">   60   </a>    <b>{</b>
+</span><span><a class="LN" name="61">   61   </a>	PRINTF ((<font color="#1122ff">&quot;unknown\n&quot;</font>)) ;
+</span><span><a class="LN" name="62">   62   </a>    <b>}</b>
+</span><span><a class="LN" name="63">   63   </a>
+</span><span><a class="LN" name="64">   64   </a>    <span class="CT">/* statistics about the input matrix */</span>
+</span><span><a class="LN" name="65">   65   </a>    PRI (<font color="#1122ff">&quot;    n, dimension of A:                                  %.20g\n&quot;</font>, n);
+</span><span><a class="LN" name="66">   66   </a>    PRI (<font color="#1122ff">&quot;    nz, number of nonzeros in A:                        %.20g\n&quot;</font>,
+</span><span><a class="LN" name="67">   67   </a>	Info [AMD_NZ]) ;
+</span><span><a class="LN" name="68">   68   </a>    PRI (<font color="#1122ff">&quot;    symmetry of A:                                      %.4f\n&quot;</font>,
+</span><span><a class="LN" name="69">   69   </a>	Info [AMD_SYMMETRY]) ;
+</span><span><a class="LN" name="70">   70   </a>    PRI (<font color="#1122ff">&quot;    number of nonzeros on diagonal:                     %.20g\n&quot;</font>,
+</span><span><a class="LN" name="71">   71   </a>	Info [AMD_NZDIAG]) ;
+</span><span><a class="LN" name="72">   72   </a>    PRI (<font color="#1122ff">&quot;    nonzeros in pattern of A+A' (excl. diagonal):       %.20g\n&quot;</font>,
+</span><span><a class="LN" name="73">   73   </a>	Info [AMD_NZ_A_PLUS_AT]) ;
+</span><span><a class="LN" name="74">   74   </a>    PRI (<font color="#1122ff">&quot;    # dense rows/columns of A+A':                       %.20g\n&quot;</font>,
+</span><span><a class="LN" name="75">   75   </a>	Info [AMD_NDENSE]) ;
+</span><span><a class="LN" name="76">   76   </a>
+</span><span><a class="LN" name="77">   77   </a>    <span class="CT">/* statistics about AMD's behavior  */</span>
+</span><span><a class="LN" name="78">   78   </a>    PRI (<font color="#1122ff">&quot;    memory used, in bytes:                              %.20g\n&quot;</font>,
+</span><span><a class="LN" name="79">   79   </a>	Info [AMD_MEMORY]) ;
+</span><span><a class="LN" name="80">   80   </a>    PRI (<font color="#1122ff">&quot;    # of memory compactions:                            %.20g\n&quot;</font>,
+</span><span><a class="LN" name="81">   81   </a>	Info [AMD_NCMPA]) ;
+</span><span><a class="LN" name="82">   82   </a>
+</span><span><a class="LN" name="83">   83   </a>    <span class="CT">/* statistics about the ordering quality */</span>
+</span><span><a class="LN" name="84">   84   </a>    PRINTF ((<font color="#1122ff">&quot;\n&quot;</font>
+</span><span><a class="LN" name="85">   85   </a>	<font color="#1122ff">&quot;    The following approximate statistics are for a subsequent\n&quot;</font>
+</span><span><a class="LN" name="86">   86   </a>	<font color="#1122ff">&quot;    factorization of A(P,P) + A(P,P)'.  They are slight upper\n&quot;</font>
+</span><span><a class="LN" name="87">   87   </a>	<font color="#1122ff">&quot;    bounds if there are no dense rows/columns in A+A', and become\n&quot;</font>
+</span><span><a class="LN" name="88">   88   </a>	<font color="#1122ff">&quot;    looser if dense rows/columns exist.\n\n&quot;</font>)) ;
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a>    PRI (<font color="#1122ff">&quot;    nonzeros in L (excluding diagonal):                 %.20g\n&quot;</font>,
+</span><span><a class="LN" name="91">   91   </a>	lnz) ;
+</span><span><a class="LN" name="92">   92   </a>    PRI (<font color="#1122ff">&quot;    nonzeros in L (including diagonal):                 %.20g\n&quot;</font>,
+</span><span><a class="LN" name="93">   93   </a>	lnzd) ;
+</span><span><a class="LN" name="94">   94   </a>    PRI (<font color="#1122ff">&quot;    # divide operations for LDL' or LU:                 %.20g\n&quot;</font>,
+</span><span><a class="LN" name="95">   95   </a>	ndiv) ;
+</span><span><a class="LN" name="96">   96   </a>    PRI (<font color="#1122ff">&quot;    # multiply-subtract operations for LDL':            %.20g\n&quot;</font>,
+</span><span><a class="LN" name="97">   97   </a>	nmultsubs_ldl) ;
+</span><span><a class="LN" name="98">   98   </a>    PRI (<font color="#1122ff">&quot;    # multiply-subtract operations for LU:              %.20g\n&quot;</font>,
+</span><span><a class="LN" name="99">   99   </a>	nmultsubs_lu) ;
+</span><span><a class="LN" name="100">  100   </a>    PRI (<font color="#1122ff">&quot;    max nz. in any column of L (incl. diagonal):        %.20g\n&quot;</font>,
+</span><span><a class="LN" name="101">  101   </a>	Info [AMD_DMAX]) ;
+</span><span><a class="LN" name="102">  102   </a>
+</span><span><a class="LN" name="103">  103   </a>    <span class="CT">/* total flop counts for various factorizations */</span>
+</span><span><a class="LN" name="104">  104   </a>
+</span><span><a class="LN" name="105">  105   </a>    <span class="KW">if</span> (n &gt;= 0 &amp;&amp; ndiv &gt;= 0 &amp;&amp; nmultsubs_ldl &gt;= 0 &amp;&amp; nmultsubs_lu &gt;= 0)
+</span><span><a class="LN" name="106">  106   </a>    <b>{</b>
+</span><span><a class="LN" name="107">  107   </a>	PRINTF ((<font color="#1122ff">&quot;\n&quot;</font>
+</span><span><a class="LN" name="108">  108   </a>	<font color="#1122ff">&quot;    chol flop count for real A, sqrt counted as 1 flop: %.20g\n&quot;</font>
+</span><span><a class="LN" name="109">  109   </a>	<font color="#1122ff">&quot;    LDL' flop count for real A:                         %.20g\n&quot;</font>
+</span><span><a class="LN" name="110">  110   </a>	<font color="#1122ff">&quot;    LDL' flop count for complex A:                      %.20g\n&quot;</font>
+</span><span><a class="LN" name="111">  111   </a>	<font color="#1122ff">&quot;    LU flop count for real A (with no pivoting):        %.20g\n&quot;</font>
+</span><span><a class="LN" name="112">  112   </a>	<font color="#1122ff">&quot;    LU flop count for complex A (with no pivoting):     %.20g\n\n&quot;</font>,
+</span><span><a class="LN" name="113">  113   </a>	n + ndiv + 2*nmultsubs_ldl,
+</span><span><a class="LN" name="114">  114   </a>	    ndiv + 2*nmultsubs_ldl,
+</span><span><a class="LN" name="115">  115   </a>	  9*ndiv + 8*nmultsubs_ldl,
+</span><span><a class="LN" name="116">  116   </a>	    ndiv + 2*nmultsubs_lu,
+</span><span><a class="LN" name="117">  117   </a>	  9*ndiv + 8*nmultsubs_lu)) ;
+</span><span><a class="LN" name="118">  118   </a>    <b>}</b>
+</span><span><a class="LN" name="119">  119   </a><b>}</b>
+</span><span><a class="LN" name="120">  120   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

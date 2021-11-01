@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - bsearch_s1bfmSFP.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('bsearch_s1bfmSFP_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../bsearch_s1bfmSFP.c" target="rtwreport_document_frame" id="linkToText_plain">bsearch_s1bfmSFP.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: bsearch_s1bfmSFP.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;bsearch_s1bfmSFP.h&quot;</font>
+</span><span><a class="LN" name="17">   17   </a>
+</span><span><a class="LN" name="18">   18   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:271:46:198:17')" name="code2model"><font color="#117755"><i>&lt;S437&gt;/soar_INTERP</i></font></a>' */</span>
+</span><span><a class="LN" name="19">   19   </a><a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> <a name="fcn_bsearch_s1bfmSFP">bsearch_s1bfmSFP</a>(<span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> x[10], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> xi)
+</span><span><a class="LN" name="20">   20   </a><b>{</b>
+</span><span><a class="LN" name="21">   21   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> n;
+</span><span><a class="LN" name="22">   22   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> low_ip1;
+</span><span><a class="LN" name="23">   23   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> high_i;
+</span><span><a class="LN" name="24">   24   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> mid_i;
+</span><span><a class="LN" name="25">   25   </a>  n = 1;
+</span><span><a class="LN" name="26">   26   </a>  low_ip1 = 2;
+</span><span><a class="LN" name="27">   27   </a>  high_i = 10;
+</span><span><a class="LN" name="28">   28   </a>  <span class="KW">while</span> (high_i &gt; low_ip1) <b>{</b>
+</span><span><a class="LN" name="29">   29   </a>    mid_i = (n + high_i) &gt;&gt; 1;
+</span><span><a class="LN" name="30">   30   </a>    <span class="KW">if</span> (xi &gt;= x[mid_i - 1]) <b>{</b>
+</span><span><a class="LN" name="31">   31   </a>      n = mid_i;
+</span><span><a class="LN" name="32">   32   </a>      low_ip1 = mid_i + 1;
+</span><span><a class="LN" name="33">   33   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="34">   34   </a>      high_i = mid_i;
+</span><span><a class="LN" name="35">   35   </a>    <b>}</b>
+</span><span><a class="LN" name="36">   36   </a>  <b>}</b>
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a>  <span class="KW">return</span> n;
+</span><span><a class="LN" name="39">   39   </a><b>}</b>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="42">   42   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="43">   43   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="44">   44   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="45">   45   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="46">   46   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

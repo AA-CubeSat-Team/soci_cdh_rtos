@@ -1,0 +1,135 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - ctrlc.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('ctrlc_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/ctrlc.c" target="rtwreport_document_frame" id="linkToText_plain">ctrlc.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * Implements signal handling (ctrl-c) for ECOS.</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="25">   25   </a><span class="CT"> * Under Windows, we use SetConsoleCtrlHandler.</span>
+</span><span><a class="LN" name="26">   26   </a><span class="CT"> * Under Unix systems, we use sigaction.</span>
+</span><span><a class="LN" name="27">   27   </a><span class="CT"> * For Mex files, we use utSetInterruptEnabled/utIsInterruptPending.</span>
+</span><span><a class="LN" name="28">   28   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="29">   29   </a><span class="CT"> * This module is (c) Michael Grant, [mcg@cvxr.com] contributed by Github PR #82</span>
+</span><span><a class="LN" name="30">   30   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="31">   31   </a>
+</span><span><a class="LN" name="32">   32   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ctrlc.h&quot;</font>
+</span><span><a class="LN" name="33">   33   </a>
+</span><span><a class="LN" name="34">   34   </a><font color="#992211">#</font><span class="PP">if</span> CTRLC &gt; 0
+</span><span><a class="LN" name="35">   35   </a>
+</span><span><a class="LN" name="36">   36   </a><font color="#992211">#</font><span class="PP">if</span> <span class="PP">defined</span> MATLAB_MEX_FILE
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a> <span class="CT">/* No header file available here; define the prototypes ourselves */</span>
+</span><span><a class="LN" name="39">   39   </a><span class="DT">extern</span> bool utIsInterruptPending(<span class="DT">void</span>);
+</span><span><a class="LN" name="40">   40   </a><span class="DT">extern</span> bool utSetInterruptEnabled(bool);
+</span><span><a class="LN" name="41">   41   </a>
+</span><span><a class="LN" name="42">   42   </a><span class="DT">static</span> <span class="DT">int</span> <a name="var_istate">istate</a>;
+</span><span><a class="LN" name="43">   43   </a><span class="DT">void</span> <a name="fcn_init_ctrlc">init_ctrlc</a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="44">   44   </a><b>{</b>
+</span><span><a class="LN" name="45">   45   </a>    <a href="#var_istate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_istate');" target="_self"><font color="#1122aa">istate</font></a> = (<span class="DT">int</span>)utSetInterruptEnabled(true);
+</span><span><a class="LN" name="46">   46   </a><b>}</b>
+</span><span><a class="LN" name="47">   47   </a><span class="DT">void</span> <a name="fcn_remove_ctrlc">remove_ctrlc</a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="48">   48   </a><b>{</b>
+</span><span><a class="LN" name="49">   49   </a>    utSetInterruptEnabled((bool)<a href="#var_istate" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_istate');" target="_self"><font color="#1122aa">istate</font></a>);
+</span><span><a class="LN" name="50">   50   </a><b>}</b>
+</span><span><a class="LN" name="51">   51   </a><span class="DT">int</span> <a name="fcn_check_ctrlc">check_ctrlc</a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="52">   52   </a><b>{</b>
+</span><span><a class="LN" name="53">   53   </a>    <span class="KW">return</span> (<span class="DT">int</span>)utIsInterruptPending();
+</span><span><a class="LN" name="54">   54   </a><b>}</b>
+</span><span><a class="LN" name="55">   55   </a>
+</span><span><a class="LN" name="56">   56   </a><font color="#992211">#</font><span class="PP">elif</span> <span class="PP">defined</span> _WIN32 || <span class="PP">defined</span> _WIN64
+</span><span><a class="LN" name="57">   57   </a>
+</span><span><a class="LN" name="58">   58   </a><span class="CT">/* Use Windows SetConsoleCtrlHandler for signal handling */</span>
+</span><span><a class="LN" name="59">   59   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;windows.h&gt;</font>
+</span><span><a class="LN" name="60">   60   </a>
+</span><span><a class="LN" name="61">   61   </a><span class="DT">static</span> <span class="DT">int</span> <a name="var_int_detected">int_detected</a>;
+</span><span><a class="LN" name="62">   62   </a>BOOL WINAPI <a name="var_handle_ctrlc">handle_ctrlc</a>(DWORD dwCtrlType)
+</span><span><a class="LN" name="63">   63   </a><b>{</b>
+</span><span><a class="LN" name="64">   64   </a>    <span class="KW">if</span> (dwCtrlType != CTRL_C_EVENT) <span class="KW">return</span> FALSE;
+</span><span><a class="LN" name="65">   65   </a>    <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a> = 1;
+</span><span><a class="LN" name="66">   66   </a>    <span class="KW">return</span> TRUE;
+</span><span><a class="LN" name="67">   67   </a><b>}</b>
+</span><span><a class="LN" name="68">   68   </a><span class="DT">void</span> <a href="#fcn_init_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_init_ctrlc');" target="_self"><font color="#1122aa">init_ctrlc</font></a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="69">   69   </a><b>{</b>
+</span><span><a class="LN" name="70">   70   </a>    <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a> = 0;
+</span><span><a class="LN" name="71">   71   </a>    SetConsoleCtrlHandler( <a href="#var_handle_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_handle_ctrlc');" target="_self"><font color="#1122aa">handle_ctrlc</font></a>, TRUE );
+</span><span><a class="LN" name="72">   72   </a><b>}</b>
+</span><span><a class="LN" name="73">   73   </a><span class="DT">void</span> <a href="#fcn_remove_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_remove_ctrlc');" target="_self"><font color="#1122aa">remove_ctrlc</font></a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="74">   74   </a><b>{</b>
+</span><span><a class="LN" name="75">   75   </a>    SetConsoleCtrlHandler( <a href="#var_handle_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_handle_ctrlc');" target="_self"><font color="#1122aa">handle_ctrlc</font></a>, FALSE );
+</span><span><a class="LN" name="76">   76   </a><b>}</b>
+</span><span><a class="LN" name="77">   77   </a><span class="DT">int</span> <a href="#fcn_check_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_check_ctrlc');" target="_self"><font color="#1122aa">check_ctrlc</font></a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="78">   78   </a><b>{</b>
+</span><span><a class="LN" name="79">   79   </a>    <span class="KW">return</span> <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a>;
+</span><span><a class="LN" name="80">   80   </a><b>}</b>
+</span><span><a class="LN" name="81">   81   </a>
+</span><span><a class="LN" name="82">   82   </a><font color="#992211">#</font><span class="PP">else</span> <span class="CT">/* Unix */</span>
+</span><span><a class="LN" name="83">   83   </a>
+</span><span><a class="LN" name="84">   84   </a><span class="CT">/* Use POSIX clocl_gettime() for timing on non-Windows machines */</span>
+</span><span><a class="LN" name="85">   85   </a>
+</span><span><a class="LN" name="86">   86   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;signal.h&gt;</font>
+</span><span><a class="LN" name="87">   87   </a><span class="DT">static</span> <span class="DT">int</span> <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a>;
+</span><span><a class="LN" name="88">   88   </a><span class="KW">struct</span> sigaction <a name="fcn_oact">oact</a>;
+</span><span><a class="LN" name="89">   89   </a><span class="DT">void</span> <a href="#var_handle_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_handle_ctrlc');" target="_self"><font color="#1122aa">handle_ctrlc</font></a>(<span class="DT">int</span> dummy)
+</span><span><a class="LN" name="90">   90   </a><b>{</b>
+</span><span><a class="LN" name="91">   91   </a>    <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a> = dummy?dummy:-1;
+</span><span><a class="LN" name="92">   92   </a><b>}</b>
+</span><span><a class="LN" name="93">   93   </a><span class="DT">void</span> <a href="#fcn_init_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_init_ctrlc');" target="_self"><font color="#1122aa">init_ctrlc</font></a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="94">   94   </a><b>{</b>
+</span><span><a class="LN" name="95">   95   </a>    <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a> = 0;
+</span><span><a class="LN" name="96">   96   </a>    <span class="KW">struct</span> sigaction act;
+</span><span><a class="LN" name="97">   97   </a>    act.sa_flags = 0;
+</span><span><a class="LN" name="98">   98   </a>    sigemptyset(&amp;act.sa_mask);
+</span><span><a class="LN" name="99">   99   </a>    act.sa_handler = <a href="#var_handle_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_handle_ctrlc');" target="_self"><font color="#1122aa">handle_ctrlc</font></a>;
+</span><span><a class="LN" name="100">  100   </a>    sigaction(SIGINT,&amp;act,&amp;<a href="#fcn_oact" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_oact');" target="_self"><font color="#1122aa">oact</font></a>);
+</span><span><a class="LN" name="101">  101   </a><b>}</b>
+</span><span><a class="LN" name="102">  102   </a><span class="DT">void</span> <a href="#fcn_remove_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_remove_ctrlc');" target="_self"><font color="#1122aa">remove_ctrlc</font></a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="103">  103   </a><b>{</b>
+</span><span><a class="LN" name="104">  104   </a>    <span class="KW">struct</span> sigaction act;
+</span><span><a class="LN" name="105">  105   </a>    sigaction(SIGINT,&amp;<a href="#fcn_oact" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_oact');" target="_self"><font color="#1122aa">oact</font></a>,&amp;act);
+</span><span><a class="LN" name="106">  106   </a><b>}</b>
+</span><span><a class="LN" name="107">  107   </a><span class="DT">int</span> <a href="#fcn_check_ctrlc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_check_ctrlc');" target="_self"><font color="#1122aa">check_ctrlc</font></a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="108">  108   </a><b>{</b>
+</span><span><a class="LN" name="109">  109   </a>    <span class="KW">return</span> <a href="#var_int_detected" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_int_detected');" target="_self"><font color="#1122aa">int_detected</font></a>;
+</span><span><a class="LN" name="110">  110   </a><b>}</b>
+</span><span><a class="LN" name="111">  111   </a>
+</span><span><a class="LN" name="112">  112   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/* END IF MATLAB_MEX_FILE / WIN32 */</span>
+</span><span><a class="LN" name="113">  113   </a>
+</span><span><a class="LN" name="114">  114   </a><font color="#992211">#</font><span class="PP">endif</span> <span class="CT">/* END IF CTRLC &gt; 0 */</span>
+</span><span><a class="LN" name="115">  115   </a>
+</span><span><a class="LN" name="116">  116   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

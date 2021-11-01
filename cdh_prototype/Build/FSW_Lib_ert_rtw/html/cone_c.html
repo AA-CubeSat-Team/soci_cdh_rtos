@@ -1,0 +1,581 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - cone.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('cone_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/cone.c" target="rtwreport_document_frame" id="linkToText_plain">cone.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">/* cone functions */</span>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;cone.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;spla.h&quot;</font>
+</span><span><a class="LN" name="24">   24   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;expcone.h&quot;</font>
+</span><span><a class="LN" name="26">   26   </a>
+</span><span><a class="LN" name="27">   27   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;stdio.h&gt;</font>
+</span><span><a class="LN" name="28">   28   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;stdlib.h&gt;</font>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a>
+</span><span><a class="LN" name="32">   32   </a><span class="CT">/* PRIVATE METHODS ===================================================== */</span>
+</span><span><a class="LN" name="33">   33   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="34">   34   </a><span class="CT"> * Computes u0^2 - u1'*u1 for second order cones</span>
+</span><span><a class="LN" name="35">   35   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="36">   36   </a>pfloat <a name="fcn_socres">socres</a>(pfloat* u, idxint p)
+</span><span><a class="LN" name="37">   37   </a><b>{</b>
+</span><span><a class="LN" name="38">   38   </a>	pfloat res = u[0]*u[0];
+</span><span><a class="LN" name="39">   39   </a>	idxint i;
+</span><span><a class="LN" name="40">   40   </a>	<span class="KW">for</span>( i=1; i&lt;p; i++) <b>{</b> res -= u[i]*u[i]; <b>}</b>
+</span><span><a class="LN" name="41">   41   </a>	<span class="KW">return</span> res;
+</span><span><a class="LN" name="42">   42   </a><b>}</b>
+</span><span><a class="LN" name="43">   43   </a>
+</span><span><a class="LN" name="44">   44   </a>
+</span><span><a class="LN" name="45">   45   </a><span class="CT">/* PUBLIC METHODS ====================================================== */</span>
+</span><span><a class="LN" name="46">   46   </a>
+</span><span><a class="LN" name="47">   47   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="48">   48   </a><span class="CT"> * Scales a conic variable such that it lies strictly in the cone.</span>
+</span><span><a class="LN" name="49">   49   </a><span class="CT"> * If it is already in the cone, r is simply copied to s.</span>
+</span><span><a class="LN" name="50">   50   </a><span class="CT"> * Otherwise s = r + (1+alpha)*e where alpha is the biggest residual.</span>
+</span><span><a class="LN" name="51">   51   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="52">   52   </a><span class="DT">void</span> <a name="fcn_bring2cone">bring2cone</a>(cone* C, pfloat* r, pfloat* s)
+</span><span><a class="LN" name="53">   53   </a><b>{</b>
+</span><span><a class="LN" name="54">   54   </a>	pfloat alpha = -GAMMA;
+</span><span><a class="LN" name="55">   55   </a>	pfloat cres, r1square;
+</span><span><a class="LN" name="56">   56   </a>	idxint i, l, j;
+</span><span><a class="LN" name="57">   57   </a>
+</span><span><a class="LN" name="58">   58   </a>	<span class="CT">/*</span>
+</span><span><a class="LN" name="59">   59   </a><span class="CT">	 * 1. Find maximum residual ----------------------------------------------</span>
+</span><span><a class="LN" name="60">   60   </a><span class="CT">	 */</span>
+</span><span><a class="LN" name="61">   61   </a>
+</span><span><a class="LN" name="62">   62   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="63">   63   </a>	<span class="KW">for</span>( i=0; i&lt;C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="64">   64   </a>		<span class="KW">if</span>( r[i] &lt;= 0 &amp;&amp; -r[i] &gt; alpha )<b>{</b> alpha = -r[i]; <b>}</b>
+</span><span><a class="LN" name="65">   65   </a>	<b>}</b>
+</span><span><a class="LN" name="66">   66   </a>
+</span><span><a class="LN" name="67">   67   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="68">   68   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="69">   69   </a>		cres = r[i++]; r1square = 0;
+</span><span><a class="LN" name="70">   70   </a>		<span class="KW">for</span>( j=1; j&lt;C-&gt;soc[l].p; j++ )<b>{</b> r1square += r[i]*r[i]; i++; <b>}</b>
+</span><span><a class="LN" name="71">   71   </a>		cres -= sqrt(r1square);
+</span><span><a class="LN" name="72">   72   </a>		<span class="KW">if</span>( cres &lt;= 0 &amp;&amp; -cres &gt; alpha )<b>{</b> alpha = -cres; <b>}</b>
+</span><span><a class="LN" name="73">   73   </a>	<b>}</b>
+</span><span><a class="LN" name="74">   74   </a>
+</span><span><a class="LN" name="75">   75   </a>
+</span><span><a class="LN" name="76">   76   </a>	<span class="CT">/*</span>
+</span><span><a class="LN" name="77">   77   </a><span class="CT">	 * 2. compute s = r + (1+alpha)*e -------------------------------------</span>
+</span><span><a class="LN" name="78">   78   </a><span class="CT">	 */</span>
+</span><span><a class="LN" name="79">   79   </a>
+</span><span><a class="LN" name="80">   80   </a>	alpha += 1.0;
+</span><span><a class="LN" name="81">   81   </a>
+</span><span><a class="LN" name="82">   82   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="83">   83   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="84">   84   </a>		s[i] = r[i] + alpha;
+</span><span><a class="LN" name="85">   85   </a>	<b>}</b>
+</span><span><a class="LN" name="86">   86   </a>
+</span><span><a class="LN" name="87">   87   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="88">   88   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="89">   89   </a>		s[i] = r[i] + alpha; i++;
+</span><span><a class="LN" name="90">   90   </a>		<span class="KW">for</span>( j=1; j &lt; C-&gt;soc[l].p; j++ )<b>{</b> s[i] = r[i]; i++; <b>}</b>
+</span><span><a class="LN" name="91">   91   </a>	<b>}</b>
+</span><span><a class="LN" name="92">   92   </a><b>}</b>
+</span><span><a class="LN" name="93">   93   </a>
+</span><span><a class="LN" name="94">   94   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="95">   95   </a>
+</span><span><a class="LN" name="96">   96   </a><span class="CT">/* Sets the initial point to the jordan algebra identity e times scaling for the symmetric cones</span>
+</span><span><a class="LN" name="97">   97   </a><span class="CT"> * and the central ray for the exponential cone, scaled by scaling</span>
+</span><span><a class="LN" name="98">   98   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="99">   99   </a><span class="DT">void</span> <a name="fcn_unitInitialization">unitInitialization</a>(cone* C, pfloat* s, pfloat* z, pfloat scaling)
+</span><span><a class="LN" name="100">  100   </a><b>{</b>
+</span><span><a class="LN" name="101">  101   </a>    idxint i,l,j;
+</span><span><a class="LN" name="102">  102   </a>
+</span><span><a class="LN" name="103">  103   </a>    <span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="104">  104   </a>    <span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="105">  105   </a>        s[i] = scaling;
+</span><span><a class="LN" name="106">  106   </a>        z[i] = scaling;
+</span><span><a class="LN" name="107">  107   </a>    <b>}</b>
+</span><span><a class="LN" name="108">  108   </a>
+</span><span><a class="LN" name="109">  109   </a>    <span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="110">  110   </a>    <span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="111">  111   </a>        s[i] = scaling; z[i] = scaling;  i++;
+</span><span><a class="LN" name="112">  112   </a>        <span class="KW">for</span>( j=1; j &lt; C-&gt;soc[l].p; j++ )<b>{</b> s[i] = 0.0; z[i] = 0.0; i++; <b>}</b>
+</span><span><a class="LN" name="113">  113   </a>    <b>}</b>
+</span><span><a class="LN" name="114">  114   </a>    <span class="CT">/* Exponential cone */</span>
+</span><span><a class="LN" name="115">  115   </a>    <span class="KW">for</span>(l=0;l&lt;C-&gt;nexc;l++)
+</span><span><a class="LN" name="116">  116   </a>    <b>{</b>
+</span><span><a class="LN" name="117">  117   </a>       s[i]   = scaling*(-1.051383945322714);
+</span><span><a class="LN" name="118">  118   </a>       s[i+1] = scaling*(1.258967884768947);
+</span><span><a class="LN" name="119">  119   </a>       s[i+2] = scaling*(0.556409619469370);
+</span><span><a class="LN" name="120">  120   </a>       z[i]   = scaling*(-1.051383945322714);
+</span><span><a class="LN" name="121">  121   </a>       z[i+1] = scaling*(1.258967884768947);
+</span><span><a class="LN" name="122">  122   </a>       z[i+2] = scaling*(0.556409619469370);
+</span><span><a class="LN" name="123">  123   </a>       i=i+3;
+</span><span><a class="LN" name="124">  124   </a>    <b>}</b>
+</span><span><a class="LN" name="125">  125   </a><b>}</b>
+</span><span><a class="LN" name="126">  126   </a>
+</span><span><a class="LN" name="127">  127   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="128">  128   </a>
+</span><span><a class="LN" name="129">  129   </a>
+</span><span><a class="LN" name="130">  130   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="131">  131   </a><span class="CT"> * Update scalings.</span>
+</span><span><a class="LN" name="132">  132   </a><span class="CT"> * Returns OUTSIDE_CONE as soon as any multiplier or slack leaves the cone,</span>
+</span><span><a class="LN" name="133">  133   </a><span class="CT"> * as this indicates severe problems.</span>
+</span><span><a class="LN" name="134">  134   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="135">  135   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="136">  136   </a>idxint <a href="#fcn_updateScalings" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_updateScalings');" target="_self"><font color="#1122aa">updateScalings</font></a>(cone* C, pfloat* s, pfloat* z, pfloat* lambda, pfloat mu)
+</span><span><a class="LN" name="137">  137   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="138">  138   </a>idxint <a name="fcn_updateScalings">updateScalings</a>(cone* C, pfloat* s, pfloat* z, pfloat* lambda)
+</span><span><a class="LN" name="139">  139   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="140">  140   </a><b>{</b>
+</span><span><a class="LN" name="141">  141   </a>	idxint i, l, k, p; <span class="CT">/*, pm1; */</span>
+</span><span><a class="LN" name="142">  142   </a>	pfloat sres, zres, snorm, znorm, gamma, one_over_2gamma;
+</span><span><a class="LN" name="143">  143   </a>	pfloat* sk;
+</span><span><a class="LN" name="144">  144   </a>	pfloat* zk;
+</span><span><a class="LN" name="145">  145   </a>    pfloat a, c, d, w, temp, divisor; <span class="CT">/*, b; */</span>
+</span><span><a class="LN" name="146">  146   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="147">  147   </a>    pfloat u0, u0_square, u1, v1, d1, c2byu02_d, c2byu02, c_square;
+</span><span><a class="LN" name="148">  148   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="149">  149   </a>
+</span><span><a class="LN" name="150">  150   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="151">  151   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="152">  152   </a>		C-&gt;lpc-&gt;v[i] = SAFEDIV_POS(s[i], z[i]);
+</span><span><a class="LN" name="153">  153   </a>		C-&gt;lpc-&gt;w[i] = sqrt(C-&gt;lpc-&gt;v[i]);
+</span><span><a class="LN" name="154">  154   </a>	<b>}</b>
+</span><span><a class="LN" name="155">  155   </a>
+</span><span><a class="LN" name="156">  156   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="157">  157   </a>	k = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="158">  158   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="159">  159   </a>
+</span><span><a class="LN" name="160">  160   </a>		<span class="CT">/* indices and variables */</span>
+</span><span><a class="LN" name="161">  161   </a>		sk = s+k; zk = z+k; p = C-&gt;soc[l].p; <span class="CT">/* pm1 = p-1; */</span>
+</span><span><a class="LN" name="162">  162   </a>
+</span><span><a class="LN" name="163">  163   </a>		<span class="CT">/* check residuals and quit if they're negative */</span>
+</span><span><a class="LN" name="164">  164   </a>		sres = <a href="#fcn_socres" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_socres');" target="_self"><font color="#1122aa">socres</font></a>(sk, p);  zres = <a href="#fcn_socres" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_socres');" target="_self"><font color="#1122aa">socres</font></a>(zk, p);
+</span><span><a class="LN" name="165">  165   </a>        <span class="KW">if</span>( sres &lt;= 0 || zres &lt;= 0 )<b>{</b> <span class="KW">return</span> OUTSIDE_CONE; <b>}</b>
+</span><span><a class="LN" name="166">  166   </a>
+</span><span><a class="LN" name="167">  167   </a>		<span class="CT">/* normalize variables */</span>
+</span><span><a class="LN" name="168">  168   </a>		snorm = sqrt(sres);    znorm = sqrt(zres);
+</span><span><a class="LN" name="169">  169   </a>		<span class="KW">for</span>( i=0; i&lt;p; i++ )<b>{</b> C-&gt;soc[l].skbar[i] = SAFEDIV_POS(sk[i],snorm); <b>}</b>
+</span><span><a class="LN" name="170">  170   </a>		<span class="KW">for</span>( i=0; i&lt;p; i++ )<b>{</b> C-&gt;soc[l].zkbar[i] = SAFEDIV_POS(zk[i],znorm); <b>}</b>
+</span><span><a class="LN" name="171">  171   </a>		C-&gt;soc[l].eta_square = SAFEDIV_POS(snorm,znorm);
+</span><span><a class="LN" name="172">  172   </a>		C-&gt;soc[l].eta = sqrt(C-&gt;soc[l].eta_square);
+</span><span><a class="LN" name="173">  173   </a>
+</span><span><a class="LN" name="174">  174   </a>		<span class="CT">/* Normalized Nesterov-Todd scaling point */</span>
+</span><span><a class="LN" name="175">  175   </a>		gamma = 1.0;
+</span><span><a class="LN" name="176">  176   </a>		<span class="KW">for</span>( i=0; i&lt;p; i++)<b>{</b> gamma += C-&gt;soc[l].skbar[i]*C-&gt;soc[l].zkbar[i]; <b>}</b>
+</span><span><a class="LN" name="177">  177   </a>		gamma = sqrt(0.5*gamma);
+</span><span><a class="LN" name="178">  178   </a>		one_over_2gamma = SAFEDIV_POS(0.5,gamma);
+</span><span><a class="LN" name="179">  179   </a>		a = one_over_2gamma*(C-&gt;soc[l].skbar[0] + C-&gt;soc[l].zkbar[0]);
+</span><span><a class="LN" name="180">  180   </a>		w = 0;
+</span><span><a class="LN" name="181">  181   </a>		<span class="KW">for</span>( i=1; i&lt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="182">  182   </a>			C-&gt;soc[l].q[i-1] = one_over_2gamma*(C-&gt;soc[l].skbar[i] - C-&gt;soc[l].zkbar[i]);
+</span><span><a class="LN" name="183">  183   </a>			w += C-&gt;soc[l].q[i-1]*C-&gt;soc[l].q[i-1];
+</span><span><a class="LN" name="184">  184   </a>		<b>}</b>
+</span><span><a class="LN" name="185">  185   </a>        C-&gt;soc[l].w = w;
+</span><span><a class="LN" name="186">  186   </a>        C-&gt;soc[l].a = a;
+</span><span><a class="LN" name="187">  187   </a>
+</span><span><a class="LN" name="188">  188   </a>		<span class="CT">/* pre-compute variables needed for KKT matrix (kkt_update uses those) */</span>
+</span><span><a class="LN" name="189">  189   </a>        temp = 1.0 + a;
+</span><span><a class="LN" name="190">  190   </a>        <span class="CT">/* b = SAFEDIV_POS(1.0,temp); */</span>
+</span><span><a class="LN" name="191">  191   </a>        c = 1.0 + a + SAFEDIV_POS(w,temp);
+</span><span><a class="LN" name="192">  192   </a>        divisor = temp*temp;
+</span><span><a class="LN" name="193">  193   </a>        d = 1 + SAFEDIV_POS(2,temp) + SAFEDIV_POS(w,divisor);
+</span><span><a class="LN" name="194">  194   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE &gt; 0
+</span><span><a class="LN" name="195">  195   </a>        C-&gt;soc[l].c = c;
+</span><span><a class="LN" name="196">  196   </a>        C-&gt;soc[l].d = d;
+</span><span><a class="LN" name="197">  197   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="198">  198   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="199">  199   </a>        c_square = c*c;
+</span><span><a class="LN" name="200">  200   </a>        divisor = 1.0 + w*d;
+</span><span><a class="LN" name="201">  201   </a>        d1 = 0.5*(a*a + w*(1.0 - SAFEDIV_POS(c_square,divisor) ));  <span class="KW">if</span>( d1 &lt; 0 )<b>{</b> d1 = 0; <b>}</b>
+</span><span><a class="LN" name="202">  202   </a>        u0_square = a*a + w - d1;
+</span><span><a class="LN" name="203">  203   </a>        u0 = sqrt(u0_square);
+</span><span><a class="LN" name="204">  204   </a>        c2byu02 = SAFEDIV_POS((c*c),u0_square);
+</span><span><a class="LN" name="205">  205   </a>        c2byu02_d = c2byu02 - d;
+</span><span><a class="LN" name="206">  206   </a>        <span class="KW">if</span> (c2byu02_d &lt;= 0) <b>{</b> <span class="KW">return</span> OUTSIDE_CONE; <b>}</b>
+</span><span><a class="LN" name="207">  207   </a>        v1 = sqrt(c2byu02_d);
+</span><span><a class="LN" name="208">  208   </a>        u1 = sqrt(c2byu02);
+</span><span><a class="LN" name="209">  209   </a>        C-&gt;soc[l].d1 = d1;
+</span><span><a class="LN" name="210">  210   </a>        C-&gt;soc[l].u0 = u0;
+</span><span><a class="LN" name="211">  211   </a>        C-&gt;soc[l].u1 = u1;
+</span><span><a class="LN" name="212">  212   </a>        C-&gt;soc[l].v1 = v1;
+</span><span><a class="LN" name="213">  213   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="214">  214   </a>
+</span><span><a class="LN" name="215">  215   </a>		<span class="CT">/* increase offset for next cone */</span>
+</span><span><a class="LN" name="216">  216   </a>		k += C-&gt;soc[l].p;
+</span><span><a class="LN" name="217">  217   </a>	<b>}</b>
+</span><span><a class="LN" name="218">  218   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="219">  219   </a>       <span class="CT">/*Exponential cones*/</span>
+</span><span><a class="LN" name="220">  220   </a>        k = C-&gt;fexv;
+</span><span><a class="LN" name="221">  221   </a>        <span class="KW">for</span>(l=0;l&lt;C-&gt;nexc;l++)
+</span><span><a class="LN" name="222">  222   </a>        <b>{</b>
+</span><span><a class="LN" name="223">  223   </a>            <a href="expcone_c.html#fcn_evalExpHessian" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_evalExpHessian');" target="_self"><font color="#1122aa">evalExpHessian</font></a>(z+k, C-&gt;expc[l].v, mu);
+</span><span><a class="LN" name="224">  224   </a>            <a href="expcone_c.html#fcn_evalExpGradient" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_evalExpGradient');" target="_self"><font color="#1122aa">evalExpGradient</font></a>(z+k, C-&gt;expc[l].g);
+</span><span><a class="LN" name="225">  225   </a>            k+=3;
+</span><span><a class="LN" name="226">  226   </a>        <b>}</b>
+</span><span><a class="LN" name="227">  227   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="228">  228   </a>	<span class="CT">/* lambda = W*z */</span>
+</span><span><a class="LN" name="229">  229   </a>	<a href="#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>(z, C, lambda);
+</span><span><a class="LN" name="230">  230   </a>
+</span><span><a class="LN" name="231">  231   </a>	<span class="KW">return</span> INSIDE_CONE;
+</span><span><a class="LN" name="232">  232   </a><b>}</b>
+</span><span><a class="LN" name="233">  233   </a>
+</span><span><a class="LN" name="234">  234   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="235">  235   </a><span class="CT">/* Evaulates log(s) + log(z) + log(t) + log(k) + logbarriersocp - (D+1) */</span>
+</span><span><a class="LN" name="236">  236   </a>pfloat <a name="fcn_evalSymmetricBarrierValue">evalSymmetricBarrierValue</a>(pfloat* siter, pfloat *ziter, pfloat tauIter, pfloat kapIter, cone* C, pfloat D)
+</span><span><a class="LN" name="237">  237   </a><b>{</b>
+</span><span><a class="LN" name="238">  238   </a>   pfloat barrier = 0.0;
+</span><span><a class="LN" name="239">  239   </a>   idxint j,k,l;
+</span><span><a class="LN" name="240">  240   </a>   pfloat normAccumS = 0.0;
+</span><span><a class="LN" name="241">  241   </a>   pfloat normAccumZ = 0.0;
+</span><span><a class="LN" name="242">  242   </a>   idxint socDim;
+</span><span><a class="LN" name="243">  243   </a>   <span class="CT">/* Positive orthant barrier */</span>
+</span><span><a class="LN" name="244">  244   </a>   <span class="KW">for</span>(k=0;k&lt;C-&gt;lpc-&gt;p;k++)
+</span><span><a class="LN" name="245">  245   </a>        barrier -= (siter[k]&lt;=0||ziter[k]&lt;=0)? ECOS_INFINITY : (log(siter[k])+log(ziter[k]));
+</span><span><a class="LN" name="246">  246   </a>
+</span><span><a class="LN" name="247">  247   </a>    barrier-= (tauIter&lt;=0||kapIter&lt;=0) ? ECOS_INFINITY : (log(tauIter)+log(kapIter));
+</span><span><a class="LN" name="248">  248   </a>    <span class="CT">/* Socp cones */</span>
+</span><span><a class="LN" name="249">  249   </a>    <span class="KW">for</span>(l=0;l&lt;C-&gt;nsoc;l++)
+</span><span><a class="LN" name="250">  250   </a>    <b>{</b>
+</span><span><a class="LN" name="251">  251   </a>        socDim = C-&gt;soc[l].p;
+</span><span><a class="LN" name="252">  252   </a>        normAccumS = 0.0;
+</span><span><a class="LN" name="253">  253   </a>        normAccumZ = 0.0;
+</span><span><a class="LN" name="254">  254   </a>        normAccumS = siter[k]*siter[k]; <span class="CT">/* Root variable of the socp cone */</span>
+</span><span><a class="LN" name="255">  255   </a>        normAccumZ = ziter[k]*ziter[k];
+</span><span><a class="LN" name="256">  256   </a>        k++;
+</span><span><a class="LN" name="257">  257   </a>        <span class="KW">for</span>(j=1;j&lt;socDim;j++)
+</span><span><a class="LN" name="258">  258   </a>        <b>{</b>
+</span><span><a class="LN" name="259">  259   </a>            normAccumS -= siter[k]*siter[k];
+</span><span><a class="LN" name="260">  260   </a>            normAccumZ -= ziter[k]*ziter[k];
+</span><span><a class="LN" name="261">  261   </a>            k++;
+</span><span><a class="LN" name="262">  262   </a>        <b>}</b>
+</span><span><a class="LN" name="263">  263   </a>        barrier-= normAccumS&lt;=0.0? ECOS_INFINITY : 0.5*log(normAccumS);
+</span><span><a class="LN" name="264">  264   </a>        barrier-= normAccumZ&lt;=0.0? ECOS_INFINITY : 0.5*log(normAccumZ);
+</span><span><a class="LN" name="265">  265   </a>
+</span><span><a class="LN" name="266">  266   </a>    <b>}</b>
+</span><span><a class="LN" name="267">  267   </a>    <span class="KW">return</span> barrier-D-1;
+</span><span><a class="LN" name="268">  268   </a><b>}</b>
+</span><span><a class="LN" name="269">  269   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="270">  270   </a>
+</span><span><a class="LN" name="271">  271   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="272">  272   </a><span class="CT"> * Fast multiplication by scaling matrix.</span>
+</span><span><a class="LN" name="273">  273   </a><span class="CT"> * Returns lambda = W*z</span>
+</span><span><a class="LN" name="274">  274   </a><span class="CT"> * The exponential variables are not touched.</span>
+</span><span><a class="LN" name="275">  275   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="276">  276   </a><span class="DT">void</span> <a name="fcn_scale">scale</a>(pfloat* z, cone* C, pfloat* lambda)
+</span><span><a class="LN" name="277">  277   </a><b>{</b>
+</span><span><a class="LN" name="278">  278   </a>	idxint i, j, l, cone_start;
+</span><span><a class="LN" name="279">  279   </a>	pfloat zeta, factor;
+</span><span><a class="LN" name="280">  280   </a>
+</span><span><a class="LN" name="281">  281   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="282">  282   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b> lambda[i] = C-&gt;lpc-&gt;w[i] * z[i]; <b>}</b>
+</span><span><a class="LN" name="283">  283   </a>
+</span><span><a class="LN" name="284">  284   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="285">  285   </a>	cone_start = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="286">  286   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="287">  287   </a>
+</span><span><a class="LN" name="288">  288   </a>		<span class="CT">/* zeta = q'*z1 */</span>
+</span><span><a class="LN" name="289">  289   </a>		zeta = 0;
+</span><span><a class="LN" name="290">  290   </a>		<span class="KW">for</span>( i=1; i &lt; C-&gt;soc[l].p; i++ )<b>{</b> zeta += C-&gt;soc[l].q[i-1] * z[cone_start + i]; <b>}</b>
+</span><span><a class="LN" name="291">  291   </a>
+</span><span><a class="LN" name="292">  292   </a>		<span class="CT">/* factor = z0 + zeta / (1+a); */</span>
+</span><span><a class="LN" name="293">  293   </a>		factor = z[cone_start] + SAFEDIV_POS(zeta,(1+C-&gt;soc[l].a));
+</span><span><a class="LN" name="294">  294   </a>
+</span><span><a class="LN" name="295">  295   </a>		<span class="CT">/* second pass (on k): write out result */</span>
+</span><span><a class="LN" name="296">  296   </a>		lambda[cone_start] = C-&gt;soc[l].eta*(C-&gt;soc[l].a*z[cone_start] + zeta); <span class="CT">/* lambda[0] */</span>
+</span><span><a class="LN" name="297">  297   </a>		<span class="KW">for</span>( i=1; i &lt; C-&gt;soc[l].p; i++ )<b>{</b>
+</span><span><a class="LN" name="298">  298   </a>			j = cone_start+i;
+</span><span><a class="LN" name="299">  299   </a>			lambda[j] = C-&gt;soc[l].eta*(z[j] + factor*C-&gt;soc[l].q[i-1]);
+</span><span><a class="LN" name="300">  300   </a>		<b>}</b>
+</span><span><a class="LN" name="301">  301   </a>
+</span><span><a class="LN" name="302">  302   </a>		cone_start += C-&gt;soc[l].p;
+</span><span><a class="LN" name="303">  303   </a>	<b>}</b>
+</span><span><a class="LN" name="304">  304   </a><b>}</b>
+</span><span><a class="LN" name="305">  305   </a>
+</span><span><a class="LN" name="306">  306   </a>
+</span><span><a class="LN" name="307">  307   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="308">  308   </a><span class="CT"> *                                       [ D   v   u  ]</span>
+</span><span><a class="LN" name="309">  309   </a><span class="CT"> * Fast multiplication with V =  eta^2 * [ v'  1   0  ] = W^2</span>
+</span><span><a class="LN" name="310">  310   </a><span class="CT"> *                                       [ u   0  -1  ]</span>
+</span><span><a class="LN" name="311">  311   </a><span class="CT"> * Computes y += W^2*x;</span>
+</span><span><a class="LN" name="312">  312   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="313">  313   </a><span class="DT">void</span> <a name="fcn_scale2add">scale2add</a>(pfloat *x, pfloat* y, cone* C)
+</span><span><a class="LN" name="314">  314   </a><b>{</b>
+</span><span><a class="LN" name="315">  315   </a>    idxint i, l, cone_start, conesize, conesize_m1;
+</span><span><a class="LN" name="316">  316   </a>    pfloat *x1, *x2, *y1, *y2, eta_square, *q;
+</span><span><a class="LN" name="317">  317   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="318">  318   </a>    pfloat *x3, *x4, *y3, *y4;
+</span><span><a class="LN" name="319">  319   </a>    pfloat d1, u0, u1, v1;
+</span><span><a class="LN" name="320">  320   </a>    pfloat v1x3_plus_u1x4;
+</span><span><a class="LN" name="321">  321   </a>    pfloat qtx2;
+</span><span><a class="LN" name="322">  322   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="323">  323   </a>    pfloat zeta, temp, a, w, c, d;
+</span><span><a class="LN" name="324">  324   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="325">  325   </a>
+</span><span><a class="LN" name="326">  326   </a>    <span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="327">  327   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b> y[i] += C-&gt;lpc-&gt;v[i] * x[i]; <b>}</b>
+</span><span><a class="LN" name="328">  328   </a>
+</span><span><a class="LN" name="329">  329   </a>    <span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="330">  330   </a>    cone_start = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="331">  331   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="332">  332   </a>
+</span><span><a class="LN" name="333">  333   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="334">  334   </a>
+</span><span><a class="LN" name="335">  335   </a>        <a href="#fcn_getSOCDetails" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_getSOCDetails');" target="_self"><font color="#1122aa">getSOCDetails</font></a>(&amp;C-&gt;soc[l], &amp;conesize, &amp;eta_square, &amp;d1, &amp;u0, &amp;u1, &amp;v1, &amp;q);
+</span><span><a class="LN" name="336">  336   </a>        conesize_m1 = conesize - 1;
+</span><span><a class="LN" name="337">  337   </a>
+</span><span><a class="LN" name="338">  338   </a>        x1 = x + cone_start;
+</span><span><a class="LN" name="339">  339   </a>        x2 = x1 + 1;
+</span><span><a class="LN" name="340">  340   </a>        x3 = x2 + conesize - 1;
+</span><span><a class="LN" name="341">  341   </a>        x4 = x3 + 1;
+</span><span><a class="LN" name="342">  342   </a>
+</span><span><a class="LN" name="343">  343   </a>        y1 = y + cone_start;
+</span><span><a class="LN" name="344">  344   </a>        y2 = y1 + 1;
+</span><span><a class="LN" name="345">  345   </a>        y3 = y2 + conesize - 1;
+</span><span><a class="LN" name="346">  346   </a>        y4 = y3 + 1;
+</span><span><a class="LN" name="347">  347   </a>
+</span><span><a class="LN" name="348">  348   </a>        <span class="CT">/* y1 += d1*x1 + u0*x4 */</span>
+</span><span><a class="LN" name="349">  349   </a>        y1[0] += eta_square*(d1*x1[0] + u0*x4[0]);
+</span><span><a class="LN" name="350">  350   </a>
+</span><span><a class="LN" name="351">  351   </a>        <span class="CT">/* y2 += x2 + v1*q*x3 + u1*q*x4 */</span>
+</span><span><a class="LN" name="352">  352   </a>        v1x3_plus_u1x4 = v1*x3[0] + u1*x4[0];
+</span><span><a class="LN" name="353">  353   </a>        qtx2 = 0;
+</span><span><a class="LN" name="354">  354   </a>        <span class="KW">for</span> (i=0; i&lt;conesize_m1; i++) <b>{</b>
+</span><span><a class="LN" name="355">  355   </a>            y2[i] += eta_square*(x2[i] + v1x3_plus_u1x4*q[i]);
+</span><span><a class="LN" name="356">  356   </a>            qtx2 += q[i]*x2[i];
+</span><span><a class="LN" name="357">  357   </a>        <b>}</b>
+</span><span><a class="LN" name="358">  358   </a>
+</span><span><a class="LN" name="359">  359   </a>        <span class="CT">/* y3 += v1*q'*x2 + x3 */</span>
+</span><span><a class="LN" name="360">  360   </a>        y3[0] += eta_square*(v1*qtx2 + x3[0]);
+</span><span><a class="LN" name="361">  361   </a>
+</span><span><a class="LN" name="362">  362   </a>        <span class="CT">/* y4 += u0*x1 + u1*q'*x2 - x4 */</span>
+</span><span><a class="LN" name="363">  363   </a>        y4[0] += eta_square*(u0*x1[0] + u1*qtx2 - x4[0]);
+</span><span><a class="LN" name="364">  364   </a>
+</span><span><a class="LN" name="365">  365   </a>        <span class="CT">/* prepare index for next cone */</span>
+</span><span><a class="LN" name="366">  366   </a>        cone_start += conesize + 2;
+</span><span><a class="LN" name="367">  367   </a>    <b>}</b>
+</span><span><a class="LN" name="368">  368   </a>
+</span><span><a class="LN" name="369">  369   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="370">  370   </a>
+</span><span><a class="LN" name="371">  371   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="372">  372   </a>
+</span><span><a class="LN" name="373">  373   </a>        conesize = C-&gt;soc[l].p;
+</span><span><a class="LN" name="374">  374   </a>        conesize_m1 = conesize - 1;
+</span><span><a class="LN" name="375">  375   </a>        eta_square = C-&gt;soc[l].eta_square;
+</span><span><a class="LN" name="376">  376   </a>        a = C-&gt;soc[l].a;
+</span><span><a class="LN" name="377">  377   </a>        c = C-&gt;soc[l].c;
+</span><span><a class="LN" name="378">  378   </a>        d = C-&gt;soc[l].d;
+</span><span><a class="LN" name="379">  379   </a>        q = C-&gt;soc[l].q;
+</span><span><a class="LN" name="380">  380   </a>        w = C-&gt;soc[l].w;
+</span><span><a class="LN" name="381">  381   </a>
+</span><span><a class="LN" name="382">  382   </a>        x1 = x + cone_start;
+</span><span><a class="LN" name="383">  383   </a>        x2 = x1 + 1;
+</span><span><a class="LN" name="384">  384   </a>
+</span><span><a class="LN" name="385">  385   </a>        y1 = y + cone_start;
+</span><span><a class="LN" name="386">  386   </a>        y2 = y1 + 1;
+</span><span><a class="LN" name="387">  387   </a>
+</span><span><a class="LN" name="388">  388   </a>        <span class="CT">/* zeta = q'*x2 */</span>
+</span><span><a class="LN" name="389">  389   </a>        zeta = 0;
+</span><span><a class="LN" name="390">  390   </a>        <span class="KW">for</span> (i=0; i&lt;conesize-1; i++) <b>{</b>
+</span><span><a class="LN" name="391">  391   </a>            zeta += q[i]*x2[i];
+</span><span><a class="LN" name="392">  392   </a>        <b>}</b>
+</span><span><a class="LN" name="393">  393   </a>
+</span><span><a class="LN" name="394">  394   </a>        <span class="CT">/* y1 += eta^2*[ (a^2 + w)x1 + c*zeta ] */</span>
+</span><span><a class="LN" name="395">  395   </a>        y1[0] += eta_square*( (a*a+w)*x1[0] + c*zeta );
+</span><span><a class="LN" name="396">  396   </a>
+</span><span><a class="LN" name="397">  397   </a>        <span class="CT">/* y2 += eta^2*[ (c*q*x1 + x2 + d*q*zeta ] */</span>
+</span><span><a class="LN" name="398">  398   </a>        temp = c*x1[0] + d*zeta;
+</span><span><a class="LN" name="399">  399   </a>        <span class="KW">for</span> (i=0; i&lt;conesize_m1; i++) <b>{</b>
+</span><span><a class="LN" name="400">  400   </a>            y2[i] += eta_square*( temp*q[i] + x2[i] );
+</span><span><a class="LN" name="401">  401   </a>        <b>}</b>
+</span><span><a class="LN" name="402">  402   </a>
+</span><span><a class="LN" name="403">  403   </a>        <span class="CT">/* prepare index for next cone */</span>
+</span><span><a class="LN" name="404">  404   </a>        cone_start += conesize;
+</span><span><a class="LN" name="405">  405   </a>    <b>}</b>
+</span><span><a class="LN" name="406">  406   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="407">  407   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="408">  408   </a>    <a href="expcone_c.html#fcn_scaleToAddExpcone" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scaleToAddExpcone');" target="_self"><font color="#1122aa">scaleToAddExpcone</font></a>(y,x,C-&gt;expc,C-&gt;nexc,cone_start);
+</span><span><a class="LN" name="409">  409   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="410">  410   </a><b>}</b>
+</span><span><a class="LN" name="411">  411   </a>
+</span><span><a class="LN" name="412">  412   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="413">  413   </a><span class="CT"> * Fast left-division by scaling matrix.</span>
+</span><span><a class="LN" name="414">  414   </a><span class="CT"> * Returns z = W\lambda</span>
+</span><span><a class="LN" name="415">  415   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="416">  416   </a><span class="DT">void</span> <a name="fcn_unscale">unscale</a>(pfloat* lambda, cone* C, pfloat* z)
+</span><span><a class="LN" name="417">  417   </a><b>{</b>
+</span><span><a class="LN" name="418">  418   </a>	idxint i, j, l, cone_start;
+</span><span><a class="LN" name="419">  419   </a>	pfloat zeta, factor;
+</span><span><a class="LN" name="420">  420   </a>
+</span><span><a class="LN" name="421">  421   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="422">  422   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b> z[i] = SAFEDIV_POS(lambda[i], C-&gt;lpc-&gt;w[i]); <b>}</b>
+</span><span><a class="LN" name="423">  423   </a>
+</span><span><a class="LN" name="424">  424   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="425">  425   </a>	cone_start = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="426">  426   </a>	<span class="KW">for</span>( l=0; l &lt; C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="427">  427   </a>
+</span><span><a class="LN" name="428">  428   </a>		<span class="CT">/* zeta = q'*lambda1 */</span>
+</span><span><a class="LN" name="429">  429   </a>		zeta = 0;
+</span><span><a class="LN" name="430">  430   </a>		<span class="KW">for</span>( i=1; i &lt; C-&gt;soc[l].p; i++ )<b>{</b> zeta += C-&gt;soc[l].q[i-1] * lambda[cone_start + i]; <b>}</b>
+</span><span><a class="LN" name="431">  431   </a>
+</span><span><a class="LN" name="432">  432   </a>		<span class="CT">/* factor = -lambda0 + zeta / (1+a); */</span>
+</span><span><a class="LN" name="433">  433   </a>		factor = -lambda[cone_start] + SAFEDIV_POS(zeta,(1+C-&gt;soc[l].a));
+</span><span><a class="LN" name="434">  434   </a>
+</span><span><a class="LN" name="435">  435   </a>		<span class="CT">/* second pass (on k): write out result */</span>
+</span><span><a class="LN" name="436">  436   </a>		z[cone_start] = SAFEDIV_POS( (C-&gt;soc[l].a*lambda[cone_start] - zeta), C-&gt;soc[l].eta );
+</span><span><a class="LN" name="437">  437   </a>		<span class="KW">for</span>( i=1; i &lt; C-&gt;soc[l].p; i++ )<b>{</b>
+</span><span><a class="LN" name="438">  438   </a>			j = cone_start+i;
+</span><span><a class="LN" name="439">  439   </a>			z[j] = SAFEDIV_POS( (lambda[j] + factor*C-&gt;soc[l].q[i-1]), C-&gt;soc[l].eta );
+</span><span><a class="LN" name="440">  440   </a>		<b>}</b>
+</span><span><a class="LN" name="441">  441   </a>
+</span><span><a class="LN" name="442">  442   </a>		cone_start += C-&gt;soc[l].p;
+</span><span><a class="LN" name="443">  443   </a>	<b>}</b>
+</span><span><a class="LN" name="444">  444   </a><b>}</b>
+</span><span><a class="LN" name="445">  445   </a>
+</span><span><a class="LN" name="446">  446   </a>
+</span><span><a class="LN" name="447">  447   </a>
+</span><span><a class="LN" name="448">  448   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="449">  449   </a><span class="CT"> * Conic product, implements the "o" operator, w = u o v</span>
+</span><span><a class="LN" name="450">  450   </a><span class="CT"> * and returns e'*w (where e is the conic 1-vector)</span>
+</span><span><a class="LN" name="451">  451   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="452">  452   </a>pfloat <a name="fcn_conicProduct">conicProduct</a>(pfloat* u, pfloat* v, cone* C, pfloat* w)
+</span><span><a class="LN" name="453">  453   </a><b>{</b>
+</span><span><a class="LN" name="454">  454   </a>	idxint i, j, k, cone_start, conesize;
+</span><span><a class="LN" name="455">  455   </a>	pfloat u0, v0, mu;
+</span><span><a class="LN" name="456">  456   </a>
+</span><span><a class="LN" name="457">  457   </a>    mu = 0;
+</span><span><a class="LN" name="458">  458   </a>	k=0;
+</span><span><a class="LN" name="459">  459   </a>
+</span><span><a class="LN" name="460">  460   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="461">  461   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="462">  462   </a>        w[k] = u[i] * v[i];
+</span><span><a class="LN" name="463">  463   </a>        mu += w[k] &lt; 0 ? -w[k] : w[k];
+</span><span><a class="LN" name="464">  464   </a>        k++;
+</span><span><a class="LN" name="465">  465   </a>    <b>}</b>
+</span><span><a class="LN" name="466">  466   </a>
+</span><span><a class="LN" name="467">  467   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="468">  468   </a>	cone_start = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="469">  469   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;nsoc; i++ )<b>{</b>
+</span><span><a class="LN" name="470">  470   </a>		conesize = C-&gt;soc[i].p;
+</span><span><a class="LN" name="471">  471   </a>		u0 = u[cone_start];
+</span><span><a class="LN" name="472">  472   </a>		v0 = v[cone_start];
+</span><span><a class="LN" name="473">  473   </a>		w[k] = <a href="spla_c.html#fcn_eddot" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eddot');" target="_self"><font color="#1122aa">eddot</font></a>(conesize, u+cone_start, v+cone_start);
+</span><span><a class="LN" name="474">  474   </a>        mu += w[k] &lt; 0 ? -w[k] : w[k];
+</span><span><a class="LN" name="475">  475   </a>        k++;
+</span><span><a class="LN" name="476">  476   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b> w[k++] = u0*v[cone_start+j] + v0*u[cone_start+j]; <b>}</b>
+</span><span><a class="LN" name="477">  477   </a>		cone_start += conesize;
+</span><span><a class="LN" name="478">  478   </a>	<b>}</b>
+</span><span><a class="LN" name="479">  479   </a>
+</span><span><a class="LN" name="480">  480   </a>    <span class="KW">return</span> mu;
+</span><span><a class="LN" name="481">  481   </a><b>}</b>
+</span><span><a class="LN" name="482">  482   </a>
+</span><span><a class="LN" name="483">  483   </a>
+</span><span><a class="LN" name="484">  484   </a>
+</span><span><a class="LN" name="485">  485   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="486">  486   </a><span class="CT"> * Conic division, implements the "\" operator, v = u \ w</span>
+</span><span><a class="LN" name="487">  487   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="488">  488   </a><span class="DT">void</span> <a name="fcn_conicDivision">conicDivision</a>(pfloat* u, pfloat* w, cone* C, pfloat* v)
+</span><span><a class="LN" name="489">  489   </a><b>{</b>
+</span><span><a class="LN" name="490">  490   </a>	idxint i, j, k, cone_start, conesize;
+</span><span><a class="LN" name="491">  491   </a>	pfloat rho, zeta, u0, w0, factor, temp;
+</span><span><a class="LN" name="492">  492   </a>
+</span><span><a class="LN" name="493">  493   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="494">  494   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b> v[i] = SAFEDIV_POS(w[i],u[i]); <b>}</b>
+</span><span><a class="LN" name="495">  495   </a>
+</span><span><a class="LN" name="496">  496   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="497">  497   </a>	cone_start = C-&gt;lpc-&gt;p;
+</span><span><a class="LN" name="498">  498   </a>	<span class="KW">for</span>( i=0; i &lt; C-&gt;nsoc; i++ )<b>{</b>
+</span><span><a class="LN" name="499">  499   </a>		conesize = C-&gt;soc[i].p;
+</span><span><a class="LN" name="500">  500   </a>		u0 = u[cone_start]; w0 = w[cone_start];
+</span><span><a class="LN" name="501">  501   </a>		rho = u0*u0;   zeta = 0;
+</span><span><a class="LN" name="502">  502   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b>
+</span><span><a class="LN" name="503">  503   </a>			k = cone_start+j;
+</span><span><a class="LN" name="504">  504   </a>			rho -= u[k]*u[k];
+</span><span><a class="LN" name="505">  505   </a>			zeta += u[k]*w[k];
+</span><span><a class="LN" name="506">  506   </a>		<b>}</b>
+</span><span><a class="LN" name="507">  507   </a>        temp = SAFEDIV_POS(zeta,u0) - w0;
+</span><span><a class="LN" name="508">  508   </a>        factor = SAFEDIV_POS(temp,rho);
+</span><span><a class="LN" name="509">  509   </a>        temp = u0*w0 - zeta;
+</span><span><a class="LN" name="510">  510   </a>		v[cone_start] = SAFEDIV_POS(temp,rho);
+</span><span><a class="LN" name="511">  511   </a>		<span class="KW">for</span>( j=1; j &lt; conesize; j++ )<b>{</b>
+</span><span><a class="LN" name="512">  512   </a>			k = cone_start+j;
+</span><span><a class="LN" name="513">  513   </a>			v[cone_start+j] = factor*u[k] + SAFEDIV_POS(w[k],u0);
+</span><span><a class="LN" name="514">  514   </a>		<b>}</b>
+</span><span><a class="LN" name="515">  515   </a>		cone_start += C-&gt;soc[i].p;
+</span><span><a class="LN" name="516">  516   </a>	<b>}</b>
+</span><span><a class="LN" name="517">  517   </a><b>}</b>
+</span><span><a class="LN" name="518">  518   </a>
+</span><span><a class="LN" name="519">  519   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="520">  520   </a><span class="CT"> * Returns details on second order cone</span>
+</span><span><a class="LN" name="521">  521   </a><span class="CT"> * Purpose: cleaner code</span>
+</span><span><a class="LN" name="522">  522   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="523">  523   </a><span class="DT">void</span> <a name="fcn_getSOCDetails">getSOCDetails</a>(socone *soc, idxint *conesize, pfloat* eta_square, pfloat* d1, pfloat* u0, pfloat* u1, pfloat* v1, pfloat **q)
+</span><span><a class="LN" name="524">  524   </a><b>{</b>
+</span><span><a class="LN" name="525">  525   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="526">  526   </a>    *conesize = soc-&gt;p;
+</span><span><a class="LN" name="527">  527   </a>    *eta_square = soc-&gt;eta_square;
+</span><span><a class="LN" name="528">  528   </a>    *d1 = soc-&gt;d1;
+</span><span><a class="LN" name="529">  529   </a>    *u0 = soc-&gt;u0;
+</span><span><a class="LN" name="530">  530   </a>    *u1 = soc-&gt;u1;
+</span><span><a class="LN" name="531">  531   </a>    *v1 = soc-&gt;v1;
+</span><span><a class="LN" name="532">  532   </a>    *q = soc-&gt;q;
+</span><span><a class="LN" name="533">  533   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="534">  534   </a><b>}</b>
+</span><span><a class="LN" name="535">  535   </a>
+</span><span><a class="LN" name="536">  536   </a>
+</span><span><a class="LN" name="537">  537   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="538">  538   </a><span class="CT"> * Returns dx, dy and dz from the expanded and permuted version of</span>
+</span><span><a class="LN" name="539">  539   </a><span class="CT"> * a search direction vector.</span>
+</span><span><a class="LN" name="540">  540   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="541">  541   </a><span class="DT">void</span> <a name="fcn_unstretch">unstretch</a>(idxint n, idxint p, cone *C, idxint *Pinv, pfloat *Px, pfloat *dx, pfloat *dy, pfloat *dz)
+</span><span><a class="LN" name="542">  542   </a><b>{</b>
+</span><span><a class="LN" name="543">  543   </a>    idxint i,j,k,l;
+</span><span><a class="LN" name="544">  544   </a>    k = 0;
+</span><span><a class="LN" name="545">  545   </a>    <span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b> dx[i] = Px[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="546">  546   </a>    <span class="KW">for</span>( i=0; i&lt;p; i++ )<b>{</b> dy[i] = Px[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="547">  547   </a>    j = 0;
+</span><span><a class="LN" name="548">  548   </a>    <span class="KW">for</span>( i=0; i&lt;C-&gt;lpc-&gt;p; i++ )<b>{</b> dz[j++] = Px[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="549">  549   </a>    <span class="KW">for</span>( l=0; l&lt;C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="550">  550   </a>        <span class="KW">for</span>( i=0; i&lt;C-&gt;soc[l].p; i++ )<b>{</b> dz[j++] = Px[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="551">  551   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="552">  552   </a>        k += 2;
+</span><span><a class="LN" name="553">  553   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="554">  554   </a>    <b>}</b>
+</span><span><a class="LN" name="555">  555   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="556">  556   </a>    <span class="KW">for</span>( l=0; l&lt;C-&gt;nexc; l++)
+</span><span><a class="LN" name="557">  557   </a>    <b>{</b>
+</span><span><a class="LN" name="558">  558   </a>        <span class="KW">for</span>( i=0; i&lt;3; i++ )<b>{</b> dz[j++] = Px[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="559">  559   </a>    <b>}</b>
+</span><span><a class="LN" name="560">  560   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="561">  561   </a><b>}</b>
+</span><span><a class="LN" name="562">  562   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - eml_dlahqr_HClTWgbm.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('eml_dlahqr_HClTWgbm_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../eml_dlahqr_HClTWgbm.c" target="rtwreport_document_frame" id="linkToText_plain">eml_dlahqr_HClTWgbm.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: eml_dlahqr_HClTWgbm.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rt_nonfinite.h&quot;</font>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xdlanv2_FIBA3SmX.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xrot_6iHri7if.h&quot;</font>
+</span><span><a class="LN" name="20">   20   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xrot_DROkKeLU.h&quot;</font>
+</span><span><a class="LN" name="21">   21   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xrot_JzPltzlP.h&quot;</font>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;xzlarfg_J3AXVwxO.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;eml_dlahqr_HClTWgbm.h&quot;</font>
+</span><span><a class="LN" name="24">   24   </a>
+</span><span><a class="LN" name="25">   25   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:271:46:187:36')" name="code2model"><font color="#117755"><i>&lt;S438&gt;/INITIALIZE</i></font></a>' */</span>
+</span><span><a class="LN" name="26">   26   </a><a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> <a name="fcn_eml_dlahqr_HClTWgbm">eml_dlahqr_HClTWgbm</a>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> h[16], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> z[16])
+</span><span><a class="LN" name="27">   27   </a><b>{</b>
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> info;
+</span><span><a class="LN" name="29">   29   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> v[3];
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> L;
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> goto150;
+</span><span><a class="LN" name="33">   33   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> k;
+</span><span><a class="LN" name="34">   34   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tst;
+</span><span><a class="LN" name="35">   35   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> htmp1;
+</span><span><a class="LN" name="36">   36   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> ab;
+</span><span><a class="LN" name="37">   37   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> ba;
+</span><span><a class="LN" name="38">   38   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> aa;
+</span><span><a class="LN" name="39">   39   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> h12;
+</span><span><a class="LN" name="40">   40   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> m;
+</span><span><a class="LN" name="41">   41   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> nr;
+</span><span><a class="LN" name="42">   42   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> hoffset;
+</span><span><a class="LN" name="43">   43   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> cs;
+</span><span><a class="LN" name="44">   44   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> sn;
+</span><span><a class="LN" name="45">   45   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> b_v[3];
+</span><span><a class="LN" name="46">   46   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> its;
+</span><span><a class="LN" name="47">   47   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> j;
+</span><span><a class="LN" name="48">   48   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> tst_tmp;
+</span><span><a class="LN" name="49">   49   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tst_tmp_0;
+</span><span><a class="LN" name="50">   50   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> h12_tmp;
+</span><span><a class="LN" name="51">   51   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tst_tmp_tmp;
+</span><span><a class="LN" name="52">   52   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> h12_tmp_tmp;
+</span><span><a class="LN" name="53">   53   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> h12_tmp_tmp_0;
+</span><span><a class="LN" name="54">   54   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> exitg1;
+</span><span><a class="LN" name="55">   55   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> exitg2;
+</span><span><a class="LN" name="56">   56   </a>  <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> exitg3;
+</span><span><a class="LN" name="57">   57   </a>  info = 0;
+</span><span><a class="LN" name="58">   58   </a>  v[0] = 0.0;
+</span><span><a class="LN" name="59">   59   </a>  v[1] = 0.0;
+</span><span><a class="LN" name="60">   60   </a>  v[2] = 0.0;
+</span><span><a class="LN" name="61">   61   </a>  h[2] = 0.0;
+</span><span><a class="LN" name="62">   62   </a>  h[3] = 0.0;
+</span><span><a class="LN" name="63">   63   </a>  h[7] = 0.0;
+</span><span><a class="LN" name="64">   64   </a>  i = 3;
+</span><span><a class="LN" name="65">   65   </a>  exitg1 = false;
+</span><span><a class="LN" name="66">   66   </a>  <span class="KW">while</span> ((!exitg1) &amp;&amp; (i + 1 &gt;= 1)) <b>{</b>
+</span><span><a class="LN" name="67">   67   </a>    L = 1;
+</span><span><a class="LN" name="68">   68   </a>    goto150 = false;
+</span><span><a class="LN" name="69">   69   </a>    its = 0;
+</span><span><a class="LN" name="70">   70   </a>    exitg2 = false;
+</span><span><a class="LN" name="71">   71   </a>    <span class="KW">while</span> ((!exitg2) &amp;&amp; (its &lt; 301)) <b>{</b>
+</span><span><a class="LN" name="72">   72   </a>      k = i;
+</span><span><a class="LN" name="73">   73   </a>      exitg3 = false;
+</span><span><a class="LN" name="74">   74   </a>      <span class="KW">while</span> ((!exitg3) &amp;&amp; (k + 1 &gt; L)) <b>{</b>
+</span><span><a class="LN" name="75">   75   </a>        hoffset = ((k - 1) &lt;&lt; 2) + k;
+</span><span><a class="LN" name="76">   76   </a>        ba = fabs(h[hoffset]);
+</span><span><a class="LN" name="77">   77   </a>        <span class="KW">if</span> (ba &lt;= 4.0083367200179456E-292) <b>{</b>
+</span><span><a class="LN" name="78">   78   </a>          exitg3 = true;
+</span><span><a class="LN" name="79">   79   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="80">   80   </a>          tst_tmp = (k &lt;&lt; 2) + k;
+</span><span><a class="LN" name="81">   81   </a>          htmp1 = fabs(h[tst_tmp]);
+</span><span><a class="LN" name="82">   82   </a>          tst_tmp_0 = h[hoffset - 1];
+</span><span><a class="LN" name="83">   83   </a>          tst = fabs(tst_tmp_0) + htmp1;
+</span><span><a class="LN" name="84">   84   </a>          <span class="KW">if</span> (tst == 0.0) <b>{</b>
+</span><span><a class="LN" name="85">   85   </a>            <span class="KW">if</span> (k - 1 &gt;= 1) <b>{</b>
+</span><span><a class="LN" name="86">   86   </a>              tst = fabs(h[(((k - 2) &lt;&lt; 2) + k) - 1]);
+</span><span><a class="LN" name="87">   87   </a>            <b>}</b>
+</span><span><a class="LN" name="88">   88   </a>
+</span><span><a class="LN" name="89">   89   </a>            <span class="KW">if</span> (k + 2 &lt;= 4) <b>{</b>
+</span><span><a class="LN" name="90">   90   </a>              tst += fabs(h[tst_tmp + 1]);
+</span><span><a class="LN" name="91">   91   </a>            <b>}</b>
+</span><span><a class="LN" name="92">   92   </a>          <b>}</b>
+</span><span><a class="LN" name="93">   93   </a>
+</span><span><a class="LN" name="94">   94   </a>          <span class="KW">if</span> (ba &lt;= 2.2204460492503131E-16 * tst) <b>{</b>
+</span><span><a class="LN" name="95">   95   </a>            tst = fabs(h[tst_tmp - 1]);
+</span><span><a class="LN" name="96">   96   </a>            <span class="KW">if</span> (ba &gt; tst) <b>{</b>
+</span><span><a class="LN" name="97">   97   </a>              ab = ba;
+</span><span><a class="LN" name="98">   98   </a>              ba = tst;
+</span><span><a class="LN" name="99">   99   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="100">  100   </a>              ab = tst;
+</span><span><a class="LN" name="101">  101   </a>            <b>}</b>
+</span><span><a class="LN" name="102">  102   </a>
+</span><span><a class="LN" name="103">  103   </a>            tst = fabs(tst_tmp_0 - h[(k &lt;&lt; 2) + k]);
+</span><span><a class="LN" name="104">  104   </a>            <span class="KW">if</span> (htmp1 &gt; tst) <b>{</b>
+</span><span><a class="LN" name="105">  105   </a>              aa = htmp1;
+</span><span><a class="LN" name="106">  106   </a>              htmp1 = tst;
+</span><span><a class="LN" name="107">  107   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="108">  108   </a>              aa = tst;
+</span><span><a class="LN" name="109">  109   </a>            <b>}</b>
+</span><span><a class="LN" name="110">  110   </a>
+</span><span><a class="LN" name="111">  111   </a>            tst = aa + ab;
+</span><span><a class="LN" name="112">  112   </a>            htmp1 = aa / tst * htmp1 * 2.2204460492503131E-16;
+</span><span><a class="LN" name="113">  113   </a>            <span class="KW">if</span> ((4.0083367200179456E-292 &gt; htmp1) || <a href="rt_nonfinite_c.html#fcn_rtIsNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaN');" target="_self"><font color="#1122aa">rtIsNaN</font></a>(htmp1)) <b>{</b>
+</span><span><a class="LN" name="114">  114   </a>              htmp1 = 4.0083367200179456E-292;
+</span><span><a class="LN" name="115">  115   </a>            <b>}</b>
+</span><span><a class="LN" name="116">  116   </a>
+</span><span><a class="LN" name="117">  117   </a>            <span class="KW">if</span> (ab / tst * ba &lt;= htmp1) <b>{</b>
+</span><span><a class="LN" name="118">  118   </a>              exitg3 = true;
+</span><span><a class="LN" name="119">  119   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="120">  120   </a>              k--;
+</span><span><a class="LN" name="121">  121   </a>            <b>}</b>
+</span><span><a class="LN" name="122">  122   </a>          <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="123">  123   </a>            k--;
+</span><span><a class="LN" name="124">  124   </a>          <b>}</b>
+</span><span><a class="LN" name="125">  125   </a>        <b>}</b>
+</span><span><a class="LN" name="126">  126   </a>      <b>}</b>
+</span><span><a class="LN" name="127">  127   </a>
+</span><span><a class="LN" name="128">  128   </a>      L = k + 1;
+</span><span><a class="LN" name="129">  129   </a>      <span class="KW">if</span> (k + 1 &gt; 1) <b>{</b>
+</span><span><a class="LN" name="130">  130   </a>        h[k + ((k - 1) &lt;&lt; 2)] = 0.0;
+</span><span><a class="LN" name="131">  131   </a>      <b>}</b>
+</span><span><a class="LN" name="132">  132   </a>
+</span><span><a class="LN" name="133">  133   </a>      <span class="KW">if</span> (k + 1 &gt;= i) <b>{</b>
+</span><span><a class="LN" name="134">  134   </a>        goto150 = true;
+</span><span><a class="LN" name="135">  135   </a>        exitg2 = true;
+</span><span><a class="LN" name="136">  136   </a>      <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="137">  137   </a>        <span class="KW">switch</span> (its) <b>{</b>
+</span><span><a class="LN" name="138">  138   </a>         <span class="KW">case</span> 10:
+</span><span><a class="LN" name="139">  139   </a>          tst = fabs(h[(((k + 1) &lt;&lt; 2) + k) + 2]) + fabs(h[((k &lt;&lt; 2) + k) + 1]);
+</span><span><a class="LN" name="140">  140   </a>          ba = h[(k &lt;&lt; 2) + k] + 0.75 * tst;
+</span><span><a class="LN" name="141">  141   </a>          h12 = -0.4375 * tst;
+</span><span><a class="LN" name="142">  142   </a>          aa = tst;
+</span><span><a class="LN" name="143">  143   </a>          htmp1 = ba;
+</span><span><a class="LN" name="144">  144   </a>          <span class="KW">break</span>;
+</span><span><a class="LN" name="145">  145   </a>
+</span><span><a class="LN" name="146">  146   </a>         <span class="KW">case</span> 20:
+</span><span><a class="LN" name="147">  147   </a>          tst = fabs(h[(((i - 2) &lt;&lt; 2) + i) - 1]) + fabs(h[((i - 1) &lt;&lt; 2) + i]);
+</span><span><a class="LN" name="148">  148   </a>          ba = h[(i &lt;&lt; 2) + i] + 0.75 * tst;
+</span><span><a class="LN" name="149">  149   </a>          h12 = -0.4375 * tst;
+</span><span><a class="LN" name="150">  150   </a>          aa = tst;
+</span><span><a class="LN" name="151">  151   </a>          htmp1 = ba;
+</span><span><a class="LN" name="152">  152   </a>          <span class="KW">break</span>;
+</span><span><a class="LN" name="153">  153   </a>
+</span><span><a class="LN" name="154">  154   </a>         <span class="KW">default</span>:
+</span><span><a class="LN" name="155">  155   </a>          m = ((i - 1) &lt;&lt; 2) + i;
+</span><span><a class="LN" name="156">  156   </a>          ba = h[m - 1];
+</span><span><a class="LN" name="157">  157   </a>          aa = h[m];
+</span><span><a class="LN" name="158">  158   </a>          h12_tmp = (i &lt;&lt; 2) + i;
+</span><span><a class="LN" name="159">  159   </a>          h12 = h[h12_tmp - 1];
+</span><span><a class="LN" name="160">  160   </a>          htmp1 = h[h12_tmp];
+</span><span><a class="LN" name="161">  161   </a>          <span class="KW">break</span>;
+</span><span><a class="LN" name="162">  162   </a>        <b>}</b>
+</span><span><a class="LN" name="163">  163   </a>
+</span><span><a class="LN" name="164">  164   </a>        tst = ((fabs(ba) + fabs(h12)) + fabs(aa)) + fabs(htmp1);
+</span><span><a class="LN" name="165">  165   </a>        <span class="KW">if</span> (tst == 0.0) <b>{</b>
+</span><span><a class="LN" name="166">  166   </a>          ba = 0.0;
+</span><span><a class="LN" name="167">  167   </a>          htmp1 = 0.0;
+</span><span><a class="LN" name="168">  168   </a>          ab = 0.0;
+</span><span><a class="LN" name="169">  169   </a>          aa = 0.0;
+</span><span><a class="LN" name="170">  170   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="171">  171   </a>          ba /= tst;
+</span><span><a class="LN" name="172">  172   </a>          aa /= tst;
+</span><span><a class="LN" name="173">  173   </a>          h12 /= tst;
+</span><span><a class="LN" name="174">  174   </a>          htmp1 /= tst;
+</span><span><a class="LN" name="175">  175   </a>          ab = (ba + htmp1) / 2.0;
+</span><span><a class="LN" name="176">  176   </a>          ba = (ba - ab) * (htmp1 - ab) - h12 * aa;
+</span><span><a class="LN" name="177">  177   </a>          aa = sqrt(fabs(ba));
+</span><span><a class="LN" name="178">  178   </a>          <span class="KW">if</span> (ba &gt;= 0.0) <b>{</b>
+</span><span><a class="LN" name="179">  179   </a>            ba = ab * tst;
+</span><span><a class="LN" name="180">  180   </a>            ab = ba;
+</span><span><a class="LN" name="181">  181   </a>            htmp1 = aa * tst;
+</span><span><a class="LN" name="182">  182   </a>            aa = -htmp1;
+</span><span><a class="LN" name="183">  183   </a>          <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="184">  184   </a>            ba = ab + aa;
+</span><span><a class="LN" name="185">  185   </a>            ab -= aa;
+</span><span><a class="LN" name="186">  186   </a>            <span class="KW">if</span> (fabs(ba - htmp1) &lt;= fabs(ab - htmp1)) <b>{</b>
+</span><span><a class="LN" name="187">  187   </a>              ba *= tst;
+</span><span><a class="LN" name="188">  188   </a>              ab = ba;
+</span><span><a class="LN" name="189">  189   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="190">  190   </a>              ab *= tst;
+</span><span><a class="LN" name="191">  191   </a>              ba = ab;
+</span><span><a class="LN" name="192">  192   </a>            <b>}</b>
+</span><span><a class="LN" name="193">  193   </a>
+</span><span><a class="LN" name="194">  194   </a>            htmp1 = 0.0;
+</span><span><a class="LN" name="195">  195   </a>            aa = 0.0;
+</span><span><a class="LN" name="196">  196   </a>          <b>}</b>
+</span><span><a class="LN" name="197">  197   </a>        <b>}</b>
+</span><span><a class="LN" name="198">  198   </a>
+</span><span><a class="LN" name="199">  199   </a>        m = i - 1;
+</span><span><a class="LN" name="200">  200   </a>        exitg3 = false;
+</span><span><a class="LN" name="201">  201   </a>        <span class="KW">while</span> ((!exitg3) &amp;&amp; (m &gt;= k + 1)) <b>{</b>
+</span><span><a class="LN" name="202">  202   </a>          tst_tmp = ((m - 1) &lt;&lt; 2) + m;
+</span><span><a class="LN" name="203">  203   </a>          tst_tmp_tmp = h[tst_tmp - 1];
+</span><span><a class="LN" name="204">  204   </a>          tst_tmp_0 = tst_tmp_tmp - ab;
+</span><span><a class="LN" name="205">  205   </a>          tst = (fabs(tst_tmp_0) + fabs(aa)) + fabs(h[tst_tmp]);
+</span><span><a class="LN" name="206">  206   </a>          h12 = h[((m - 1) &lt;&lt; 2) + m] / tst;
+</span><span><a class="LN" name="207">  207   </a>          tst_tmp = (m &lt;&lt; 2) + m;
+</span><span><a class="LN" name="208">  208   </a>          v[0] = (tst_tmp_0 / tst * (tst_tmp_tmp - ba) + h[tst_tmp - 1] * h12) -
+</span><span><a class="LN" name="209">  209   </a>            aa / tst * htmp1;
+</span><span><a class="LN" name="210">  210   </a>          v[1] = (((tst_tmp_tmp + h[tst_tmp]) - ba) - ab) * h12;
+</span><span><a class="LN" name="211">  211   </a>          v[2] = h[tst_tmp + 1] * h12;
+</span><span><a class="LN" name="212">  212   </a>          tst = (fabs(v[0]) + fabs(v[1])) + fabs(v[2]);
+</span><span><a class="LN" name="213">  213   </a>          v[0] /= tst;
+</span><span><a class="LN" name="214">  214   </a>          v[1] /= tst;
+</span><span><a class="LN" name="215">  215   </a>          v[2] /= tst;
+</span><span><a class="LN" name="216">  216   </a>          <span class="KW">if</span> (k + 1 == m) <b>{</b>
+</span><span><a class="LN" name="217">  217   </a>            exitg3 = true;
+</span><span><a class="LN" name="218">  218   </a>          <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="219">  219   </a>            hoffset = ((m - 2) &lt;&lt; 2) + m;
+</span><span><a class="LN" name="220">  220   </a>            <span class="KW">if</span> (fabs(h[hoffset - 1]) * (fabs(v[1]) + fabs(v[2])) &lt;= ((fabs
+</span><span><a class="LN" name="221">  221   </a>                  (h[hoffset - 2]) + fabs(tst_tmp_tmp)) + fabs(h[(m &lt;&lt; 2) + m]))
+</span><span><a class="LN" name="222">  222   </a>                * (2.2204460492503131E-16 * fabs(v[0]))) <b>{</b>
+</span><span><a class="LN" name="223">  223   </a>              exitg3 = true;
+</span><span><a class="LN" name="224">  224   </a>            <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="225">  225   </a>              m--;
+</span><span><a class="LN" name="226">  226   </a>            <b>}</b>
+</span><span><a class="LN" name="227">  227   </a>          <b>}</b>
+</span><span><a class="LN" name="228">  228   </a>        <b>}</b>
+</span><span><a class="LN" name="229">  229   </a>
+</span><span><a class="LN" name="230">  230   </a>        <span class="KW">for</span> (tst_tmp = m; tst_tmp &lt;= i; tst_tmp++) <b>{</b>
+</span><span><a class="LN" name="231">  231   </a>          nr = (i - tst_tmp) + 2;
+</span><span><a class="LN" name="232">  232   </a>          <span class="KW">if</span> (3 &lt; nr) <b>{</b>
+</span><span><a class="LN" name="233">  233   </a>            nr = 3;
+</span><span><a class="LN" name="234">  234   </a>          <b>}</b>
+</span><span><a class="LN" name="235">  235   </a>
+</span><span><a class="LN" name="236">  236   </a>          <span class="KW">if</span> (tst_tmp &gt; m) <b>{</b>
+</span><span><a class="LN" name="237">  237   </a>            h12_tmp = (((tst_tmp - 2) &lt;&lt; 2) + tst_tmp) - 1;
+</span><span><a class="LN" name="238">  238   </a>            <span class="KW">for</span> (j = 0; j &lt; nr; j++) <b>{</b>
+</span><span><a class="LN" name="239">  239   </a>              v[j] = h[j + h12_tmp];
+</span><span><a class="LN" name="240">  240   </a>            <b>}</b>
+</span><span><a class="LN" name="241">  241   </a>          <b>}</b>
+</span><span><a class="LN" name="242">  242   </a>
+</span><span><a class="LN" name="243">  243   </a>          htmp1 = v[0];
+</span><span><a class="LN" name="244">  244   </a>          b_v[0] = v[0];
+</span><span><a class="LN" name="245">  245   </a>          b_v[1] = v[1];
+</span><span><a class="LN" name="246">  246   </a>          b_v[2] = v[2];
+</span><span><a class="LN" name="247">  247   </a>          tst = <a href="xzlarfg_J3AXVwxO_c.html#fcn_xzlarfg_J3AXVwxO" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xzlarfg_J3AXVwxO');" target="_self"><font color="#1122aa">xzlarfg_J3AXVwxO</font></a>(nr, &amp;htmp1, b_v);
+</span><span><a class="LN" name="248">  248   </a>          v[1] = b_v[1];
+</span><span><a class="LN" name="249">  249   </a>          v[2] = b_v[2];
+</span><span><a class="LN" name="250">  250   </a>          v[0] = htmp1;
+</span><span><a class="LN" name="251">  251   </a>          <span class="KW">if</span> (tst_tmp &gt; m) <b>{</b>
+</span><span><a class="LN" name="252">  252   </a>            h[(tst_tmp + ((tst_tmp - 2) &lt;&lt; 2)) - 1] = htmp1;
+</span><span><a class="LN" name="253">  253   </a>            h[tst_tmp + ((tst_tmp - 2) &lt;&lt; 2)] = 0.0;
+</span><span><a class="LN" name="254">  254   </a>            <span class="KW">if</span> (tst_tmp &lt; i) <b>{</b>
+</span><span><a class="LN" name="255">  255   </a>              h[(tst_tmp + ((tst_tmp - 2) &lt;&lt; 2)) + 1] = 0.0;
+</span><span><a class="LN" name="256">  256   </a>            <b>}</b>
+</span><span><a class="LN" name="257">  257   </a>          <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="258">  258   </a>            <span class="KW">if</span> (m &gt; k + 1) <b>{</b>
+</span><span><a class="LN" name="259">  259   </a>              h[(tst_tmp + ((tst_tmp - 2) &lt;&lt; 2)) - 1] *= 1.0 - tst;
+</span><span><a class="LN" name="260">  260   </a>            <b>}</b>
+</span><span><a class="LN" name="261">  261   </a>          <b>}</b>
+</span><span><a class="LN" name="262">  262   </a>
+</span><span><a class="LN" name="263">  263   </a>          htmp1 = b_v[1];
+</span><span><a class="LN" name="264">  264   </a>          ab = tst * b_v[1];
+</span><span><a class="LN" name="265">  265   </a>          <span class="KW">switch</span> (nr) <b>{</b>
+</span><span><a class="LN" name="266">  266   </a>           <span class="KW">case</span> 3:
+</span><span><a class="LN" name="267">  267   </a>            ba = b_v[2];
+</span><span><a class="LN" name="268">  268   </a>            aa = tst * b_v[2];
+</span><span><a class="LN" name="269">  269   </a>            <span class="KW">for</span> (nr = tst_tmp - 1; nr + 1 &lt; 5; nr++) <b>{</b>
+</span><span><a class="LN" name="270">  270   </a>              hoffset = nr &lt;&lt; 2;
+</span><span><a class="LN" name="271">  271   </a>              h12_tmp = hoffset + tst_tmp;
+</span><span><a class="LN" name="272">  272   </a>              j = h12_tmp - 1;
+</span><span><a class="LN" name="273">  273   </a>              h12_tmp_tmp = h12_tmp + 1;
+</span><span><a class="LN" name="274">  274   </a>              h12 = (h[j] + h[h12_tmp] * htmp1) + h[h12_tmp_tmp] * ba;
+</span><span><a class="LN" name="275">  275   </a>              hoffset += tst_tmp;
+</span><span><a class="LN" name="276">  276   </a>              h[hoffset - 1] = h[j] - h12 * tst;
+</span><span><a class="LN" name="277">  277   </a>              h[hoffset] = h[h12_tmp] - h12 * ab;
+</span><span><a class="LN" name="278">  278   </a>              h[hoffset + 1] = h[h12_tmp_tmp] - h12 * aa;
+</span><span><a class="LN" name="279">  279   </a>            <b>}</b>
+</span><span><a class="LN" name="280">  280   </a>
+</span><span><a class="LN" name="281">  281   </a>            h12_tmp = tst_tmp + 3;
+</span><span><a class="LN" name="282">  282   </a>            nr = i + 1;
+</span><span><a class="LN" name="283">  283   </a>            <span class="KW">if</span> (h12_tmp &lt; nr) <b>{</b>
+</span><span><a class="LN" name="284">  284   </a>              nr = h12_tmp;
+</span><span><a class="LN" name="285">  285   </a>            <b>}</b>
+</span><span><a class="LN" name="286">  286   </a>
+</span><span><a class="LN" name="287">  287   </a>            <span class="KW">for</span> (hoffset = 0; hoffset &lt; nr; hoffset++) <b>{</b>
+</span><span><a class="LN" name="288">  288   </a>              tst_tmp_0 = h[((tst_tmp - 1) &lt;&lt; 2) + hoffset];
+</span><span><a class="LN" name="289">  289   </a>              h12_tmp = (tst_tmp &lt;&lt; 2) + hoffset;
+</span><span><a class="LN" name="290">  290   </a>              j = ((tst_tmp + 1) &lt;&lt; 2) + hoffset;
+</span><span><a class="LN" name="291">  291   </a>              h12 = (tst_tmp_0 + h[h12_tmp] * htmp1) + h[j] * ba;
+</span><span><a class="LN" name="292">  292   </a>              h[hoffset + ((tst_tmp - 1) &lt;&lt; 2)] = tst_tmp_0 - h12 * tst;
+</span><span><a class="LN" name="293">  293   </a>              h[hoffset + (tst_tmp &lt;&lt; 2)] = h[h12_tmp] - h12 * ab;
+</span><span><a class="LN" name="294">  294   </a>              h[hoffset + ((tst_tmp + 1) &lt;&lt; 2)] = h[j] - h12 * aa;
+</span><span><a class="LN" name="295">  295   </a>            <b>}</b>
+</span><span><a class="LN" name="296">  296   </a>
+</span><span><a class="LN" name="297">  297   </a>            <span class="KW">for</span> (nr = 0; nr &lt; 4; nr++) <b>{</b>
+</span><span><a class="LN" name="298">  298   </a>              hoffset = (tst_tmp - 1) &lt;&lt; 2;
+</span><span><a class="LN" name="299">  299   </a>              tst_tmp_0 = z[hoffset + nr];
+</span><span><a class="LN" name="300">  300   </a>              h12_tmp_tmp = tst_tmp &lt;&lt; 2;
+</span><span><a class="LN" name="301">  301   </a>              h12_tmp = h12_tmp_tmp + nr;
+</span><span><a class="LN" name="302">  302   </a>              h12_tmp_tmp_0 = (tst_tmp + 1) &lt;&lt; 2;
+</span><span><a class="LN" name="303">  303   </a>              j = h12_tmp_tmp_0 + nr;
+</span><span><a class="LN" name="304">  304   </a>              h12 = (tst_tmp_0 + z[h12_tmp] * htmp1) + z[j] * ba;
+</span><span><a class="LN" name="305">  305   </a>              z[nr + hoffset] = tst_tmp_0 - h12 * tst;
+</span><span><a class="LN" name="306">  306   </a>              z[nr + h12_tmp_tmp] = z[h12_tmp] - h12 * ab;
+</span><span><a class="LN" name="307">  307   </a>              z[nr + h12_tmp_tmp_0] = z[j] - h12 * aa;
+</span><span><a class="LN" name="308">  308   </a>            <b>}</b>
+</span><span><a class="LN" name="309">  309   </a>            <span class="KW">break</span>;
+</span><span><a class="LN" name="310">  310   </a>
+</span><span><a class="LN" name="311">  311   </a>           <span class="KW">case</span> 2:
+</span><span><a class="LN" name="312">  312   </a>            <span class="KW">for</span> (nr = tst_tmp - 1; nr + 1 &lt; 5; nr++) <b>{</b>
+</span><span><a class="LN" name="313">  313   </a>              hoffset = nr &lt;&lt; 2;
+</span><span><a class="LN" name="314">  314   </a>              h12_tmp = hoffset + tst_tmp;
+</span><span><a class="LN" name="315">  315   </a>              j = h12_tmp - 1;
+</span><span><a class="LN" name="316">  316   </a>              h12 = h[j] + h[h12_tmp] * htmp1;
+</span><span><a class="LN" name="317">  317   </a>              hoffset += tst_tmp;
+</span><span><a class="LN" name="318">  318   </a>              h[hoffset - 1] = h[j] - h12 * tst;
+</span><span><a class="LN" name="319">  319   </a>              h[hoffset] = h[h12_tmp] - h12 * ab;
+</span><span><a class="LN" name="320">  320   </a>            <b>}</b>
+</span><span><a class="LN" name="321">  321   </a>
+</span><span><a class="LN" name="322">  322   </a>            <span class="KW">for</span> (nr = 0; nr &lt;= i; nr++) <b>{</b>
+</span><span><a class="LN" name="323">  323   </a>              h12 = h[((tst_tmp - 1) &lt;&lt; 2) + nr] + h[(tst_tmp &lt;&lt; 2) + nr] *
+</span><span><a class="LN" name="324">  324   </a>                htmp1;
+</span><span><a class="LN" name="325">  325   </a>              h[nr + ((tst_tmp - 1) &lt;&lt; 2)] -= h12 * tst;
+</span><span><a class="LN" name="326">  326   </a>              h[nr + (tst_tmp &lt;&lt; 2)] -= h12 * ab;
+</span><span><a class="LN" name="327">  327   </a>            <b>}</b>
+</span><span><a class="LN" name="328">  328   </a>
+</span><span><a class="LN" name="329">  329   </a>            <span class="KW">for</span> (nr = 0; nr &lt; 4; nr++) <b>{</b>
+</span><span><a class="LN" name="330">  330   </a>              h12_tmp = ((tst_tmp - 1) &lt;&lt; 2) + nr;
+</span><span><a class="LN" name="331">  331   </a>              j = (tst_tmp &lt;&lt; 2) + nr;
+</span><span><a class="LN" name="332">  332   </a>              h12 = z[h12_tmp] + z[j] * htmp1;
+</span><span><a class="LN" name="333">  333   </a>              z[nr + ((tst_tmp - 1) &lt;&lt; 2)] = z[h12_tmp] - h12 * tst;
+</span><span><a class="LN" name="334">  334   </a>              z[nr + (tst_tmp &lt;&lt; 2)] = z[j] - h12 * ab;
+</span><span><a class="LN" name="335">  335   </a>            <b>}</b>
+</span><span><a class="LN" name="336">  336   </a>            <span class="KW">break</span>;
+</span><span><a class="LN" name="337">  337   </a>          <b>}</b>
+</span><span><a class="LN" name="338">  338   </a>        <b>}</b>
+</span><span><a class="LN" name="339">  339   </a>
+</span><span><a class="LN" name="340">  340   </a>        its++;
+</span><span><a class="LN" name="341">  341   </a>      <b>}</b>
+</span><span><a class="LN" name="342">  342   </a>    <b>}</b>
+</span><span><a class="LN" name="343">  343   </a>
+</span><span><a class="LN" name="344">  344   </a>    <span class="KW">if</span> (!goto150) <b>{</b>
+</span><span><a class="LN" name="345">  345   </a>      info = i + 1;
+</span><span><a class="LN" name="346">  346   </a>      exitg1 = true;
+</span><span><a class="LN" name="347">  347   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="348">  348   </a>      <span class="KW">if</span> ((i + 1 != L) &amp;&amp; (L == i)) <b>{</b>
+</span><span><a class="LN" name="349">  349   </a>        tst = h[(((i - 1) &lt;&lt; 2) + i) - 1];
+</span><span><a class="LN" name="350">  350   </a>        htmp1 = h[((i &lt;&lt; 2) + i) - 1];
+</span><span><a class="LN" name="351">  351   </a>        ab = h[((i - 1) &lt;&lt; 2) + i];
+</span><span><a class="LN" name="352">  352   </a>        ba = h[(i &lt;&lt; 2) + i];
+</span><span><a class="LN" name="353">  353   </a>        <a href="xdlanv2_FIBA3SmX_c.html#fcn_xdlanv2_FIBA3SmX" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xdlanv2_FIBA3SmX');" target="_self"><font color="#1122aa">xdlanv2_FIBA3SmX</font></a>(&amp;tst, &amp;htmp1, &amp;ab, &amp;ba, &amp;aa, &amp;h12, &amp;tst_tmp_0,
+</span><span><a class="LN" name="354">  354   </a>                         &amp;tst_tmp_tmp, &amp;cs, &amp;sn);
+</span><span><a class="LN" name="355">  355   </a>        hoffset = i + ((i - 1) &lt;&lt; 2);
+</span><span><a class="LN" name="356">  356   </a>        h[hoffset - 1] = tst;
+</span><span><a class="LN" name="357">  357   </a>        its = i + (i &lt;&lt; 2);
+</span><span><a class="LN" name="358">  358   </a>        h[its - 1] = htmp1;
+</span><span><a class="LN" name="359">  359   </a>        h[hoffset] = ab;
+</span><span><a class="LN" name="360">  360   </a>        h[its] = ba;
+</span><span><a class="LN" name="361">  361   </a>        <span class="KW">if</span> (4 &gt; i + 1) <b>{</b>
+</span><span><a class="LN" name="362">  362   </a>          <a href="xrot_JzPltzlP_c.html#fcn_xrot_JzPltzlP" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xrot_JzPltzlP');" target="_self"><font color="#1122aa">xrot_JzPltzlP</font></a>(3 - i, h, i + ((i + 1) &lt;&lt; 2), (i + ((i + 1) &lt;&lt; 2)) + 1,
+</span><span><a class="LN" name="363">  363   </a>                        cs, sn);
+</span><span><a class="LN" name="364">  364   </a>        <b>}</b>
+</span><span><a class="LN" name="365">  365   </a>
+</span><span><a class="LN" name="366">  366   </a>        <a href="xrot_DROkKeLU_c.html#fcn_xrot_DROkKeLU" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xrot_DROkKeLU');" target="_self"><font color="#1122aa">xrot_DROkKeLU</font></a>(i - 1, h, 1 + ((i - 1) &lt;&lt; 2), 1 + (i &lt;&lt; 2), cs, sn);
+</span><span><a class="LN" name="367">  367   </a>        <a href="xrot_6iHri7if_c.html#fcn_xrot_6iHri7if" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_xrot_6iHri7if');" target="_self"><font color="#1122aa">xrot_6iHri7if</font></a>(z, 1 + ((i - 1) &lt;&lt; 2), 1 + (i &lt;&lt; 2), cs, sn);
+</span><span><a class="LN" name="368">  368   </a>      <b>}</b>
+</span><span><a class="LN" name="369">  369   </a>
+</span><span><a class="LN" name="370">  370   </a>      i = L - 2;
+</span><span><a class="LN" name="371">  371   </a>    <b>}</b>
+</span><span><a class="LN" name="372">  372   </a>  <b>}</b>
+</span><span><a class="LN" name="373">  373   </a>
+</span><span><a class="LN" name="374">  374   </a>  <span class="KW">return</span> info;
+</span><span><a class="LN" name="375">  375   </a><b>}</b>
+</span><span><a class="LN" name="376">  376   </a>
+</span><span><a class="LN" name="377">  377   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="378">  378   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="379">  379   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="380">  380   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="381">  381   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="382">  382   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

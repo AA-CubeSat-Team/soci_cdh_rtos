@@ -1,0 +1,395 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - Q_linearize_CKnbADMM.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('Q_linearize_CKnbADMM_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../Q_linearize_CKnbADMM.c" target="rtwreport_document_frame" id="linkToText_plain">Q_linearize_CKnbADMM.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: Q_linearize_CKnbADMM.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Mon Oct 25 17:45:01 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="14">   14   </a>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;rtwtypes.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="17">   17   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;string.h&gt;</font>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;mrdivide_helper_JpwaVRMh.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;Q_linearize_CKnbADMM.h&quot;</font>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">/* Function for MATLAB Function: '<a href="matlab:coder.internal.code2model('Main_Sim:593:271:46:187:35')" name="code2model"><font color="#117755"><i>&lt;S438&gt;/SOLVE</i></font></a>' */</span>
+</span><span><a class="LN" name="22">   22   </a><span class="DT">void</span> <a name="fcn_Q_linearize_CKnbADMM">Q_linearize_CKnbADMM</a>(<span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> x[10], <span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> u[3], <span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> J
+</span><span><a class="LN" name="23">   23   </a>  [9], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> A[100], <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> f[10])
+</span><span><a class="LN" name="24">   24   </a><b>{</b>
+</span><span><a class="LN" name="25">   25   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> q[4];
+</span><span><a class="LN" name="26">   26   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> w[3];
+</span><span><a class="LN" name="27">   27   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> dfq_dhb[12];
+</span><span><a class="LN" name="28">   28   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="29">   29   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> absxk;
+</span><span><a class="LN" name="30">   30   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> t;
+</span><span><a class="LN" name="31">   31   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> b_A[9];
+</span><span><a class="LN" name="32">   32   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> r1;
+</span><span><a class="LN" name="33">   33   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> r2;
+</span><span><a class="LN" name="34">   34   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> r3;
+</span><span><a class="LN" name="35">   35   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> maxval;
+</span><span><a class="LN" name="36">   36   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> rtemp;
+</span><span><a class="LN" name="37">   37   </a>  <span class="DT">static</span> <span class="DT">const</span> <a href="rtwtypes_h.html#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> b[9] = <b>{</b> 1, 0, 0, 0, 1, 0, 0, 0, 1 <b>}</b>;
+</span><span><a class="LN" name="38">   38   </a>
+</span><span><a class="LN" name="39">   39   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> b_y_tmp[12];
+</span><span><a class="LN" name="40">   40   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tmp[9];
+</span><span><a class="LN" name="41">   41   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tmp_0[9];
+</span><span><a class="LN" name="42">   42   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> tmp_1[9];
+</span><span><a class="LN" name="43">   43   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp;
+</span><span><a class="LN" name="44">   44   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_0;
+</span><span><a class="LN" name="45">   45   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_1;
+</span><span><a class="LN" name="46">   46   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_2;
+</span><span><a class="LN" name="47">   47   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_3;
+</span><span><a class="LN" name="48">   48   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_4;
+</span><span><a class="LN" name="49">   49   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_5;
+</span><span><a class="LN" name="50">   50   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> dfq_dhb_tmp_6;
+</span><span><a class="LN" name="51">   51   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> dfq_dhb_tmp_7;
+</span><span><a class="LN" name="52">   52   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> dfq_dhb_tmp_8;
+</span><span><a class="LN" name="53">   53   </a>  <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = 3.3121686421112381E-170;
+</span><span><a class="LN" name="54">   54   </a>  absxk = fabs(x[0]);
+</span><span><a class="LN" name="55">   55   </a>  <span class="KW">if</span> (absxk &gt; 3.3121686421112381E-170) <b>{</b>
+</span><span><a class="LN" name="56">   56   </a>    maxval = 1.0;
+</span><span><a class="LN" name="57">   57   </a>    <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = absxk;
+</span><span><a class="LN" name="58">   58   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="59">   59   </a>    t = absxk / 3.3121686421112381E-170;
+</span><span><a class="LN" name="60">   60   </a>    maxval = t * t;
+</span><span><a class="LN" name="61">   61   </a>  <b>}</b>
+</span><span><a class="LN" name="62">   62   </a>
+</span><span><a class="LN" name="63">   63   </a>  absxk = fabs(x[1]);
+</span><span><a class="LN" name="64">   64   </a>  <span class="KW">if</span> (absxk &gt; <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>) <b>{</b>
+</span><span><a class="LN" name="65">   65   </a>    t = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> / absxk;
+</span><span><a class="LN" name="66">   66   </a>    maxval = maxval * t * t + 1.0;
+</span><span><a class="LN" name="67">   67   </a>    <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = absxk;
+</span><span><a class="LN" name="68">   68   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="69">   69   </a>    t = absxk / <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="70">   70   </a>    maxval += t * t;
+</span><span><a class="LN" name="71">   71   </a>  <b>}</b>
+</span><span><a class="LN" name="72">   72   </a>
+</span><span><a class="LN" name="73">   73   </a>  absxk = fabs(x[2]);
+</span><span><a class="LN" name="74">   74   </a>  <span class="KW">if</span> (absxk &gt; <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>) <b>{</b>
+</span><span><a class="LN" name="75">   75   </a>    t = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> / absxk;
+</span><span><a class="LN" name="76">   76   </a>    maxval = maxval * t * t + 1.0;
+</span><span><a class="LN" name="77">   77   </a>    <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = absxk;
+</span><span><a class="LN" name="78">   78   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="79">   79   </a>    t = absxk / <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="80">   80   </a>    maxval += t * t;
+</span><span><a class="LN" name="81">   81   </a>  <b>}</b>
+</span><span><a class="LN" name="82">   82   </a>
+</span><span><a class="LN" name="83">   83   </a>  absxk = fabs(x[3]);
+</span><span><a class="LN" name="84">   84   </a>  <span class="KW">if</span> (absxk &gt; <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>) <b>{</b>
+</span><span><a class="LN" name="85">   85   </a>    t = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> / absxk;
+</span><span><a class="LN" name="86">   86   </a>    maxval = maxval * t * t + 1.0;
+</span><span><a class="LN" name="87">   87   </a>    <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = absxk;
+</span><span><a class="LN" name="88">   88   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="89">   89   </a>    t = absxk / <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="90">   90   </a>    maxval += t * t;
+</span><span><a class="LN" name="91">   91   </a>  <b>}</b>
+</span><span><a class="LN" name="92">   92   </a>
+</span><span><a class="LN" name="93">   93   </a>  maxval = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> * sqrt(maxval);
+</span><span><a class="LN" name="94">   94   </a>  q[0] = x[0] / maxval;
+</span><span><a class="LN" name="95">   95   </a>  q[1] = x[1] / maxval;
+</span><span><a class="LN" name="96">   96   </a>  q[2] = x[2] / maxval;
+</span><span><a class="LN" name="97">   97   </a>  q[3] = x[3] / maxval;
+</span><span><a class="LN" name="98">   98   </a>  memcpy(&amp;b_A[0], &amp;J[0], 9U * <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>));
+</span><span><a class="LN" name="99">   99   </a>  r1 = 0;
+</span><span><a class="LN" name="100">  100   </a>  r2 = 1;
+</span><span><a class="LN" name="101">  101   </a>  r3 = 2;
+</span><span><a class="LN" name="102">  102   </a>  <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = fabs(J[0]);
+</span><span><a class="LN" name="103">  103   </a>  maxval = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="104">  104   </a>  absxk = fabs(J[1]);
+</span><span><a class="LN" name="105">  105   </a>  <span class="KW">if</span> (absxk &gt; <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>) <b>{</b>
+</span><span><a class="LN" name="106">  106   </a>    maxval = absxk;
+</span><span><a class="LN" name="107">  107   </a>    r1 = 1;
+</span><span><a class="LN" name="108">  108   </a>    r2 = 0;
+</span><span><a class="LN" name="109">  109   </a>  <b>}</b>
+</span><span><a class="LN" name="110">  110   </a>
+</span><span><a class="LN" name="111">  111   </a>  t = fabs(J[2]);
+</span><span><a class="LN" name="112">  112   </a>  <span class="KW">if</span> (t &gt; maxval) <b>{</b>
+</span><span><a class="LN" name="113">  113   </a>    r1 = 2;
+</span><span><a class="LN" name="114">  114   </a>    r2 = 1;
+</span><span><a class="LN" name="115">  115   </a>    r3 = 0;
+</span><span><a class="LN" name="116">  116   </a>  <b>}</b>
+</span><span><a class="LN" name="117">  117   </a>
+</span><span><a class="LN" name="118">  118   </a>  b_A[r2] = J[r2] / J[r1];
+</span><span><a class="LN" name="119">  119   </a>  b_A[r3] /= b_A[r1];
+</span><span><a class="LN" name="120">  120   </a>  b_A[3 + r2] -= b_A[3 + r1] * b_A[r2];
+</span><span><a class="LN" name="121">  121   </a>  b_A[3 + r3] -= b_A[3 + r1] * b_A[r3];
+</span><span><a class="LN" name="122">  122   </a>  b_A[6 + r2] -= b_A[6 + r1] * b_A[r2];
+</span><span><a class="LN" name="123">  123   </a>  b_A[6 + r3] -= b_A[6 + r1] * b_A[r3];
+</span><span><a class="LN" name="124">  124   </a>  <span class="KW">if</span> (fabs(b_A[3 + r3]) &gt; fabs(b_A[3 + r2])) <b>{</b>
+</span><span><a class="LN" name="125">  125   </a>    rtemp = r2;
+</span><span><a class="LN" name="126">  126   </a>    r2 = r3;
+</span><span><a class="LN" name="127">  127   </a>    r3 = rtemp;
+</span><span><a class="LN" name="128">  128   </a>  <b>}</b>
+</span><span><a class="LN" name="129">  129   </a>
+</span><span><a class="LN" name="130">  130   </a>  b_A[3 + r3] /= b_A[3 + r2];
+</span><span><a class="LN" name="131">  131   </a>  b_A[6 + r3] -= b_A[3 + r3] * b_A[6 + r2];
+</span><span><a class="LN" name="132">  132   </a>  maxval = x[4 + r1];
+</span><span><a class="LN" name="133">  133   </a>  w[1] = x[4 + r2] - maxval * b_A[r2];
+</span><span><a class="LN" name="134">  134   </a>  w[2] = (x[4 + r3] - maxval * b_A[r3]) - b_A[3 + r3] * w[1];
+</span><span><a class="LN" name="135">  135   </a>  w[2] /= b_A[6 + r3];
+</span><span><a class="LN" name="136">  136   </a>  w[0] = maxval - b_A[6 + r1] * w[2];
+</span><span><a class="LN" name="137">  137   </a>  w[1] -= b_A[6 + r2] * w[2];
+</span><span><a class="LN" name="138">  138   </a>  w[1] /= b_A[3 + r2];
+</span><span><a class="LN" name="139">  139   </a>  w[0] -= b_A[3 + r1] * w[1];
+</span><span><a class="LN" name="140">  140   </a>  w[0] /= b_A[r1];
+</span><span><a class="LN" name="141">  141   </a>  maxval = q[0];
+</span><span><a class="LN" name="142">  142   </a>  b_A[0] = 0.0;
+</span><span><a class="LN" name="143">  143   </a>  b_A[3] = -q[3];
+</span><span><a class="LN" name="144">  144   </a>  b_A[6] = q[2];
+</span><span><a class="LN" name="145">  145   </a>  b_A[1] = q[3];
+</span><span><a class="LN" name="146">  146   </a>  b_A[4] = 0.0;
+</span><span><a class="LN" name="147">  147   </a>  b_A[7] = -q[1];
+</span><span><a class="LN" name="148">  148   </a>  b_A[2] = -q[2];
+</span><span><a class="LN" name="149">  149   </a>  b_A[5] = q[1];
+</span><span><a class="LN" name="150">  150   </a>  b_A[8] = 0.0;
+</span><span><a class="LN" name="151">  151   </a>  <span class="KW">for</span> (r1 = 0; r1 &lt; 3; r1++) <b>{</b>
+</span><span><a class="LN" name="152">  152   </a>    r2 = r1 &lt;&lt; 2;
+</span><span><a class="LN" name="153">  153   </a>    b_y_tmp[r2] = -q[1 + r1] * 0.5;
+</span><span><a class="LN" name="154">  154   </a>    b_y_tmp[1 + r2] = ((<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)b[3 * r1] * maxval + b_A[3 * r1]) * 0.5;
+</span><span><a class="LN" name="155">  155   </a>    r3 = 3 * r1 + 1;
+</span><span><a class="LN" name="156">  156   </a>    b_y_tmp[2 + r2] = ((<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)b[r3] * maxval + b_A[r3]) * 0.5;
+</span><span><a class="LN" name="157">  157   </a>    r3 = 3 * r1 + 2;
+</span><span><a class="LN" name="158">  158   </a>    b_y_tmp[3 + r2] = ((<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>)b[r3] * maxval + b_A[r3]) * 0.5;
+</span><span><a class="LN" name="159">  159   </a>  <b>}</b>
+</span><span><a class="LN" name="160">  160   </a>
+</span><span><a class="LN" name="161">  161   </a>  memcpy(&amp;b_A[0], &amp;J[0], 9U * <span class="KW">sizeof</span>(<a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a>));
+</span><span><a class="LN" name="162">  162   </a>  r1 = 0;
+</span><span><a class="LN" name="163">  163   </a>  r2 = 1;
+</span><span><a class="LN" name="164">  164   </a>  r3 = 2;
+</span><span><a class="LN" name="165">  165   </a>  maxval = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="166">  166   </a>  <span class="KW">if</span> (absxk &gt; <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>) <b>{</b>
+</span><span><a class="LN" name="167">  167   </a>    maxval = absxk;
+</span><span><a class="LN" name="168">  168   </a>    r1 = 1;
+</span><span><a class="LN" name="169">  169   </a>    r2 = 0;
+</span><span><a class="LN" name="170">  170   </a>  <b>}</b>
+</span><span><a class="LN" name="171">  171   </a>
+</span><span><a class="LN" name="172">  172   </a>  <span class="KW">if</span> (t &gt; maxval) <b>{</b>
+</span><span><a class="LN" name="173">  173   </a>    r1 = 2;
+</span><span><a class="LN" name="174">  174   </a>    r2 = 1;
+</span><span><a class="LN" name="175">  175   </a>    r3 = 0;
+</span><span><a class="LN" name="176">  176   </a>  <b>}</b>
+</span><span><a class="LN" name="177">  177   </a>
+</span><span><a class="LN" name="178">  178   </a>  b_A[r2] = J[r2] / J[r1];
+</span><span><a class="LN" name="179">  179   </a>  b_A[r3] /= b_A[r1];
+</span><span><a class="LN" name="180">  180   </a>  b_A[3 + r2] -= b_A[3 + r1] * b_A[r2];
+</span><span><a class="LN" name="181">  181   </a>  b_A[3 + r3] -= b_A[3 + r1] * b_A[r3];
+</span><span><a class="LN" name="182">  182   </a>  b_A[6 + r2] -= b_A[6 + r1] * b_A[r2];
+</span><span><a class="LN" name="183">  183   </a>  b_A[6 + r3] -= b_A[6 + r1] * b_A[r3];
+</span><span><a class="LN" name="184">  184   </a>  <span class="KW">if</span> (fabs(b_A[3 + r3]) &gt; fabs(b_A[3 + r2])) <b>{</b>
+</span><span><a class="LN" name="185">  185   </a>    rtemp = r2;
+</span><span><a class="LN" name="186">  186   </a>    r2 = r3;
+</span><span><a class="LN" name="187">  187   </a>    r3 = rtemp;
+</span><span><a class="LN" name="188">  188   </a>  <b>}</b>
+</span><span><a class="LN" name="189">  189   </a>
+</span><span><a class="LN" name="190">  190   </a>  b_A[3 + r3] /= b_A[3 + r2];
+</span><span><a class="LN" name="191">  191   </a>  b_A[6 + r3] -= b_A[3 + r3] * b_A[6 + r2];
+</span><span><a class="LN" name="192">  192   </a>  rtemp = r1 &lt;&lt; 2;
+</span><span><a class="LN" name="193">  193   </a>  dfq_dhb[rtemp] = b_y_tmp[0] / b_A[r1];
+</span><span><a class="LN" name="194">  194   </a>  dfq_dhb_tmp = r2 &lt;&lt; 2;
+</span><span><a class="LN" name="195">  195   </a>  maxval = b_A[3 + r1];
+</span><span><a class="LN" name="196">  196   </a>  dfq_dhb[dfq_dhb_tmp] = b_y_tmp[4] - dfq_dhb[rtemp] * maxval;
+</span><span><a class="LN" name="197">  197   </a>  dfq_dhb_tmp_0 = r3 &lt;&lt; 2;
+</span><span><a class="LN" name="198">  198   </a>  <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = b_A[6 + r1];
+</span><span><a class="LN" name="199">  199   </a>  dfq_dhb[dfq_dhb_tmp_0] = b_y_tmp[8] - dfq_dhb[rtemp] * <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="200">  200   </a>  absxk = b_A[3 + r2];
+</span><span><a class="LN" name="201">  201   </a>  dfq_dhb[dfq_dhb_tmp] /= absxk;
+</span><span><a class="LN" name="202">  202   </a>  t = b_A[6 + r2];
+</span><span><a class="LN" name="203">  203   </a>  dfq_dhb[dfq_dhb_tmp_0] -= dfq_dhb[dfq_dhb_tmp] * t;
+</span><span><a class="LN" name="204">  204   </a>  dfq_dhb_tmp_6 = b_A[6 + r3];
+</span><span><a class="LN" name="205">  205   </a>  dfq_dhb[dfq_dhb_tmp_0] /= dfq_dhb_tmp_6;
+</span><span><a class="LN" name="206">  206   </a>  dfq_dhb_tmp_7 = b_A[3 + r3];
+</span><span><a class="LN" name="207">  207   </a>  dfq_dhb[dfq_dhb_tmp] -= dfq_dhb[dfq_dhb_tmp_0] * dfq_dhb_tmp_7;
+</span><span><a class="LN" name="208">  208   </a>  dfq_dhb[rtemp] -= dfq_dhb[dfq_dhb_tmp_0] * b_A[r3];
+</span><span><a class="LN" name="209">  209   </a>  dfq_dhb[rtemp] -= dfq_dhb[dfq_dhb_tmp] * b_A[r2];
+</span><span><a class="LN" name="210">  210   </a>  dfq_dhb_tmp_8 = 1 + rtemp;
+</span><span><a class="LN" name="211">  211   </a>  dfq_dhb[dfq_dhb_tmp_8] = b_y_tmp[1] / b_A[r1];
+</span><span><a class="LN" name="212">  212   </a>  dfq_dhb_tmp_1 = rtemp + 1;
+</span><span><a class="LN" name="213">  213   </a>  dfq_dhb_tmp_2 = 1 + dfq_dhb_tmp;
+</span><span><a class="LN" name="214">  214   </a>  dfq_dhb[dfq_dhb_tmp_2] = b_y_tmp[5] - dfq_dhb[dfq_dhb_tmp_1] * maxval;
+</span><span><a class="LN" name="215">  215   </a>  dfq_dhb_tmp_4 = 1 + dfq_dhb_tmp_0;
+</span><span><a class="LN" name="216">  216   </a>  dfq_dhb[dfq_dhb_tmp_4] = b_y_tmp[9] - dfq_dhb[dfq_dhb_tmp_1] * <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="217">  217   </a>  dfq_dhb_tmp_3 = dfq_dhb_tmp + 1;
+</span><span><a class="LN" name="218">  218   </a>  dfq_dhb[dfq_dhb_tmp_2] = dfq_dhb[dfq_dhb_tmp_3] / absxk;
+</span><span><a class="LN" name="219">  219   </a>  dfq_dhb_tmp_5 = dfq_dhb_tmp_0 + 1;
+</span><span><a class="LN" name="220">  220   </a>  dfq_dhb[dfq_dhb_tmp_4] = dfq_dhb[dfq_dhb_tmp_5] - dfq_dhb[dfq_dhb_tmp_3] * t;
+</span><span><a class="LN" name="221">  221   </a>  dfq_dhb[dfq_dhb_tmp_4] = dfq_dhb[dfq_dhb_tmp_5] / dfq_dhb_tmp_6;
+</span><span><a class="LN" name="222">  222   </a>  dfq_dhb[dfq_dhb_tmp_2] = dfq_dhb[dfq_dhb_tmp_3] - dfq_dhb[dfq_dhb_tmp_5] *
+</span><span><a class="LN" name="223">  223   </a>    dfq_dhb_tmp_7;
+</span><span><a class="LN" name="224">  224   </a>  dfq_dhb[dfq_dhb_tmp_8] = dfq_dhb[dfq_dhb_tmp_1] - dfq_dhb[dfq_dhb_tmp_5] *
+</span><span><a class="LN" name="225">  225   </a>    b_A[r3];
+</span><span><a class="LN" name="226">  226   </a>  dfq_dhb[dfq_dhb_tmp_8] = dfq_dhb[dfq_dhb_tmp_1] - dfq_dhb[dfq_dhb_tmp_3] *
+</span><span><a class="LN" name="227">  227   </a>    b_A[r2];
+</span><span><a class="LN" name="228">  228   </a>  dfq_dhb_tmp_8 = 2 + rtemp;
+</span><span><a class="LN" name="229">  229   </a>  dfq_dhb[dfq_dhb_tmp_8] = b_y_tmp[2] / b_A[r1];
+</span><span><a class="LN" name="230">  230   </a>  dfq_dhb_tmp_1 = rtemp + 2;
+</span><span><a class="LN" name="231">  231   </a>  dfq_dhb_tmp_2 = 2 + dfq_dhb_tmp;
+</span><span><a class="LN" name="232">  232   </a>  dfq_dhb[dfq_dhb_tmp_2] = b_y_tmp[6] - dfq_dhb[dfq_dhb_tmp_1] * maxval;
+</span><span><a class="LN" name="233">  233   </a>  dfq_dhb_tmp_4 = 2 + dfq_dhb_tmp_0;
+</span><span><a class="LN" name="234">  234   </a>  dfq_dhb[dfq_dhb_tmp_4] = b_y_tmp[10] - dfq_dhb[dfq_dhb_tmp_1] * <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="235">  235   </a>  dfq_dhb_tmp_3 = dfq_dhb_tmp + 2;
+</span><span><a class="LN" name="236">  236   </a>  dfq_dhb[dfq_dhb_tmp_2] = dfq_dhb[dfq_dhb_tmp_3] / absxk;
+</span><span><a class="LN" name="237">  237   </a>  dfq_dhb_tmp_5 = dfq_dhb_tmp_0 + 2;
+</span><span><a class="LN" name="238">  238   </a>  dfq_dhb[dfq_dhb_tmp_4] = dfq_dhb[dfq_dhb_tmp_5] - dfq_dhb[dfq_dhb_tmp_3] * t;
+</span><span><a class="LN" name="239">  239   </a>  dfq_dhb[dfq_dhb_tmp_4] = dfq_dhb[dfq_dhb_tmp_5] / dfq_dhb_tmp_6;
+</span><span><a class="LN" name="240">  240   </a>  dfq_dhb[dfq_dhb_tmp_2] = dfq_dhb[dfq_dhb_tmp_3] - dfq_dhb[dfq_dhb_tmp_5] *
+</span><span><a class="LN" name="241">  241   </a>    dfq_dhb_tmp_7;
+</span><span><a class="LN" name="242">  242   </a>  dfq_dhb[dfq_dhb_tmp_8] = dfq_dhb[dfq_dhb_tmp_1] - dfq_dhb[dfq_dhb_tmp_5] *
+</span><span><a class="LN" name="243">  243   </a>    b_A[r3];
+</span><span><a class="LN" name="244">  244   </a>  dfq_dhb[dfq_dhb_tmp_8] = dfq_dhb[dfq_dhb_tmp_1] - dfq_dhb[dfq_dhb_tmp_3] *
+</span><span><a class="LN" name="245">  245   </a>    b_A[r2];
+</span><span><a class="LN" name="246">  246   </a>  dfq_dhb_tmp_8 = 3 + rtemp;
+</span><span><a class="LN" name="247">  247   </a>  dfq_dhb[dfq_dhb_tmp_8] = b_y_tmp[3] / b_A[r1];
+</span><span><a class="LN" name="248">  248   </a>  rtemp += 3;
+</span><span><a class="LN" name="249">  249   </a>  dfq_dhb_tmp_1 = 3 + dfq_dhb_tmp;
+</span><span><a class="LN" name="250">  250   </a>  dfq_dhb[dfq_dhb_tmp_1] = b_y_tmp[7] - dfq_dhb[rtemp] * maxval;
+</span><span><a class="LN" name="251">  251   </a>  dfq_dhb_tmp_2 = 3 + dfq_dhb_tmp_0;
+</span><span><a class="LN" name="252">  252   </a>  dfq_dhb[dfq_dhb_tmp_2] = b_y_tmp[11] - dfq_dhb[rtemp] * <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="253">  253   </a>  dfq_dhb_tmp += 3;
+</span><span><a class="LN" name="254">  254   </a>  dfq_dhb[dfq_dhb_tmp_1] = dfq_dhb[dfq_dhb_tmp] / absxk;
+</span><span><a class="LN" name="255">  255   </a>  dfq_dhb_tmp_0 += 3;
+</span><span><a class="LN" name="256">  256   </a>  dfq_dhb[dfq_dhb_tmp_2] = dfq_dhb[dfq_dhb_tmp_0] - dfq_dhb[dfq_dhb_tmp] * t;
+</span><span><a class="LN" name="257">  257   </a>  dfq_dhb[dfq_dhb_tmp_2] = dfq_dhb[dfq_dhb_tmp_0] / dfq_dhb_tmp_6;
+</span><span><a class="LN" name="258">  258   </a>  dfq_dhb[dfq_dhb_tmp_1] = dfq_dhb[dfq_dhb_tmp] - dfq_dhb[dfq_dhb_tmp_0] *
+</span><span><a class="LN" name="259">  259   </a>    dfq_dhb_tmp_7;
+</span><span><a class="LN" name="260">  260   </a>  dfq_dhb[dfq_dhb_tmp_8] = dfq_dhb[rtemp] - dfq_dhb[dfq_dhb_tmp_0] * b_A[r3];
+</span><span><a class="LN" name="261">  261   </a>  dfq_dhb[dfq_dhb_tmp_8] = dfq_dhb[rtemp] - dfq_dhb[dfq_dhb_tmp] * b_A[r2];
+</span><span><a class="LN" name="262">  262   </a>  maxval = x[4] + x[7];
+</span><span><a class="LN" name="263">  263   </a>  <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a> = x[5] + x[8];
+</span><span><a class="LN" name="264">  264   </a>  absxk = x[6] + x[9];
+</span><span><a class="LN" name="265">  265   </a>  b_A[0] = 0.0;
+</span><span><a class="LN" name="266">  266   </a>  b_A[3] = -absxk;
+</span><span><a class="LN" name="267">  267   </a>  b_A[6] = <a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="268">  268   </a>  b_A[1] = absxk;
+</span><span><a class="LN" name="269">  269   </a>  b_A[4] = 0.0;
+</span><span><a class="LN" name="270">  270   </a>  b_A[7] = -maxval;
+</span><span><a class="LN" name="271">  271   </a>  b_A[2] = -<a href="../../../../FSW_Lib_ert_rtw/html/cone_c.html#fcn_scale" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale');" target="_self"><font color="#1122aa">scale</font></a>;
+</span><span><a class="LN" name="272">  272   </a>  b_A[5] = maxval;
+</span><span><a class="LN" name="273">  273   </a>  b_A[8] = 0.0;
+</span><span><a class="LN" name="274">  274   </a>  <span class="KW">for</span> (r1 = 0; r1 &lt; 4; r1++) <b>{</b>
+</span><span><a class="LN" name="275">  275   </a>    q[r1] = b_y_tmp[r1 + 8] * w[2] + (b_y_tmp[r1 + 4] * w[1] + b_y_tmp[r1] * w[0]);
+</span><span><a class="LN" name="276">  276   </a>  <b>}</b>
+</span><span><a class="LN" name="277">  277   </a>
+</span><span><a class="LN" name="278">  278   </a>  f[0] = q[0];
+</span><span><a class="LN" name="279">  279   </a>  f[1] = q[1];
+</span><span><a class="LN" name="280">  280   </a>  f[2] = q[2];
+</span><span><a class="LN" name="281">  281   </a>  f[3] = q[3];
+</span><span><a class="LN" name="282">  282   </a>  tmp[0] = 0.0;
+</span><span><a class="LN" name="283">  283   </a>  tmp[3] = -x[6];
+</span><span><a class="LN" name="284">  284   </a>  tmp[6] = x[5];
+</span><span><a class="LN" name="285">  285   </a>  tmp[1] = x[6];
+</span><span><a class="LN" name="286">  286   </a>  tmp[4] = 0.0;
+</span><span><a class="LN" name="287">  287   </a>  tmp[7] = -x[4];
+</span><span><a class="LN" name="288">  288   </a>  tmp[2] = -x[5];
+</span><span><a class="LN" name="289">  289   </a>  tmp[5] = x[4];
+</span><span><a class="LN" name="290">  290   </a>  tmp[8] = 0.0;
+</span><span><a class="LN" name="291">  291   </a>  <a href="mrdivide_helper_JpwaVRMh_c.html#fcn_mrdivide_helper_JpwaVRMh" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_mrdivide_helper_JpwaVRMh');" target="_self"><font color="#1122aa">mrdivide_helper_JpwaVRMh</font></a>(tmp, J, tmp_0);
+</span><span><a class="LN" name="292">  292   </a>  tmp[0] = 0.0;
+</span><span><a class="LN" name="293">  293   </a>  tmp[3] = -x[9];
+</span><span><a class="LN" name="294">  294   </a>  tmp[6] = x[8];
+</span><span><a class="LN" name="295">  295   </a>  tmp[1] = x[9];
+</span><span><a class="LN" name="296">  296   </a>  tmp[4] = 0.0;
+</span><span><a class="LN" name="297">  297   </a>  tmp[7] = -x[7];
+</span><span><a class="LN" name="298">  298   </a>  tmp[2] = -x[8];
+</span><span><a class="LN" name="299">  299   </a>  tmp[5] = x[7];
+</span><span><a class="LN" name="300">  300   </a>  tmp[8] = 0.0;
+</span><span><a class="LN" name="301">  301   </a>  <a href="mrdivide_helper_JpwaVRMh_c.html#fcn_mrdivide_helper_JpwaVRMh" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_mrdivide_helper_JpwaVRMh');" target="_self"><font color="#1122aa">mrdivide_helper_JpwaVRMh</font></a>(tmp, J, tmp_1);
+</span><span><a class="LN" name="302">  302   </a>  tmp[0] = 0.0;
+</span><span><a class="LN" name="303">  303   </a>  tmp[3] = -w[2];
+</span><span><a class="LN" name="304">  304   </a>  tmp[6] = w[1];
+</span><span><a class="LN" name="305">  305   </a>  tmp[1] = w[2];
+</span><span><a class="LN" name="306">  306   </a>  tmp[4] = 0.0;
+</span><span><a class="LN" name="307">  307   </a>  tmp[7] = -w[0];
+</span><span><a class="LN" name="308">  308   </a>  tmp[2] = -w[1];
+</span><span><a class="LN" name="309">  309   </a>  tmp[5] = w[0];
+</span><span><a class="LN" name="310">  310   </a>  tmp[8] = 0.0;
+</span><span><a class="LN" name="311">  311   </a>  A[0] = 0.0;
+</span><span><a class="LN" name="312">  312   </a>  <span class="KW">for</span> (r1 = 0; r1 &lt; 3; r1++) <b>{</b>
+</span><span><a class="LN" name="313">  313   </a>    f[r1 + 4] = ((b_A[r1 + 3] * w[1] + b_A[r1] * w[0]) + b_A[r1 + 6] * w[2]) +
+</span><span><a class="LN" name="314">  314   </a>      -u[r1];
+</span><span><a class="LN" name="315">  315   </a>    f[r1 + 7] = u[r1];
+</span><span><a class="LN" name="316">  316   </a>    A[10 * (r1 + 1)] = 0.5 * -w[r1];
+</span><span><a class="LN" name="317">  317   </a>    A[r1 + 1] = 0.5 * w[r1];
+</span><span><a class="LN" name="318">  318   </a>    r2 = r1 &lt;&lt; 2;
+</span><span><a class="LN" name="319">  319   </a>    r3 = 10 * (r1 + 4);
+</span><span><a class="LN" name="320">  320   </a>    A[r3] = dfq_dhb[r2];
+</span><span><a class="LN" name="321">  321   </a>    rtemp = 10 * (r1 + 7);
+</span><span><a class="LN" name="322">  322   </a>    A[rtemp] = 0.0;
+</span><span><a class="LN" name="323">  323   </a>    A[1 + r3] = dfq_dhb[r2 + 1];
+</span><span><a class="LN" name="324">  324   </a>    A[1 + rtemp] = 0.0;
+</span><span><a class="LN" name="325">  325   </a>    A[2 + r3] = dfq_dhb[r2 + 2];
+</span><span><a class="LN" name="326">  326   </a>    A[2 + rtemp] = 0.0;
+</span><span><a class="LN" name="327">  327   </a>    A[3 + r3] = dfq_dhb[r2 + 3];
+</span><span><a class="LN" name="328">  328   </a>    A[3 + rtemp] = 0.0;
+</span><span><a class="LN" name="329">  329   </a>  <b>}</b>
+</span><span><a class="LN" name="330">  330   </a>
+</span><span><a class="LN" name="331">  331   </a>  A[11] = -0.0;
+</span><span><a class="LN" name="332">  332   </a>  A[21] = 0.5 * w[2];
+</span><span><a class="LN" name="333">  333   </a>  A[31] = 0.5 * -w[1];
+</span><span><a class="LN" name="334">  334   </a>  A[12] = 0.5 * -w[2];
+</span><span><a class="LN" name="335">  335   </a>  A[22] = -0.0;
+</span><span><a class="LN" name="336">  336   </a>  A[32] = 0.5 * w[0];
+</span><span><a class="LN" name="337">  337   </a>  A[13] = 0.5 * w[1];
+</span><span><a class="LN" name="338">  338   </a>  A[23] = 0.5 * -w[0];
+</span><span><a class="LN" name="339">  339   </a>  A[33] = -0.0;
+</span><span><a class="LN" name="340">  340   </a>  <span class="KW">for</span> (r1 = 0; r1 &lt; 4; r1++) <b>{</b>
+</span><span><a class="LN" name="341">  341   </a>    A[4 + 10 * r1] = 0.0;
+</span><span><a class="LN" name="342">  342   </a>    A[5 + 10 * r1] = 0.0;
+</span><span><a class="LN" name="343">  343   </a>    A[6 + 10 * r1] = 0.0;
+</span><span><a class="LN" name="344">  344   </a>  <b>}</b>
+</span><span><a class="LN" name="345">  345   </a>
+</span><span><a class="LN" name="346">  346   </a>  <span class="KW">for</span> (r1 = 0; r1 &lt; 3; r1++) <b>{</b>
+</span><span><a class="LN" name="347">  347   </a>    r2 = 10 * (r1 + 4);
+</span><span><a class="LN" name="348">  348   </a>    A[4 + r2] = (tmp_0[3 * r1] - tmp[3 * r1]) + tmp_1[3 * r1];
+</span><span><a class="LN" name="349">  349   </a>    r3 = 3 * r1 + 1;
+</span><span><a class="LN" name="350">  350   </a>    A[5 + r2] = (tmp_0[r3] - tmp[r3]) + tmp_1[r3];
+</span><span><a class="LN" name="351">  351   </a>    r3 = 3 * r1 + 2;
+</span><span><a class="LN" name="352">  352   </a>    A[6 + r2] = (tmp_0[r3] - tmp[r3]) + tmp_1[r3];
+</span><span><a class="LN" name="353">  353   </a>  <b>}</b>
+</span><span><a class="LN" name="354">  354   </a>
+</span><span><a class="LN" name="355">  355   </a>  A[74] = -0.0;
+</span><span><a class="LN" name="356">  356   </a>  A[84] = w[2];
+</span><span><a class="LN" name="357">  357   </a>  A[94] = -w[1];
+</span><span><a class="LN" name="358">  358   </a>  A[75] = -w[2];
+</span><span><a class="LN" name="359">  359   </a>  A[85] = -0.0;
+</span><span><a class="LN" name="360">  360   </a>  A[95] = w[0];
+</span><span><a class="LN" name="361">  361   </a>  A[76] = w[1];
+</span><span><a class="LN" name="362">  362   </a>  A[86] = -w[0];
+</span><span><a class="LN" name="363">  363   </a>  A[96] = -0.0;
+</span><span><a class="LN" name="364">  364   </a>  <span class="KW">for</span> (r1 = 0; r1 &lt; 10; r1++) <b>{</b>
+</span><span><a class="LN" name="365">  365   </a>    A[7 + 10 * r1] = 0.0;
+</span><span><a class="LN" name="366">  366   </a>    A[8 + 10 * r1] = 0.0;
+</span><span><a class="LN" name="367">  367   </a>    A[9 + 10 * r1] = 0.0;
+</span><span><a class="LN" name="368">  368   </a>  <b>}</b>
+</span><span><a class="LN" name="369">  369   </a><b>}</b>
+</span><span><a class="LN" name="370">  370   </a>
+</span><span><a class="LN" name="371">  371   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="372">  372   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="373">  373   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="374">  374   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="375">  375   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="376">  376   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

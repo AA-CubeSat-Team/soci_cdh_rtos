@@ -1,0 +1,128 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - FSW_Lib_data.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('FSW_Lib_data_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../FSW_Lib_data.c" target="rtwreport_document_frame" id="linkToText_plain">FSW_Lib_data.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * Academic License - for use in teaching, academic research, and meeting</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * course requirements at degree granting institutions only.  Not for</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * government, commercial, or other organizational use.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * File: FSW_Lib_data.c</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * Code generated for Simulink model 'FSW_Lib'.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Model version                  : 1.374</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * Simulink Coder version         : 9.0 (R2018b) 24-May-2018</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * C/C++ source code generated on : Tue Oct 26 16:29:45 2021</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * Target selection: ert.tlc</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Embedded hardware selection: NXP-&gt;Cortex-M4</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Code generation objectives:</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> *    1. Execution efficiency</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> *    2. RAM efficiency</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * Validation result: Not run</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>
+</span><span><a class="LN" name="22">   22   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib.h&quot;</font>
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;FSW_Lib_private.h&quot;</font>
+</span><span><a class="LN" name="24">   24   </a>
+</span><span><a class="LN" name="25">   25   </a><span class="CT">/* Invariant block signals (default storage) */</span>
+</span><span><a class="LN" name="26">   26   </a><span class="DT">const</span> <a href="FSW_Lib_h.html#type_ConstB" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_ConstB');" target="_self"><font color="#1122aa">ConstB</font></a> <a name="var_rtConstB">rtConstB</a> = <b>{</b>
+</span><span><a class="LN" name="27">   27   </a>  1.0,                                 <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:534')" name="code2model"><font color="#117755"><i>&lt;S230&gt;/Switch</i></font></a>' */</span>
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a>  <b>{</b> 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 <b>}</b>,<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:407:108:115')" name="code2model"><font color="#117755"><i>&lt;S251&gt;/Identity Matrix</i></font></a>' */</span>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a>  <b>{</b> 2.9526E-5, 0.0, 0.0, 0.0, 0.0, 2.9526E-5, 0.0, 0.0, 0.0, 0.0, 2.9526E-5, 0.0,
+</span><span><a class="LN" name="32">   32   </a>    0.0, 0.0, 0.0, 2.9526E-5 <b>}</b>,        <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:407:108:188')" name="code2model"><font color="#117755"><i>&lt;S250&gt;/Create Diagonal Matrix</i></font></a>' */</span>
+</span><span><a class="LN" name="33">   33   </a>
+</span><span><a class="LN" name="34">   34   </a>  <b>{</b> -0.00011384640139575119, 0.00011384640139575162, -4.832493030858644E-5 <b>}</b>,<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:407:108:128')" name="code2model"><font color="#117755"><i>&lt;S250&gt;/Matrix Multiply4</i></font></a>' */</span>
+</span><span><a class="LN" name="35">   35   </a>
+</span><span><a class="LN" name="36">   36   </a>  <b>{</b> 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 <b>}</b>,<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:407:136:115')" name="code2model"><font color="#117755"><i>&lt;S243&gt;/Identity Matrix</i></font></a>' */</span>
+</span><span><a class="LN" name="37">   37   </a>
+</span><span><a class="LN" name="38">   38   </a>  <b>{</b> 2.9526E-5, 0.0, 0.0, 0.0, 0.0, 2.9526E-5, 0.0, 0.0, 0.0, 0.0, 2.9526E-5, 0.0,
+</span><span><a class="LN" name="39">   39   </a>    0.0, 0.0, 0.0, 2.9526E-5 <b>}</b>,        <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:407:136:188')" name="code2model"><font color="#117755"><i>&lt;S242&gt;/Create Diagonal Matrix</i></font></a>' */</span>
+</span><span><a class="LN" name="40">   40   </a>
+</span><span><a class="LN" name="41">   41   </a>  <b>{</b> -0.00011384640139575119, 0.00011384640139575162, -4.832493030858644E-5 <b>}</b>,<span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:407:136:128')" name="code2model"><font color="#117755"><i>&lt;S242&gt;/Matrix Multiply4</i></font></a>' */</span>
+</span><span><a class="LN" name="42">   42   </a>
+</span><span><a class="LN" name="43">   43   </a>  <span class="CT">/* Start of '<a href="matlab:coder.internal.code2model('Main_Sim:593:17')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/mode_select_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="44">   44   </a>  <b>{</b>
+</span><span><a class="LN" name="45">   45   </a>    <b>{</b> 2.9526E-5, 0.0, 0.0, 0.0, 0.0, 2.9526E-5, 0.0, 0.0, 0.0, 0.0, 2.9526E-5,
+</span><span><a class="LN" name="46">   46   </a>      0.0, 0.0, 0.0, 0.0, 2.9526E-5 <b>}</b>  <span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:17:123')" name="code2model"><font color="#117755"><i>&lt;S382&gt;/Create Diagonal Matrix</i></font></a>' */</span>
+</span><span><a class="LN" name="47">   47   </a>  <b>}</b>
+</span><span><a class="LN" name="48">   48   </a>  ,
+</span><span><a class="LN" name="49">   49   </a>
+</span><span><a class="LN" name="50">   50   </a>  <span class="CT">/* End of '<a href="matlab:coder.internal.code2model('Main_Sim:593:17')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/mode_select_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="51">   51   </a>
+</span><span><a class="LN" name="52">   52   </a>  <span class="CT">/* Start of '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189')" name="code2model"><font color="#117755"><i>&lt;S288&gt;/target_groundpass_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="53">   53   </a>  <b>{</b>
+</span><span><a class="LN" name="54">   54   </a>    <b>{</b> -0.39497937598550986, 0.845231988038406, -0.35996413563401142,
+</span><span><a class="LN" name="55">   55   </a>      -0.624718338364105, -0.53439955688290364, -0.56933655364375457,
+</span><span><a class="LN" name="56">   56   </a>      -0.67358614167579844, 0.0, 0.73910872660408433 <b>}</b><span class="CT">/* '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189:20:29')" name="code2model"><font color="#117755"><i>&lt;S341&gt;/Vector Concatenate</i></font></a>' */</span>
+</span><span><a class="LN" name="57">   57   </a>  <b>}</b>
+</span><span><a class="LN" name="58">   58   </a>  <span class="CT">/* End of '<a href="matlab:coder.internal.code2model('Main_Sim:593:76:61:189')" name="code2model"><font color="#117755"><i>&lt;S288&gt;/target_groundpass_lib</i></font></a>' */</span>
+</span><span><a class="LN" name="59">   59   </a><b>}</b>;
+</span><span><a class="LN" name="60">   60   </a>
+</span><span><a class="LN" name="61">   61   </a><span class="CT">/* Constant parameters (default storage) */</span>
+</span><span><a class="LN" name="62">   62   </a><span class="DT">const</span> <a href="FSW_Lib_h.html#type_ConstP" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_ConstP');" target="_self"><font color="#1122aa">ConstP</font></a> <a name="var_rtConstP">rtConstP</a> = <b>{</b>
+</span><span><a class="LN" name="63">   63   </a>  <span class="CT">/* Expression: fswParams.allocator</span>
+</span><span><a class="LN" name="64">   64   </a><span class="CT">   * Referenced by: '<a href="matlab:coder.internal.code2model('Main_Sim:593:53:257:6:33')" name="code2model"><font color="#117755"><i>&lt;S278&gt;/Constant</i></font></a>'</span>
+</span><span><a class="LN" name="65">   65   </a><span class="CT">   */</span>
+</span><span><a class="LN" name="66">   66   </a>  <b>{</b>
+</span><span><a class="LN" name="67">   67   </a>    <b>{</b> 0.92050485345244037, 0.0, 0.39073112848927377, 0.0, 0.92050485345244037,
+</span><span><a class="LN" name="68">   68   </a>      0.39073112848927377, -0.92050485345244037, 0.0, 0.39073112848927377, 0.0,
+</span><span><a class="LN" name="69">   69   </a>      -0.92050485345244037, 0.39073112848927377 <b>}</b>,
+</span><span><a class="LN" name="70">   70   </a>
+</span><span><a class="LN" name="71">   71   </a>    <b>{</b> 2.9526e-5, 2.9526e-5, 2.9526e-5, 2.9526e-5 <b>}</b>,
+</span><span><a class="LN" name="72">   72   </a>
+</span><span><a class="LN" name="73">   73   </a>    <b>{</b> 33868.4549210865, 33868.4549210865, 33868.4549210865, 33868.4549210865 <b>}</b>,
+</span><span><a class="LN" name="74">   74   </a>    0.0032,
+</span><span><a class="LN" name="75">   75   </a>    6500.0,
+</span><span><a class="LN" name="76">   76   </a>    6U,
+</span><span><a class="LN" name="77">   77   </a>
+</span><span><a class="LN" name="78">   78   </a>    <b>{</b> 0.0029991968249731822, -0.0030610359347664436, 0.0031228750445597051,
+</span><span><a class="LN" name="79">   79   </a>      -0.003184714154352967 <b>}</b>,
+</span><span><a class="LN" name="80">   80   </a>    0.01,
+</span><span><a class="LN" name="81">   81   </a>
+</span><span><a class="LN" name="82">   82   </a>    <b>{</b> 1.0, -1.0, 1.0, -1.0 <b>}</b>,
+</span><span><a class="LN" name="83">   83   </a>
+</span><span><a class="LN" name="84">   84   </a>    <b>{</b> 0.00294561553104781, 0.00214403277419873 <b>}</b>,
+</span><span><a class="LN" name="85">   85   </a>
+</span><span><a class="LN" name="86">   86   </a>    <b>{</b> 3U, 2U, 2U, 1U, 1U, 1U, 4U, 4U, 3U, 4U, 3U, 2U <b>}</b>,
+</span><span><a class="LN" name="87">   87   </a>
+</span><span><a class="LN" name="88">   88   </a>    <b>{</b> 1U, 1U, 1U, 2U, 2U, 3U, 2U, 3U, 4U, 3U, 4U, 4U <b>}</b>,
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a>    <b>{</b> 0.27159009435132403, 0.27159009435132403, 0.63982616631186306,
+</span><span><a class="LN" name="91">   91   </a>      0.54318018870264806, 0.0, -0.0, 0.27159009435132403, -0.27159009435132403,
+</span><span><a class="LN" name="92">   92   </a>      0.63982616631186306, 0.27159009435132403, -0.27159009435132403,
+</span><span><a class="LN" name="93">   93   </a>      -0.63982616631186306, 0.0, -0.54318018870264806, 0.0, -0.27159009435132403,
+</span><span><a class="LN" name="94">   94   </a>      -0.27159009435132403, 0.63982616631186306 <b>}</b>,
+</span><span><a class="LN" name="95">   95   </a>
+</span><span><a class="LN" name="96">   96   </a>    <b>{</b> -0.47020150830868962, 0.0, -0.47020150830868962, 0.47020150830868962, 0.0,
+</span><span><a class="LN" name="97">   97   </a>      -0.47020150830868962 <b>}</b>,
+</span><span><a class="LN" name="98">   98   </a>
+</span><span><a class="LN" name="99">   99   </a>    <b>{</b> 1.0238646233366748, 1.9325548097883873, 1.0238646233366748,
+</span><span><a class="LN" name="100">  100   </a>      1.0238646233366748, 1.9325548097883873, 1.0238646233366748 <b>}</b>
+</span><span><a class="LN" name="101">  101   </a>  <b>}</b>
+</span><span><a class="LN" name="102">  102   </a><b>}</b>;
+</span><span><a class="LN" name="103">  103   </a>
+</span><span><a class="LN" name="104">  104   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="105">  105   </a><span class="CT"> * File trailer for generated code.</span>
+</span><span><a class="LN" name="106">  106   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="107">  107   </a><span class="CT"> * [EOF]</span>
+</span><span><a class="LN" name="108">  108   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="109">  109   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

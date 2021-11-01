@@ -1,0 +1,461 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - ldl.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('ldl_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/ldl.c" target="rtwreport_document_frame" id="linkToText_plain">ldl.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">/* === ldl.c: sparse LDL' factorization and solve package =================== */</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="4">    4   </a>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">/* LDL:  a simple set of routines for sparse LDL' factorization.  These routines</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * are not terrifically fast (they do not use dense matrix kernels), but the</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * code is very short.  The purpose is to illustrate the algorithms in a very</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * concise manner, primarily for educational purposes.  Although the code is</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * very concise, this package is slightly faster than the built-in sparse</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Cholesky factorization in MATLAB 7.0 (chol), when using the same input</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * permutation.</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * The routines compute the LDL' factorization of a real sparse symmetric</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * matrix A (or PAP' if a permutation P is supplied), and solve upper</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * and lower triangular systems with the resulting L and D factors.  If A is</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * positive definite then the factorization will be accurate.  A can be</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * indefinite (with negative values on the diagonal D), but in this case no</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> * guarantee of accuracy is provided, since no numeric pivoting is performed.</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> * The n-by-n sparse matrix A is in compressed-column form.  The nonzero values</span>
+</span><span><a class="LN" name="21">   21   </a><span class="CT"> * in column j are stored in Ax [Ap [j] ... Ap [j+1]-1], with corresponding row</span>
+</span><span><a class="LN" name="22">   22   </a><span class="CT"> * indices in Ai [Ap [j] ... Ap [j+1]-1].  Ap [0] = 0 is required, and thus</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * nz = Ap [n] is the number of nonzeros in A.  Ap is an int array of size n+1.</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> * The int array Ai and the double array Ax are of size nz.  This data structure</span>
+</span><span><a class="LN" name="25">   25   </a><span class="CT"> * is identical to the one used by MATLAB, except for the following</span>
+</span><span><a class="LN" name="26">   26   </a><span class="CT"> * generalizations.  The row indices in each column of A need not be in any</span>
+</span><span><a class="LN" name="27">   27   </a><span class="CT"> * particular order, although they must be in the range 0 to n-1.  Duplicate</span>
+</span><span><a class="LN" name="28">   28   </a><span class="CT"> * entries can be present; any duplicates are summed.  That is, if row index i</span>
+</span><span><a class="LN" name="29">   29   </a><span class="CT"> * appears twice in a column j, then the value of A (i,j) is the sum of the two</span>
+</span><span><a class="LN" name="30">   30   </a><span class="CT"> * entries.  The data structure used here for the input matrix A is more</span>
+</span><span><a class="LN" name="31">   31   </a><span class="CT"> * flexible than MATLAB's, which requires sorted columns with no duplicate</span>
+</span><span><a class="LN" name="32">   32   </a><span class="CT"> * entries.</span>
+</span><span><a class="LN" name="33">   33   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="34">   34   </a><span class="CT"> * Only the diagonal and upper triangular part of A (or PAP' if a permutation</span>
+</span><span><a class="LN" name="35">   35   </a><span class="CT"> * P is provided) is accessed.  The lower triangular parts of the matrix A or</span>
+</span><span><a class="LN" name="36">   36   </a><span class="CT"> * PAP' can be present, but they are ignored.</span>
+</span><span><a class="LN" name="37">   37   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="38">   38   </a><span class="CT"> * The optional input permutation is provided as an array P of length n.  If</span>
+</span><span><a class="LN" name="39">   39   </a><span class="CT"> * P [k] = j, the row and column j of A is the kth row and column of PAP'.</span>
+</span><span><a class="LN" name="40">   40   </a><span class="CT"> * If P is present then the factorization is LDL' = PAP' or L*D*L' = A(P,P) in</span>
+</span><span><a class="LN" name="41">   41   </a><span class="CT"> * 0-based MATLAB notation.  If P is not present (a null pointer) then no</span>
+</span><span><a class="LN" name="42">   42   </a><span class="CT"> * permutation is performed, and the factorization is LDL' = A.</span>
+</span><span><a class="LN" name="43">   43   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="44">   44   </a><span class="CT"> * The lower triangular matrix L is stored in the same compressed-column</span>
+</span><span><a class="LN" name="45">   45   </a><span class="CT"> * form (an int Lp array of size n+1, an int Li array of size Lp [n], and a</span>
+</span><span><a class="LN" name="46">   46   </a><span class="CT"> * double array Lx of the same size as Li).  It has a unit diagonal, which is</span>
+</span><span><a class="LN" name="47">   47   </a><span class="CT"> * not stored.  The row indices in each column of L are always returned in</span>
+</span><span><a class="LN" name="48">   48   </a><span class="CT"> * ascending order, with no duplicate entries.  This format is compatible with</span>
+</span><span><a class="LN" name="49">   49   </a><span class="CT"> * MATLAB, except that it would be more convenient for MATLAB to include the</span>
+</span><span><a class="LN" name="50">   50   </a><span class="CT"> * unit diagonal of L.  Doing so here would add additional complexity to the</span>
+</span><span><a class="LN" name="51">   51   </a><span class="CT"> * code, and is thus omitted in the interest of keeping this code short and</span>
+</span><span><a class="LN" name="52">   52   </a><span class="CT"> * readable.</span>
+</span><span><a class="LN" name="53">   53   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="54">   54   </a><span class="CT"> * The elimination tree is held in the Parent [0..n-1] array.  It is normally</span>
+</span><span><a class="LN" name="55">   55   </a><span class="CT"> * not required by the user, but it is required by ldl_numeric.  The diagonal</span>
+</span><span><a class="LN" name="56">   56   </a><span class="CT"> * matrix D is held as an array D [0..n-1] of size n.</span>
+</span><span><a class="LN" name="57">   57   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="58">   58   </a><span class="CT"> * --------------------</span>
+</span><span><a class="LN" name="59">   59   </a><span class="CT"> * C-callable routines:</span>
+</span><span><a class="LN" name="60">   60   </a><span class="CT"> * --------------------</span>
+</span><span><a class="LN" name="61">   61   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="62">   62   </a><span class="CT"> *	ldl_symbolic:  Given the pattern of A, computes the Lp and Parent arrays</span>
+</span><span><a class="LN" name="63">   63   </a><span class="CT"> *	    required by ldl_numeric.  Takes time proportional to the number of</span>
+</span><span><a class="LN" name="64">   64   </a><span class="CT"> *	    nonzeros in L.  Computes the inverse Pinv of P if P is provided.</span>
+</span><span><a class="LN" name="65">   65   </a><span class="CT"> *	    Also returns Lnz, the count of nonzeros in each column of L below</span>
+</span><span><a class="LN" name="66">   66   </a><span class="CT"> *	    the diagonal (this is not required by ldl_numeric).</span>
+</span><span><a class="LN" name="67">   67   </a><span class="CT"> *	ldl_numeric:  Given the pattern and numerical values of A, the Lp array,</span>
+</span><span><a class="LN" name="68">   68   </a><span class="CT"> *	    the Parent array, and P and Pinv if applicable, computes the</span>
+</span><span><a class="LN" name="69">   69   </a><span class="CT"> *	    pattern and numerical values of L and D.</span>
+</span><span><a class="LN" name="70">   70   </a><span class="CT"> *	ldl_lsolve:  Solves Lx=b for a dense vector b.</span>
+</span><span><a class="LN" name="71">   71   </a><span class="CT"> *	ldl_dsolve:  Solves Dx=b for a dense vector b.</span>
+</span><span><a class="LN" name="72">   72   </a><span class="CT"> *	ldl_ltsolve: Solves L'x=b for a dense vector b.</span>
+</span><span><a class="LN" name="73">   73   </a><span class="CT"> *	ldl_perm:    Computes x=Pb for a dense vector b.</span>
+</span><span><a class="LN" name="74">   74   </a><span class="CT"> *	ldl_permt:   Computes x=P'b for a dense vector b.</span>
+</span><span><a class="LN" name="75">   75   </a><span class="CT"> *	ldl_valid_perm:  checks the validity of a permutation vector</span>
+</span><span><a class="LN" name="76">   76   </a><span class="CT"> *	ldl_valid_matrix:  checks the validity of the sparse matrix A</span>
+</span><span><a class="LN" name="77">   77   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="78">   78   </a><span class="CT"> * ----------------------------</span>
+</span><span><a class="LN" name="79">   79   </a><span class="CT"> * Limitations of this package:</span>
+</span><span><a class="LN" name="80">   80   </a><span class="CT"> * ----------------------------</span>
+</span><span><a class="LN" name="81">   81   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="82">   82   </a><span class="CT"> * In the interest of keeping this code simple and readable, ldl_symbolic and</span>
+</span><span><a class="LN" name="83">   83   </a><span class="CT"> * ldl_numeric assume their inputs are valid.  You can check your own inputs</span>
+</span><span><a class="LN" name="84">   84   </a><span class="CT"> * prior to calling these routines with the ldl_valid_perm and ldl_valid_matrix</span>
+</span><span><a class="LN" name="85">   85   </a><span class="CT"> * routines.  Except for the two ldl_valid_* routines, no routine checks to see</span>
+</span><span><a class="LN" name="86">   86   </a><span class="CT"> * if the array arguments are present (non-NULL).  Like all C routines, no</span>
+</span><span><a class="LN" name="87">   87   </a><span class="CT"> * routine can determine if the arrays are long enough and don't overlap.</span>
+</span><span><a class="LN" name="88">   88   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="89">   89   </a><span class="CT"> * The ldl_numeric does check the numerical factorization, however.  It returns</span>
+</span><span><a class="LN" name="90">   90   </a><span class="CT"> * n if the factorization is successful.  If D (k,k) is zero, then k is</span>
+</span><span><a class="LN" name="91">   91   </a><span class="CT"> * returned, and L is only partially computed.</span>
+</span><span><a class="LN" name="92">   92   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="93">   93   </a><span class="CT"> * No pivoting to control fill-in is performed, which is often critical for</span>
+</span><span><a class="LN" name="94">   94   </a><span class="CT"> * obtaining good performance.  I recommend that you compute the permutation P</span>
+</span><span><a class="LN" name="95">   95   </a><span class="CT"> * using AMD or SYMAMD (approximate minimum degree ordering routines), or an</span>
+</span><span><a class="LN" name="96">   96   </a><span class="CT"> * appropriate graph-partitioning based ordering.  See the ldldemo.m routine for</span>
+</span><span><a class="LN" name="97">   97   </a><span class="CT"> * an example in MATLAB, and the ldlmain.c stand-alone C program for examples of</span>
+</span><span><a class="LN" name="98">   98   </a><span class="CT"> * how to find P.  Routines for manipulating compressed-column matrices are</span>
+</span><span><a class="LN" name="99">   99   </a><span class="CT"> * available in UMFPACK.  AMD, SYMAMD, UMFPACK, and this LDL package are all</span>
+</span><span><a class="LN" name="100">  100   </a><span class="CT"> * available at http://www.suitesparse.com.</span>
+</span><span><a class="LN" name="101">  101   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="102">  102   </a><span class="CT"> * -------------------------</span>
+</span><span><a class="LN" name="103">  103   </a><span class="CT"> * Possible simplifications:</span>
+</span><span><a class="LN" name="104">  104   </a><span class="CT"> * -------------------------</span>
+</span><span><a class="LN" name="105">  105   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="106">  106   </a><span class="CT"> * These routines could be made even simpler with a few additional assumptions.</span>
+</span><span><a class="LN" name="107">  107   </a><span class="CT"> * If no input permutation were performed, the caller would have to permute the</span>
+</span><span><a class="LN" name="108">  108   </a><span class="CT"> * matrix first, but the computation of Pinv, and the use of P and Pinv could be</span>
+</span><span><a class="LN" name="109">  109   </a><span class="CT"> * removed.  If only the diagonal and upper triangular part of A or PAP' are</span>
+</span><span><a class="LN" name="110">  110   </a><span class="CT"> * present, then the tests in the "if (i &lt; k)" statement in ldl_symbolic and</span>
+</span><span><a class="LN" name="111">  111   </a><span class="CT"> * "if (i &lt;= k)" in ldl_numeric, are always true, and could be removed (i can</span>
+</span><span><a class="LN" name="112">  112   </a><span class="CT"> * equal k in ldl_symbolic, but then the body of the if statement would</span>
+</span><span><a class="LN" name="113">  113   </a><span class="CT"> * correctly do no work since Flag [k] == k).  If we could assume that no</span>
+</span><span><a class="LN" name="114">  114   </a><span class="CT"> * duplicate entries are present, then the statement Y [i] += Ax [p] could be</span>
+</span><span><a class="LN" name="115">  115   </a><span class="CT"> * replaced with Y [i] = Ax [p] in ldl_numeric.</span>
+</span><span><a class="LN" name="116">  116   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="117">  117   </a><span class="CT"> * --------------------------</span>
+</span><span><a class="LN" name="118">  118   </a><span class="CT"> * Description of the method:</span>
+</span><span><a class="LN" name="119">  119   </a><span class="CT"> * --------------------------</span>
+</span><span><a class="LN" name="120">  120   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="121">  121   </a><span class="CT"> * LDL computes the symbolic factorization by finding the pattern of L one row</span>
+</span><span><a class="LN" name="122">  122   </a><span class="CT"> * at a time.  It does this based on the following theory.  Consider a sparse</span>
+</span><span><a class="LN" name="123">  123   </a><span class="CT"> * system Lx=b, where L, x, and b, are all sparse, and where L comes from a</span>
+</span><span><a class="LN" name="124">  124   </a><span class="CT"> * Cholesky (or LDL') factorization.  The elimination tree (etree) of L is</span>
+</span><span><a class="LN" name="125">  125   </a><span class="CT"> * defined as follows.  The parent of node j is the smallest k &gt; j such that</span>
+</span><span><a class="LN" name="126">  126   </a><span class="CT"> * L (k,j) is nonzero.  Node j has no parent if column j of L is completely zero</span>
+</span><span><a class="LN" name="127">  127   </a><span class="CT"> * below the diagonal (j is a root of the etree in this case).  The nonzero</span>
+</span><span><a class="LN" name="128">  128   </a><span class="CT"> * pattern of x is the union of the paths from each node i to the root, for</span>
+</span><span><a class="LN" name="129">  129   </a><span class="CT"> * each nonzero b (i).  To compute the numerical solution to Lx=b, we can</span>
+</span><span><a class="LN" name="130">  130   </a><span class="CT"> * traverse the columns of L corresponding to nonzero values of x.  This</span>
+</span><span><a class="LN" name="131">  131   </a><span class="CT"> * traversal does not need to be done in the order 0 to n-1.  It can be done in</span>
+</span><span><a class="LN" name="132">  132   </a><span class="CT"> * any "topological" order, such that x (i) is computed before x (j) if i is a</span>
+</span><span><a class="LN" name="133">  133   </a><span class="CT"> * descendant of j in the elimination tree.</span>
+</span><span><a class="LN" name="134">  134   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="135">  135   </a><span class="CT"> * The row-form of the LDL' factorization is shown in the MATLAB function</span>
+</span><span><a class="LN" name="136">  136   </a><span class="CT"> * ldlrow.m in this LDL package.  Note that row k of L is found via a sparse</span>
+</span><span><a class="LN" name="137">  137   </a><span class="CT"> * triangular solve of L (1:k-1, 1:k-1) \ A (1:k-1, k), to use 1-based MATLAB</span>
+</span><span><a class="LN" name="138">  138   </a><span class="CT"> * notation.  Thus, we can start with the nonzero pattern of the kth column of</span>
+</span><span><a class="LN" name="139">  139   </a><span class="CT"> * A (above the diagonal), follow the paths up to the root of the etree of the</span>
+</span><span><a class="LN" name="140">  140   </a><span class="CT"> * (k-1)-by-(k-1) leading submatrix of L, and obtain the pattern of the kth row</span>
+</span><span><a class="LN" name="141">  141   </a><span class="CT"> * of L.  Note that we only need the leading (k-1)-by-(k-1) submatrix of L to</span>
+</span><span><a class="LN" name="142">  142   </a><span class="CT"> * do this.  The elimination tree can be constructed as we go.</span>
+</span><span><a class="LN" name="143">  143   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="144">  144   </a><span class="CT"> * The symbolic factorization does the same thing, except that it discards the</span>
+</span><span><a class="LN" name="145">  145   </a><span class="CT"> * pattern of L as it is computed.  It simply counts the number of nonzeros in</span>
+</span><span><a class="LN" name="146">  146   </a><span class="CT"> * each column of L and then constructs the Lp index array when it's done.  The</span>
+</span><span><a class="LN" name="147">  147   </a><span class="CT"> * symbolic factorization does not need to do this in topological order.</span>
+</span><span><a class="LN" name="148">  148   </a><span class="CT"> * Compare ldl_symbolic with the first part of ldl_numeric, and note that the</span>
+</span><span><a class="LN" name="149">  149   </a><span class="CT"> * while (len &gt; 0) loop is not present in ldl_symbolic.</span>
+</span><span><a class="LN" name="150">  150   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="151">  151   </a><span class="CT"> * Copyright (c) 2006 by Timothy A Davis, http://www.suitesparse.com.</span>
+</span><span><a class="LN" name="152">  152   </a><span class="CT"> * All Rights Reserved.  Developed while on sabbatical</span>
+</span><span><a class="LN" name="153">  153   </a><span class="CT"> * at Stanford University and Lawrence Berkeley National Laboratory.  Refer to</span>
+</span><span><a class="LN" name="154">  154   </a><span class="CT"> * the README file for the License.</span>
+</span><span><a class="LN" name="155">  155   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="156">  156   </a>
+</span><span><a class="LN" name="157">  157   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ldl.h&quot;</font>
+</span><span><a class="LN" name="158">  158   </a>
+</span><span><a class="LN" name="159">  159   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;glblopts.h&quot;</font>
+</span><span><a class="LN" name="160">  160   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="161">  161   </a>
+</span><span><a class="LN" name="162">  162   </a>
+</span><span><a class="LN" name="163">  163   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="164">  164   </a><span class="CT">/* === ldl_symbolic2 ======================================================== */</span>
+</span><span><a class="LN" name="165">  165   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="166">  166   </a>
+</span><span><a class="LN" name="167">  167   </a><span class="CT">/* The input to this routine is a sparse matrix A, stored in column form, and</span>
+</span><span><a class="LN" name="168">  168   </a><span class="CT"> * an optional permutation P.  The output is the elimination tree</span>
+</span><span><a class="LN" name="169">  169   </a><span class="CT"> * and the number of nonzeros in each column of L.  Parent [i] = k if k is the</span>
+</span><span><a class="LN" name="170">  170   </a><span class="CT"> * parent of i in the tree.  The Parent array is required by ldl_numeric.</span>
+</span><span><a class="LN" name="171">  171   </a><span class="CT"> * Lnz [k] gives the number of nonzeros in the kth column of L, excluding the</span>
+</span><span><a class="LN" name="172">  172   </a><span class="CT"> * diagonal.</span>
+</span><span><a class="LN" name="173">  173   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="174">  174   </a><span class="CT"> * One workspace vector (Flag) of size n is required.</span>
+</span><span><a class="LN" name="175">  175   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="176">  176   </a><span class="CT"> * If P is NULL, then it is ignored.  The factorization will be LDL' = A.</span>
+</span><span><a class="LN" name="177">  177   </a><span class="CT"> * Pinv is not computed.  In this case, neither P nor Pinv are required by</span>
+</span><span><a class="LN" name="178">  178   </a><span class="CT"> * ldl_numeric.</span>
+</span><span><a class="LN" name="179">  179   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="180">  180   </a><span class="CT"> * If P is not NULL, then it is assumed to be a valid permutation.  If</span>
+</span><span><a class="LN" name="181">  181   </a><span class="CT"> * row and column j of A is the kth pivot, the P [k] = j.  The factorization</span>
+</span><span><a class="LN" name="182">  182   </a><span class="CT"> * will be LDL' = PAP', or A (p,p) in MATLAB notation.  The inverse permutation</span>
+</span><span><a class="LN" name="183">  183   </a><span class="CT"> * Pinv is computed, where Pinv [j] = k if P [k] = j.  In this case, both P</span>
+</span><span><a class="LN" name="184">  184   </a><span class="CT"> * and Pinv are required as inputs to ldl_numeric.</span>
+</span><span><a class="LN" name="185">  185   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="186">  186   </a><span class="CT"> * The floating-point operation count of the subsequent call to ldl_numeric</span>
+</span><span><a class="LN" name="187">  187   </a><span class="CT"> * is not returned, but could be computed after ldl_symbolic is done.  It is</span>
+</span><span><a class="LN" name="188">  188   </a><span class="CT"> * the sum of (Lnz [k]) * (Lnz [k] + 2) for k = 0 to n-1.</span>
+</span><span><a class="LN" name="189">  189   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="190">  190   </a><span class="CT"> * This is essentially ldl_symbolic, but with the following simplifications</span>
+</span><span><a class="LN" name="191">  191   </a><span class="CT"> * implemented (as stated above) by A. Domahidi:</span>
+</span><span><a class="LN" name="192">  192   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="193">  193   </a><span class="CT"> * These routines could be made even simpler with a few additional assumptions.</span>
+</span><span><a class="LN" name="194">  194   </a><span class="CT"> * If no input permutation were performed, the caller would have to permute the</span>
+</span><span><a class="LN" name="195">  195   </a><span class="CT"> * matrix first, but the computation of Pinv, and the use of P and Pinv could be</span>
+</span><span><a class="LN" name="196">  196   </a><span class="CT"> * removed.  If only the diagonal and upper triangular part of A or PAP' are</span>
+</span><span><a class="LN" name="197">  197   </a><span class="CT"> * present, then the tests in the "if (i &lt; k)" statement in ldl_symbolic and</span>
+</span><span><a class="LN" name="198">  198   </a><span class="CT"> * "if (i &lt;= k)" in ldl_numeric, are always true, and could be removed (i can</span>
+</span><span><a class="LN" name="199">  199   </a><span class="CT"> * equal k in ldl_symbolic, but then the body of the if statement would</span>
+</span><span><a class="LN" name="200">  200   </a><span class="CT"> * correctly do no work since Flag [k] == k). </span>
+</span><span><a class="LN" name="201">  201   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="202">  202   </a>
+</span><span><a class="LN" name="203">  203   </a><span class="DT">void</span> <a name="fcn_LDL_symbolic2">LDL_symbolic2</a>
+</span><span><a class="LN" name="204">  204   </a>(
+</span><span><a class="LN" name="205">  205   </a>    LDL_int n,		<span class="CT">/* A and L are n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="206">  206   </a>    LDL_int Ap [ ],	<span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="207">  207   </a>    LDL_int Ai [ ],	<span class="CT">/* input of size nz=Ap[n], not modified */</span>
+</span><span><a class="LN" name="208">  208   </a>    LDL_int Lp [ ],	<span class="CT">/* output of size n+1, not defined on input */</span>
+</span><span><a class="LN" name="209">  209   </a>    LDL_int Parent [ ],	<span class="CT">/* output of size n, not defined on input */</span>
+</span><span><a class="LN" name="210">  210   </a>    LDL_int Lnz [ ],	<span class="CT">/* output of size n, not defined on input */</span>
+</span><span><a class="LN" name="211">  211   </a>    LDL_int Flag [ ]	<span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="212">  212   </a>)
+</span><span><a class="LN" name="213">  213   </a><b>{</b>
+</span><span><a class="LN" name="214">  214   </a>    LDL_int i, k, p, p2 ;
+</span><span><a class="LN" name="215">  215   </a>    
+</span><span><a class="LN" name="216">  216   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++)<b>{</b>
+</span><span><a class="LN" name="217">  217   </a>		<span class="CT">/* L(k,:) pattern: all nodes reachable in etree from nz in A(0:k-1,k) */</span>
+</span><span><a class="LN" name="218">  218   </a>		Parent [k] = -1 ;	    <span class="CT">/* parent of k is not yet known */</span>
+</span><span><a class="LN" name="219">  219   </a>		Flag [k] = k ;		    <span class="CT">/* mark node k as visited */</span>
+</span><span><a class="LN" name="220">  220   </a>		Lnz [k] = 0 ;		    <span class="CT">/* count of nonzeros in column k of L */</span>	
+</span><span><a class="LN" name="221">  221   </a>		p2 = Ap [k+1] ;
+</span><span><a class="LN" name="222">  222   </a>		<span class="KW">for</span> (p = Ap [k] ; p &lt; p2 ; p++)	<b>{</b>
+</span><span><a class="LN" name="223">  223   </a>			<span class="CT">/* A (i,k) is nonzero (original or permuted A) */</span>
+</span><span><a class="LN" name="224">  224   </a>			i = Ai [p];
+</span><span><a class="LN" name="225">  225   </a>	    
+</span><span><a class="LN" name="226">  226   </a>			<span class="CT">/* follow path from i to root of etree, stop at flagged node */</span>
+</span><span><a class="LN" name="227">  227   </a>			<span class="KW">for</span> ( ; Flag [i] != k ; i = Parent [i])<b>{</b>
+</span><span><a class="LN" name="228">  228   </a>				<span class="CT">/* find parent of i if not yet determined */</span>
+</span><span><a class="LN" name="229">  229   </a>				<span class="KW">if</span> (Parent [i] == -1) Parent [i] = k ;
+</span><span><a class="LN" name="230">  230   </a>				Lnz [i]++ ;				<span class="CT">/* L (k,i) is nonzero */</span>
+</span><span><a class="LN" name="231">  231   </a>				Flag [i] = k ;			<span class="CT">/* mark i as visited */</span>
+</span><span><a class="LN" name="232">  232   </a>			<b>}</b>	    
+</span><span><a class="LN" name="233">  233   </a>		<b>}</b>
+</span><span><a class="LN" name="234">  234   </a>    <b>}</b>
+</span><span><a class="LN" name="235">  235   </a>
+</span><span><a class="LN" name="236">  236   </a>    <span class="CT">/* construct Lp index array from Lnz column counts */</span>
+</span><span><a class="LN" name="237">  237   </a>    Lp [0] = 0 ;
+</span><span><a class="LN" name="238">  238   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++)<b>{</b>
+</span><span><a class="LN" name="239">  239   </a>		Lp [k+1] = Lp [k] + Lnz [k] ;
+</span><span><a class="LN" name="240">  240   </a>    <b>}</b>
+</span><span><a class="LN" name="241">  241   </a><b>}</b>
+</span><span><a class="LN" name="242">  242   </a>
+</span><span><a class="LN" name="243">  243   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="244">  244   </a><span class="CT">/* === ldl_numeric2 ========================================================== */</span>
+</span><span><a class="LN" name="245">  245   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="246">  246   </a>
+</span><span><a class="LN" name="247">  247   </a><span class="CT">/* Given a sparse matrix A (the arguments n, Ap, Ai, and Ax) and its symbolic</span>
+</span><span><a class="LN" name="248">  248   </a><span class="CT"> * analysis (Lp and Parent, and optionally P and Pinv), compute the numeric LDL'</span>
+</span><span><a class="LN" name="249">  249   </a><span class="CT"> * factorization of A or PAP'.  The outputs of this routine are arguments Li,</span>
+</span><span><a class="LN" name="250">  250   </a><span class="CT"> * Lx, and D.  It also requires three size-n workspaces (Y, Pattern, and Flag).</span>
+</span><span><a class="LN" name="251">  251   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="252">  252   </a><span class="CT"> * This is essentially ldl_numeric, but with the following simplifications</span>
+</span><span><a class="LN" name="253">  253   </a><span class="CT"> * implemented (as stated above) by A. Domahidi:</span>
+</span><span><a class="LN" name="254">  254   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="255">  255   </a><span class="CT"> * These routines could be made even simpler with a few additional assumptions.</span>
+</span><span><a class="LN" name="256">  256   </a><span class="CT"> * If no input permutation were performed, the caller would have to permute the</span>
+</span><span><a class="LN" name="257">  257   </a><span class="CT"> * matrix first, but the computation of Pinv, and the use of P and Pinv could be</span>
+</span><span><a class="LN" name="258">  258   </a><span class="CT"> * removed.  If only the diagonal and upper triangular part of A or PAP' are</span>
+</span><span><a class="LN" name="259">  259   </a><span class="CT"> * present, then the tests in the "if (i &lt; k)" statement in ldl_symbolic and</span>
+</span><span><a class="LN" name="260">  260   </a><span class="CT"> * "if (i &lt;= k)" in ldl_numeric, are always true, and could be removed (i can</span>
+</span><span><a class="LN" name="261">  261   </a><span class="CT"> * equal k in ldl_symbolic, but then the body of the if statement would</span>
+</span><span><a class="LN" name="262">  262   </a><span class="CT"> * correctly do no work since Flag [k] == k).  If we could assume that no</span>
+</span><span><a class="LN" name="263">  263   </a><span class="CT"> * duplicate entries are present, then the statement Y [i] += Ax [p] could be</span>
+</span><span><a class="LN" name="264">  264   </a><span class="CT"> * replaced with Y [i] = Ax [p] in ldl_numeric.</span>
+</span><span><a class="LN" name="265">  265   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="266">  266   </a>LDL_int <a name="fcn_LDL_numeric2">LDL_numeric2</a>	<span class="CT">/* returns n if successful, k if D (k,k) is zero */</span>
+</span><span><a class="LN" name="267">  267   </a>(
+</span><span><a class="LN" name="268">  268   </a>    LDL_int n,		     <span class="CT">/* A and L are n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="269">  269   </a>    LDL_int Ap [ ],	     <span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="270">  270   </a>    LDL_int Ai [ ],	     <span class="CT">/* input of size nz=Ap[n], not modified */</span>
+</span><span><a class="LN" name="271">  271   </a>    <span class="DT">double</span> Ax [ ],	     <span class="CT">/* input of size nz=Ap[n], not modified */</span>
+</span><span><a class="LN" name="272">  272   </a>    LDL_int Lp [ ],	     <span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="273">  273   </a>    LDL_int Parent [ ],	 <span class="CT">/* input of size n, not modified */</span>
+</span><span><a class="LN" name="274">  274   </a>	LDL_int Sign[ ],     <span class="CT">/* input of size n, sign vector of diagonal entries for regularization */</span>
+</span><span><a class="LN" name="275">  275   </a>    <span class="DT">double</span> eps,          <span class="CT">/* input, regularization threshold */</span>
+</span><span><a class="LN" name="276">  276   </a>	<span class="DT">double</span> delta,        <span class="CT">/* input, regularization parameter */</span>
+</span><span><a class="LN" name="277">  277   </a>    LDL_int Lnz [ ],	 <span class="CT">/* output of size n, not defn. on input */</span>
+</span><span><a class="LN" name="278">  278   </a>    LDL_int Li [ ],	     <span class="CT">/* output of size lnz=Lp[n], not defined on input */</span>
+</span><span><a class="LN" name="279">  279   </a>    <span class="DT">double</span> Lx [ ],	     <span class="CT">/* output of size lnz=Lp[n], not defined on input */</span>
+</span><span><a class="LN" name="280">  280   </a>    <span class="DT">double</span> D [ ],	     <span class="CT">/* output of size n, not defined on input */</span>
+</span><span><a class="LN" name="281">  281   </a>    <span class="DT">double</span> Y [ ],	     <span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="282">  282   </a>    LDL_int Pattern [ ], <span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="283">  283   </a>    LDL_int Flag [ ]	 <span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="284">  284   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="285">  285   </a>    ,<span class="DT">double</span> *t1,           <span class="CT">/* time for non-zero pattern computation */</span>
+</span><span><a class="LN" name="286">  286   </a>    <span class="DT">double</span> *t2           <span class="CT">/* time for back-solves */</span>
+</span><span><a class="LN" name="287">  287   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="288">  288   </a>)
+</span><span><a class="LN" name="289">  289   </a><b>{</b>
+</span><span><a class="LN" name="290">  290   </a>    <span class="DT">double</span> yi, l_ki;
+</span><span><a class="LN" name="291">  291   </a>    LDL_int i, k, p, p2, len, top;
+</span><span><a class="LN" name="292">  292   </a>        
+</span><span><a class="LN" name="293">  293   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="294">  294   </a>    timer clock;
+</span><span><a class="LN" name="295">  295   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="296">  296   </a>    
+</span><span><a class="LN" name="297">  297   </a>    <span class="CT">/* go row-wise about this */</span>
+</span><span><a class="LN" name="298">  298   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++)<b>{</b>
+</span><span><a class="LN" name="299">  299   </a>        
+</span><span><a class="LN" name="300">  300   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="301">  301   </a>        <a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;clock);
+</span><span><a class="LN" name="302">  302   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="303">  303   </a>		<span class="CT">/* compute nonzero Pattern of kth row of L, in topological order */</span>
+</span><span><a class="LN" name="304">  304   </a>		Y [k] = 0.0 ;		    <span class="CT">/* Y(0:k) is now all zero */</span>
+</span><span><a class="LN" name="305">  305   </a>		top = n ;		        <span class="CT">/* stack for pattern is empty */</span>
+</span><span><a class="LN" name="306">  306   </a>		Flag [k] = k ;		    <span class="CT">/* mark node k as visited */</span>
+</span><span><a class="LN" name="307">  307   </a>		Lnz [k] = 0 ;		    <span class="CT">/* count of nonzeros in column k of L */</span>	
+</span><span><a class="LN" name="308">  308   </a>		p2 = Ap [k+1] ;
+</span><span><a class="LN" name="309">  309   </a>		<span class="KW">for</span> (p = Ap [k] ; p &lt; p2 ; p++)<b>{</b>
+</span><span><a class="LN" name="310">  310   </a>			i = Ai [p];			<span class="CT">/* get A(i,k) */</span>	   
+</span><span><a class="LN" name="311">  311   </a>			Y [i] = Ax [p] ;  
+</span><span><a class="LN" name="312">  312   </a>			<span class="KW">for</span> (len = 0 ; Flag [i] != k ; i = Parent [i])<b>{</b>
+</span><span><a class="LN" name="313">  313   </a>				Pattern [len++] = i ;   <span class="CT">/* L(k,i) is nonzero */</span>
+</span><span><a class="LN" name="314">  314   </a>				Flag [i] = k ;			<span class="CT">/* mark i as visited */</span>
+</span><span><a class="LN" name="315">  315   </a>			<b>}</b>
+</span><span><a class="LN" name="316">  316   </a>			<span class="KW">while</span> (len &gt; 0) Pattern [--top] = Pattern [--len] ;	    
+</span><span><a class="LN" name="317">  317   </a>		<b>}</b>
+</span><span><a class="LN" name="318">  318   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="319">  319   </a>        *t1 += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;clock);        
+</span><span><a class="LN" name="320">  320   </a>        <a href="timer_c.html#fcn_tic" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_tic');" target="_self"><font color="#1122aa">tic</font></a>(&amp;clock);
+</span><span><a class="LN" name="321">  321   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="322">  322   </a>		<span class="CT">/* compute numerical values kth row of L (a sparse triangular solve) */</span>		
+</span><span><a class="LN" name="323">  323   </a>		D [k] = Y [k] ;		    <span class="CT">/* get D(k,k) and clear Y(k) */</span>	
+</span><span><a class="LN" name="324">  324   </a>		Y [k] = 0.0 ;
+</span><span><a class="LN" name="325">  325   </a>		<span class="KW">for</span> ( ; top &lt; n ; top++)<b>{</b>
+</span><span><a class="LN" name="326">  326   </a>			i = Pattern [top] ;	   <span class="CT">/* Pattern [top:n-1] is pattern of L(:,k) */</span>
+</span><span><a class="LN" name="327">  327   </a>			yi = Y [i] ;	       <span class="CT">/* get and clear Y(i) */</span>
+</span><span><a class="LN" name="328">  328   </a>			Y [i] = 0.0 ;
+</span><span><a class="LN" name="329">  329   </a>			p2 = Lp [i] + Lnz [i] ;
+</span><span><a class="LN" name="330">  330   </a>			<span class="KW">for</span> (p = Lp [i] ; p &lt; p2 ; p++)<b>{</b>
+</span><span><a class="LN" name="331">  331   </a>				Y [Li [p]] -= Lx [p] * yi ;
+</span><span><a class="LN" name="332">  332   </a>			<b>}</b>
+</span><span><a class="LN" name="333">  333   </a>			l_ki = yi / D [i] ;	    <span class="CT">/* the nonzero entry L(k,i) */</span>
+</span><span><a class="LN" name="334">  334   </a>			D [k] -= l_ki * yi ;
+</span><span><a class="LN" name="335">  335   </a>			Li [p] = k ;	        <span class="CT">/* store L(k,i) in column form of L */</span>
+</span><span><a class="LN" name="336">  336   </a>			Lx [p] = l_ki ;
+</span><span><a class="LN" name="337">  337   </a>			Lnz [i]++ ;		        <span class="CT">/* increment count of nonzeros in col i */</span>
+</span><span><a class="LN" name="338">  338   </a>		<b>}</b>
+</span><span><a class="LN" name="339">  339   </a>        
+</span><span><a class="LN" name="340">  340   </a>        <span class="CT">/* Dynamic regularization */</span>
+</span><span><a class="LN" name="341">  341   </a>        D[k] = Sign[k]*D[k] &lt;= eps ? Sign[k]*delta : D[k];
+</span><span><a class="LN" name="342">  342   </a>        
+</span><span><a class="LN" name="343">  343   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="344">  344   </a>        *t2 += <a href="timer_c.html#fcn_toc" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_toc');" target="_self"><font color="#1122aa">toc</font></a>(&amp;clock);
+</span><span><a class="LN" name="345">  345   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="346">  346   </a>        <span class="CT">/* FOR DEBUG</span>
+</span><span><a class="LN" name="347">  347   </a><span class="CT">        if( Sign[k]*D[k] &lt;= eps )</span>
+</span><span><a class="LN" name="348">  348   </a><span class="CT">        {</span>
+</span><span><a class="LN" name="349">  349   </a><span class="CT">            PRINTTEXT( "Sign[%d]=%d, D[%d] = %6.4e, regularizing to %4.2e\n", (int)k, (int)Sign[k], (int)k, D[k], Sign[k]*delta);</span>
+</span><span><a class="LN" name="350">  350   </a><span class="CT">            D[k] = Sign[k]*delta;</span>
+</span><span><a class="LN" name="351">  351   </a><span class="CT">        }</span>
+</span><span><a class="LN" name="352">  352   </a><span class="CT">         */</span>
+</span><span><a class="LN" name="353">  353   </a>    <b>}</b>
+</span><span><a class="LN" name="354">  354   </a>    <span class="KW">return</span> (n) ;	<span class="CT">/* success, diagonal of D is all nonzero */</span>
+</span><span><a class="LN" name="355">  355   </a><b>}</b>
+</span><span><a class="LN" name="356">  356   </a>
+</span><span><a class="LN" name="357">  357   </a>
+</span><span><a class="LN" name="358">  358   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="359">  359   </a><span class="CT">/* === ldl_lsolve:  solve Lx=b ============================================== */</span>
+</span><span><a class="LN" name="360">  360   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="361">  361   </a>
+</span><span><a class="LN" name="362">  362   </a><span class="DT">void</span> <a name="fcn_LDL_lsolve">LDL_lsolve</a>
+</span><span><a class="LN" name="363">  363   </a>(
+</span><span><a class="LN" name="364">  364   </a>    LDL_int n,		<span class="CT">/* L is n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="365">  365   </a>    <span class="DT">double</span> X [ ],	<span class="CT">/* size n.  right-hand-side on input, soln. on output */</span>
+</span><span><a class="LN" name="366">  366   </a>    LDL_int Lp [ ],	<span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="367">  367   </a>    LDL_int Li [ ],	<span class="CT">/* input of size lnz=Lp[n], not modified */</span>
+</span><span><a class="LN" name="368">  368   </a>    <span class="DT">double</span> Lx [ ]	<span class="CT">/* input of size lnz=Lp[n], not modified */</span>
+</span><span><a class="LN" name="369">  369   </a>)<b>{</b>
+</span><span><a class="LN" name="370">  370   </a>    LDL_int j, p, p2 ;
+</span><span><a class="LN" name="371">  371   </a>    <span class="KW">for</span> (j = 0 ; j &lt; n ; j++)<b>{</b>
+</span><span><a class="LN" name="372">  372   </a>		p2 = Lp [j+1] ;
+</span><span><a class="LN" name="373">  373   </a>		<span class="KW">for</span> (p = Lp [j] ; p &lt; p2 ; p++)<b>{</b>
+</span><span><a class="LN" name="374">  374   </a>			X [Li [p]] -= Lx [p] * X [j] ;
+</span><span><a class="LN" name="375">  375   </a>		<b>}</b>
+</span><span><a class="LN" name="376">  376   </a>	<b>}</b>
+</span><span><a class="LN" name="377">  377   </a><b>}</b>
+</span><span><a class="LN" name="378">  378   </a>
+</span><span><a class="LN" name="379">  379   </a><span class="CT">/* MODIFIED BY ALEXANDER DOMAHIDI */</span>
+</span><span><a class="LN" name="380">  380   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="381">  381   </a><span class="CT">/* === ldl_lsolve2:  solve Lx=b ============================================= */</span>
+</span><span><a class="LN" name="382">  382   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="383">  383   </a>
+</span><span><a class="LN" name="384">  384   </a><span class="DT">void</span> <a name="fcn_LDL_lsolve2">LDL_lsolve2</a>
+</span><span><a class="LN" name="385">  385   </a>(
+</span><span><a class="LN" name="386">  386   </a>    LDL_int n,		<span class="CT">/* L is n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="387">  387   </a>	<span class="DT">double</span> b [ ],	<span class="CT">/* size n. input. right-hand-side */</span>    
+</span><span><a class="LN" name="388">  388   </a>    LDL_int Lp [ ],	<span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="389">  389   </a>    LDL_int Li [ ],	<span class="CT">/* input of size lnz=Lp[n], not modified */</span>
+</span><span><a class="LN" name="390">  390   </a>    <span class="DT">double</span> Lx [ ],	<span class="CT">/* input of size lnz=Lp[n], not modified */</span>
+</span><span><a class="LN" name="391">  391   </a>	<span class="DT">double</span> x [ ]	<span class="CT">/* size n. output. solution to Lx=b */</span>
+</span><span><a class="LN" name="392">  392   </a>)
+</span><span><a class="LN" name="393">  393   </a><b>{</b>
+</span><span><a class="LN" name="394">  394   </a>    LDL_int j, p, p2 ;
+</span><span><a class="LN" name="395">  395   </a>	<span class="KW">for</span>( j=0; j &lt; n; j++ )<b>{</b> x[j] = b[j]; <b>}</b>
+</span><span><a class="LN" name="396">  396   </a>    <span class="KW">for</span> (j = 0 ; j &lt; n ; j++)<b>{</b>		
+</span><span><a class="LN" name="397">  397   </a>		p2 = Lp [j+1] ;
+</span><span><a class="LN" name="398">  398   </a>		<span class="KW">for</span> (p = Lp [j] ; p &lt; p2 ; p++)<b>{</b> 
+</span><span><a class="LN" name="399">  399   </a>			x [Li [p]] -= Lx [p] * x [j]; 
+</span><span><a class="LN" name="400">  400   </a>		<b>}</b>
+</span><span><a class="LN" name="401">  401   </a>    <b>}</b>
+</span><span><a class="LN" name="402">  402   </a><b>}</b>
+</span><span><a class="LN" name="403">  403   </a>
+</span><span><a class="LN" name="404">  404   </a>
+</span><span><a class="LN" name="405">  405   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="406">  406   </a><span class="CT">/* === ldl_dsolve:  solve Dx=b ============================================== */</span>
+</span><span><a class="LN" name="407">  407   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="408">  408   </a>
+</span><span><a class="LN" name="409">  409   </a><span class="DT">void</span> <a name="fcn_LDL_dsolve">LDL_dsolve</a>
+</span><span><a class="LN" name="410">  410   </a>(
+</span><span><a class="LN" name="411">  411   </a>    LDL_int n,		<span class="CT">/* D is n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="412">  412   </a>    <span class="DT">double</span> X [ ],	<span class="CT">/* size n.  right-hand-side on input, soln. on output */</span>
+</span><span><a class="LN" name="413">  413   </a>    <span class="DT">double</span> D [ ]	<span class="CT">/* input of size n, not modified */</span>
+</span><span><a class="LN" name="414">  414   </a>)
+</span><span><a class="LN" name="415">  415   </a><b>{</b>
+</span><span><a class="LN" name="416">  416   </a>    LDL_int j ;
+</span><span><a class="LN" name="417">  417   </a>    <span class="KW">for</span> (j = 0 ; j &lt; n ; j++)<b>{</b> X [j] /= D [j]; <b>}</b>
+</span><span><a class="LN" name="418">  418   </a><b>}</b>
+</span><span><a class="LN" name="419">  419   </a>
+</span><span><a class="LN" name="420">  420   </a>
+</span><span><a class="LN" name="421">  421   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="422">  422   </a><span class="CT">/* === ldl_ltsolve: solve L'x=b  ============================================ */</span>
+</span><span><a class="LN" name="423">  423   </a><span class="CT">/* ========================================================================== */</span>
+</span><span><a class="LN" name="424">  424   </a>
+</span><span><a class="LN" name="425">  425   </a><span class="DT">void</span> <a name="fcn_LDL_ltsolve">LDL_ltsolve</a>
+</span><span><a class="LN" name="426">  426   </a>(
+</span><span><a class="LN" name="427">  427   </a>    LDL_int n,		<span class="CT">/* L is n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="428">  428   </a>    <span class="DT">double</span> X [ ],	<span class="CT">/* size n.  right-hand-side on input, soln. on output */</span>
+</span><span><a class="LN" name="429">  429   </a>    LDL_int Lp [ ],	<span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="430">  430   </a>    LDL_int Li [ ],	<span class="CT">/* input of size lnz=Lp[n], not modified */</span>
+</span><span><a class="LN" name="431">  431   </a>    <span class="DT">double</span> Lx [ ]	<span class="CT">/* input of size lnz=Lp[n], not modified */</span>
+</span><span><a class="LN" name="432">  432   </a>)
+</span><span><a class="LN" name="433">  433   </a><b>{</b>
+</span><span><a class="LN" name="434">  434   </a>    LDL_int j, p, p2 ;
+</span><span><a class="LN" name="435">  435   </a>    <span class="KW">for</span> (j = n-1 ; j &gt;= 0 ; j--)<b>{</b>
+</span><span><a class="LN" name="436">  436   </a>		p2 = Lp [j+1] ;
+</span><span><a class="LN" name="437">  437   </a>		<span class="KW">for</span> (p = Lp [j] ; p &lt; p2 ; p++)<b>{</b>
+</span><span><a class="LN" name="438">  438   </a>			X [j] -= Lx [p] * X [Li [p]] ;
+</span><span><a class="LN" name="439">  439   </a>		<b>}</b>
+</span><span><a class="LN" name="440">  440   </a>    <b>}</b>
+</span><span><a class="LN" name="441">  441   </a><b>}</b>
+</span><span><a class="LN" name="442">  442   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - amd_aat.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('amd_aat_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/amd_aat.c" target="rtwreport_document_frame" id="linkToText_plain">amd_aat.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">/* === AMD_aat ============================================================= */</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/* ========================================================================= */</span>
+</span><span><a class="LN" name="4">    4   </a>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">/* AMD, Copyright (c) Timothy A. Davis,					     */</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT">/* Patrick R. Amestoy, and Iain S. Duff.  See ../README.txt for License.     */</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">/* email: DrTimothyAldenDavis@gmail.com                                      */</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT">/* ------------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="10">   10   </a>
+</span><span><a class="LN" name="11">   11   </a><span class="CT">/* AMD_aat:  compute the symmetry of the pattern of A, and count the number of</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * nonzeros each column of A+A' (excluding the diagonal).  Assumes the input</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * matrix has no errors, with sorted columns and no duplicates</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * (AMD_valid (n, n, Ap, Ai) must be AMD_OK, but this condition is not</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * checked).</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="17">   17   </a>
+</span><span><a class="LN" name="18">   18   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;amd_internal.h&quot;</font>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>GLOBAL size_t <a name="fcn_AMD_aat">AMD_aat</a>	<span class="CT">/* returns nz in A+A' */</span>
+</span><span><a class="LN" name="21">   21   </a>(
+</span><span><a class="LN" name="22">   22   </a>    Int n,
+</span><span><a class="LN" name="23">   23   </a>    <span class="DT">const</span> Int Ap [ ],
+</span><span><a class="LN" name="24">   24   </a>    <span class="DT">const</span> Int Ai [ ],
+</span><span><a class="LN" name="25">   25   </a>    Int Len [ ],	<span class="CT">/* Len [j]: length of column j of A+A', excl diagonal*/</span>
+</span><span><a class="LN" name="26">   26   </a>    Int Tp [ ],		<span class="CT">/* workspace of size n */</span>
+</span><span><a class="LN" name="27">   27   </a>    <span class="DT">double</span> Info [ ]
+</span><span><a class="LN" name="28">   28   </a>)
+</span><span><a class="LN" name="29">   29   </a><b>{</b>
+</span><span><a class="LN" name="30">   30   </a>    Int p1, p2, p, i, j, pj, pj2, k, nzdiag, nzboth, nz ;
+</span><span><a class="LN" name="31">   31   </a>    <span class="DT">double</span> sym ;
+</span><span><a class="LN" name="32">   32   </a>    size_t nzaat ;
+</span><span><a class="LN" name="33">   33   </a>
+</span><span><a class="LN" name="34">   34   </a><font color="#992211">#</font><span class="PP">ifndef</span> NDEBUG
+</span><span><a class="LN" name="35">   35   </a>    <a href="amd_dump_c.html#fcn_AMD_debug_init" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_AMD_debug_init');" target="_self"><font color="#1122aa">AMD_debug_init</font></a> (<font color="#1122ff">&quot;AMD AAT&quot;</font>) ;
+</span><span><a class="LN" name="36">   36   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++) Tp [k] = EMPTY ;
+</span><span><a class="LN" name="37">   37   </a>    ASSERT (<a href="amd_valid_c.html#fcn_AMD_valid" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_AMD_valid');" target="_self"><font color="#1122aa">AMD_valid</font></a> (n, n, Ap, Ai) == AMD_OK) ;
+</span><span><a class="LN" name="38">   38   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="39">   39   </a>
+</span><span><a class="LN" name="40">   40   </a>    <span class="KW">if</span> (Info != (<span class="DT">double</span> *) NULL)
+</span><span><a class="LN" name="41">   41   </a>    <b>{</b>
+</span><span><a class="LN" name="42">   42   </a>	<span class="CT">/* clear the Info array, if it exists */</span>
+</span><span><a class="LN" name="43">   43   </a>	<span class="KW">for</span> (i = 0 ; i &lt; AMD_INFO ; i++)
+</span><span><a class="LN" name="44">   44   </a>	<b>{</b>
+</span><span><a class="LN" name="45">   45   </a>	    Info [i] = EMPTY ;
+</span><span><a class="LN" name="46">   46   </a>	<b>}</b>
+</span><span><a class="LN" name="47">   47   </a>	Info [AMD_STATUS] = AMD_OK ;
+</span><span><a class="LN" name="48">   48   </a>    <b>}</b>
+</span><span><a class="LN" name="49">   49   </a>
+</span><span><a class="LN" name="50">   50   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++)
+</span><span><a class="LN" name="51">   51   </a>    <b>{</b>
+</span><span><a class="LN" name="52">   52   </a>	Len [k] = 0 ;
+</span><span><a class="LN" name="53">   53   </a>    <b>}</b>
+</span><span><a class="LN" name="54">   54   </a>
+</span><span><a class="LN" name="55">   55   </a>    nzdiag = 0 ;
+</span><span><a class="LN" name="56">   56   </a>    nzboth = 0 ;
+</span><span><a class="LN" name="57">   57   </a>    nz = Ap [n] ;
+</span><span><a class="LN" name="58">   58   </a>
+</span><span><a class="LN" name="59">   59   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++)
+</span><span><a class="LN" name="60">   60   </a>    <b>{</b>
+</span><span><a class="LN" name="61">   61   </a>	p1 = Ap [k] ;
+</span><span><a class="LN" name="62">   62   </a>	p2 = Ap [k+1] ;
+</span><span><a class="LN" name="63">   63   </a>	AMD_DEBUG2 ((<font color="#1122ff">&quot;\nAAT Column: &quot;</font>ID<font color="#1122ff">&quot; p1: &quot;</font>ID<font color="#1122ff">&quot; p2: &quot;</font>ID<font color="#1122ff">&quot;\n&quot;</font>, k, p1, p2)) ;
+</span><span><a class="LN" name="64">   64   </a>
+</span><span><a class="LN" name="65">   65   </a>	<span class="CT">/* construct A+A' */</span>
+</span><span><a class="LN" name="66">   66   </a>	<span class="KW">for</span> (p = p1 ; p &lt; p2 ; )
+</span><span><a class="LN" name="67">   67   </a>	<b>{</b>
+</span><span><a class="LN" name="68">   68   </a>	    <span class="CT">/* scan the upper triangular part of A */</span>
+</span><span><a class="LN" name="69">   69   </a>	    j = Ai [p] ;
+</span><span><a class="LN" name="70">   70   </a>	    <span class="KW">if</span> (j &lt; k)
+</span><span><a class="LN" name="71">   71   </a>	    <b>{</b>
+</span><span><a class="LN" name="72">   72   </a>		<span class="CT">/* entry A (j,k) is in the strictly upper triangular part,</span>
+</span><span><a class="LN" name="73">   73   </a><span class="CT">		 * add both A (j,k) and A (k,j) to the matrix A+A' */</span>
+</span><span><a class="LN" name="74">   74   </a>		Len [j]++ ;
+</span><span><a class="LN" name="75">   75   </a>		Len [k]++ ;
+</span><span><a class="LN" name="76">   76   </a>		AMD_DEBUG3 ((<font color="#1122ff">&quot;    upper (&quot;</font>ID<font color="#1122ff">&quot;,&quot;</font>ID<font color="#1122ff">&quot;) (&quot;</font>ID<font color="#1122ff">&quot;,&quot;</font>ID<font color="#1122ff">&quot;)\n&quot;</font>, j,k, k,j));
+</span><span><a class="LN" name="77">   77   </a>		p++ ;
+</span><span><a class="LN" name="78">   78   </a>	    <b>}</b>
+</span><span><a class="LN" name="79">   79   </a>	    <span class="KW">else</span> <span class="KW">if</span> (j == k)
+</span><span><a class="LN" name="80">   80   </a>	    <b>{</b>
+</span><span><a class="LN" name="81">   81   </a>		<span class="CT">/* skip the diagonal */</span>
+</span><span><a class="LN" name="82">   82   </a>		p++ ;
+</span><span><a class="LN" name="83">   83   </a>		nzdiag++ ;
+</span><span><a class="LN" name="84">   84   </a>		<span class="KW">break</span> ;
+</span><span><a class="LN" name="85">   85   </a>	    <b>}</b>
+</span><span><a class="LN" name="86">   86   </a>	    <span class="KW">else</span> <span class="CT">/* j &gt; k */</span>
+</span><span><a class="LN" name="87">   87   </a>	    <b>{</b>
+</span><span><a class="LN" name="88">   88   </a>		<span class="CT">/* first entry below the diagonal */</span>
+</span><span><a class="LN" name="89">   89   </a>		<span class="KW">break</span> ;
+</span><span><a class="LN" name="90">   90   </a>	    <b>}</b>
+</span><span><a class="LN" name="91">   91   </a>	    <span class="CT">/* scan lower triangular part of A, in column j until reaching</span>
+</span><span><a class="LN" name="92">   92   </a><span class="CT">	     * row k.  Start where last scan left off. */</span>
+</span><span><a class="LN" name="93">   93   </a>	    ASSERT (Tp [j] != EMPTY) ;
+</span><span><a class="LN" name="94">   94   </a>	    ASSERT (Ap [j] &lt;= Tp [j] &amp;&amp; Tp [j] &lt;= Ap [j+1]) ;
+</span><span><a class="LN" name="95">   95   </a>	    pj2 = Ap [j+1] ;
+</span><span><a class="LN" name="96">   96   </a>	    <span class="KW">for</span> (pj = Tp [j] ; pj &lt; pj2 ; )
+</span><span><a class="LN" name="97">   97   </a>	    <b>{</b>
+</span><span><a class="LN" name="98">   98   </a>		i = Ai [pj] ;
+</span><span><a class="LN" name="99">   99   </a>		<span class="KW">if</span> (i &lt; k)
+</span><span><a class="LN" name="100">  100   </a>		<b>{</b>
+</span><span><a class="LN" name="101">  101   </a>		    <span class="CT">/* A (i,j) is only in the lower part, not in upper.</span>
+</span><span><a class="LN" name="102">  102   </a><span class="CT">		     * add both A (i,j) and A (j,i) to the matrix A+A' */</span>
+</span><span><a class="LN" name="103">  103   </a>		    Len [i]++ ;
+</span><span><a class="LN" name="104">  104   </a>		    Len [j]++ ;
+</span><span><a class="LN" name="105">  105   </a>		    AMD_DEBUG3 ((<font color="#1122ff">&quot;    lower (&quot;</font>ID<font color="#1122ff">&quot;,&quot;</font>ID<font color="#1122ff">&quot;) (&quot;</font>ID<font color="#1122ff">&quot;,&quot;</font>ID<font color="#1122ff">&quot;)\n&quot;</font>,
+</span><span><a class="LN" name="106">  106   </a>			i,j, j,i)) ;
+</span><span><a class="LN" name="107">  107   </a>		    pj++ ;
+</span><span><a class="LN" name="108">  108   </a>		<b>}</b>
+</span><span><a class="LN" name="109">  109   </a>		<span class="KW">else</span> <span class="KW">if</span> (i == k)
+</span><span><a class="LN" name="110">  110   </a>		<b>{</b>
+</span><span><a class="LN" name="111">  111   </a>		    <span class="CT">/* entry A (k,j) in lower part and A (j,k) in upper */</span>
+</span><span><a class="LN" name="112">  112   </a>		    pj++ ;
+</span><span><a class="LN" name="113">  113   </a>		    nzboth++ ;
+</span><span><a class="LN" name="114">  114   </a>		    <span class="KW">break</span> ;
+</span><span><a class="LN" name="115">  115   </a>		<b>}</b>
+</span><span><a class="LN" name="116">  116   </a>		<span class="KW">else</span> <span class="CT">/* i &gt; k */</span>
+</span><span><a class="LN" name="117">  117   </a>		<b>{</b>
+</span><span><a class="LN" name="118">  118   </a>		    <span class="CT">/* consider this entry later, when k advances to i */</span>
+</span><span><a class="LN" name="119">  119   </a>		    <span class="KW">break</span> ;
+</span><span><a class="LN" name="120">  120   </a>		<b>}</b>
+</span><span><a class="LN" name="121">  121   </a>	    <b>}</b>
+</span><span><a class="LN" name="122">  122   </a>	    Tp [j] = pj ;
+</span><span><a class="LN" name="123">  123   </a>	<b>}</b>
+</span><span><a class="LN" name="124">  124   </a>	<span class="CT">/* Tp [k] points to the entry just below the diagonal in column k */</span>
+</span><span><a class="LN" name="125">  125   </a>	Tp [k] = p ;
+</span><span><a class="LN" name="126">  126   </a>    <b>}</b>
+</span><span><a class="LN" name="127">  127   </a>
+</span><span><a class="LN" name="128">  128   </a>    <span class="CT">/* clean up, for remaining mismatched entries */</span>
+</span><span><a class="LN" name="129">  129   </a>    <span class="KW">for</span> (j = 0 ; j &lt; n ; j++)
+</span><span><a class="LN" name="130">  130   </a>    <b>{</b>
+</span><span><a class="LN" name="131">  131   </a>	<span class="KW">for</span> (pj = Tp [j] ; pj &lt; Ap [j+1] ; pj++)
+</span><span><a class="LN" name="132">  132   </a>	<b>{</b>
+</span><span><a class="LN" name="133">  133   </a>	    i = Ai [pj] ;
+</span><span><a class="LN" name="134">  134   </a>	    <span class="CT">/* A (i,j) is only in the lower part, not in upper.</span>
+</span><span><a class="LN" name="135">  135   </a><span class="CT">	     * add both A (i,j) and A (j,i) to the matrix A+A' */</span>
+</span><span><a class="LN" name="136">  136   </a>	    Len [i]++ ;
+</span><span><a class="LN" name="137">  137   </a>	    Len [j]++ ;
+</span><span><a class="LN" name="138">  138   </a>	    AMD_DEBUG3 ((<font color="#1122ff">&quot;    lower cleanup (&quot;</font>ID<font color="#1122ff">&quot;,&quot;</font>ID<font color="#1122ff">&quot;) (&quot;</font>ID<font color="#1122ff">&quot;,&quot;</font>ID<font color="#1122ff">&quot;)\n&quot;</font>,
+</span><span><a class="LN" name="139">  139   </a>		i,j, j,i)) ;
+</span><span><a class="LN" name="140">  140   </a>	<b>}</b>
+</span><span><a class="LN" name="141">  141   </a>    <b>}</b>
+</span><span><a class="LN" name="142">  142   </a>
+</span><span><a class="LN" name="143">  143   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="144">  144   </a>    <span class="CT">/* compute the symmetry of the nonzero pattern of A */</span>
+</span><span><a class="LN" name="145">  145   </a>    <span class="CT">/* --------------------------------------------------------------------- */</span>
+</span><span><a class="LN" name="146">  146   </a>
+</span><span><a class="LN" name="147">  147   </a>    <span class="CT">/* Given a matrix A, the symmetry of A is:</span>
+</span><span><a class="LN" name="148">  148   </a><span class="CT">     *	B = tril (spones (A), -1) + triu (spones (A), 1) ;</span>
+</span><span><a class="LN" name="149">  149   </a><span class="CT">     *  sym = nnz (B & B') / nnz (B) ;</span>
+</span><span><a class="LN" name="150">  150   </a><span class="CT">     *  or 1 if nnz (B) is zero.</span>
+</span><span><a class="LN" name="151">  151   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="152">  152   </a>
+</span><span><a class="LN" name="153">  153   </a>    <span class="KW">if</span> (nz == nzdiag)
+</span><span><a class="LN" name="154">  154   </a>    <b>{</b>
+</span><span><a class="LN" name="155">  155   </a>	sym = 1 ;
+</span><span><a class="LN" name="156">  156   </a>    <b>}</b>
+</span><span><a class="LN" name="157">  157   </a>    <span class="KW">else</span>
+</span><span><a class="LN" name="158">  158   </a>    <b>{</b>
+</span><span><a class="LN" name="159">  159   </a>	sym = (2 * (<span class="DT">double</span>) nzboth) / ((<span class="DT">double</span>) (nz - nzdiag)) ;
+</span><span><a class="LN" name="160">  160   </a>    <b>}</b>
+</span><span><a class="LN" name="161">  161   </a>
+</span><span><a class="LN" name="162">  162   </a>    nzaat = 0 ;
+</span><span><a class="LN" name="163">  163   </a>    <span class="KW">for</span> (k = 0 ; k &lt; n ; k++)
+</span><span><a class="LN" name="164">  164   </a>    <b>{</b>
+</span><span><a class="LN" name="165">  165   </a>	nzaat += Len [k] ;
+</span><span><a class="LN" name="166">  166   </a>    <b>}</b>
+</span><span><a class="LN" name="167">  167   </a>
+</span><span><a class="LN" name="168">  168   </a>    AMD_DEBUG1 ((<font color="#1122ff">&quot;AMD nz in A+A', excluding diagonal (nzaat) = %g\n&quot;</font>,
+</span><span><a class="LN" name="169">  169   </a>	(<span class="DT">double</span>) nzaat)) ;
+</span><span><a class="LN" name="170">  170   </a>    AMD_DEBUG1 ((<font color="#1122ff">&quot;   nzboth: &quot;</font>ID<font color="#1122ff">&quot; nz: &quot;</font>ID<font color="#1122ff">&quot; nzdiag: &quot;</font>ID<font color="#1122ff">&quot; symmetry: %g\n&quot;</font>,
+</span><span><a class="LN" name="171">  171   </a>		nzboth, nz, nzdiag, sym)) ;
+</span><span><a class="LN" name="172">  172   </a>
+</span><span><a class="LN" name="173">  173   </a>    <span class="KW">if</span> (Info != (<span class="DT">double</span> *) NULL)
+</span><span><a class="LN" name="174">  174   </a>    <b>{</b>
+</span><span><a class="LN" name="175">  175   </a>	Info [AMD_STATUS] = AMD_OK ;
+</span><span><a class="LN" name="176">  176   </a>	Info [AMD_N] = (<span class="DT">double</span>)n ;
+</span><span><a class="LN" name="177">  177   </a>	Info [AMD_NZ] = (<span class="DT">double</span>)nz ;
+</span><span><a class="LN" name="178">  178   </a>	Info [AMD_SYMMETRY] = sym ;					<span class="CT">/* symmetry of pattern of A */</span>
+</span><span><a class="LN" name="179">  179   </a>	Info [AMD_NZDIAG] = (<span class="DT">double</span>)nzdiag ;	    <span class="CT">/* nonzeros on diagonal of A */</span>
+</span><span><a class="LN" name="180">  180   </a>	Info [AMD_NZ_A_PLUS_AT] = (<span class="DT">double</span>)nzaat ;	<span class="CT">/* nonzeros in A+A' */</span>
+</span><span><a class="LN" name="181">  181   </a>    <b>}</b>
+</span><span><a class="LN" name="182">  182   </a>
+</span><span><a class="LN" name="183">  183   </a>    <span class="KW">return</span> (nzaat) ;
+</span><span><a class="LN" name="184">  184   </a><b>}</b>
+</span><span><a class="LN" name="185">  185   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - kkt.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('kkt_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/kkt.c" target="rtwreport_document_frame" id="linkToText_plain">kkt.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">/* The KKT module.</span>
+</span><span><a class="LN" name="22">   22   </a><span class="CT"> * Handles all computation related to KKT matrix:</span>
+</span><span><a class="LN" name="23">   23   </a><span class="CT"> * - updating the matrix</span>
+</span><span><a class="LN" name="24">   24   </a><span class="CT"> * - its factorization</span>
+</span><span><a class="LN" name="25">   25   </a><span class="CT"> * - solving for search directions</span>
+</span><span><a class="LN" name="26">   26   </a><span class="CT"> * - etc.</span>
+</span><span><a class="LN" name="27">   27   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;kkt.h&quot;</font>
+</span><span><a class="LN" name="30">   30   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ldl.h&quot;</font>
+</span><span><a class="LN" name="31">   31   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;splamm.h&quot;</font>
+</span><span><a class="LN" name="32">   32   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="33">   33   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;cone.h&quot;</font>
+</span><span><a class="LN" name="34">   34   </a>
+</span><span><a class="LN" name="35">   35   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;math.h&gt;</font>
+</span><span><a class="LN" name="36">   36   </a>
+</span><span><a class="LN" name="37">   37   </a><span class="CT">/* Factorization of KKT matrix. Just a wrapper for some LDL code */</span>
+</span><span><a class="LN" name="38">   38   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="39">   39   </a>idxint <a href="#fcn_kkt_factor" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_kkt_factor');" target="_self"><font color="#1122aa">kkt_factor</font></a>(kkt* KKT, pfloat eps, pfloat delta, pfloat *t1, pfloat* t2)
+</span><span><a class="LN" name="40">   40   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="41">   41   </a>idxint <a name="fcn_kkt_factor">kkt_factor</a>(kkt* KKT, pfloat eps, pfloat delta)
+</span><span><a class="LN" name="42">   42   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="43">   43   </a><b>{</b>
+</span><span><a class="LN" name="44">   44   </a>	idxint nd;
+</span><span><a class="LN" name="45">   45   </a>
+</span><span><a class="LN" name="46">   46   </a>    <span class="CT">/* returns n if successful, k if D (k,k) is zero */</span>
+</span><span><a class="LN" name="47">   47   </a>	nd = <a href="ldl_c.html#fcn_LDL_numeric2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_numeric2');" target="_self"><font color="#1122aa">LDL_numeric2</font></a>(
+</span><span><a class="LN" name="48">   48   </a>				KKT-&gt;PKPt-&gt;n,	<span class="CT">/* K and L are n-by-n, where n &gt;= 0 */</span>
+</span><span><a class="LN" name="49">   49   </a>				KKT-&gt;PKPt-&gt;jc,	<span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="50">   50   </a>				KKT-&gt;PKPt-&gt;ir,	<span class="CT">/* input of size nz=Kjc[n], not modified */</span>
+</span><span><a class="LN" name="51">   51   </a>				KKT-&gt;PKPt-&gt;pr,	<span class="CT">/* input of size nz=Kjc[n], not modified */</span>
+</span><span><a class="LN" name="52">   52   </a>				KKT-&gt;L-&gt;jc,		<span class="CT">/* input of size n+1, not modified */</span>
+</span><span><a class="LN" name="53">   53   </a>				KKT-&gt;Parent,	<span class="CT">/* input of size n, not modified */</span>
+</span><span><a class="LN" name="54">   54   </a>				KKT-&gt;Sign,      <span class="CT">/* input, permuted sign vector for regularization */</span>
+</span><span><a class="LN" name="55">   55   </a>                eps,            <span class="CT">/* input, inverse permutation vector */</span>
+</span><span><a class="LN" name="56">   56   </a>				delta,          <span class="CT">/* size of dynamic regularization */</span>
+</span><span><a class="LN" name="57">   57   </a>				KKT-&gt;Lnz,		<span class="CT">/* output of size n, not defn. on input */</span>
+</span><span><a class="LN" name="58">   58   </a>				KKT-&gt;L-&gt;ir,		<span class="CT">/* output of size lnz=Lp[n], not defined on input */</span>
+</span><span><a class="LN" name="59">   59   </a>				KKT-&gt;L-&gt;pr,		<span class="CT">/* output of size lnz=Lp[n], not defined on input */</span>
+</span><span><a class="LN" name="60">   60   </a>				KKT-&gt;D,			<span class="CT">/* output of size n, not defined on input */</span>
+</span><span><a class="LN" name="61">   61   </a>				KKT-&gt;work1,		<span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="62">   62   </a>				KKT-&gt;Pattern,   <span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="63">   63   </a>				KKT-&gt;Flag	    <span class="CT">/* workspace of size n, not defn. on input or output */</span>
+</span><span><a class="LN" name="64">   64   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1
+</span><span><a class="LN" name="65">   65   </a>                      , t1, t2
+</span><span><a class="LN" name="66">   66   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="67">   67   </a>    );
+</span><span><a class="LN" name="68">   68   </a>
+</span><span><a class="LN" name="69">   69   </a>	<span class="KW">return</span> nd == KKT-&gt;PKPt-&gt;n ? KKT_OK : KKT_PROBLEM;
+</span><span><a class="LN" name="70">   70   </a><b>}</b>
+</span><span><a class="LN" name="71">   71   </a>
+</span><span><a class="LN" name="72">   72   </a>
+</span><span><a class="LN" name="73">   73   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="74">   74   </a><span class="CT"> * Solves the permuted KKT system and returns the unpermuted search directions.</span>
+</span><span><a class="LN" name="75">   75   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="76">   76   </a><span class="CT"> * On entry, the factorization of the permuted KKT matrix, PKPt,</span>
+</span><span><a class="LN" name="77">   77   </a><span class="CT"> * is assumed to be up to date (call kkt_factor beforehand to achieve this).</span>
+</span><span><a class="LN" name="78">   78   </a><span class="CT"> * The right hand side, Pb, is assumed to be already permuted.</span>
+</span><span><a class="LN" name="79">   79   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="80">   80   </a><span class="CT"> * On exit, the resulting search directions are written into dx, dy and dz,</span>
+</span><span><a class="LN" name="81">   81   </a><span class="CT"> * where these variables are permuted back to the original ordering.</span>
+</span><span><a class="LN" name="82">   82   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="83">   83   </a><span class="CT"> * KKT-&gt;nitref iterative refinement steps are applied to solve the linear system.</span>
+</span><span><a class="LN" name="84">   84   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="85">   85   </a><span class="CT"> * Returns the number of iterative refinement steps really taken.</span>
+</span><span><a class="LN" name="86">   86   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="87">   87   </a>idxint <a name="fcn_kkt_solve">kkt_solve</a>(kkt* KKT, spmat* A, spmat* G, pfloat* Pb, pfloat* dx, pfloat* dy, pfloat* dz, idxint n, idxint p, idxint m, cone* C, idxint isinit, idxint nitref)
+</span><span><a class="LN" name="88">   88   </a><b>{</b>
+</span><span><a class="LN" name="89">   89   </a>
+</span><span><a class="LN" name="90">   90   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="91">   91   </a><font color="#992211">#</font><span class="PP">define</span> MTILDE (m+2*C-&gt;nsoc)
+</span><span><a class="LN" name="92">   92   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="93">   93   </a><font color="#992211">#</font><span class="PP">define</span> MTILDE (m)
+</span><span><a class="LN" name="94">   94   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="95">   95   </a>
+</span><span><a class="LN" name="96">   96   </a>    idxint i, k, l, j, kk, kItRef;
+</span><span><a class="LN" name="97">   97   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="98">   98   </a>	idxint dzoffset;
+</span><span><a class="LN" name="99">   99   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="100">  100   </a>	idxint*  Pinv = KKT-&gt;Pinv;
+</span><span><a class="LN" name="101">  101   </a>	pfloat*    Px = KKT-&gt;work1;
+</span><span><a class="LN" name="102">  102   </a>	pfloat*   dPx = KKT-&gt;work2;
+</span><span><a class="LN" name="103">  103   </a>	pfloat*     e = KKT-&gt;work3;
+</span><span><a class="LN" name="104">  104   </a>    pfloat*    Pe = KKT-&gt;work4;
+</span><span><a class="LN" name="105">  105   </a>    pfloat* truez = KKT-&gt;work5;
+</span><span><a class="LN" name="106">  106   </a>    pfloat*   Gdx = KKT-&gt;work6;
+</span><span><a class="LN" name="107">  107   </a>    pfloat* ex = e;
+</span><span><a class="LN" name="108">  108   </a>    pfloat* ey = e + n;
+</span><span><a class="LN" name="109">  109   </a>    pfloat* ez = e + n+p;
+</span><span><a class="LN" name="110">  110   </a>    pfloat bnorm = 1.0 + <a href="spla_c.html#fcn_norminf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norminf');" target="_self"><font color="#1122aa">norminf</font></a>(Pb, n+p+MTILDE);
+</span><span><a class="LN" name="111">  111   </a>    pfloat nex = 0;
+</span><span><a class="LN" name="112">  112   </a>    pfloat ney = 0;
+</span><span><a class="LN" name="113">  113   </a>    pfloat nez = 0;
+</span><span><a class="LN" name="114">  114   </a>    pfloat nerr;
+</span><span><a class="LN" name="115">  115   </a>    pfloat nerr_prev = (pfloat)ECOS_NAN;
+</span><span><a class="LN" name="116">  116   </a>    pfloat error_threshold = bnorm*LINSYSACC;
+</span><span><a class="LN" name="117">  117   </a>    idxint nK = KKT-&gt;PKPt-&gt;n;
+</span><span><a class="LN" name="118">  118   </a>
+</span><span><a class="LN" name="119">  119   </a>	<span class="CT">/* forward - diagonal - backward solves: Px holds solution */</span>
+</span><span><a class="LN" name="120">  120   </a>	<a href="ldl_c.html#fcn_LDL_lsolve2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_lsolve2');" target="_self"><font color="#1122aa">LDL_lsolve2</font></a>(nK, Pb, KKT-&gt;L-&gt;jc, KKT-&gt;L-&gt;ir, KKT-&gt;L-&gt;pr, Px );
+</span><span><a class="LN" name="121">  121   </a>	<a href="ldl_c.html#fcn_LDL_dsolve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_dsolve');" target="_self"><font color="#1122aa">LDL_dsolve</font></a>(nK, Px, KKT-&gt;D);
+</span><span><a class="LN" name="122">  122   </a>	<a href="ldl_c.html#fcn_LDL_ltsolve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_ltsolve');" target="_self"><font color="#1122aa">LDL_ltsolve</font></a>(nK, Px, KKT-&gt;L-&gt;jc, KKT-&gt;L-&gt;ir, KKT-&gt;L-&gt;pr);
+</span><span><a class="LN" name="123">  123   </a>
+</span><span><a class="LN" name="124">  124   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="125">  125   </a>    <span class="KW">if</span>( p &gt; 0 )<b>{</b>
+</span><span><a class="LN" name="126">  126   </a>        PRINTTEXT(<font color="#1122ff">&quot;\nIR: it  ||ex||   ||ey||   ||ez|| (threshold: %4.2e)\n&quot;</font>, error_threshold);
+</span><span><a class="LN" name="127">  127   </a>        PRINTTEXT(<font color="#1122ff">&quot;    --------------------------------------------------\n&quot;</font>);
+</span><span><a class="LN" name="128">  128   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="129">  129   </a>        PRINTTEXT(<font color="#1122ff">&quot;\nIR: it  ||ex||   ||ez|| (threshold: %4.2e)\n&quot;</font>, error_threshold);
+</span><span><a class="LN" name="130">  130   </a>        PRINTTEXT(<font color="#1122ff">&quot;    -----------------------------------------\n&quot;</font>);
+</span><span><a class="LN" name="131">  131   </a>    <b>}</b>
+</span><span><a class="LN" name="132">  132   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="133">  133   </a>
+</span><span><a class="LN" name="134">  134   </a>	<span class="CT">/* iterative refinement */</span>
+</span><span><a class="LN" name="135">  135   </a>	<span class="KW">for</span>( kItRef=0; kItRef &lt;= nitref; kItRef++ )<b>{</b>
+</span><span><a class="LN" name="136">  136   </a>
+</span><span><a class="LN" name="137">  137   </a>        <span class="CT">/* unpermute x & copy into arrays */</span>
+</span><span><a class="LN" name="138">  138   </a>        <a href="cone_c.html#fcn_unstretch" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_unstretch');" target="_self"><font color="#1122aa">unstretch</font></a>(n, p, C, Pinv, Px, dx, dy, dz);
+</span><span><a class="LN" name="139">  139   </a>
+</span><span><a class="LN" name="140">  140   </a>		<span class="CT">/* compute error term */</span>
+</span><span><a class="LN" name="141">  141   </a>        k=0; j=0;
+</span><span><a class="LN" name="142">  142   </a>
+</span><span><a class="LN" name="143">  143   </a>		<span class="CT">/* 1. error on dx*/</span>
+</span><span><a class="LN" name="144">  144   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="145">  145   </a>		<span class="CT">/* ex = bx - A'*dy - G'*dz - DELTASTAT*dx */</span>
+</span><span><a class="LN" name="146">  146   </a>        <span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b> ex[i] = Pb[Pinv[k++]] - DELTASTAT*dx[i]; <b>}</b>
+</span><span><a class="LN" name="147">  147   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="148">  148   </a>		<span class="CT">/* ex = bx - A'*dy - G'*dz */</span>
+</span><span><a class="LN" name="149">  149   </a>		<span class="KW">for</span>( i=0; i&lt;n; i++ )<b>{</b> ex[i] = Pb[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="150">  150   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="151">  151   </a>        <span class="KW">if</span>(A) <a href="spla_c.html#fcn_sparseMtVm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMtVm');" target="_self"><font color="#1122aa">sparseMtVm</font></a>(A, dy, ex, 0, 0);
+</span><span><a class="LN" name="152">  152   </a>        <a href="spla_c.html#fcn_sparseMtVm" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMtVm');" target="_self"><font color="#1122aa">sparseMtVm</font></a>(G, dz, ex, 0, 0);
+</span><span><a class="LN" name="153">  153   </a>        nex = <a href="spla_c.html#fcn_norminf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norminf');" target="_self"><font color="#1122aa">norminf</font></a>(ex,n);
+</span><span><a class="LN" name="154">  154   </a>
+</span><span><a class="LN" name="155">  155   </a>        <span class="CT">/* error on dy */</span>
+</span><span><a class="LN" name="156">  156   </a>        <span class="KW">if</span>( p &gt; 0 )<b>{</b>
+</span><span><a class="LN" name="157">  157   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="158">  158   </a>			<span class="CT">/* ey = by - A*dx + DELTASTAT*dy */</span>
+</span><span><a class="LN" name="159">  159   </a>            <span class="KW">for</span>( i=0; i&lt;p; i++ )<b>{</b> ey[i] = Pb[Pinv[k++]] + DELTASTAT*dy[i]; <b>}</b>
+</span><span><a class="LN" name="160">  160   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="161">  161   </a>			<span class="CT">/* ey = by - A*dx */</span>
+</span><span><a class="LN" name="162">  162   </a>			<span class="KW">for</span>( i=0; i&lt;p; i++ )<b>{</b> ey[i] = Pb[Pinv[k++]]; <b>}</b>
+</span><span><a class="LN" name="163">  163   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="164">  164   </a>            <a href="spla_c.html#fcn_sparseMV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMV');" target="_self"><font color="#1122aa">sparseMV</font></a>(A, dx, ey, -1, 0);
+</span><span><a class="LN" name="165">  165   </a>            ney = <a href="spla_c.html#fcn_norminf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norminf');" target="_self"><font color="#1122aa">norminf</font></a>(ey,p);
+</span><span><a class="LN" name="166">  166   </a>        <b>}</b>
+</span><span><a class="LN" name="167">  167   </a>
+</span><span><a class="LN" name="168">  168   </a>
+</span><span><a class="LN" name="169">  169   </a>		<span class="CT">/* --&gt; 3. ez = bz - G*dx + V*dz_true */</span>
+</span><span><a class="LN" name="170">  170   </a>        kk = 0; j=0;
+</span><span><a class="LN" name="171">  171   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="172">  172   </a>		dzoffset=0;
+</span><span><a class="LN" name="173">  173   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="174">  174   </a>        <a href="spla_c.html#fcn_sparseMV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_sparseMV');" target="_self"><font color="#1122aa">sparseMV</font></a>(G, dx, Gdx, 1, 1);
+</span><span><a class="LN" name="175">  175   </a>        <span class="KW">for</span>( i=0; i&lt;C-&gt;lpc-&gt;p; i++ )<b>{</b>
+</span><span><a class="LN" name="176">  176   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="177">  177   </a>            ez[kk++] = Pb[Pinv[k++]] - Gdx[j++] + DELTASTAT*dz[dzoffset++];
+</span><span><a class="LN" name="178">  178   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="179">  179   </a>			ez[kk++] = Pb[Pinv[k++]] - Gdx[j++];
+</span><span><a class="LN" name="180">  180   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="181">  181   </a>        <b>}</b>
+</span><span><a class="LN" name="182">  182   </a>        <span class="KW">for</span>( l=0; l&lt;C-&gt;nsoc; l++ )<b>{</b>
+</span><span><a class="LN" name="183">  183   </a>            <span class="KW">for</span>( i=0; i&lt;C-&gt;soc[l].p; i++ )<b>{</b>
+</span><span><a class="LN" name="184">  184   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="185">  185   </a>                ez[kk++] = i&lt;(C-&gt;soc[l].p-1) ? Pb[Pinv[k++]] - Gdx[j++] + DELTASTAT*dz[dzoffset++] : Pb[Pinv[k++]] - Gdx[j++] - DELTASTAT*dz[dzoffset++];
+</span><span><a class="LN" name="186">  186   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="187">  187   </a>				ez[kk++] = Pb[Pinv[k++]] - Gdx[j++];
+</span><span><a class="LN" name="188">  188   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="189">  189   </a>            <b>}</b>
+</span><span><a class="LN" name="190">  190   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="191">  191   </a>            ez[kk] = 0;
+</span><span><a class="LN" name="192">  192   </a>            ez[kk+1] = 0;
+</span><span><a class="LN" name="193">  193   </a>            k += 2;
+</span><span><a class="LN" name="194">  194   </a>            kk += 2;
+</span><span><a class="LN" name="195">  195   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="196">  196   </a>        <b>}</b>
+</span><span><a class="LN" name="197">  197   </a><font color="#992211">#</font><span class="PP">ifdef</span> EXPCONE
+</span><span><a class="LN" name="198">  198   </a>        <span class="KW">for</span>(l=0; l&lt;C-&gt;nexc; l++)
+</span><span><a class="LN" name="199">  199   </a>        <b>{</b>
+</span><span><a class="LN" name="200">  200   </a>            <span class="KW">for</span>(i=0;i&lt;3;i++)
+</span><span><a class="LN" name="201">  201   </a>            <b>{</b>
+</span><span><a class="LN" name="202">  202   </a><font color="#992211">#</font><span class="PP">if</span> (<span class="PP">defined</span> STATICREG) &amp;&amp; (STATICREG &gt; 0)
+</span><span><a class="LN" name="203">  203   </a>                ez[kk++] = Pb[Pinv[k++]] - Gdx[j++] + DELTASTAT*dz[dzoffset++];
+</span><span><a class="LN" name="204">  204   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="205">  205   </a>				ez[kk++] = Pb[Pinv[k++]] - Gdx[j++];
+</span><span><a class="LN" name="206">  206   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="207">  207   </a>            <b>}</b>
+</span><span><a class="LN" name="208">  208   </a>        <b>}</b>
+</span><span><a class="LN" name="209">  209   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="210">  210   </a>        <span class="KW">for</span>( i=0; i&lt;MTILDE; i++) <b>{</b> truez[i] = Px[Pinv[n+p+i]]; <b>}</b>
+</span><span><a class="LN" name="211">  211   </a>        <span class="KW">if</span>( isinit == 0 )<b>{</b>
+</span><span><a class="LN" name="212">  212   </a>            <a href="cone_c.html#fcn_scale2add" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_scale2add');" target="_self"><font color="#1122aa">scale2add</font></a>(truez, ez, C);
+</span><span><a class="LN" name="213">  213   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="214">  214   </a>            <a href="spla_c.html#fcn_vadd" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_vadd');" target="_self"><font color="#1122aa">vadd</font></a>(MTILDE, truez, ez);
+</span><span><a class="LN" name="215">  215   </a>        <b>}</b>
+</span><span><a class="LN" name="216">  216   </a>        nez = <a href="spla_c.html#fcn_norminf" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_norminf');" target="_self"><font color="#1122aa">norminf</font></a>(ez,MTILDE);
+</span><span><a class="LN" name="217">  217   </a>
+</span><span><a class="LN" name="218">  218   </a>
+</span><span><a class="LN" name="219">  219   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="220">  220   </a>        <span class="KW">if</span>( p &gt; 0 )<b>{</b>
+</span><span><a class="LN" name="221">  221   </a>            PRINTTEXT(<font color="#1122ff">&quot;    %2d  %3.1e  %3.1e  %3.1e\n&quot;</font>, (<span class="DT">int</span>)kItRef, nex, ney, nez);
+</span><span><a class="LN" name="222">  222   </a>        <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="223">  223   </a>            PRINTTEXT(<font color="#1122ff">&quot;    %2d  %3.1e  %3.1e\n&quot;</font>, (<span class="DT">int</span>)kItRef, nex, nez);
+</span><span><a class="LN" name="224">  224   </a>        <b>}</b>
+</span><span><a class="LN" name="225">  225   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="226">  226   </a>
+</span><span><a class="LN" name="227">  227   </a>        <span class="CT">/* maximum error (infinity norm of e) */</span>
+</span><span><a class="LN" name="228">  228   </a>        nerr = MAX( nex, nez);
+</span><span><a class="LN" name="229">  229   </a>        <span class="KW">if</span>( p &gt; 0 )<b>{</b> nerr = MAX( nerr, ney ); <b>}</b>
+</span><span><a class="LN" name="230">  230   </a>
+</span><span><a class="LN" name="231">  231   </a>        <span class="CT">/* CHECK WHETHER REFINEMENT BROUGHT DECREASE - if not undo and quit! */</span>
+</span><span><a class="LN" name="232">  232   </a>        <span class="KW">if</span>( kItRef &gt; 0 &amp;&amp; nerr &gt; nerr_prev )<b>{</b>
+</span><span><a class="LN" name="233">  233   </a>            <span class="CT">/* undo refinement */</span>
+</span><span><a class="LN" name="234">  234   </a>            <span class="KW">for</span>( i=0; i&lt;nK; i++ )<b>{</b> Px[i] -= dPx[i]; <b>}</b>
+</span><span><a class="LN" name="235">  235   </a>            kItRef--;
+</span><span><a class="LN" name="236">  236   </a>            <span class="KW">break</span>;
+</span><span><a class="LN" name="237">  237   </a>        <b>}</b>
+</span><span><a class="LN" name="238">  238   </a>
+</span><span><a class="LN" name="239">  239   </a>        <span class="CT">/* CHECK WHETHER TO REFINE AGAIN */</span>
+</span><span><a class="LN" name="240">  240   </a>        <span class="KW">if</span>( kItRef == nitref || ( nerr &lt; error_threshold ) || ( kItRef &gt; 0 &amp;&amp; nerr_prev &lt; IRERRFACT*nerr ) )<b>{</b>
+</span><span><a class="LN" name="241">  241   </a>            <span class="KW">break</span>;
+</span><span><a class="LN" name="242">  242   </a>        <b>}</b>
+</span><span><a class="LN" name="243">  243   </a>        nerr_prev = nerr;
+</span><span><a class="LN" name="244">  244   </a>
+</span><span><a class="LN" name="245">  245   </a>        <span class="CT">/* permute */</span>
+</span><span><a class="LN" name="246">  246   </a>        <span class="KW">for</span>( i=0; i&lt;nK; i++) <b>{</b> Pe[Pinv[i]] = e[i]; <b>}</b>
+</span><span><a class="LN" name="247">  247   </a>
+</span><span><a class="LN" name="248">  248   </a>        <span class="CT">/* forward - diagonal - backward solves: dPx holds solution */</span>
+</span><span><a class="LN" name="249">  249   </a>        <a href="ldl_c.html#fcn_LDL_lsolve2" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_lsolve2');" target="_self"><font color="#1122aa">LDL_lsolve2</font></a>(nK, Pe, KKT-&gt;L-&gt;jc, KKT-&gt;L-&gt;ir, KKT-&gt;L-&gt;pr, dPx);
+</span><span><a class="LN" name="250">  250   </a>        <a href="ldl_c.html#fcn_LDL_dsolve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_dsolve');" target="_self"><font color="#1122aa">LDL_dsolve</font></a>(nK, dPx, KKT-&gt;D);
+</span><span><a class="LN" name="251">  251   </a>        <a href="ldl_c.html#fcn_LDL_ltsolve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_LDL_ltsolve');" target="_self"><font color="#1122aa">LDL_ltsolve</font></a>(nK, dPx, KKT-&gt;L-&gt;jc, KKT-&gt;L-&gt;ir, KKT-&gt;L-&gt;pr);
+</span><span><a class="LN" name="252">  252   </a>
+</span><span><a class="LN" name="253">  253   </a>        <span class="CT">/* add refinement to Px */</span>
+</span><span><a class="LN" name="254">  254   </a>        <span class="KW">for</span>( i=0; i&lt;nK; i++ )<b>{</b> Px[i] += dPx[i]; <b>}</b>
+</span><span><a class="LN" name="255">  255   </a>	<b>}</b>
+</span><span><a class="LN" name="256">  256   </a>
+</span><span><a class="LN" name="257">  257   </a><font color="#992211">#</font><span class="PP">if</span> PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="258">  258   </a>    PRINTTEXT(<font color="#1122ff">&quot;\n&quot;</font>);
+</span><span><a class="LN" name="259">  259   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="260">  260   </a>
+</span><span><a class="LN" name="261">  261   </a>	<span class="CT">/* copy solution out into the different arrays, permutation included */</span>
+</span><span><a class="LN" name="262">  262   </a>	<a href="cone_c.html#fcn_unstretch" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_unstretch');" target="_self"><font color="#1122aa">unstretch</font></a>(n, p, C, Pinv, Px, dx, dy, dz);
+</span><span><a class="LN" name="263">  263   </a>
+</span><span><a class="LN" name="264">  264   </a>    <span class="KW">return</span> kItRef;
+</span><span><a class="LN" name="265">  265   </a><b>}</b>
+</span><span><a class="LN" name="266">  266   </a>
+</span><span><a class="LN" name="267">  267   </a>
+</span><span><a class="LN" name="268">  268   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="269">  269   </a><span class="CT"> * Updates the permuted KKT matrix by copying in the new scalings.</span>
+</span><span><a class="LN" name="270">  270   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="271">  271   </a><span class="DT">void</span> <a name="fcn_kkt_update">kkt_update</a>(spmat* PKP, idxint* P, cone *C)
+</span><span><a class="LN" name="272">  272   </a><b>{</b>
+</span><span><a class="LN" name="273">  273   </a>	idxint i, j, k, conesize;
+</span><span><a class="LN" name="274">  274   </a>    pfloat eta_square, *q;
+</span><span><a class="LN" name="275">  275   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="276">  276   </a>    pfloat d1, u0, u1, v1;
+</span><span><a class="LN" name="277">  277   </a>    idxint conesize_m1;
+</span><span><a class="LN" name="278">  278   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="279">  279   </a>    pfloat a, w, c, d, eta_square_d, qj;
+</span><span><a class="LN" name="280">  280   </a>    idxint thiscolstart;
+</span><span><a class="LN" name="281">  281   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="282">  282   </a>
+</span><span><a class="LN" name="283">  283   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="284">  284   </a>    <span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b> PKP-&gt;pr[P[C-&gt;lpc-&gt;kkt_idx[i]]] = -C-&gt;lpc-&gt;v[i] - DELTASTAT; <b>}</b>
+</span><span><a class="LN" name="285">  285   </a>
+</span><span><a class="LN" name="286">  286   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="287">  287   </a>	<span class="KW">for</span>( i=0; i&lt;C-&gt;nsoc; i++ )<b>{</b>
+</span><span><a class="LN" name="288">  288   </a>
+</span><span><a class="LN" name="289">  289   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="290">  290   </a>        <a href="cone_c.html#fcn_getSOCDetails" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_getSOCDetails');" target="_self"><font color="#1122aa">getSOCDetails</font></a>(&amp;C-&gt;soc[i], &amp;conesize, &amp;eta_square, &amp;d1, &amp;u0, &amp;u1, &amp;v1, &amp;q);
+</span><span><a class="LN" name="291">  291   </a>        conesize_m1 = conesize - 1;
+</span><span><a class="LN" name="292">  292   </a>
+</span><span><a class="LN" name="293">  293   </a>        <span class="CT">/* D */</span>
+</span><span><a class="LN" name="294">  294   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[0]]] = -eta_square * d1 - DELTASTAT;
+</span><span><a class="LN" name="295">  295   </a>        <span class="KW">for</span> (k=1; k &lt; conesize; k++) <b>{</b>
+</span><span><a class="LN" name="296">  296   </a>            PKP-&gt;pr[P[C-&gt;soc[i].Didx[k]]] = -eta_square - DELTASTAT;
+</span><span><a class="LN" name="297">  297   </a>        <b>}</b>
+</span><span><a class="LN" name="298">  298   </a>
+</span><span><a class="LN" name="299">  299   </a>        <span class="CT">/* v */</span>
+</span><span><a class="LN" name="300">  300   </a>        j=1;
+</span><span><a class="LN" name="301">  301   </a>        <span class="KW">for</span> (k=0; k &lt; conesize_m1; k++) <b>{</b>
+</span><span><a class="LN" name="302">  302   </a>            PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = -eta_square * v1 * q[k];
+</span><span><a class="LN" name="303">  303   </a>        <b>}</b>
+</span><span><a class="LN" name="304">  304   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = -eta_square;
+</span><span><a class="LN" name="305">  305   </a>
+</span><span><a class="LN" name="306">  306   </a>        <span class="CT">/* u */</span>
+</span><span><a class="LN" name="307">  307   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = -eta_square * u0;
+</span><span><a class="LN" name="308">  308   </a>        <span class="KW">for</span> (k=0; k &lt; conesize_m1; k++) <b>{</b>
+</span><span><a class="LN" name="309">  309   </a>            PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = -eta_square * u1 * q[k];
+</span><span><a class="LN" name="310">  310   </a>        <b>}</b>
+</span><span><a class="LN" name="311">  311   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = +eta_square + DELTASTAT;
+</span><span><a class="LN" name="312">  312   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="313">  313   </a>
+</span><span><a class="LN" name="314">  314   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE &gt; 0
+</span><span><a class="LN" name="315">  315   </a>        conesize = C-&gt;soc[i].p;
+</span><span><a class="LN" name="316">  316   </a>        eta_square = C-&gt;soc[i].eta_square;
+</span><span><a class="LN" name="317">  317   </a>        a = C-&gt;soc[i].a;
+</span><span><a class="LN" name="318">  318   </a>        w = C-&gt;soc[i].w;
+</span><span><a class="LN" name="319">  319   </a>        c = C-&gt;soc[i].c;
+</span><span><a class="LN" name="320">  320   </a>        d = C-&gt;soc[i].d;
+</span><span><a class="LN" name="321">  321   </a>        q = C-&gt;soc[i].q;
+</span><span><a class="LN" name="322">  322   </a>        eta_square_d = eta_square * d;
+</span><span><a class="LN" name="323">  323   </a>
+</span><span><a class="LN" name="324">  324   </a>        <span class="CT">/* first column - only diagonal element */</span>
+</span><span><a class="LN" name="325">  325   </a>        PKP-&gt;pr[P[C-&gt;soc[i].colstart[0]]] = -eta_square * (a*a + w);
+</span><span><a class="LN" name="326">  326   </a>
+</span><span><a class="LN" name="327">  327   </a>        <span class="CT">/* next conesize-1 columns */</span>
+</span><span><a class="LN" name="328">  328   </a>        <span class="KW">for</span> (j=1; j&lt;conesize; j++) <b>{</b>
+</span><span><a class="LN" name="329">  329   </a>
+</span><span><a class="LN" name="330">  330   </a>            thiscolstart = C-&gt;soc[i].colstart[j];
+</span><span><a class="LN" name="331">  331   </a>
+</span><span><a class="LN" name="332">  332   </a>            <span class="CT">/* first element in column (=c*q) */</span>
+</span><span><a class="LN" name="333">  333   </a>            qj = q[j-1];
+</span><span><a class="LN" name="334">  334   </a>            PKP-&gt;pr[P[thiscolstart]] = -eta_square * c * qj;
+</span><span><a class="LN" name="335">  335   </a>
+</span><span><a class="LN" name="336">  336   </a>            <span class="CT">/* the rest of the column (=I + d*qq') */</span>
+</span><span><a class="LN" name="337">  337   </a>            <span class="KW">for</span> (k=1; k&lt;j; k++) <b>{</b>
+</span><span><a class="LN" name="338">  338   </a>                PKP-&gt;pr[P[thiscolstart+k]] = -eta_square_d * q[k-1]*qj;      <span class="CT">/* super-diagonal elements */</span>
+</span><span><a class="LN" name="339">  339   </a>            <b>}</b>
+</span><span><a class="LN" name="340">  340   </a>            PKP-&gt;pr[P[thiscolstart+j]] = -eta_square * (1.0 +  d * qj*qj);   <span class="CT">/* diagonal element */</span>
+</span><span><a class="LN" name="341">  341   </a>        <b>}</b>
+</span><span><a class="LN" name="342">  342   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="343">  343   </a>	<b>}</b>
+</span><span><a class="LN" name="344">  344   </a>    #<span class="KW">if</span> defined EXPCONE
+</span><span><a class="LN" name="345">  345   </a>    <span class="CT">/* Exponential cones */</span>
+</span><span><a class="LN" name="346">  346   </a>    <span class="KW">for</span>( i=0; i &lt; C-&gt;nexc; i++)<b>{</b>
+</span><span><a class="LN" name="347">  347   </a>        PKP-&gt;pr[P[C-&gt;expc[i].colstart[0]]]   = -C-&gt;expc[i].v[0]-DELTASTAT;
+</span><span><a class="LN" name="348">  348   </a>        PKP-&gt;pr[P[C-&gt;expc[i].colstart[1]]]   = -C-&gt;expc[i].v[1];
+</span><span><a class="LN" name="349">  349   </a>        PKP-&gt;pr[P[C-&gt;expc[i].colstart[1]+1]] = -C-&gt;expc[i].v[2]-DELTASTAT;
+</span><span><a class="LN" name="350">  350   </a>        PKP-&gt;pr[P[C-&gt;expc[i].colstart[2]]]   = -C-&gt;expc[i].v[3];
+</span><span><a class="LN" name="351">  351   </a>        PKP-&gt;pr[P[C-&gt;expc[i].colstart[2]+1]] = -C-&gt;expc[i].v[4];
+</span><span><a class="LN" name="352">  352   </a>        PKP-&gt;pr[P[C-&gt;expc[i].colstart[2]+2]] = -C-&gt;expc[i].v[5]-DELTASTAT;
+</span><span><a class="LN" name="353">  353   </a>    <b>}</b>
+</span><span><a class="LN" name="354">  354   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="355">  355   </a>
+</span><span><a class="LN" name="356">  356   </a>
+</span><span><a class="LN" name="357">  357   </a><b>}</b>
+</span><span><a class="LN" name="358">  358   </a>
+</span><span><a class="LN" name="359">  359   </a>
+</span><span><a class="LN" name="360">  360   </a>
+</span><span><a class="LN" name="361">  361   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="362">  362   </a><span class="CT"> * Initializes the (3,3) block of the KKT matrix to produce the matrix</span>
+</span><span><a class="LN" name="363">  363   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="364">  364   </a><span class="CT"> * 		[0  A'  G']</span>
+</span><span><a class="LN" name="365">  365   </a><span class="CT"> * K =  [A  0   0 ]</span>
+</span><span><a class="LN" name="366">  366   </a><span class="CT"> *      [G  0  -I ]</span>
+</span><span><a class="LN" name="367">  367   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="368">  368   </a><span class="CT"> * It is assumed that the A,G have been already copied in appropriately,</span>
+</span><span><a class="LN" name="369">  369   </a><span class="CT"> * and that enough memory has been allocated (this is done in preproc.c module).</span>
+</span><span><a class="LN" name="370">  370   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="371">  371   </a><span class="CT"> * Note that the function works on the permuted KKT matrix.</span>
+</span><span><a class="LN" name="372">  372   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="373">  373   </a><span class="DT">void</span> <a name="fcn_kkt_init">kkt_init</a>(spmat* PKP, idxint* P, cone *C)
+</span><span><a class="LN" name="374">  374   </a><b>{</b>
+</span><span><a class="LN" name="375">  375   </a>	idxint i, j, k, conesize;
+</span><span><a class="LN" name="376">  376   </a>    pfloat eta_square, *q;
+</span><span><a class="LN" name="377">  377   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="378">  378   </a>    pfloat d1, u0, u1, v1;
+</span><span><a class="LN" name="379">  379   </a>    idxint conesize_m1;
+</span><span><a class="LN" name="380">  380   </a><font color="#992211">#</font><span class="PP">else</span>
+</span><span><a class="LN" name="381">  381   </a>    pfloat a, w, c, d, eta_square_d, qj;
+</span><span><a class="LN" name="382">  382   </a>    idxint thiscolstart;
+</span><span><a class="LN" name="383">  383   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="384">  384   </a>
+</span><span><a class="LN" name="385">  385   </a>	<span class="CT">/* LP cone */</span>
+</span><span><a class="LN" name="386">  386   </a>    <span class="KW">for</span>( i=0; i &lt; C-&gt;lpc-&gt;p; i++ )<b>{</b> PKP-&gt;pr[P[C-&gt;lpc-&gt;kkt_idx[i]]] = -1.0; <b>}</b>
+</span><span><a class="LN" name="387">  387   </a>
+</span><span><a class="LN" name="388">  388   </a>	<span class="CT">/* Second-order cone */</span>
+</span><span><a class="LN" name="389">  389   </a>	<span class="KW">for</span>( i=0; i&lt;C-&gt;nsoc; i++ )<b>{</b>
+</span><span><a class="LN" name="390">  390   </a>
+</span><span><a class="LN" name="391">  391   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE == 0
+</span><span><a class="LN" name="392">  392   </a>        <a href="cone_c.html#fcn_getSOCDetails" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_getSOCDetails');" target="_self"><font color="#1122aa">getSOCDetails</font></a>(&amp;C-&gt;soc[i], &amp;conesize, &amp;eta_square, &amp;d1, &amp;u0, &amp;u1, &amp;v1, &amp;q);
+</span><span><a class="LN" name="393">  393   </a>        conesize_m1 = conesize - 1;
+</span><span><a class="LN" name="394">  394   </a>
+</span><span><a class="LN" name="395">  395   </a>        <span class="CT">/* D */</span>
+</span><span><a class="LN" name="396">  396   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[0]]] = -1.0;
+</span><span><a class="LN" name="397">  397   </a>        <span class="KW">for</span> (k=1; k &lt; conesize; k++) <b>{</b>
+</span><span><a class="LN" name="398">  398   </a>            PKP-&gt;pr[P[C-&gt;soc[i].Didx[k]]] = -1.0;
+</span><span><a class="LN" name="399">  399   </a>        <b>}</b>
+</span><span><a class="LN" name="400">  400   </a>
+</span><span><a class="LN" name="401">  401   </a>        <span class="CT">/* v */</span>
+</span><span><a class="LN" name="402">  402   </a>        j=1;
+</span><span><a class="LN" name="403">  403   </a>        <span class="KW">for</span> (k=0; k &lt; conesize_m1; k++) <b>{</b>
+</span><span><a class="LN" name="404">  404   </a>            PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = 0.0;
+</span><span><a class="LN" name="405">  405   </a>        <b>}</b>
+</span><span><a class="LN" name="406">  406   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = -1.0;
+</span><span><a class="LN" name="407">  407   </a>
+</span><span><a class="LN" name="408">  408   </a>        <span class="CT">/* u */</span>
+</span><span><a class="LN" name="409">  409   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = 0.0;
+</span><span><a class="LN" name="410">  410   </a>        <span class="KW">for</span> (k=0; k &lt; conesize_m1; k++) <b>{</b>
+</span><span><a class="LN" name="411">  411   </a>            PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = 0.0;
+</span><span><a class="LN" name="412">  412   </a>        <b>}</b>
+</span><span><a class="LN" name="413">  413   </a>        PKP-&gt;pr[P[C-&gt;soc[i].Didx[conesize_m1] + j++]] = +1.0;
+</span><span><a class="LN" name="414">  414   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="415">  415   </a>
+</span><span><a class="LN" name="416">  416   </a><font color="#992211">#</font><span class="PP">if</span> CONEMODE &gt; 0
+</span><span><a class="LN" name="417">  417   </a>        conesize = C-&gt;soc[i].p;
+</span><span><a class="LN" name="418">  418   </a>        eta_square = C-&gt;soc[i].eta_square;
+</span><span><a class="LN" name="419">  419   </a>        a = C-&gt;soc[i].a;
+</span><span><a class="LN" name="420">  420   </a>        w = C-&gt;soc[i].w;
+</span><span><a class="LN" name="421">  421   </a>        c = C-&gt;soc[i].c;
+</span><span><a class="LN" name="422">  422   </a>        d = C-&gt;soc[i].d;
+</span><span><a class="LN" name="423">  423   </a>        q = C-&gt;soc[i].q;
+</span><span><a class="LN" name="424">  424   </a>        eta_square_d = eta_square * d;
+</span><span><a class="LN" name="425">  425   </a>
+</span><span><a class="LN" name="426">  426   </a>        <span class="CT">/* first column - only diagonal element */</span>
+</span><span><a class="LN" name="427">  427   </a>        PKP-&gt;pr[P[C-&gt;soc[i].colstart[0]]] = -1.0;
+</span><span><a class="LN" name="428">  428   </a>
+</span><span><a class="LN" name="429">  429   </a>        <span class="CT">/* next conesize-1 columns */</span>
+</span><span><a class="LN" name="430">  430   </a>        <span class="KW">for</span> (j=1; j&lt;conesize; j++) <b>{</b>
+</span><span><a class="LN" name="431">  431   </a>
+</span><span><a class="LN" name="432">  432   </a>            thiscolstart = C-&gt;soc[i].colstart[j];
+</span><span><a class="LN" name="433">  433   </a>
+</span><span><a class="LN" name="434">  434   </a>            <span class="CT">/* first element in column (=c*q) */</span>
+</span><span><a class="LN" name="435">  435   </a>            qj = q[j-1];
+</span><span><a class="LN" name="436">  436   </a>            PKP-&gt;pr[P[thiscolstart]] = 0.0;
+</span><span><a class="LN" name="437">  437   </a>
+</span><span><a class="LN" name="438">  438   </a>            <span class="CT">/* the rest of the column (=I + d*qq') */</span>
+</span><span><a class="LN" name="439">  439   </a>            <span class="KW">for</span> (k=1; k&lt;j; k++) <b>{</b>
+</span><span><a class="LN" name="440">  440   </a>                PKP-&gt;pr[P[thiscolstart+k]] = 0.0;      <span class="CT">/* super-diagonal elements */</span>
+</span><span><a class="LN" name="441">  441   </a>            <b>}</b>
+</span><span><a class="LN" name="442">  442   </a>            PKP-&gt;pr[P[thiscolstart+j]] = -1.0;   <span class="CT">/* diagonal element */</span>
+</span><span><a class="LN" name="443">  443   </a>        <b>}</b>
+</span><span><a class="LN" name="444">  444   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="445">  445   </a>	<b>}</b>
+</span><span><a class="LN" name="446">  446   </a><b>}</b>
+</span><span><a class="LN" name="447">  447   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

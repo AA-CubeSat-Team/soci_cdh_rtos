@@ -1,0 +1,113 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - runecos.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('runecos_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/runecos.c" target="rtwreport_document_frame" id="linkToText_plain">runecos.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">/*</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT"> * ECOS - Embedded Conic Solver.</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT"> * Copyright (C) 2012-2015 A. Domahidi [domahidi@embotech.com],</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Automatic Control Lab, ETH Zurich & embotech GmbH, Zurich, Switzerland.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> * This program is free software: you can redistribute it and/or modify</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * it under the terms of the GNU General Public License as published by</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the Free Software Foundation, either version 3 of the License, or</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> * (at your option) any later version.</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * This program is distributed in the hope that it will be useful,</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * GNU General Public License for more details.</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * You should have received a copy of the GNU General Public License</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="19">   19   </a>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">/* main file with example of how to run ECOS */</span>
+</span><span><a class="LN" name="22">   22   </a>
+</span><span><a class="LN" name="23">   23   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&lt;stdio.h&gt;</font>
+</span><span><a class="LN" name="24">   24   </a>
+</span><span><a class="LN" name="25">   25   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="26">   26   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;data.h&quot;</font>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><span class="DT">int</span> <a name="fcn_ecosmain">ecosmain</a>(<span class="DT">void</span>)
+</span><span><a class="LN" name="29">   29   </a><b>{</b>
+</span><span><a class="LN" name="30">   30   </a>	<span class="CT">/*char ver[7];*/</span>
+</span><span><a class="LN" name="31">   31   </a>    idxint exitflag = ECOS_FATAL;
+</span><span><a class="LN" name="32">   32   </a>	pwork* mywork;
+</span><span><a class="LN" name="33">   33   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1 &amp;&amp; PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="34">   34   </a>    <span class="DT">double</span> torder, tkktcreate, ttranspose, tfactor, tkktsolve, ttotal, tsetup, tsolve;
+</span><span><a class="LN" name="35">   35   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="36">   36   </a>	
+</span><span><a class="LN" name="37">   37   </a>	<span class="CT">/* set up data */</span>	
+</span><span><a class="LN" name="38">   38   </a>	mywork = <a href="preproc_c.html#fcn_ECOS_setup" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ECOS_setup');" target="_self"><font color="#1122aa">ECOS_setup</font></a>(n, m, p, l, ncones, q, 0, Gpr, Gjc, Gir, Apr, Ajc, Air, c, h, b);
+</span><span><a class="LN" name="39">   39   </a> 
+</span><span><a class="LN" name="40">   40   </a>    <span class="KW">if</span>( mywork != NULL )<b>{</b>
+</span><span><a class="LN" name="41">   41   </a>	
+</span><span><a class="LN" name="42">   42   </a>		<span class="CT">/* solve */</span>	
+</span><span><a class="LN" name="43">   43   </a>		exitflag = <a href="ecos_c.html#fcn_ECOS_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ECOS_solve');" target="_self"><font color="#1122aa">ECOS_solve</font></a>(mywork);
+</span><span><a class="LN" name="44">   44   </a>    
+</span><span><a class="LN" name="45">   45   </a>    	<span class="CT">/* test second solve</span>
+</span><span><a class="LN" name="46">   46   </a><span class="CT">    	exitflag = ECOS_solve(mywork); */</span>
+</span><span><a class="LN" name="47">   47   </a>
+</span><span><a class="LN" name="48">   48   </a><font color="#992211">#</font><span class="PP">if</span> PROFILING &gt; 1 &amp;&amp; PRINTLEVEL &gt; 2
+</span><span><a class="LN" name="49">   49   </a>		
+</span><span><a class="LN" name="50">   50   </a>		<span class="CT">/* some statistics in milliseconds */</span>
+</span><span><a class="LN" name="51">   51   </a>		tsolve = mywork-&gt;info-&gt;tsolve         * 1000;
+</span><span><a class="LN" name="52">   52   </a>		tsetup = mywork-&gt;info-&gt;tsetup         * 1000;
+</span><span><a class="LN" name="53">   53   </a>		ttotal = tsetup + tsolve;
+</span><span><a class="LN" name="54">   54   </a>	
+</span><span><a class="LN" name="55">   55   </a>		torder = mywork-&gt;info-&gt;torder         * 1000;
+</span><span><a class="LN" name="56">   56   </a>		tkktcreate = mywork-&gt;info-&gt;tkktcreate * 1000;
+</span><span><a class="LN" name="57">   57   </a>		ttranspose = mywork-&gt;info-&gt;ttranspose * 1000;
+</span><span><a class="LN" name="58">   58   </a>		tfactor = mywork-&gt;info-&gt;tfactor       * 1000;
+</span><span><a class="LN" name="59">   59   </a>		tkktsolve = mywork-&gt;info-&gt;tkktsolve   * 1000;
+</span><span><a class="LN" name="60">   60   </a>	
+</span><span><a class="LN" name="61">   61   </a>		printf(<font color="#1122ff">&quot;ECOS timings (all times in milliseconds):\n\n&quot;</font>);
+</span><span><a class="LN" name="62">   62   </a>		printf(<font color="#1122ff">&quot;1. Setup: %7.3f (%4.1f%%)\n&quot;</font>, tsetup,  tsetup / ttotal*100);
+</span><span><a class="LN" name="63">   63   </a>		printf(<font color="#1122ff">&quot;2. Solve: %7.3f (%4.1f%%)\n&quot;</font>, tsolve,  tsolve / ttotal*100);
+</span><span><a class="LN" name="64">   64   </a>		printf(<font color="#1122ff">&quot;----------------------------------\n&quot;</font>);
+</span><span><a class="LN" name="65">   65   </a>		printf(<font color="#1122ff">&quot; Total solve time: %7.3f ms\n\n&quot;</font>, ttotal);
+</span><span><a class="LN" name="66">   66   </a>	
+</span><span><a class="LN" name="67">   67   </a>		printf(<font color="#1122ff">&quot;Detailed timings in SETUP:\n&quot;</font>);
+</span><span><a class="LN" name="68">   68   </a>		printf(<font color="#1122ff">&quot;Create transposes: %7.3f (%4.1f%%)\n&quot;</font>, ttranspose, ttranspose / tsetup*100);
+</span><span><a class="LN" name="69">   69   </a>		printf(<font color="#1122ff">&quot;Create KKT Matrix: %7.3f (%4.1f%%)\n&quot;</font>, tkktcreate, tkktcreate / tsetup*100);
+</span><span><a class="LN" name="70">   70   </a>		printf(<font color="#1122ff">&quot; Compute ordering: %7.3f (%4.1f%%)\n&quot;</font>, torder,         torder / tsetup*100);
+</span><span><a class="LN" name="71">   71   </a>		printf(<font color="#1122ff">&quot;            Other: %7.3f (%4.1f%%)\n&quot;</font>, tsetup-torder-tkktcreate-ttranspose,         (tsetup-torder-tkktcreate-ttranspose) / tsetup*100);
+</span><span><a class="LN" name="72">   72   </a>		printf(<font color="#1122ff">&quot;\n&quot;</font>);
+</span><span><a class="LN" name="73">   73   </a>
+</span><span><a class="LN" name="74">   74   </a>		printf(<font color="#1122ff">&quot;Detailed timings in SOLVE:\n&quot;</font>);
+</span><span><a class="LN" name="75">   75   </a>		printf(<font color="#1122ff">&quot;   Factorizations: %7.3f (%4.1f%% of tsolve / %4.1f%% of ttotal)\n&quot;</font>, tfactor,     tfactor / tsolve*100, tfactor / ttotal*100);
+</span><span><a class="LN" name="76">   76   </a>		printf(<font color="#1122ff">&quot;       KKT solves: %7.3f (%4.1f%% of tsolve / %4.1f%% of ttotal)\n&quot;</font>, tkktsolve, tkktsolve / tsolve*100, tfactor / ttotal*100);
+</span><span><a class="LN" name="77">   77   </a>		printf(<font color="#1122ff">&quot;            Other: %7.3f (%4.1f%% of tsolve / %4.1f%% of ttotal)\n&quot;</font>, tsolve-tkktsolve-tfactor, (tsolve-tkktsolve-tfactor) / tsolve*100, (tsolve-tkktsolve-tfactor) / ttotal*100);
+</span><span><a class="LN" name="78">   78   </a>		printf(<font color="#1122ff">&quot;\n&quot;</font>);
+</span><span><a class="LN" name="79">   79   </a><font color="#992211">#</font><span class="PP">endif</span>
+</span><span><a class="LN" name="80">   80   </a>	
+</span><span><a class="LN" name="81">   81   </a>    	<span class="CT">/* clean up memory */</span>
+</span><span><a class="LN" name="82">   82   </a>		<a href="preproc_c.html#fcn_ECOS_cleanup" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ECOS_cleanup');" target="_self"><font color="#1122aa">ECOS_cleanup</font></a>(mywork, 0);
+</span><span><a class="LN" name="83">   83   </a>        
+</span><span><a class="LN" name="84">   84   </a>    <b>}</b>
+</span><span><a class="LN" name="85">   85   </a>    
+</span><span><a class="LN" name="86">   86   </a>    <span class="CT">/* test version number</span>
+</span><span><a class="LN" name="87">   87   </a><span class="CT">    ECOS_ver(ver);</span>
+</span><span><a class="LN" name="88">   88   </a><span class="CT">    printf("This test has been run on ECOS version %s\n", ver);</span>
+</span><span><a class="LN" name="89">   89   </a><span class="CT">     */</span>
+</span><span><a class="LN" name="90">   90   </a>	
+</span><span><a class="LN" name="91">   91   </a>    <span class="CT">/* explicitly truncate exit code */</span>
+</span><span><a class="LN" name="92">   92   </a>	<span class="KW">return</span> (<span class="DT">int</span>)exitflag;
+</span><span><a class="LN" name="93">   93   </a><b>}</b>
+</span><span><a class="LN" name="94">   94   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - matlab_main.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('matlab_main_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/matlab_main.c" target="rtwreport_document_frame" id="linkToText_plain">matlab_main.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><font color="#992211">#</font> <span class="PP">include</span> <font color="#992211">&quot;ecos.h&quot;</font>
+</span><span><a class="LN" name="2">    2   </a>
+</span><span><a class="LN" name="3">    3   </a><span class="DT">void</span> <a name="fcn_callecos">callecos</a>(<span class="DT">int</span> n, <span class="DT">int</span> m, <span class="DT">int</span> p, <span class="DT">int</span> l, <span class="DT">int</span> ncones, <span class="DT">double</span> *c, <span class="DT">int</span> *Gjc, <span class="DT">int</span> *Gir, <span class="DT">double</span> *Gpr,
+</span><span><a class="LN" name="4">    4   </a>			  <span class="DT">double</span>* h, <span class="DT">int</span>* q, <span class="DT">int</span>* Ajc, <span class="DT">int</span>* Air, <span class="DT">double</span> *Apr, <span class="DT">double</span> *b, <span class="DT">double</span> *y) <b>{</b>
+</span><span><a class="LN" name="5">    5   </a>	<span class="CT">/* Initialize */</span>
+</span><span><a class="LN" name="6">    6   </a>	pwork* mywork = <a href="preproc_c.html#fcn_ECOS_setup" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ECOS_setup');" target="_self"><font color="#1122aa">ECOS_setup</font></a>(n, m, p, l, ncones, q, 0, Gpr, Gjc, Gir, Apr, Ajc, Air, c, h, b);
+</span><span><a class="LN" name="7">    7   </a>	<span class="CT">/* Solve */</span>
+</span><span><a class="LN" name="8">    8   </a>	idxint exitflag = <a href="ecos_c.html#fcn_ECOS_solve" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ECOS_solve');" target="_self"><font color="#1122aa">ECOS_solve</font></a>(mywork);
+</span><span><a class="LN" name="9">    9   </a>	<span class="CT">/* Extract optimal solution */</span>
+</span><span><a class="LN" name="10">   10   </a>	<span class="DT">int</span> i;
+</span><span><a class="LN" name="11">   11   </a>    <span class="DT">int</span> N=332; <span class="CT">// c_size</span>
+</span><span><a class="LN" name="12">   12   </a>	<span class="CT">// Save optimal decision vector</span>
+</span><span><a class="LN" name="13">   13   </a>	<span class="KW">for</span>(i=0;i&lt;N;i++) <b>{</b>
+</span><span><a class="LN" name="14">   14   </a>		y[i] = mywork-&gt;x[i];
+</span><span><a class="LN" name="15">   15   </a>	<b>}</b>
+</span><span><a class="LN" name="16">   16   </a>	<span class="CT">// Save exitflag</span>
+</span><span><a class="LN" name="17">   17   </a>	y[N] = exitflag;
+</span><span><a class="LN" name="18">   18   </a>	<span class="CT">// Save solution time</span>
+</span><span><a class="LN" name="19">   19   </a>	<span class="CT">// UPDATE May 25 2021:</span>
+</span><span><a class="LN" name="20">   20   </a>	<span class="CT">// 	Removing timer.h from everything because it cannot be included in the OBC build</span>
+</span><span><a class="LN" name="21">   21   </a>	<span class="CT">// y[N+1] = mywork-&gt;info-&gt;tsetup + mywork-&gt;info-&gt;tsolve;</span>
+</span><span><a class="LN" name="22">   22   </a>	<span class="CT">// Clean up memory</span>
+</span><span><a class="LN" name="23">   23   </a>	<a href="preproc_c.html#fcn_ECOS_cleanup" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_ECOS_cleanup');" target="_self"><font color="#1122aa">ECOS_cleanup</font></a>(mywork, 0);
+</span><span><a class="LN" name="24">   24   </a><b>}</b>
+</span><span><a class="LN" name="25">   25   </a>
+</span><span><a class="LN" name="26">   26   </a>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a>
+</span><span><a class="LN" name="29">   29   </a>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - wright_omega.c</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('wright_omega_c_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../../../Lib/FSW/soar/include/ecos/src/wright_omega.c" target="rtwreport_document_frame" id="linkToText_plain">wright_omega.c</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;wright_omega.h&quot;</font>
+</span><span><a class="LN" name="2">    2   </a>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">/**</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT"> * Santiago Akle</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT"> * ICME Stanford University 2014</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT"> * Computes the value \omega(z) defined as the solution y to</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT"> * the equation y+log(y) = z ONLY FOR z real and z&gt;=1.</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT"> *</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT"> * Loosely follows the recommendations by</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT"> * PIERS W. LAWRENCE, ROBERT M. CORLESS, and DAVID J. JEFFREY.</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT"> * Published in:</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT"> * Algorithm 917: Complex Double-Precision Evaluation of the Wright \omega Function</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT"> * ACM Transactions on Mathematical Software (TOMS) TOMS Homepage table of contents archive</span>
+</span><span><a class="LN" name="15">   15   </a><span class="CT"> * Volume 38 Issue 3, April 2012</span>
+</span><span><a class="LN" name="16">   16   </a><span class="CT"> * Article No.	 20</span>
+</span><span><a class="LN" name="17">   17   </a><span class="CT"> * Publication Date	2012-04-01 (yyyy-mm-dd)</span>
+</span><span><a class="LN" name="18">   18   </a><span class="CT"> * Publisher	ACM New York, NY, USA</span>
+</span><span><a class="LN" name="19">   19   </a><span class="CT"> * ISSN: 0098-3500 EISSN: 1557-7295 doi&gt;10.1145/2168773.2168779</span>
+</span><span><a class="LN" name="20">   20   </a><span class="CT"> */</span>
+</span><span><a class="LN" name="21">   21   </a>pfloat <a name="fcn_wrightOmega">wrightOmega</a>(pfloat z)
+</span><span><a class="LN" name="22">   22   </a><b>{</b>
+</span><span><a class="LN" name="23">   23   </a>    pfloat w  = 0.0;
+</span><span><a class="LN" name="24">   24   </a>    pfloat r  = 0.0;
+</span><span><a class="LN" name="25">   25   </a>    pfloat q  = 0.0;
+</span><span><a class="LN" name="26">   26   </a>    pfloat zi = 0.0;
+</span><span><a class="LN" name="27">   27   </a>    
+</span><span><a class="LN" name="28">   28   </a>	<span class="KW">if</span>(z&lt;0.0) <span class="KW">return</span> -1; <span class="CT">/* Fail if the input is not supported */</span>
+</span><span><a class="LN" name="29">   29   </a>	
+</span><span><a class="LN" name="30">   30   </a>	<span class="KW">if</span>(z&lt;1.0+M_PI)      <span class="CT">/* If z is between 0 and 1+pi */</span>
+</span><span><a class="LN" name="31">   31   </a>    <b>{</b>
+</span><span><a class="LN" name="32">   32   </a>        q = z-1;
+</span><span><a class="LN" name="33">   33   </a>        r = q;
+</span><span><a class="LN" name="34">   34   </a>        w = 1+0.5*r;
+</span><span><a class="LN" name="35">   35   </a>        r *= q;
+</span><span><a class="LN" name="36">   36   </a>        w += 1/16.0*r;
+</span><span><a class="LN" name="37">   37   </a>        r *= q;
+</span><span><a class="LN" name="38">   38   </a>        w -= 1/192.0*r;
+</span><span><a class="LN" name="39">   39   </a>        r *= q;
+</span><span><a class="LN" name="40">   40   </a>        w -= 1/3072.0*q;
+</span><span><a class="LN" name="41">   41   </a>        r *= q; <span class="CT">/* (z-1)^5 */</span>
+</span><span><a class="LN" name="42">   42   </a>        w += 13/61440.0*q;
+</span><span><a class="LN" name="43">   43   </a>        <span class="CT">/* Initialize with the taylor series */</span>
+</span><span><a class="LN" name="44">   44   </a>    <b>}</b>
+</span><span><a class="LN" name="45">   45   </a>    <span class="KW">else</span>
+</span><span><a class="LN" name="46">   46   </a>    <b>{</b>
+</span><span><a class="LN" name="47">   47   </a>        r = log(z);
+</span><span><a class="LN" name="48">   48   </a>        q = r;
+</span><span><a class="LN" name="49">   49   </a>        zi  = 1.0/z;
+</span><span><a class="LN" name="50">   50   </a>        w = z-r;
+</span><span><a class="LN" name="51">   51   </a>        q = r*zi;
+</span><span><a class="LN" name="52">   52   </a>        w += q;
+</span><span><a class="LN" name="53">   53   </a>        q = q*zi;
+</span><span><a class="LN" name="54">   54   </a>        w += q*(0.5*r-1);
+</span><span><a class="LN" name="55">   55   </a>        q = q*zi;
+</span><span><a class="LN" name="56">   56   </a>        w += q*(1/3.0*r*r-3.0/2.0*r+1);
+</span><span><a class="LN" name="57">   57   </a>        <span class="CT">/* Initialize with w(z) = z-r+r/z^2(r/2-1)+r/z^3(1/3ln^2z-3/2r+1) */</span>
+</span><span><a class="LN" name="58">   58   </a>    <b>}</b>
+</span><span><a class="LN" name="59">   59   </a>    <span class="CT">/* FSC iteration */</span>
+</span><span><a class="LN" name="60">   60   </a>    <span class="CT">/* Initialize the residual */</span>
+</span><span><a class="LN" name="61">   61   </a>    r = z-w-log(w);
+</span><span><a class="LN" name="62">   62   </a>    z = (1+w);
+</span><span><a class="LN" name="63">   63   </a>    q = z+2/3.0*r;
+</span><span><a class="LN" name="64">   64   </a>    w *= 1+r/z*(z*q-0.5*r)/(z*q-r);
+</span><span><a class="LN" name="65">   65   </a>    r = (2*w*w-8*w-1)/(72.0*(z*z*z*z*z*z))*r*r*r*r;
+</span><span><a class="LN" name="66">   66   </a>    <span class="CT">/* Check residual */</span>
+</span><span><a class="LN" name="67">   67   </a>    <span class="CT">/*  if(r&lt;1.e-16) return w; */</span> <span class="CT">/*XXX Just do two rounds */</span>
+</span><span><a class="LN" name="68">   68   </a>    z = (1+w);
+</span><span><a class="LN" name="69">   69   </a>    q = z+2/3.0*r;
+</span><span><a class="LN" name="70">   70   </a>    w *= 1+r/z*(z*q-0.5*r)/(z*q-r);
+</span><span><a class="LN" name="71">   71   </a>    r = (2*w*w-8*w-1)/(72.0*(z*z*z*z*z*z))*r*r*r*r;
+</span><span><a class="LN" name="72">   72   </a>
+</span><span><a class="LN" name="73">   73   </a>    <span class="KW">return</span> w;
+</span><span><a class="LN" name="74">   74   </a><b>}</b>
+</span><span><a class="LN" name="75">   75   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>
