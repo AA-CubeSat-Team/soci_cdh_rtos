@@ -144,7 +144,7 @@ static bool enterCommandMode()
 	//PRINTF("%d\n", strlen(rx_buffer));
 
 	size_t n = 0;
-	int returnVal =  LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, 3); //LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, 3);
+	int returnVal =  LPUART_RTOS_Send(&uart3_handle, (uint8_t *)tx_buffer, 3); //LPUART_RTOS_Send(&uart3_handle, (uint8_t *)tx_buffer, 3);
     PRINTF("message sent\n");
 
 	//Another delay of 100 msec so radio can go into command mode
@@ -175,7 +175,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     int size_t = 0;
     while (try < DEFAULT_RETRIES) {
     	PRINTF("Trying to send ...\n");
-    	int sendReturnVal = LPUART_RTOS_Send(&uart2_handle, (uint8_t *)tx_buffer, sizeofTx); //LPUART_RTOS_Send(&uart2_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
+    	int sendReturnVal = LPUART_RTOS_Send(&uart3_handle, (uint8_t *)tx_buffer, sizeofTx); //LPUART_RTOS_Send(&uart3_handle, tx_buffer, sizeofTx); // Rithu: changing to sizeOfTx
     	if (sendReturnVal == kStatus_Success){
     		PRINTF("SUCCESS SENDING\n");
     	}
@@ -183,7 +183,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("ERROR SENDING\n");
     	}
         PRINTF("Trying to receive ...\n");
-        int recReturnVal = LPUART_RTOS_Receive(&uart2_handle, rx_buffer, sizeof(rx_buffer), size_t);
+        int recReturnVal = LPUART_RTOS_Receive(&uart3_handle, rx_buffer, sizeof(rx_buffer), size_t);
     	if (recReturnVal == kStatus_Success){
     		PRINTF("SUCCESS RECEIVING\n");
     	}
@@ -302,13 +302,13 @@ void com_getCommands() //highest priority
 
 	// void * memcpy ( void * destination, const void * source, size_t num );
 
-	if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart2_handle, (uint8_t *)to_send, strlen(to_send)))
+	if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send)))
 	{
 		PRINTF("could not send!!!\r\n\r\n");
 		return;
 	}
 
-	status_t error = LPUART_RTOS_Receive(&uart2_handle, rcv_buffer, sizeof(rcv_buffer), &n);
+	status_t error = LPUART_RTOS_Receive(&uart3_handle, rcv_buffer, sizeof(rcv_buffer), &n);
 	if (error == kStatus_LPUART_RxHardwareOverrun)
 	{
 		PRINTF("hardware overrun!!!\r\n\r\n");
@@ -322,7 +322,7 @@ void com_getCommands() //highest priority
 	if (n > 0)
 	{
 		/* send back the received data */
-		if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&uart2_handle, (uint8_t *)rcv_buffer, n))
+		if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&uart3_handle, (uint8_t *)rcv_buffer, n))
 		{
 			vTaskSuspend(NULL);
 		}
@@ -359,24 +359,24 @@ void com_sendPayloads() //high priority
 //	    }
 
 	    /* Send introduction message. */
-	    if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)to_send, strlen(to_send))){
+	    if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send))){
 	    	vTaskSuspend( NULL );
 	    }
 	    PRINTF("message sent\n");
 
 	    /* Receive user input and send it back to terminal. */
 	    int n = 0;
-	    status_t error = LPUART_RTOS_Receive(&uart2_handle, receive_buffer, 8, &n);
+	    status_t error = LPUART_RTOS_Receive(&uart3_handle, receive_buffer, 8, &n);
 	    do
 	    {
-	    	error = LPUART_RTOS_Receive(&uart2_handle, receive_buffer, 8, &n);
+	    	error = LPUART_RTOS_Receive(&uart3_handle, receive_buffer, 8, &n);
 
 	        PRINTF("n = %d\n", n);
 	        if (error == kStatus_LPUART_RxHardwareOverrun)
 	        {
 	            /* Notify about hardware buffer overrun */
 	            if (kStatus_Success !=
-					LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
+					LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -384,7 +384,7 @@ void com_sendPayloads() //high priority
 	        if (error == kStatus_LPUART_RxRingBufferOverrun)
 	        {
 	            /* Notify about ring buffer overrun */
-	            if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
+	            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -392,7 +392,7 @@ void com_sendPayloads() //high priority
 	        if (n > 0)
 	        {
 	            /* send back the received data */
-	            if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)receive_buffer, 8))
+	            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)receive_buffer, 8))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -411,25 +411,25 @@ void com_sendImages() //medium priority
 //	    }
 
 	    /* Send introduction message. */
-	    if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)to_send, strlen(to_send))){
+	    if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send))){
 	    	vTaskSuspend( NULL );
 	    }
 	    PRINTF("message sent\n");
 
 	    /* Receive user input and send it back to terminal. */
 	    size_t n = 0;
-	    status_t error = LPUART_RTOS_Receive(&uart2_handle, receive_buffer, 8, &n);
+	    status_t error = LPUART_RTOS_Receive(&uart3_handle, receive_buffer, 8, &n);
 	    do
 	    {
 	    	n = 0;
-	        error = LPUART_RTOS_Receive(&uart2_handle, receive_buffer, 8, &n);
+	        error = LPUART_RTOS_Receive(&uart3_handle, receive_buffer, 8, &n);
 
 	        PRINTF("n = %d\n", n);
 	        if (error == kStatus_LPUART_RxHardwareOverrun)
 	        {
 	            /* Notify about hardware buffer overrun */
 	            if (kStatus_Success !=
-					LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
+					LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -437,7 +437,7 @@ void com_sendImages() //medium priority
 	        if (error == kStatus_LPUART_RxRingBufferOverrun)
 	        {
 	            /* Notify about ring buffer overrun */
-	            if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
+	            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -445,7 +445,7 @@ void com_sendImages() //medium priority
 	        if (n > 0)
 	        {
 	            /* send back the received data */
-	            if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)receive_buffer, 8))
+	            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)receive_buffer, 8))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -464,25 +464,25 @@ void com_sendBeacons() //low priority, happens every 60 secs
 //	    }
 
 	    /* Send introduction message. */
-	    if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)to_send, strlen(to_send))){
+	    if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)to_send, strlen(to_send))){
 	    	vTaskSuspend( NULL );
 	    }
 	    PRINTF("message sent\n");
 
 	    /* Receive user input and send it back to terminal. */
 	    size_t n = 0;
-	    status_t error = LPUART_RTOS_Receive(&uart2_handle, receive_buffer, 8, &n);
+	    status_t error = LPUART_RTOS_Receive(&uart3_handle, receive_buffer, 8, &n);
 	    do
 	    {
 	    	n = 0;
-	        error = LPUART_RTOS_Receive(&uart2_handle, receive_buffer, 8, &n);
+	        error = LPUART_RTOS_Receive(&uart3_handle, receive_buffer, 8, &n);
 
 	        PRINTF("n = %d\n", n);
 	        if (error == kStatus_LPUART_RxHardwareOverrun)
 	        {
 	            /* Notify about hardware buffer overrun */
 	            if (kStatus_Success !=
-					LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
+					LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -490,7 +490,7 @@ void com_sendBeacons() //low priority, happens every 60 secs
 	        if (error == kStatus_LPUART_RxRingBufferOverrun)
 	        {
 	            /* Notify about ring buffer overrun */
-	            if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
+	            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
 	            {
 	                vTaskSuspend(NULL);
 	            }
@@ -498,7 +498,7 @@ void com_sendBeacons() //low priority, happens every 60 secs
 	        if (n > 0)
 	        {
 	            /* send back the received data */
-	            if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)receive_buffer, 8))
+	            if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)receive_buffer, 8))
 	            {
 	                vTaskSuspend(NULL);
 	            }

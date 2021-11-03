@@ -1,6 +1,6 @@
 #define COM_ENABLE	0
 #define COM_WRAP_DEBUG 0
-#define UART_TESTING 0
+#define UART_TESTING 1
 
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"

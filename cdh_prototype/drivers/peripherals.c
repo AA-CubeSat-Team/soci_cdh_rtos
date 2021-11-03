@@ -103,10 +103,9 @@ static void LPUART2_init(void) {
 lpuart_rtos_handle_t uart3_handle;
 struct _lpuart_handle t_handle3;
 uint8_t background_buffer3[32];
-uint8_t recv_buffer3[4];
 
 lpuart_rtos_config_t lpuart3_config = {
-    .baudrate    = 115200,
+    .baudrate    = 38400,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer3,
@@ -132,7 +131,6 @@ static void LPUART3_init(void) {
 lpuart_rtos_handle_t uart4_handle;
 struct _lpuart_handle t_handle4;
 uint8_t background_buffer4[32];
-uint8_t recv_buffer4[4];
 
 lpuart_rtos_config_t lpuart4_config = {
     .baudrate    = 115200,

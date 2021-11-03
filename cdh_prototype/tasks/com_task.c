@@ -38,8 +38,10 @@ void com_task(void *pvParameters)
 	int error;
 	size_t n = 0;
 
+	PRINTF("Send UART");
+
 	/* Send introduction message. */
-	if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_message, strlen(send_message)))
+	if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_message, strlen(send_message)))
 	{
 		vTaskSuspend(NULL);
 	}
@@ -47,12 +49,12 @@ void com_task(void *pvParameters)
 	/* Receive user input and send it back to terminal. */
 	do
 	{
-		error = LPUART_RTOS_Receive(&uart2_handle, recv_buffer, sizeof(recv_buffer), &n);
+		error = LPUART_RTOS_Receive(&uart3_handle, recv_buffer, sizeof(recv_buffer), &n);
 		if (error == kStatus_LPUART_RxHardwareOverrun)
 		{
 			/* Notify about hardware buffer overrun */
 			if (kStatus_Success !=
-				LPUART_RTOS_Send(&uart2_handle, (uint8_t *)hardware_overrun, strlen(hardware_overrun)))
+				LPUART_RTOS_Send(&uart3_handle, (uint8_t *)hardware_overrun, strlen(hardware_overrun)))
 			{
 				vTaskSuspend(NULL);
 			}
@@ -60,7 +62,7 @@ void com_task(void *pvParameters)
 		if (error == kStatus_LPUART_RxRingBufferOverrun)
 		{
 			/* Notify about ring buffer overrun */
-			if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)ring_overrun, strlen(ring_overrun)))
+			if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)ring_overrun, strlen(ring_overrun)))
 			{
 				vTaskSuspend(NULL);
 			}
@@ -68,7 +70,7 @@ void com_task(void *pvParameters)
 		if (n > 0)
 		{
 			/* send back the received data */
-			if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, recv_buffer, n))
+			if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, recv_buffer, n))
 			{
 				vTaskSuspend(NULL);
 			}

@@ -18,7 +18,7 @@ void imag_task(void *pvParameters)
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
-    // sdram example
+    /*// sdram example
     memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
     memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
     SEMC_SDRAM_Read(0, 10, 1);
@@ -28,7 +28,7 @@ void imag_task(void *pvParameters)
 	for (int i = 0; i < 10; i++) {
 		//read into the readBuffer to access later
 		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
-	}
+	}*/
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
