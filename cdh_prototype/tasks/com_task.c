@@ -38,20 +38,27 @@ void com_task(void *pvParameters)
 	int error;
 	size_t n = 0;
 
-	PRINTF("Send UART");
+	PRINTF("Send UART\n");
 
 	/* Send introduction message. */
 	if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)send_message, strlen(send_message)))
 	{
+		PRINTF("NOT SENT SUCCESFULLY\n");
 		vTaskSuspend(NULL);
+	}
+	else{
+		PRINTF("SENT SUCCESFULLY\n");
 	}
 
 	/* Receive user input and send it back to terminal. */
 	do
 	{
+		PRINTF("TRYING TO RECEIVE ...\n");
 		error = LPUART_RTOS_Receive(&uart3_handle, recv_buffer, sizeof(recv_buffer), &n);
+		PRINTF("MADE IT PAST RECEIVE ...\n");
 		if (error == kStatus_LPUART_RxHardwareOverrun)
 		{
+			PRINTF("HARDWARE BUFFER OVERRUN\n");
 			/* Notify about hardware buffer overrun */
 			if (kStatus_Success !=
 				LPUART_RTOS_Send(&uart3_handle, (uint8_t *)hardware_overrun, strlen(hardware_overrun)))
@@ -61,6 +68,7 @@ void com_task(void *pvParameters)
 		}
 		if (error == kStatus_LPUART_RxRingBufferOverrun)
 		{
+			PRINTF("RXRINGBUFFEROVERRUN\n");
 			/* Notify about ring buffer overrun */
 			if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, (uint8_t *)ring_overrun, strlen(ring_overrun)))
 			{
@@ -69,6 +77,10 @@ void com_task(void *pvParameters)
 		}
 		if (n > 0)
 		{
+			PRINTF("RECEIVE SUCCESSFUL");
+			for(int i = 0; i < n; i++){
+				PRINTF("recv_buffer[i]: %d", recv_buffer[i]);
+			}
 			/* send back the received data */
 			if (kStatus_Success != LPUART_RTOS_Send(&uart3_handle, recv_buffer, n))
 			{
