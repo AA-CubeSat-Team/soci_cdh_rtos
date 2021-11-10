@@ -133,7 +133,7 @@ struct _lpuart_handle t_handle4;
 uint8_t background_buffer4[32];
 
 lpuart_rtos_config_t lpuart4_config = {
-    .baudrate    = 115200,
+    .baudrate    = 38400,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer4,
@@ -512,7 +512,7 @@ static void BOARD_InitPeripherals_CommonPostInit(void)
 void BOARD_InitPeripherals(void)
 {
 	NVIC_SetPriority(LPSPI1_IRQn, 3);
-    NVIC_SetPriority(LPUART3_IRQn, 10);
+    NVIC_SetPriority(LPUART4_IRQn, 10);
 
     /* Define the init structure for the output pin */
     gpio_pin_config_t pcs_config = {kGPIO_DigitalOutput, 1, kGPIO_NoIntmode};
