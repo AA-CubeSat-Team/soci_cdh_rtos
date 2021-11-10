@@ -34,6 +34,9 @@ uint8_t recv_buffer[8];
 
 void com_task(void *pvParameters)
 {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+
 #if UART_TESTING
 	int error;
 	size_t n = 0;
@@ -125,13 +128,7 @@ void com_task(void *pvParameters)
 
 	//PRINTF("Testing checkDeploy()\n");
 	//com_i2c_checkDeploy();
-	//PRINTF("\n");
-
-#else
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-
-    // Moved uart initialization up so both if/else statements can use
+	//PRINTF("\n");   // Moved uart initialization up so both if/else statements can use
 #endif
 
 #if COM_ENABLE
