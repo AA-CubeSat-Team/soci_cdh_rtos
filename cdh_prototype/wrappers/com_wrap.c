@@ -78,8 +78,8 @@ const char *send_ring_overrun     = "\r\nRing buffer overrun!FreeRTOS\r\n";
 const char *send_hardware_overrun = "\r\nHardware buffer overrun!FreeRTOS\r\n";
 uint8_t backgroundBuffer[500];
 
-static char tx_buffer[3] = {};
-static char rx_buffer[3] = {};
+static char tx_buffer[8] = {};
+static char rx_buffer[8] = {};
 static char downlink_buffer[] = {};
 static int rx_size = 0;
 // maybe try uint8_t for buffers
@@ -163,13 +163,15 @@ static bool enterCommandMode()
 //Sends a command to the radia via UART, retries several times if there is a failure.
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
-
+    for(int i = 0; i < sizeof(expectedResponse); i++){
+    	PRINTF("expectedResponse[i]: %d\n", expectedResponse[i]);
+    }
 	//clear buffers here
 	memset(rx_buffer, 0, sizeof(rx_buffer));
 	memset(tx_buffer, 0, sizeof(tx_buffer));
     for (int i = 0; i < sizeofTx; i++) {
     	tx_buffer[i] = data[i];
-    	PRINTF("tx_buffer");
+    	PRINTF("tx_buffer[i]: %d\n", tx_buffer[i]);
     }
     // Sends data to radio via UART, if the response is not correct it retries sending the command
     int size_t = 0;
