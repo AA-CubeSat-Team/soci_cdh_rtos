@@ -133,7 +133,7 @@ struct _lpuart_handle t_handle4;
 uint8_t background_buffer4[32];
 
 lpuart_rtos_config_t lpuart4_config = {
-    .baudrate    = 38400,
+    .baudrate    = 115200,
     .parity      = kLPUART_ParityDisabled,
     .stopbits    = kLPUART_OneStopBit,
     .buffer      = background_buffer4,

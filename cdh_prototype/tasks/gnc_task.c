@@ -1,10 +1,12 @@
-#include "gyro_wrap.h"
+#include "wrappers/gyro_wrapper/gyro_wrap.h"
 #include "gnc_task.h"
 //#include "FSW_Lib_types.h"
 #include "act_wrap.h"
 #include "sen_wrap.h"
 #include "idle_task.h"
 #include "peripherals.h"
+#include "sun_wrap.h"
+#include "fsl_debug_console.h"
 
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
@@ -32,7 +34,7 @@ void gnc_task(void *pvParameters)
 #endif
 
 #if GNC_ENABLE
-	PRINTF("\ninitialize gnc.\r\n");
+	printf("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
 //	sens_init();
 //  act_init();
@@ -42,7 +44,15 @@ void gnc_task(void *pvParameters)
 		xLastWakeTime = xTaskGetTickCount();
 #if GNC_ENABLE
 		xLastWakeTime = xTaskGetTickCount();
-		PRINTF("\nGNC TASK START.\r\n");
+		printf("\nGNC TASK START.\r\n");
+
+		getSunAngles(&Sun1);
+
+		int a1 = (int) (Sun1.angles[0]*1000);
+		int a2 = (int) (Sun1.angles[1]*1000);
+		printf("\n");
+		printf("a1: %d\n", a1);
+		printf("a2: %d\n", a2);
 
 		/* read sensors and actuator measurements to sensor_bus */
 		if (g_senActive) {
