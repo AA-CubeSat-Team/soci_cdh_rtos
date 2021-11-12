@@ -1,4 +1,4 @@
-#include "wrappers/gyro_wrapper/gyro_wrap.h"
+//#include "wrappers/gyro_wrapper/gyro_wrap.h"
 #include "gnc_task.h"
 //#include "FSW_Lib_types.h"
 #include "act_wrap.h"
