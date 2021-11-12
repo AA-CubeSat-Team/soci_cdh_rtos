@@ -116,22 +116,23 @@ instance:
       - 2: []
       - 3: []
       - 4: []
+      - 5: []
     - interrupts:
       - 0:
         - channelId: 'int_0'
         - interrupt_t:
           - IRQn: 'LPI2C1_IRQn'
           - enable_interrrupt: 'enabled'
-          - enable_priority: 'false'
-          - priority: '0'
+          - enable_priority: 'true'
+          - priority: '3'
           - enable_custom_name: 'false'
       - 1:
         - channelId: 'int_1'
         - interrupt_t:
           - IRQn: 'LPI2C2_IRQn'
           - enable_interrrupt: 'enabled'
-          - enable_priority: 'false'
-          - priority: '0'
+          - enable_priority: 'true'
+          - priority: '3'
           - enable_custom_name: 'false'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -433,7 +434,7 @@ instance:
     - clockSourceFreq: 'BOARD_BootClockRUN'
   - interrupt_vector: []
   - master:
-    - mode: 'polling'
+    - mode: 'freertos'
     - config:
       - enableMaster: 'true'
       - enableDoze: 'true'
@@ -450,6 +451,16 @@ instance:
         - source: 'kLPI2C_HostRequestExternalPin'
         - polarity: 'kLPI2C_HostRequestPinActiveHigh'
       - edmaRequestSources: ''
+    - transfer:
+      - enable_custom_handle: 'false'
+      - flags: ''
+      - slaveAddress: '0'
+      - direction: 'kLPI2C_Write'
+      - subaddress: '0'
+      - subaddressSize: '0'
+      - blocking_buffer: 'false'
+      - enable_custom_buffer: 'false'
+      - dataSize: '32'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 const lpi2c_master_config_t LPI2C3_masterConfig = {
@@ -469,9 +480,96 @@ const lpi2c_master_config_t LPI2C3_masterConfig = {
     .polarity = kLPI2C_HostRequestPinActiveHigh
   }
 };
+lpi2c_master_transfer_t LPI2C3_masterTransfer = {
+  .flags = kLPI2C_TransferDefaultFlag,
+  .slaveAddress = 0,
+  .direction = kLPI2C_Write,
+  .subaddress = 0,
+  .subaddressSize = 0,
+  .data = LPI2C3_masterBuffer,
+  .dataSize = 32
+};
+lpi2c_rtos_handle_t LPI2C3_masterHandle;
+uint8_t LPI2C3_masterBuffer[LPI2C3_MASTER_BUFFER_SIZE];
 
 static void LPI2C3_init(void) {
-  LPI2C_MasterInit(LPI2C3_PERIPHERAL, &LPI2C3_masterConfig, LPI2C3_CLOCK_FREQ);
+  LPI2C_RTOS_Init(&LPI2C3_masterHandle, LPI2C3_PERIPHERAL, &LPI2C3_masterConfig, LPI2C3_CLOCK_FREQ);
+}
+
+/***********************************************************************************************************************
+ * LPSPI1 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'LPSPI1'
+- type: 'lpspi'
+- mode: 'freertos'
+- custom_name_enabled: 'false'
+- type_id: 'lpspi_6e21a1e0a09f0a012d683c4f91752db8'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'LPSPI1'
+- config_sets:
+  - transfer:
+    - config:
+      - transmitBuffer:
+        - init: 'true'
+      - receiveBuffer:
+        - init: 'true'
+      - dataSize: '32'
+      - enableTransferStruct: 'defined'
+      - flags: ''
+  - main:
+    - mode: 'kLPSPI_Master'
+    - clockSource: 'LpspiClock'
+    - clockSourceFreq: 'BOARD_BootClockRUN'
+    - master:
+      - baudRate: '500000'
+      - bitsPerFrame: '8'
+      - cpol: 'kLPSPI_ClockPolarityActiveHigh'
+      - cpha: 'kLPSPI_ClockPhaseFirstEdge'
+      - direction: 'kLPSPI_MsbFirst'
+      - pcsToSckDelayInNanoSec: '1000'
+      - lastSckToPcsDelayInNanoSec: '1000'
+      - betweenTransferDelayInNanoSec: '1000'
+      - whichPcs: 'kLPSPI_Pcs0'
+      - pcsActiveHighOrLow: 'kLPSPI_PcsActiveLow'
+      - pinCfg: 'kLPSPI_SdiInSdoOut'
+      - dataOutConfig: 'kLpspiDataOutRetained'
+    - interrupt_priority:
+      - IRQn: 'LPSPI1_IRQn'
+      - enable_priority: 'true'
+      - priority: '5'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const lpspi_master_config_t LPSPI1_config = {
+  .baudRate = 500000UL,
+  .bitsPerFrame = 8UL,
+  .cpol = kLPSPI_ClockPolarityActiveHigh,
+  .cpha = kLPSPI_ClockPhaseFirstEdge,
+  .direction = kLPSPI_MsbFirst,
+  .pcsToSckDelayInNanoSec = 1000UL,
+  .lastSckToPcsDelayInNanoSec = 1000UL,
+  .betweenTransferDelayInNanoSec = 1000UL,
+  .whichPcs = kLPSPI_Pcs0,
+  .pcsActiveHighOrLow = kLPSPI_PcsActiveLow,
+  .pinCfg = kLPSPI_SdiInSdoOut,
+  .dataOutConfig = kLpspiDataOutRetained
+};
+lpspi_transfer_t LPSPI1_transfer = {
+  .txData = LPSPI1_txBuffer,
+  .rxData = LPSPI1_rxBuffer,
+  .dataSize = 32,
+  .configFlags = 0
+};
+lpspi_rtos_handle_t LPSPI1_handle;
+uint8_t LPSPI1_txBuffer[LPSPI1_BUFFER_SIZE];
+uint8_t LPSPI1_rxBuffer[LPSPI1_BUFFER_SIZE];
+
+static void LPSPI1_init(void) {
+  /* Interrupt vector LPSPI1_IRQn priority settings in the NVIC. */
+  NVIC_SetPriority(LPSPI1_IRQN, LPSPI1_IRQ_PRIORITY);
+  LPSPI_RTOS_Init(&LPSPI1_handle, LPSPI1_PERIPHERAL, &LPSPI1_config, LPSPI1_CLOCK_FREQ);
 }
 
 /***********************************************************************************************************************
@@ -502,9 +600,8 @@ instance:
       - txCtsConfig: 'kLPUART_CtsSampleAtStart'
     - interrupt_rx_tx:
       - IRQn: 'LPUART1_IRQn'
-      - enable_priority: 'false'
-      - priority: '0'
-    - quick_selection: 'QuickSelection1'
+      - enable_priority: 'true'
+      - priority: '5'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 lpuart_rtos_handle_t LPUART1_rtos_handle;
@@ -527,6 +624,8 @@ lpuart_rtos_config_t LPUART1_rtos_config = {
 static void LPUART1_init(void) {
   /* LPUART rtos initialization */
   LPUART_RTOS_Init(&LPUART1_rtos_handle, &LPUART1_lpuart_handle, &LPUART1_rtos_config);
+  /* Interrupt vector LPUART1_IRQn priority settings in the NVIC. */
+  NVIC_SetPriority(LPUART1_IRQN, LPUART1_IRQ_PRIORITY);
 }
 
 /***********************************************************************************************************************
@@ -534,6 +633,10 @@ static void LPUART1_init(void) {
  **********************************************************************************************************************/
 static void BOARD_InitPeripherals_CommonPostInit(void)
 {
+  /* Interrupt vector LPI2C1_IRQn priority settings in the NVIC. */
+  NVIC_SetPriority(INT_0_IRQN, INT_0_IRQ_PRIORITY);
+  /* Interrupt vector LPI2C2_IRQn priority settings in the NVIC. */
+  NVIC_SetPriority(INT_1_IRQN, INT_1_IRQ_PRIORITY);
   /* Enable interrupt LPI2C1_IRQn request in the NVIC. */
   EnableIRQ(INT_0_IRQN);
   /* Enable interrupt LPI2C2_IRQn request in the NVIC. */
@@ -549,6 +652,7 @@ void BOARD_InitPeripherals(void)
   LPUART3_init();
   LPUART4_init();
   LPI2C3_init();
+  LPSPI1_init();
   LPUART1_init();
   /* Common post-initialization */
   BOARD_InitPeripherals_CommonPostInit();

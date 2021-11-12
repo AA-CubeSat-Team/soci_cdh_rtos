@@ -269,7 +269,6 @@ static void DelayLoop(uint32_t count)
  * @param delayTime_us  Delay time in unit of microsecond.
  * @param coreClock_Hz  Core clock frequency with Hz.
  */
-#if 0
 void SDK_DelayAtLeastUs(uint32_t delayTime_us, uint32_t coreClock_Hz)
 {
     assert(0U != delayTime_us);
@@ -310,4 +309,3 @@ void SDK_DelayAtLeastUs(uint32_t delayTime_us, uint32_t coreClock_Hz)
     DelayLoop((uint32_t)count);
 #endif /* defined(SDK_DELAY_USE_DWT) && defined(DWT) || (defined __XCC__) */
 }
-#endif

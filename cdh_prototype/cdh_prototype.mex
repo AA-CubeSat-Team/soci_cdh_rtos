@@ -75,11 +75,6 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="LPI2C4" description="Peripheral LPI2C4 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="SEMC" description="Peripheral SEMC is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
@@ -176,8 +171,6 @@
                   <pin peripheral="GPIO1" signal="gpio_io, 09" pin_num="99" pin_signal="GPIO_AD_B0_09"/>
                   <pin peripheral="GPIO1" signal="gpio_io, 28" pin_num="78" pin_signal="GPIO_AD_B1_12"/>
                   <pin peripheral="GPIO1" signal="gpio_io, 29" pin_num="76" pin_signal="GPIO_AD_B1_13"/>
-                  <pin peripheral="LPI2C4" signal="SCL" pin_num="30" pin_signal="GPIO_SD_B1_02"/>
-                  <pin peripheral="LPI2C4" signal="SDA" pin_num="28" pin_signal="GPIO_SD_B1_03"/>
                   <pin peripheral="SEMC" signal="ADDR, 00" pin_num="142" pin_signal="GPIO_EMC_16"/>
                   <pin peripheral="SEMC" signal="ADDR, 01" pin_num="141" pin_signal="GPIO_EMC_17"/>
                   <pin peripheral="SEMC" signal="ADDR, 02" pin_num="140" pin_signal="GPIO_EMC_18"/>
@@ -548,6 +541,16 @@
                   <data type="Version">2.2.8</data>
                </feature>
             </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi" description="LPSPI Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi" description="Unsupported version of the LPSPI Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="greaterOrEqual">
+                  <data type="Version">2.0.3</data>
+               </feature>
+            </dependency>
          </dependencies>
          <generated_project_files>
             <file path="drivers/peripherals.c" update_enabled="true"/>
@@ -681,6 +684,46 @@
                         <data type="Boolean">true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpi2c_freertos" description="The fsl_lpi2c_freertos driver is missing in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpi2c_freertos" description="The compatible version of the fsl_lpi2c_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.2.0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPSPI1.lpspi_sck" description="Signal serial clock of the peripheral LPSPI1 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPSPI1.lpspi_sin" description="Signal serial data input of the peripheral LPSPI1 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPSPI1.lpspi_sout" description="Signal serial data output of the peripheral LPSPI1 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="LPSPI_CLK_ROOT" description="LPSPI_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi_freertos" description="The fsl_lpspi_freertos driver is missing in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi_freertos" description="The compatible version of the fsl_lpspi_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.0.2</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART1.uart_tx" description="Signal TX of the peripheral LPUART1 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="routed" evaluation="equal">
                         <data type="Boolean">true</data>
@@ -746,6 +789,7 @@
                            <struct name="2"/>
                            <struct name="3"/>
                            <struct name="4"/>
+                           <struct name="5"/>
                         </array>
                         <array name="interrupts">
                            <struct name="0">
@@ -753,8 +797,8 @@
                               <struct name="interrupt_t">
                                  <setting name="IRQn" value="LPI2C1_IRQn"/>
                                  <setting name="enable_interrrupt" value="enabled"/>
-                                 <setting name="enable_priority" value="false"/>
-                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_priority" value="true"/>
+                                 <setting name="priority" value="3"/>
                                  <setting name="enable_custom_name" value="false"/>
                               </struct>
                            </struct>
@@ -763,8 +807,8 @@
                               <struct name="interrupt_t">
                                  <setting name="IRQn" value="LPI2C2_IRQn"/>
                                  <setting name="enable_interrrupt" value="enabled"/>
-                                 <setting name="enable_priority" value="false"/>
-                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_priority" value="true"/>
+                                 <setting name="priority" value="3"/>
                                  <setting name="enable_custom_name" value="false"/>
                               </struct>
                            </struct>
@@ -906,7 +950,7 @@
                      </config_set>
                      <config_set name="interrupt_vector"/>
                      <config_set name="master">
-                        <setting name="mode" value="polling"/>
+                        <setting name="mode" value="freertos"/>
                         <struct name="config">
                            <setting name="enableMaster" value="true"/>
                            <setting name="enableDoze" value="true"/>
@@ -927,10 +971,38 @@
                               <selected/>
                            </set>
                         </struct>
+                        <struct name="transfer">
+                           <setting name="enable_custom_handle" value="false"/>
+                           <set name="flags">
+                              <selected/>
+                           </set>
+                           <setting name="slaveAddress" value="0"/>
+                           <setting name="direction" value="kLPI2C_Write"/>
+                           <setting name="subaddress" value="0"/>
+                           <setting name="subaddressSize" value="0"/>
+                           <setting name="blocking_buffer" value="false"/>
+                           <setting name="enable_custom_buffer" value="false"/>
+                           <setting name="dataSize" value="32"/>
+                        </struct>
                      </config_set>
                   </instance>
-                  <instance name="LPSPI1" uuid="f72d01b3-63dc-40b8-b708-35fb658d7bf0" type="lpspi" type_id="lpspi_6e21a1e0a09f0a012d683c4f91752db8" mode="polling" peripheral="LPSPI1" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="main" quick_selection="qs_master">
+                  <instance name="LPSPI1" uuid="f72d01b3-63dc-40b8-b708-35fb658d7bf0" type="lpspi" type_id="lpspi_6e21a1e0a09f0a012d683c4f91752db8" mode="freertos" peripheral="LPSPI1" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="transfer">
+                        <struct name="config">
+                           <struct name="transmitBuffer">
+                              <setting name="init" value="true"/>
+                           </struct>
+                           <struct name="receiveBuffer">
+                              <setting name="init" value="true"/>
+                           </struct>
+                           <setting name="dataSize" value="32"/>
+                           <setting name="enableTransferStruct" value="defined"/>
+                           <set name="flags">
+                              <selected/>
+                           </set>
+                        </struct>
+                     </config_set>
+                     <config_set name="main">
                         <setting name="mode" value="kLPSPI_Master"/>
                         <setting name="clockSource" value="LpspiClock"/>
                         <setting name="clockSourceFreq" value="BOARD_BootClockRUN"/>
@@ -948,15 +1020,15 @@
                            <setting name="pinCfg" value="kLPSPI_SdiInSdoOut"/>
                            <setting name="dataOutConfig" value="kLpspiDataOutRetained"/>
                         </struct>
-                        <setting name="set_FifoWaterMarks" value="false"/>
-                        <struct name="fifoWaterMarks">
-                           <setting name="txWatermark" value="0"/>
-                           <setting name="rxWatermark" value="0"/>
+                        <struct name="interrupt_priority">
+                           <setting name="IRQn" value="LPSPI1_IRQn"/>
+                           <setting name="enable_priority" value="true"/>
+                           <setting name="priority" value="5"/>
                         </struct>
                      </config_set>
                   </instance>
                   <instance name="LPUART1" uuid="97226141-0fa4-4ace-bd4e-a1fffb0e20e7" type="lpuart" type_id="lpuart_54a65a580e3462acdbacefd5299e0cac" mode="freertos" peripheral="LPUART1" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="fsl_lpuart_freertos" quick_selection="QuickSelection1">
+                     <config_set name="fsl_lpuart_freertos">
                         <struct name="lpuart_rtos_configuration">
                            <setting name="clockSource" value="LpuartClock"/>
                            <setting name="srcclk" value="BOARD_BootClockRUN"/>
@@ -971,8 +1043,92 @@
                         </struct>
                         <struct name="interrupt_rx_tx">
                            <setting name="IRQn" value="LPUART1_IRQn"/>
+                           <setting name="enable_priority" value="true"/>
+                           <setting name="priority" value="5"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="GPIO1" uuid="50ef7558-722e-4e7a-b971-55459bbd1f6c" type="igpio" type_id="igpio_b1c1fa279aa7069dca167502b8589cb7" mode="GPIO" peripheral="GPIO1" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_gpio">
+                        <setting name="enable_irq_comb_0_15" value="false"/>
+                        <struct name="gpio_interrupt_comb_0_15">
+                           <setting name="IRQn" value="GPIO1_Combined_0_15_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
                            <setting name="enable_priority" value="false"/>
                            <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_comb_16_31" value="false"/>
+                        <struct name="gpio_interrupt_comb_16_31">
+                           <setting name="IRQn" value="GPIO1_Combined_16_31_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int0" value="false"/>
+                        <struct name="gpio_interrupt_int0">
+                           <setting name="IRQn" value="GPIO1_INT0_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int1" value="false"/>
+                        <struct name="gpio_interrupt_int1">
+                           <setting name="IRQn" value="GPIO1_INT1_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int2" value="false"/>
+                        <struct name="gpio_interrupt_int2">
+                           <setting name="IRQn" value="GPIO1_INT2_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int3" value="false"/>
+                        <struct name="gpio_interrupt_int3">
+                           <setting name="IRQn" value="GPIO1_INT3_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int4" value="false"/>
+                        <struct name="gpio_interrupt_int4">
+                           <setting name="IRQn" value="GPIO1_INT4_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int5" value="false"/>
+                        <struct name="gpio_interrupt_int5">
+                           <setting name="IRQn" value="GPIO1_INT5_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int6" value="false"/>
+                        <struct name="gpio_interrupt_int6">
+                           <setting name="IRQn" value="GPIO1_INT6_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <setting name="enable_irq_int7" value="false"/>
+                        <struct name="gpio_interrupt_int7">
+                           <setting name="IRQn" value="GPIO1_INT7_IRQn"/>
+                           <setting name="enable_interrrupt" value="enabled"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
                         </struct>
                      </config_set>
                   </instance>
