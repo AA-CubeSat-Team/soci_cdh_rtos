@@ -1,6 +1,7 @@
 /* Jay Lee
  * 11/3/21
  * A helper function that initializes the GNC build and sets up the periodic interrupt timer
+ * with rt_onestep()
  */
 #include "gnc_build.h"
 #include "fsl_pit.h"
@@ -10,6 +11,7 @@
 #include <stdio.h>                     /* This ert_main.c example uses printf/fflush */
 #include "FSW_Lib0.h"                  /* Model's header file */
 #include "rtwtypes.h"
+#include "fsl_debug_console.h"
 
 void PIT_IRQHandler(void)
 {
@@ -19,7 +21,9 @@ void PIT_IRQHandler(void)
 	 * period 0.0125 seconds (the model's base sample time) here.  The
 	 * call syntax for rt_OneStep is
 	 */
+    PRINTF("entered Interrupt\n");
     rt_OneStep();
+    PRINTF("finished Interrupt\n");
     __DSB();
 }
 
@@ -27,17 +31,13 @@ void gnc_build_init(void)
 {
 	/* Initialize model */
 	FSW_Lib0_initialize();
-
-	rt_OneStep();
-
-	/* Disable rt_OneStep() here */
+	timer_init();
 }
 
 void timer_init(void)
 {
     /* Structure of initialize PIT */
     pit_config_t pitConfig;
-    pitIsrFlag = false;
 
     /* Enable clock gate for GPIO1 */
     CLOCK_EnableClock(kCLOCK_Gpio1);
@@ -56,7 +56,7 @@ void timer_init(void)
     PIT_Init(PIT, &pitConfig);
 
     /* Set timer period for channel 0 */
-    PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, USEC_TO_COUNT(12500U, PIT_SOURCE_CLOCK));
+    PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, USEC_TO_COUNT(12500U, CLOCK_GetFreq(kCLOCK_OscClk)));
 
     /* Enable timer interrupts for channel 0 */
     PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
@@ -67,13 +67,6 @@ void timer_init(void)
     /* Start channel 0 */
     PRINTF("\r\nStarting channel No.0 ...");
     PIT_StartTimer(PIT, kPIT_Chnl_0);
-
-	/* Check whether occur interupt and toggle LED */
-	if (true == pitIsrFlag)
-	{
-		PRINTF("\r\n Channel No.0 interrupt is occurred !");
-		pitIsrFlag = false;
-	}
 }
 
 void rt_OneStep(void)

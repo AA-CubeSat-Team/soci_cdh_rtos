@@ -11,10 +11,8 @@
 #include "task.h"
 #include "semphr.h"
 #include "fsl_common.h"
-#include "power_mode_switch.h"
 #include "board.h"
 #include "fsl_debug_console.h"
-#include "lpm.h"
 #include "fsl_lpuart.h"
 #include "specific.h"
 #include "peripherals.h"
@@ -27,8 +25,6 @@
 #include "imag_task.h"
 #include "gnc_task.h"
 #include "com_task.h"
-#include "semc_sdram.h"
-#include "FSW_lib_types.h"
 
 /*******************************************************************************
  * Definitions
@@ -68,9 +64,7 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
-  /* Disable rt_OneStep() here */
 
-    APP_PrintRunFrequency(0);
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
