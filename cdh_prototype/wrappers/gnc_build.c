@@ -15,8 +15,6 @@ void PIT_IRQHandler(void)
 {
     /* Clear interrupt flag.*/
     PIT_ClearStatusFlags(PIT, kPIT_Chnl_0, kPIT_TimerFlag);
-    pitIsrFlag = true;
-
     /* Attach rt_OneStep to a timer or interrupt service routine with
 	 * period 0.0125 seconds (the model's base sample time) here.  The
 	 * call syntax for rt_OneStep is
@@ -87,6 +85,7 @@ void rt_OneStep(void)
   static int_T taskCounter[2] = { 0, 0 };
 
   /* Disable interrupts here */
+  PIT_DisableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
 
   /* Check base rate for overrun */
   if (OverrunFlags[0]) {
@@ -98,7 +97,7 @@ void rt_OneStep(void)
 
   /* Save FPU context here (if necessary) */
   /* Re-enable timer or interrupt here */
-
+  PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
   /*
    * For a bare-board target (i.e., no operating system), the
    * following code checks whether any subrate overruns,
@@ -123,11 +122,13 @@ void rt_OneStep(void)
   }
 
   /* Set model inputs associated with base rate here */
+  // not sure about this
 
   /* Step the model for base rate */
   FSW_Lib0_step0();
 
   /* Get model outputs here */
+  // not sure about this
 
   /* Indicate task for base rate complete */
   OverrunFlags[0] = false;
@@ -142,11 +143,13 @@ void rt_OneStep(void)
     OverrunFlags[1] = true;
 
     /* Set model inputs associated with subrates here */
+    // not sure about this
 
     /* Step the model for subrate 1 */
     FSW_Lib0_step1();
 
     /* Get model outputs here */
+    // not sure about this
 
     /* Indicate task complete for subrate */
     OverrunFlags[1] = false;
@@ -154,6 +157,8 @@ void rt_OneStep(void)
   }
 
   /* Disable interrupts here */
+  PIT_DisableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
   /* Restore FPU context here (if necessary) */
   /* Enable interrupts here */
+  PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
 }
