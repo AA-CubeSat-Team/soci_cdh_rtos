@@ -64,7 +64,7 @@ extern "C" {
 /* Definition of peripheral ID */
 #define LPUART3_PERIPHERAL LPUART3
 /* Definition of the backround buffer size */
-#define LPUART3_BACKGROUND_BUFFER_SIZE 1
+#define LPUART3_BACKGROUND_BUFFER_SIZE 64
 /* LPUART3 interrupt vector ID (number). */
 #define LPUART3_IRQN LPUART3_IRQn
 /* LPUART3 interrupt vector priority. */
@@ -72,7 +72,7 @@ extern "C" {
 /* Definition of peripheral ID */
 #define LPUART4_PERIPHERAL LPUART4
 /* Definition of the backround buffer size */
-#define LPUART4_BACKGROUND_BUFFER_SIZE 1
+#define LPUART4_BACKGROUND_BUFFER_SIZE 64
 /* LPUART4 interrupt vector ID (number). */
 #define LPUART4_IRQN LPUART4_IRQn
 /* LPUART4 interrupt vector priority. */
@@ -100,7 +100,7 @@ extern "C" {
 /* Definition of peripheral ID */
 #define LPUART1_PERIPHERAL LPUART1
 /* Definition of the backround buffer size */
-#define LPUART1_BACKGROUND_BUFFER_SIZE 1
+#define LPUART1_BACKGROUND_BUFFER_SIZE 64
 /* LPUART1 interrupt vector ID (number). */
 #define LPUART1_IRQN LPUART1_IRQn
 /* LPUART1 interrupt vector priority. */

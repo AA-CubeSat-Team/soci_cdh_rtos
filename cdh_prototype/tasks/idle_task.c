@@ -265,7 +265,7 @@ static void idle_phase3() {
 		g_comHealthy = com_healthcheck();
 	}*/
 }
-
+void print_buff(uint8_t* arr, int size);
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
@@ -388,16 +388,17 @@ void idle_task(void *pvParameters) {
 #elif IDLE_ALL
     SPI_GPIO_init();
 	uint8_t spi_tx[32];
-	uint8_t spi_rx[32];
+	uint8_t spi_rx[32] = {0};
     uint8_t rxbuff3[4] = {0xDE, 0xAD, 0xBE, 0xEF};
     uint8_t rxbuff4[4] = {0xDE, 0xAD, 0xBE, 0xEF};
     uint8_t txbuff[4] = {0xDE, 0xAD, 0xBE, 0xEF};
-    uint8_t n = 4;
+    size_t n = 4;
 	uint32_t i = 0;
 
 	/* Set up i2c master to send data to slave */
 	for (i = 0; i < 32; i++)
 	{
+		i2c1_tx_buff[i] = i;
 		spi_tx[i] = i;
 	}
 
@@ -405,28 +406,28 @@ void idle_task(void *pvParameters) {
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
-		PRINTF("UART3 send and receive\n\r");
-		LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)rxbuff3, n);
-		LPUART_RTOS_Receive(&LPUART3_rtos_handle, (uint8_t *)rxbuff3, sizeof(rxbuff3), &n);
+//		PRINTF("UART3 send and receive\n\r");
+//		LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)rxbuff3, n);
+//		LPUART_RTOS_Receive(&LPUART3_rtos_handle, (uint8_t *)rxbuff3, sizeof(rxbuff3), &n);
 
 
-		PRINTF("UART4 send and receive\n\r");
-		//LPUART_RTOS_Send(&LPUART4_rtos_handle, (uint8_t *)rxbuff4, n);
-		//LPUART_RTOS_Receive(&LPUART4_rtos_handle, rxbuff4, 4, &n);
-//
-//
-//		PRINTF("I2C SENDING\n\r");
-//		I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
-//		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
-//
-//		PRINTF("I2C RECEIVING\n\r");
-//		I2C_request(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
-//		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
-//
-//
-//		PRINTF("SPI SENDING\n\r");
-//		SPI_transfer(spi_tx, spi_rx, 32, RWA0);
-//		print_buff(spi_rx, 32);
+//		PRINTF("UART4 send and receive\n\r");
+//		LPUART_RTOS_Send(&LPUART4_rtos_handle, (uint8_t *)rxbuff4, n);
+//		LPUART_RTOS_Receive(&LPUART4_rtos_handle, rxbuff4, 4, &n);
+
+
+		PRINTF("I2C1 send receive\n\r");
+		I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
+		I2C_request(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
+
+		PRINTF("I2C2 send receive\n\r");
+		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
+		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
+
+		PRINTF("SPI SENDING\n\r");
+		print_buff(spi_rx, 32);
+		SPI_transfer(spi_tx, spi_rx, 32, RWA0);
+		print_buff(spi_rx, 32);
 //		SPI_transfer(spi_tx, spi_rx, 32, RWA1);
 //		print_buff(spi_rx, 32);
 //		SPI_transfer(spi_tx, spi_rx, 32, RWA2);
@@ -444,7 +445,7 @@ void idle_task(void *pvParameters) {
 
 void print_buff(uint8_t* arr, int size) {
 	for (int i = 0; i < size; i++) {
-		PRINTF("%c ", arr[i]);
+		PRINTF("%x ", arr[i]);
 	}
 	PRINTF("\r\n");
 }

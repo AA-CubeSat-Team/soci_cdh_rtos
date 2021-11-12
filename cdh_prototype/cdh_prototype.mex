@@ -909,7 +909,7 @@
                            <setting name="baudrate" value="115200"/>
                            <setting name="parity" value="kLPUART_ParityDisabled"/>
                            <setting name="stopbits" value="kLPUART_OneStopBit"/>
-                           <setting name="buffer_size" value="1"/>
+                           <setting name="buffer_size" value="64"/>
                            <setting name="enableRxRTS" value="false"/>
                            <setting name="enableTxCTS" value="false"/>
                            <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
@@ -930,7 +930,7 @@
                            <setting name="baudrate" value="115200"/>
                            <setting name="parity" value="kLPUART_ParityDisabled"/>
                            <setting name="stopbits" value="kLPUART_OneStopBit"/>
-                           <setting name="buffer_size" value="1"/>
+                           <setting name="buffer_size" value="64"/>
                            <setting name="enableRxRTS" value="false"/>
                            <setting name="enableTxCTS" value="false"/>
                            <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
@@ -1035,7 +1035,7 @@
                            <setting name="baudrate" value="115200"/>
                            <setting name="parity" value="kLPUART_ParityDisabled"/>
                            <setting name="stopbits" value="kLPUART_OneStopBit"/>
-                           <setting name="buffer_size" value="1"/>
+                           <setting name="buffer_size" value="64"/>
                            <setting name="enableRxRTS" value="false"/>
                            <setting name="enableTxCTS" value="false"/>
                            <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>

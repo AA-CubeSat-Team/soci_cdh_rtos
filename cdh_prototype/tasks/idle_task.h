@@ -12,8 +12,8 @@
 #include "lpm.h"
 
 #define IDLE_ENABLE	0
-#define IDLE_UART 1
-#define IDLE_ALL 0
+#define IDLE_UART 0
+#define IDLE_ALL 1
 
 
 /*******************************************************************************
