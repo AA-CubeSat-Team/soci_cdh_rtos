@@ -9,9 +9,11 @@
 //from ert_main.c
 #include <stddef.h>
 #include <stdio.h>                     /* This ert_main.c example uses printf/fflush */
-#include "FSW_Lib0.h"                  /* Model's header file */
+#include "FSW_Lib.h"                  /* Model's header file */
 #include "rtwtypes.h"
 #include "fsl_debug_console.h"
+
+char gnc_build_flag;
 
 void PIT_IRQHandler(void)
 {
@@ -21,16 +23,14 @@ void PIT_IRQHandler(void)
 	 * period 0.0125 seconds (the model's base sample time) here.  The
 	 * call syntax for rt_OneStep is
 	 */
-    PRINTF("entered Interrupt\n");
-    rt_OneStep();
-    PRINTF("finished Interrupt\n");
+    gnc_build_flag = 0x1;
     __DSB();
 }
 
 void gnc_build_init(void)
 {
 	/* Initialize model */
-	FSW_Lib0_initialize();
+	FSW_Lib_initialize();
 	timer_init();
 }
 
@@ -118,7 +118,7 @@ void rt_OneStep(void)
   // not sure about this
 
   /* Step the model for base rate */
-  FSW_Lib0_step0();
+  FSW_Lib_step0();
 
   /* Get model outputs here */
   // not sure about this
@@ -139,7 +139,7 @@ void rt_OneStep(void)
     // not sure about this
 
     /* Step the model for subrate 1 */
-    FSW_Lib0_step1();
+    FSW_Lib_step1();
 
     /* Get model outputs here */
     // not sure about this
