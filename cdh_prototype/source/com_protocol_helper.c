@@ -135,7 +135,7 @@ bool I2C_send(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, u
  * param rx_size number of btyes to receive
  * return operation successful or not.
  */
-void I2C_request(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, uint16_t slaveAddress, uint8_t subAddress, uint8_t * rx_buffer, size_t rx_size) {
+bool I2C_request(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, uint16_t slaveAddress, uint8_t subAddress, uint8_t * rx_buffer, size_t rx_size) {
 
 	status_t status;
 #if SHOW_DATA
