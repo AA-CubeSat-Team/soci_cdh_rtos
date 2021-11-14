@@ -21,7 +21,7 @@ bool command_request = false;
 bool payload_check = false;
 bool image_check = false;
 bool beacon_check = false;
-bool com_wrap_debug = false; // Turn this true if you want to test individual functions
+//bool com_wrap_debug = true; // Turn this true if you want to test individual functions
 
 TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
@@ -81,6 +81,9 @@ void com_task(void *pvParameters)
 	// Delay to test "soft-break" into command mode via com_init function
 	// delay(1);
 
+//	PRINTF("TESTING CONTINOUS SENDING\n");
+//	testSending();
+
 	PRINTF("Testing enterCommandMode function:\n");
 	com_enterCommandMode();
 	PRINTF("\n");
@@ -89,6 +92,14 @@ void com_task(void *pvParameters)
 	PRINTF("Testing exitCommandMode function:\n");;
 	com_exitCommandMode();
 	PRINTF("\n");
+
+	//Test sending data to radio in data mode
+//	PRINTF("Testing data mode: \n");
+//	testSending();
+//	PRINTF("\n");
+
+//	PRINTF("CONFIGURING THE RADIO\n");
+//	com_radio_init();
 
 	//PRINTF("Testing com_init() function:\n");
 	//com_init();
@@ -143,7 +154,7 @@ void com_task(void *pvParameters)
 #endif
 
 	for (;;) {
-		xLastWakeTime = xTaskGetTickCount();
+//		xLastWakeTime = xTaskGetTickCount(); TODO: Uncomment later
 
 #if COM_ENABLE
 			com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
@@ -165,7 +176,7 @@ void com_task(void *pvParameters)
 			vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+//		vTaskDelayUntil(&xLastWakeTime, xDelayms); TODO: Uncomment later
 	}
 #endif
 }

@@ -37,8 +37,8 @@
 
 /* Task priorities. */
 #define idle_task_PRIORITY	 			1
-#define imag_task_PRIORITY 				2
-#define com_task_PRIORITY				3
+#define imag_task_PRIORITY 				1
+#define com_task_PRIORITY				  2
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 
@@ -68,7 +68,6 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
-    APP_PrintRunFrequency(0);
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
@@ -76,27 +75,27 @@ int main(void)
         while (1)
             ;
     }
-//    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
-//		pdPASS)
-//	{
-//		PRINTF("Task creation failed!.\r\n");
-//		while (1)
-//			;
-//	}
-//    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
-//		pdPASS)
-//	{
-//		PRINTF("Task creation failed!.\r\n");
-//		while (1)
-//			;
-//	}
-//    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-//		pdPASS)
-//	{
-//		PRINTF("Task creation failed!.\r\n");
-//		while (1)
-//			;
-//	}
+   if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
+		   pdPASS)
+	 {
+        PRINTF("Task creation failed!.\r\n");
+        while (1)
+          ;
+	 }
+   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
+	 	    pdPASS)
+	 {
+        PRINTF("Task creation failed!.\r\n");
+        while (1)
+          ;
+	 }
+   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+		    pdPASS)
+	 {
+        PRINTF("Task creation failed!.\r\n");
+        while (1)
+          ;
+	 }
     vTaskStartScheduler();
     for (;;)
         ;
