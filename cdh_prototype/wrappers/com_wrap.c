@@ -113,6 +113,8 @@ uint8_t receive_buffer[4];
  * Rithu edit: Program wasn't recognizing delay so copied
    this function from internet:
  */
+xTaskHandle uart2_handle = NULL;
+
 void delay(int seconds)
 {
     long pause;
@@ -354,7 +356,7 @@ void com_getCommands() //highest priority
 void com_deployAntenna()
 {
 	//using algorithm one as the default
-    I2C_send(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, algorithmOne, sizeof(algorithmOne));
+    I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmOne, sizeof(algorithmOne));
 	deploy_initiated = clock();
     delay(15); //longest time possible to deploy is 15 seconds
 }
@@ -362,7 +364,7 @@ void com_deployAntenna()
 void com_deployAntenna_algorithmTwo()
 {
 	//TODO: Uncomment this! Comment below statement if testing i2c
-	I2C_send(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, algorithmTwo, sizeof(algorithmTwo));
+	I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
 	delay(30); //longest time possible to deploy is 30 seconds
 }
 
@@ -526,8 +528,8 @@ void com_sendBeacons() //low priority, happens every 60 secs
 }
 
 
-void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
-void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
+//void I2C_send(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * masterSendBuffer, size_t tx_size);
+//void I2C_request(lpi2c_rtos_handle_t * handle, uint16_t slaveAddress, uint8_t * rx_buffer, size_t rx_size);
 
 
 bool com_i2c_checkDeploy() //returns a true if doors are deployed
@@ -540,7 +542,7 @@ bool com_i2c_checkDeploy() //returns a true if doors are deployed
 	}
 	memset(rcv_buffer, 0, sizeof(*rcv_buffer));
     //TODO: Uncomment this! Comment below if statement if testing I2C
-	I2C_request(&i2c1_m_rtos_handle, I2C_COM_ANTENNA_SLAVE_ADDRESS, rcv_buffer, sizeof(rcv_buffer));
+	I2C_request(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, rcv_buffer, sizeof(rcv_buffer));
 	//Receive 4 bytes back with status of antenna
 	//First byte of rx_buffer is:
 	//MSB LSB D4 D3 D2 D1 0 M S2 S1

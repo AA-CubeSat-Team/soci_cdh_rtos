@@ -68,6 +68,8 @@ EPS:
 #define EPS_SLAVE_ADDR 0 //change
 #define I2C_DATA_LENGTH 4 //?
 
+bool eps_healthy;
+
 uint8_t buffer[I2C_DATA_LENGTH];
 static uint32_t adc_count;
 
@@ -75,13 +77,13 @@ bool eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
 	//	TickType_t xLastWakeTime = xTaskGetTickCount();
 	//	vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( 10 ));
-	//	PRINTF("Finish delay\r\n");
-	return true;
+	i2c_eps_powerModuleStatus();
+	i2c_eps_batteryModuleStatus();
+	i2c_eps_FDIRflag();
+	i2c_eps_idRegister();
+	PRINTF("Finish delay\r\n");
+	return eps_healthy;
 }
-
-
-//uint8_t kLPI2C_Write = 1; // not sure where this is defined, but I think it differentiates between read/write commands
-//uint8_t kLPI2C_Read = 0; // not sure where this is defined, but I think it differentiates between read/write commands
 
 /* the I2C_read_write_lp function is designed to write to registers within the i2c slave device, so writing i2c data looks like this:
  * [device address -> register address -> data]
@@ -99,11 +101,11 @@ static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint
 	size_t n;
 	// TODO: send the delay as well?
 
-	I2C_send(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, i2c_send_buffer, tx_size);
+	I2C_send(&LPI2C1_masterHandle, EPS_SLAVE_ADDR, 0, i2c_send_buffer, tx_size);
 
 	if (d != NO_RETURN) {
 		//delay(d);
-		I2C_request(&i2c1_m_rtos_handle, EPS_SLAVE_ADDR, i2c_recv_buffer, rx_size);
+		I2C_request(&LPI2C1_masterHandle, EPS_SLAVE_ADDR, 0, i2c_recv_buffer, rx_size);
 	}
 
 
@@ -144,6 +146,21 @@ static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint
 double i2c_eps_getBatteryLevel()
 {
 	PRINTF("get the battery value!\r\n");
+	memset(buffer, 0, I2C_DATA_LENGTH);
+	buffer[0] = I2C_EPS_TELE_POWER_BUSES;
+	buffer[1] = 0x00;
+	buffer[2] = 0x04;
+
+	uint8_t recv_buffer[24];
+	i2c_read_write_helper(buffer, 3, recv_buffer, 24, 5000);
+
+	adc_count = 0;
+	for (int i=5; i>=4; i--) {
+		adc_count <<= 8;
+		adc_count |= recv_buffer[i];
+	}
+
+	double voltage = adc_count * 0.0030945;
 	return 0.0;
 }
 
@@ -203,6 +220,11 @@ uint32_t i2c_eps_powerModuleStatus()
 	{
 		PRINTF("PDM6 error\n");
 	}
+	if (adc_count != 0) {
+		eps_healthy = false;
+	} else {
+		eps_healthy = true;
+	}
 	return adc_count;
 }
 
@@ -253,6 +275,11 @@ uint32_t i2c_eps_batteryModuleStatus()
 	if (adc_count & (1 << 13))
 	{
 		PRINTF("Set if battery balancing is happening from bottom cell to top cell.\n");
+	}
+	if (adc_count != 0) {
+		eps_healthy = false;
+	} else {
+		eps_healthy = true;
 	}
 	return adc_count;
 }
@@ -321,6 +348,11 @@ void i2c_eps_FDIRflag()
 	{
 		PRINTF("Set if TEMP_DB1 is out of range.\n");
 	}
+	if (adc_count != 0) {
+		eps_healthy = false;
+	} else {
+		eps_healthy = true;
+	}
 	return;
 }
 
@@ -348,9 +380,11 @@ void i2c_eps_idRegister() ///make bool?
 	verified_com = recv_buffer && VERIFIED_COM_MASK;
 	if (verified_com) {
 		PRINTF("Communication is verified with module \n");
+		eps_healthy = true;
 	}
 	else {
 		PRINTF("Communication is NOT verified with module \n");
+		eps_healthy = false;
 	}
 	return;
 }

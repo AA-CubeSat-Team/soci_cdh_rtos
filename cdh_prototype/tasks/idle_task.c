@@ -11,6 +11,7 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "com_protocol_helper.h"
 
 /*******************************************************************************
  * Flags
@@ -226,7 +227,7 @@ static void idle_phase2() {
 		/*task control*/
 //		suspendTask(TaskHandler_img);
 //		resumeTask(TaskHandler_com);
-//		voltage = 7.0;
+		voltage = 8.0;
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
@@ -234,7 +235,7 @@ static void idle_phase2() {
 		//i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
 //		resumeTask(TaskHandler_com);
 //		resumeTask(TaskHandler_img);
-//		voltage = 7.5;
+		voltage = 8.0;
 		//GNC task will always be active
 	}
 	setMCUPowerMode();
@@ -264,7 +265,7 @@ static void idle_phase3() {
 		g_comHealthy = com_healthcheck();
 	}*/
 }
-
+void print_buff(uint8_t* arr, int size);
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
@@ -304,11 +305,147 @@ void idle_task(void *pvParameters) {
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem
 		PRINTF ("Send I2C Data\r\n");
-//		I2C_send(&LPI2C1_masterHandle, 0x7E, i2c1_tx_buff, 32);
-//		I2C_request(&LPI2C1_masterHandle, 0x7E, i2c1_rx_buff, 32);
+
+		/*Test code for I2C1*/
+
+//		I2C_send(&LPI2C1_masterHandle, 0x7E, 0, i2c1_tx_buff, (32));
+//		I2C_request(&LPI2C1_masterHandle, 0x7E, 0, i2c1_rx_buff, (32));
+
+		/*Test code for I2C2*/
+
+		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
+		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
+
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
+#elif IDLE_UART
+
+	char *to_send               = "FreeRTOS LPUART driver example!\r\n";
+	char *send_ring_overrun     = "\r\nRing buffer overrun!\r\n";
+	char *send_hardware_overrun = "\r\nHardware buffer overrun!\r\n";
+	uint8_t background_buffer[32];
+	uint8_t recv_buffer[4];
+
+    uint8_t rxbuff[4] = {0x00, 0x00, 0x00, 0x00};
+    uint8_t txbuff[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+
+    //LPUART_WriteBlocking(uart3_handle, txbuff, sizeof(txbuff));
+
+//	for (;;) {
+//
+//		PRINTF("Sending UART3\r\n");
+//
+//        LPUART_ReadBlocking(uart3_handle, rxbuff, sizeof(rxbuff));
+//        PRINTF("%X, %X, %X, %X\n", rxbuff[0], rxbuff[1], rxbuff[2], rxbuff[3]);
+//        LPUART_WriteBlocking(uart3_handle, txbuff, sizeof(txbuff));
+//
+//		LPUART_RTOS_Send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length);
+//
+//		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+//	}
+//
+    /* Send introduction message. */
+    if (kStatus_Success != LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)to_send, strlen(to_send)))
+    {
+        vTaskSuspend(NULL);
+    }
+
+    int error;
+    size_t n = 0;
+
+    do
+    {
+        error = LPUART_RTOS_Receive(&LPUART3_rtos_handle, recv_buffer, sizeof(recv_buffer), &n);
+        if (error == kStatus_LPUART_RxHardwareOverrun)
+        {
+            /* Notify about hardware buffer overrun */
+            if (kStatus_Success !=
+                LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
+            {
+                vTaskSuspend(NULL);
+            }
+        }
+        if (error == kStatus_LPUART_RxRingBufferOverrun)
+        {
+            /* Notify about ring buffer overrun */
+            if (kStatus_Success != LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
+            {
+                vTaskSuspend(NULL);
+            }
+        }
+        if (n > 0)
+        {
+            /* send back the received data */
+            if (kStatus_Success != LPUART_RTOS_Send(&LPUART3_rtos_handle, recv_buffer, n))
+            {
+                vTaskSuspend(NULL);
+            }
+        }
+        vTaskDelayUntil(&xLastWakeTime, xDelayms);
+    } while (kStatus_Success == error);
+
+
+#elif IDLE_ALL
+    SPI_GPIO_init();
+	uint8_t spi_tx[32];
+	uint8_t spi_rx[32] = {0};
+    uint8_t rxbuff3[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+    uint8_t rxbuff4[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+    uint8_t txbuff[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+    size_t n = 4;
+	uint32_t i = 0;
+
+	/* Set up i2c master to send data to slave */
+	for (i = 0; i < 32; i++)
+	{
+		i2c1_tx_buff[i] = i;
+		spi_tx[i] = i;
+	}
+
+	//at this point, GNC will take over and run init and do main task for once, come back to IDLE to run its main task (check voltages)
+	for (;;) {
+		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+
+//		PRINTF("UART3 send and receive\n\r");
+//		LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)rxbuff3, n);
+//		LPUART_RTOS_Receive(&LPUART3_rtos_handle, (uint8_t *)rxbuff3, sizeof(rxbuff3), &n);
+
+
+//		PRINTF("UART4 send and receive\n\r");
+//		LPUART_RTOS_Send(&LPUART4_rtos_handle, (uint8_t *)rxbuff4, n);
+//		LPUART_RTOS_Receive(&LPUART4_rtos_handle, rxbuff4, 4, &n);
+
+
+		PRINTF("I2C1 send receive\n\r");
+		I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
+		I2C_request(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
+
+		PRINTF("I2C2 send receive\n\r");
+		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
+		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
+
+		PRINTF("SPI SENDING\n\r");
+		print_buff(spi_rx, 32);
+		SPI_transfer(spi_tx, spi_rx, 32, RWA0);
+		print_buff(spi_rx, 32);
+//		SPI_transfer(spi_tx, spi_rx, 32, RWA1);
+//		print_buff(spi_rx, 32);
+//		SPI_transfer(spi_tx, spi_rx, 32, RWA2);
+//		print_buff(spi_rx, 32);
+//		SPI_transfer(spi_tx, spi_rx, 32, RWA3);
+//		print_buff(spi_rx, 32);
+
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	}
+
 #else
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 #endif
+}
+
+void print_buff(uint8_t* arr, int size) {
+	for (int i = 0; i < size; i++) {
+		PRINTF("%x ", arr[i]);
+	}
+	PRINTF("\r\n");
 }
