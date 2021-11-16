@@ -46,7 +46,7 @@ static bool DEALER= false;
 
 //Intialize all the commands we will use
 static char set_dealer_mode_buf[] = {0x01, 0x44, 0x00, 0xBB};
-static char set_current_power[] = {0x01, 0x71, 0x01, 0x8E};//set to 0.5W
+static char set_current_power[] = {0x01, 0x71, 0x01, 0x8D};//set to 0.5W, Changed checksum, from 0x8E to 0x8D
 static char get_current_power[] = {0x01, 0x72, 0x8E};
 static char set_tx_freq[] = {0x01, 0x37, 0x03, 0x13, 0xF7, 0xB1, 0xC0}; //set to 335MHz @ channel 3
 static char set_rx_freq[] = {0x01, 0x39, 0x03, 0x13, 0xF7, 0xB1, 0xC0}; //set to 335MHz @ channel 3
@@ -57,29 +57,29 @@ static char set_bandwidth[] = {0x01, 0x70, 0x04, 0x01, 0x8A}; //set to 12.5k
 static char set_modulation[] = {0x01, 0x70, 0x49, 0x00, 0x00}; //last 2 should be replaced when setting is determined
 static char program_buf[] = {0x01, 0x1E, 0xE1};
 static char warm_reset[] = {0x01, 0x1D, 0x01, 0xE1};
-static char set_led_rx[] = {0x70, 0x36, 0x00, 0x5A};
+static char set_led_rx[] = {0x70, 0x36, 0x00, 0x5A}; //checksum = 0xC9? Not sure since starting value is 0x70
 // need add channel
 
 //Program the expected responses for each command
 static char set_dealer_response[] = {0x01, 0xC4, 0x00, 0x3B};
-static char set_power_response[] = {0x01, 0xF1, 0x00, 0x0F};
-static char get_power_response[] = {0x01, 0xF2, 0x01, 0x0D};
-static char set_tx_freq_response[] = {0x01, 0xB7, 0x00};
-static char set_rx_freq_response[] = {0x01, 0xB9, 0x00};
+static char set_power_response[] = {0x01, 0xF1, 0x00, 0x0E}; //Changed checksum from 0x0F to 0x0E
+static char get_power_response[] = {0x01, 0xF2, 0x01, 0x0C}; //Changed checksum from 0x0D to 0x0C
+static char set_tx_freq_response[] = {0x01, 0xB7, 0x00}; //TBD once we figure out what to value to set it to
+static char set_rx_freq_response[] = {0x01, 0xB9, 0x00}; //TBD once we figure out what to value to set it to
 static char set_channel_response[] = {0x01, 0x83, 0x00, 0x7C};
-static char set_bandwidth_response[] = {0x01, 0xF0, 0x00, 0x10};
+static char set_bandwidth_response[] = {0x01, 0xF0, 0x00, 0x0F}; //Changed checksum from 0x10 to 0x0F
 static char set_modulation_response[] = {0x01, 0xAB}; //TBD
-static char program_response[] = {0x01,0x9E, 0x00, 0x62};
-static char reset_response[] = {0x01, 0x9D, 0x00, 0x63};
-static char set_led_rx_response[] = {0x01, 0x00, 0xFF, 0x01};
+static char program_response[] = {0x01,0x9E, 0x00, 0x61}; //Changed checksum from 0x62 to 0x61
+static char reset_response[] = {0x01, 0x9D, 0x00, 0x62};
+static char set_led_rx_response[] = {0x01, 0x00, 0xFF, 0x00}; //Changed checksum from 0x01 to 0x00
 
-const char *to_send               = "FreeRTOSFreeRTOS";
+const char *to_send               = "a"; // changed from "FreeRTOSFreeRTOS"
 const char *send_ring_overrun     = "\r\nRing buffer overrun!FreeRTOS\r\n";
 const char *send_hardware_overrun = "\r\nHardware buffer overrun!FreeRTOS\r\n";
 uint8_t backgroundBuffer[500];
 
 static char tx_buffer[8] = {};
-static char rx_buffer[8] = {};
+static char rx_buffer[17] = {};
 static char downlink_buffer[] = {};
 static int rx_size = 0;
 // maybe try uint8_t for buffers
@@ -125,6 +125,8 @@ void delay(int seconds)
         now = clock();
 }
 
+
+
 // set radio to command mode with dealer mode off
 // returns true if properly set to command mode & dealer off
 static bool enterCommandMode()
@@ -166,6 +168,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     for(int i = 0; i < sizeof(expectedResponse); i++){
     	PRINTF("expectedResponse[i]: %d\n", expectedResponse[i]);
     }
+    PRINTF("size of expected response: %d\n", sizeExpectedResponse);
 	//clear buffers here
 	memset(rx_buffer, 0, sizeof(rx_buffer));
 	memset(tx_buffer, 0, sizeof(tx_buffer));
@@ -185,7 +188,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     		PRINTF("ERROR SENDING\n");
     	}
         PRINTF("Trying to receive ...\n");
-        int recReturnVal = LPUART_RTOS_Receive(&uart4_handle, rx_buffer, sizeof(rx_buffer), size_t);
+        int recReturnVal = LPUART_RTOS_Receive(&uart4_handle, rx_buffer, sizeExpectedResponse, size_t);
     	if (recReturnVal == kStatus_Success){
     		PRINTF("SUCCESS RECEIVING\n");
     	}
@@ -220,7 +223,11 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 //checks if radio response to command is correct
 static bool checkConfigCommand(uint8_t actualResponse[], uint8_t expectedResponse[], int lengthOfResponse) {
 	for (int j = 0; j < lengthOfResponse; j++) {
+		PRINTF("Checking if actual response equal to expected ...");
+		PRINTF("actual response: %d\n", actualResponse[j]);
+		PRINTF("expected response: %d\n", expectedResponse[j]);
 		if (actualResponse[j] != expectedResponse[j]) {
+			PRINTF("this index of the actual response if off from expected: %d\n", j);
 			return false;
 		}
 	}
@@ -243,7 +250,36 @@ void com_enterCommandMode()
 
 }
 
+void com_test_data_mode(){
 
+	int size_t = 0;
+	memset(rx_buffer, 0, sizeof(*rx_buffer));
+	if (kStatus_Success != LPUART_RTOS_Send(&uart4_handle, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&uart4_handle, (uint8_t *)to_send, strlen(to_send)))
+		{
+			PRINTF("Could not send!!!\r\n\r\n");
+			return;
+		}
+	else
+		{
+			//PRINTF((uint8_t *)to_send);
+			PRINTF("Send successful, now trying to receive\n");
+		}
+
+	PRINTF("trying to receive ... printing out rx_buffer beforehand just for fun\n");
+    for (int i = 0; i < sizeof(rx_buffer); i++) {
+    	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
+    }
+
+	status_t error = LPUART_RTOS_Receive(&uart4_handle, rx_buffer, 1, size_t);
+		if (error == kStatus_Success)
+		{
+			PRINTF("Receive success:\n");
+	        for (int i = 0; i < sizeof(rx_buffer); i++) {
+	        	PRINTF("rx_buffer: %d\n", rx_buffer[i]);
+	        }
+		}
+
+}
 
 void com_radio_init()
 {

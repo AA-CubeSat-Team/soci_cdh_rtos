@@ -106,8 +106,12 @@ void com_task(void *pvParameters)
 	PRINTF("\n");
 
 	//Testing if sending a command to the radio (non delay dependent) works
-	PRINTF("Testing exitCommandMode function:\n");;
+	PRINTF("Testing exitCommandMode function:\n");
 	com_exitCommandMode();
+	PRINTF("\n");
+
+	PRINTF("Testing test_data_mode function:\n");
+	com_test_data_mode();
 	PRINTF("\n");
 
 	//PRINTF("Testing com_init() function:\n");
