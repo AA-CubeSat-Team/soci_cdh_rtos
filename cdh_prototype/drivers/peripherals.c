@@ -130,7 +130,7 @@ static void LPUART3_init(void) {
 
 lpuart_rtos_handle_t uart4_handle;
 struct _lpuart_handle t_handle4;
-uint8_t background_buffer4[32];
+uint8_t background_buffer4[100];
 
 lpuart_rtos_config_t lpuart4_config = {
     .baudrate    = 115200,

@@ -20,7 +20,7 @@
 /* make a receiver buffer, needs room for angleRespLength bytes*/
 /* c gets salty at me if I try to make it of length angleRespLength but */
 /* so I'm just putting it as 17 */
-extern uint8_t sun_recv_buffer[17];
+extern uint8_t sun_recv_buffer[4];
 
 /*!
  * @brief Structure contains information about sun sensor

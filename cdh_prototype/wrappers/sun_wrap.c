@@ -8,8 +8,10 @@ const TickType_t xDelay10ms = pdMS_TO_TICKS(10);
 const int angleRespLength = 17;
 // sun sensor struct
 sun_t Sun1;
-
-uint8_t sun_recv_buffer[17];
+/* used in receive command */
+uint8_t sun_recv_buffer[4];
+/* used to store all responses */
+uint8_t response[17];
 
 /* converts the response bytes into floats, but saves them as doubles */
 /* since the data is stored as a double, and also checks data for errors */
@@ -17,20 +19,20 @@ uint8_t sun_recv_buffer[17];
 /* a pointer to the error, and a pointer to isValid */
 void readFloats(double* data, uint8_t* error, uint8_t* isValid){
    for (int x = 0; x < 3; x++){
-      uint8_t bytes[4] = {sun_recv_buffer[4*x+3], sun_recv_buffer[4*x+4], sun_recv_buffer[4*x+5], sun_recv_buffer[4*x+6]};
+      uint8_t bytes[4] = {response[4*x+3], response[4*x+4], response[4*x+5], response[4*x+6]};
       memcpy((data + x), &bytes, sizeof(float));
    }
    /* next, take the total sum of all the bytes except the address byte */
    int totSum = 0;
    /* need to sum from command (2nd) byte to last data byte (2nd to last of array) */
    for(int x = 1; x < angleRespLength - 1; x++){
-      totSum += (int)sun_recv_buffer[x];
+      totSum += (int)response[x];
    }
    /* next, need to pare totSum down to its least significant byte, which can be accomplished by */
    /* comparing it to 255 */
    totSum = (totSum & 255);
    /* then compare it to the checkSum byte, which is the last byte */
-   if(totSum != (int)sun_recv_buffer[angleRespLength - 1]){
+   if(totSum != (int)response[angleRespLength - 1]){
       *data = -1000.0;
       *(data + 1) = -1000.0;
       *(data + 2) = -1000.0;
@@ -39,7 +41,7 @@ void readFloats(double* data, uint8_t* error, uint8_t* isValid){
       return;
    }
    /* lastly, if we're getting values for angles (floatsToRead is 3) then the 4th read value needs to be the error (2nd to last) byte */
-   *error = sun_recv_buffer[angleRespLength - 2];
+   *error = response[angleRespLength - 2];
    /* check if the error is acceptable */
    if(*error == 0){
       /* if it is acceptable, then the validity flag is raised (is 1) */
@@ -88,9 +90,36 @@ void getSunAngles(sun_t * Sun){
    #else
       size_t n = 0;
       printf("preparing to read response\n");
-      error = LPUART_RTOS_Receive(&uart4_handle, &sun_recv_buffer, angleRespLength, &n);
+      /* read in response "header" (address byte, command byte, length byte) */
+      error = LPUART_RTOS_Receive(&uart4_handle, &sun_recv_buffer, 3, &n);
       printf("error: %d\n", error);
-      printf("reading response\n");
+      /* store in response buffer */
+      for(int i = 0; i < 3; i++){
+    	  response[i] = sun_recv_buffer[i];
+      }
+      /* check what is currently stored */
+      for (int i = 0; i < sizeof(response); i++) {
+      	printf("response[i]: %d\n", response[i]);
+      }
+      /* read in floats (4 bytes each, 3 floats total) and store */
+      for(int i = 0; i < 3; i++){
+    	  error = LPUART_RTOS_Receive(&uart4_handle, &sun_recv_buffer, 4, &n);
+    	  printf("error: %d\n", error);
+    	  for(int j = 4*i; j < 4*i+4; j++){
+    		  response[j+3] = sun_recv_buffer[j];
+    	  }
+          for (int i = 0; i < sizeof(response); i++) {
+          	printf("response[i]: %d\n", response[i]);
+          }
+      }
+      /* read in error code & checksum (2 bytes total) and store */
+      error = LPUART_RTOS_Receive(&uart4_handle, &sun_recv_buffer, 2, &n);
+      printf("error: %d\n", error);
+      response[15] = sun_recv_buffer[0];
+      response[16] = sun_recv_buffer[1];
+      for (int i = 0; i < sizeof(response); i++) {
+      	printf("response[i]: %d\n", response[i]);
+      }
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;
@@ -114,7 +143,7 @@ void getSunAngles(sun_t * Sun){
       printf("response read\n");
    #endif
    /* check response */
-   if(anglesComm[1] == sun_recv_buffer[1]){
+   if(anglesComm[1] == response[1]){
       readFloats(Sun->angles, &(Sun->error), &(Sun->isValid));
    }else{
       *(Sun->angles) = -1000.0;
