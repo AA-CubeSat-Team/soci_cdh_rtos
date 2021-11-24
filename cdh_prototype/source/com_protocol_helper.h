@@ -2,7 +2,7 @@
  * com_protocol_helper.h
  *
  *  Created on: Oct 25, 2021
- *      Author: Issac
+ *      Author: Issac(Junqi) & Jay
  */
 #include "peripherals.h"
 #include "board.h"
@@ -29,22 +29,8 @@ bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
 /*
  * Unit Test Function
  */
-
-/*
- * For lpuart_rtos_handle_t LPUART_rtos_handle pass in the UART# you want to test
- * &LPUART1_rtos_handle
- * &LPUART3_rtos_handle
- * &LPUART4_rtos_handle
- *
- * For int messageSize: different message size to test
- *
- * Returns true if UART is working
- * Returns false if UART is not working
- */
-bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle, int *messageSize);
-
+bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle);
 bool I2C_test(int * handlerNum);
-
 bool SPI_test(int * RWA_num);
 
 #endif /* COM_PROTOCOL_HELPER_H_ */

@@ -14,6 +14,7 @@
 
 #include "timers.h"
 #include "peripherals.h"
+#include "com_protocol_helper.h"
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
@@ -27,56 +28,11 @@ TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 extern bool i2c_com_antennaDeployed;
 
-char *send_message     = "12345678";
-char *ring_overrun     = "\r\nRing buffer overrun!\r\n";
-char *hardware_overrun = "\r\nHardware buffer overrun!\r\n";
-uint8_t recv_buffer[8];
-
 void com_task(void *pvParameters)
 {
-#if UART_TESTING
-	int error;
-	size_t n = 0;
-
-	/* Send introduction message. */
-	if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)send_message, strlen(send_message)))
-	{
-		vTaskSuspend(NULL);
-	}
-
-	/* Receive user input and send it back to terminal. */
-	do
-	{
-		error = LPUART_RTOS_Receive(&uart2_handle, recv_buffer, sizeof(recv_buffer), &n);
-		if (error == kStatus_LPUART_RxHardwareOverrun)
-		{
-			/* Notify about hardware buffer overrun */
-			if (kStatus_Success !=
-				LPUART_RTOS_Send(&uart2_handle, (uint8_t *)hardware_overrun, strlen(hardware_overrun)))
-			{
-				vTaskSuspend(NULL);
-			}
-		}
-		if (error == kStatus_LPUART_RxRingBufferOverrun)
-		{
-			/* Notify about ring buffer overrun */
-			if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, (uint8_t *)ring_overrun, strlen(ring_overrun)))
-			{
-				vTaskSuspend(NULL);
-			}
-		}
-		if (n > 0)
-		{
-			/* send back the received data */
-			if (kStatus_Success != LPUART_RTOS_Send(&uart2_handle, recv_buffer, n))
-			{
-				vTaskSuspend(NULL);
-			}
-		}
-	} while (kStatus_Success == error);
-
-#endif
-
+	UART_test(LPUART3_rtos_handle);
+	I2C_test(1);
+	SPI_test(1);
 #if COM_WRAP_DEBUG
 	// Delay to test "soft-break" into command mode via com_init function
 	// delay(1);
@@ -154,7 +110,7 @@ void com_task(void *pvParameters)
 #endif
 
 	for (;;) {
-//		xLastWakeTime = xTaskGetTickCount(); TODO: Uncomment later
+		xLastWakeTime = xTaskGetTickCount();
 
 #if COM_ENABLE
 			com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
@@ -176,7 +132,7 @@ void com_task(void *pvParameters)
 			vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
-//		vTaskDelayUntil(&xLastWakeTime, xDelayms); TODO: Uncomment later
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #endif
 }

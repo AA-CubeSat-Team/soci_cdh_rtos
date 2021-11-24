@@ -304,18 +304,10 @@ void idle_task(void *pvParameters) {
 		idle_phase1(); //Commission Phase I Checks
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem
-		PRINTF ("Send I2C Data\r\n");
-
-		/*Test code for I2C1*/
-
-//		I2C_send(&LPI2C1_masterHandle, 0x7E, 0, i2c1_tx_buff, (32));
-//		I2C_request(&LPI2C1_masterHandle, 0x7E, 0, i2c1_rx_buff, (32));
-
-		/*Test code for I2C2*/
-
-		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
-		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
-
+#else
+	for (;;) {
+		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+#endif
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 }

@@ -7,6 +7,7 @@
 #include "peripherals.h"
 #include "sun_wrap.h"
 #include "fsl_debug_console.h"
+#include "com_protocol_helper.h"
 
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
 //#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>

@@ -1,3 +1,5 @@
+#define IDLE_ENABLE	0
+
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -10,9 +12,6 @@
 #include "fsl_debug_console.h"
 #include "board.h"
 #include "lpm.h"
-
-#define IDLE_ENABLE	0
-
 
 /*******************************************************************************
  * Variable Declarations

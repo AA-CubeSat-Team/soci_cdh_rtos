@@ -2,7 +2,7 @@
  * com_protocol_helper.c
  *
  *  Created on: Nov 11, 2021
- *      Author: Issac
+ *      Author: Issac(Junqi) & Jay
  */
 #include "com_protocol_helper.h"
 
@@ -232,14 +232,26 @@ bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
 	return (status == kStatus_Success);
 }
 
-bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle, int * messageSize)
+
+/*
+ * For lpuart_rtos_handle_t LPUART_rtos_handle pass in the UART# you want to test
+ * LPUART1_rtos_handle
+ * LPUART3_rtos_handle
+ * LPUART4_rtos_handle
+ *
+ * For int messageSize: different message size to test
+ *
+ * Returns true if UART is working
+ * Returns false if UART is not working
+ */
+bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle)
 {
 	char *send_ring_overrun     = "\r\nRing buffer overrun!\r\n";
 	char *send_hardware_overrun = "\r\nHardware buffer overrun!\r\n";
-	uint8_t recv_buffer[*messageSize];
+	uint8_t recv_buffer[18];
 
-	char to_send[*messageSize];
-	for(int i = 0; i < *messageSize; i++) {
+	char to_send[18];
+	for(int i = 0; i < 18; i++) {
 		to_send[i] = i;
 	}
 
@@ -278,7 +290,7 @@ bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle, int * messageSize)
 			vTaskSuspend(NULL);
 		}
 	}
-	for(int i = 0; i < *messageSize; i++) {
+	for(int i = 0; i < 18; i++) {
 		if(to_send[i] != recv_buffer[i]) {
 			return false;
 		}
@@ -298,8 +310,8 @@ bool I2C_test(int * handlerNum)
 		I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c_tx_buff, (32));
 		I2C_request(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c_rx_buff, (32));
 	} else if(*handlerNum == 2) {
-		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c_rx_buff, (32));
 		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c_tx_buff, (32));
+		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c_rx_buff, (32));
 	}
 	for(int i = 0; i < 32; i++) {
 		if(i2c_tx_buff[i] != i2c_tx_buff[i]) {
@@ -313,13 +325,34 @@ bool SPI_test(int * RWA_num) {
 	uint8_t masterSendBuffer[32];
 	uint8_t masterReceiveBuffer[32];
 	if(*RWA_num == 1) {
-		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA0);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA0);
 	} else if(*RWA_num == 2) {
-		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA1);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA1);
 	} else if(*RWA_num == 3) {
-		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA2);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA2);
 	} else if(*RWA_num == 4) {
-		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA3);
+		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA3);
+	}
+
+	uint32_t errorCount;
+
+	errorCount = 0;
+	for (int i = 0; i < 31; i++)
+	{
+		if (masterSendBuffer != masterReceiveBuffer[i+1])
+		{
+			errorCount++;
+		}
+	}
+
+	if (errorCount == 0)
+	{
+		PRINTF("LPSPI transfer all data matched !\r\n");
+		return true;
+	}
+	else
+	{
+		PRINTF("Error occurred in LPSPI transfer !\r\n");
 	}
 	return false;
 }

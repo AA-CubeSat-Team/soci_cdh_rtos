@@ -11,11 +11,8 @@
 #include "task.h"
 #include "semphr.h"
 #include "fsl_common.h"
-#include "power_mode_switch.h"
 #include "board.h"
 #include "fsl_debug_console.h"
-#include "lpm.h"
-#include "fsl_lpuart.h"
 #include "specific.h"
 #include "peripherals.h"
 #include "pin_mux.h"
@@ -27,7 +24,6 @@
 #include "imag_task.h"
 #include "gnc_task.h"
 #include "com_task.h"
-#include "semc_sdram.h"
 
 /*******************************************************************************
  * Definitions
@@ -38,7 +34,7 @@
 /* Task priorities. */
 #define idle_task_PRIORITY	 			1
 #define imag_task_PRIORITY 				1
-#define com_task_PRIORITY				  2
+#define com_task_PRIORITY				2
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 
@@ -60,7 +56,6 @@ extern TaskHandle_t TaskHandler_img;
  */
 int main(void)
 {
-
 	/* Init board hardware. */
     BOARD_ConfigMPU();
     BOARD_InitPins();
