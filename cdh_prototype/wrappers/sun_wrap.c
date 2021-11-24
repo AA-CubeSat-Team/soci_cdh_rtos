@@ -62,7 +62,7 @@ void getSunAngles(sun_t * Sun){
       delay(10);
    #else
       int error;
-      error = LPUART_RTOS_Send(&uart2_handle, &anglesComm, sizeof(anglesComm));
+      error = LPUART_RTOS_Send(&LPUART3_rtos_handle, &anglesComm, sizeof(anglesComm));
       printf("sending command\n");
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;
@@ -87,7 +87,7 @@ void getSunAngles(sun_t * Sun){
    #else
       size_t n = 0;
       printf("preparing to read response");
-      error = LPUART_RTOS_Receive(&uart2_handle, &sun_recv_buffer, angleRespLength, &n);
+      error = LPUART_RTOS_Receive(&LPUART3_rtos_handle, &sun_recv_buffer, angleRespLength, &n);
       printf("reading response\n");
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;

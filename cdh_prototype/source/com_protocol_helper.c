@@ -38,7 +38,7 @@ bool UART_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length) {
  * Param received number of bytes received, passed by reference, method will modify this value.
  * return false if receive was not successful.
  */
-bool UART_RECEIVE(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received) {
+bool UART_receive(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received) {
 	status_t error = LPUART_RTOS_Receive(handle, buffer, length, received);
     if (error == kStatus_LPUART_RxHardwareOverrun)
     {
@@ -232,4 +232,95 @@ bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
 	return (status == kStatus_Success);
 }
 
+bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle, int * messageSize)
+{
+	char *send_ring_overrun     = "\r\nRing buffer overrun!\r\n";
+	char *send_hardware_overrun = "\r\nHardware buffer overrun!\r\n";
+	uint8_t recv_buffer[*messageSize];
+
+	char to_send[*messageSize];
+	for(int i = 0; i < *messageSize; i++) {
+		to_send[i] = i;
+	}
+
+	/* Send introduction message. */
+	if (kStatus_Success != LPUART_RTOS_Send(&LPUART_rtos_handle, (uint8_t *)to_send, strlen(to_send)))
+	{
+		vTaskSuspend(NULL);
+	}
+
+	int error;
+	size_t n = 0;
+
+	error = LPUART_RTOS_Receive(&LPUART_rtos_handle, recv_buffer, sizeof(recv_buffer), &n);
+	if (error == kStatus_LPUART_RxHardwareOverrun)
+	{
+		/* Notify about hardware buffer overrun */
+		if (kStatus_Success !=
+			LPUART_RTOS_Send(&LPUART_rtos_handle, (uint8_t *)send_hardware_overrun, strlen(send_hardware_overrun)))
+		{
+			vTaskSuspend(NULL);
+		}
+	}
+	if (error == kStatus_LPUART_RxRingBufferOverrun)
+	{
+		/* Notify about ring buffer overrun */
+		if (kStatus_Success != LPUART_RTOS_Send(&LPUART_rtos_handle, (uint8_t *)send_ring_overrun, strlen(send_ring_overrun)))
+		{
+			vTaskSuspend(NULL);
+		}
+	}
+	if (n > 0)
+	{
+		/* send back the received data */
+		if (kStatus_Success != LPUART_RTOS_Send(&LPUART_rtos_handle, recv_buffer, n))
+		{
+			vTaskSuspend(NULL);
+		}
+	}
+	for(int i = 0; i < *messageSize; i++) {
+		if(to_send[i] != recv_buffer[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool I2C_test(int * handlerNum)
+{
+	uint8_t i2c_tx_buff[32];
+	uint8_t i2c_rx_buff[32];
+
+	for(int i = 0; i < 32; i++) {
+		i2c_tx_buff[i] = i;
+	}
+	if(*handlerNum == 1) {
+		I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c_tx_buff, (32));
+		I2C_request(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, 0x7E, 0, i2c_rx_buff, (32));
+	} else if(*handlerNum == 2) {
+		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c_rx_buff, (32));
+		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c_tx_buff, (32));
+	}
+	for(int i = 0; i < 32; i++) {
+		if(i2c_tx_buff[i] != i2c_tx_buff[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool SPI_test(int * RWA_num) {
+	uint8_t masterSendBuffer[32];
+	uint8_t masterReceiveBuffer[32];
+	if(*RWA_num == 1) {
+		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA0);
+	} else if(*RWA_num == 2) {
+		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA1);
+	} else if(*RWA_num == 3) {
+		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA2);
+	} else if(*RWA_num == 4) {
+		return SPI_transfer(masterSendBuffer, masterReceiveBuffer, 32, RWA3);
+	}
+	return false;
+}
 

@@ -18,20 +18,7 @@ void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
-
-#if SPI_TEST
-		/* Initialize data in transfer buffers */
-		for (int i = 0; i < 16; i++)
-		{
-			masterSendBuffer[i]    = i;
-
-			slaveSendBuffer[i] = masterSendBuffer[i];//checks match with slave response
-		}
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA1);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA2);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA3);
-#endif
+	SPI_GPIO_init();
 
 #if GNC_ENABLE
 	printf("\ninitialize gnc.\r\n");

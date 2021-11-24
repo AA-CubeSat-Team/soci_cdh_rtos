@@ -20,10 +20,31 @@
 #define SHOW_DATA 0
 
 bool UART_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length);
-bool UART_RECEIVE(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received);
+bool UART_receive(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received);
 bool I2C_send(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, uint16_t slaveAddress, uint8_t subAddress, uint8_t * masterSendBuffer, size_t tx_size);
 bool I2C_request(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, uint16_t slaveAddress, uint8_t subAddress, uint8_t * rx_buffer, size_t rx_size);
 void SPI_GPIO_init();
 bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin);
+
+/*
+ * Unit Test Function
+ */
+
+/*
+ * For lpuart_rtos_handle_t LPUART_rtos_handle pass in the UART# you want to test
+ * &LPUART1_rtos_handle
+ * &LPUART3_rtos_handle
+ * &LPUART4_rtos_handle
+ *
+ * For int messageSize: different message size to test
+ *
+ * Returns true if UART is working
+ * Returns false if UART is not working
+ */
+bool UART_test(lpuart_rtos_handle_t LPUART_rtos_handle, int *messageSize);
+
+bool I2C_test(int * handlerNum);
+
+bool SPI_test(int * RWA_num);
 
 #endif /* COM_PROTOCOL_HELPER_H_ */
