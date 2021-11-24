@@ -13,8 +13,8 @@
  *
  * param handle pointer to RTOS handle for uart 1,3, and 4. Use following
  *		&LPUART1_rtos_handle
- *		&LPUART2_rtos_handle
  *		&LPUART3_rtos_handle
+ *		&LPUART4_rtos_handle
  * param buffer pointer to the buffer array
  * param length number of bytes to send, default should be size of the buffer.
  * return false if send was not successful.
@@ -31,8 +31,8 @@ bool UART_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length) {
  *
  * param handle pointer to RTOS handle for uart 1,3, and 4. Use following
  *		&LPUART1_rtos_handle
- *		&LPUART2_rtos_handle
  *		&LPUART3_rtos_handle
+ *		&LPUART4_rtos_handle
  * param *buffer pointer to the buffer array
  * param length number of bytes to send, default should be size of the buffer.
  * Param received number of bytes received, passed by reference, method will modify this value.
