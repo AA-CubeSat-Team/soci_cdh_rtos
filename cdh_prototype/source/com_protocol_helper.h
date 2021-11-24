@@ -20,7 +20,7 @@
 #define SHOW_DATA 0
 
 bool UART_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length);
-bool UART_RECEIVE(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received);
+bool UART_receive(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received);
 bool I2C_send(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, uint16_t slaveAddress, uint8_t subAddress, uint8_t * masterSendBuffer, size_t tx_size);
 bool I2C_request(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, uint16_t slaveAddress, uint8_t subAddress, uint8_t * rx_buffer, size_t rx_size);
 void SPI_GPIO_init();
