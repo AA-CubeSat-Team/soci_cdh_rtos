@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include "idle_task.h"
 #include "eps_wrap.h"
 #include "sen_wrap.h"
 #include <stdint.h>
@@ -11,6 +10,7 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "idle_task.h"
 #include "com_protocol_helper.h"
 
 /*******************************************************************************

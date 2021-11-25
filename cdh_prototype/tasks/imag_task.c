@@ -1,12 +1,15 @@
 //TODO: tell Lachlan to extern the recv_buff in wrapper.
 //TODO:
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
-
+#include "FreeRTOS.h"
+#include "task.h"
 #include "img_wrap.h"
 #include "imag_task.h"
+#include "fsl_common.h"
 #include "semc_sdram.h"
+#include "com_protocol_helper.h"
 
-static uint8_t recv_buffer[5]; // Receive 5 bytes
+//static uint8_t recv_buffer[5]; // Receive 5 bytes
 
 TaskHandle_t TaskHandler_img;
 extern uint8_t IMG_command; //TODO: what does img command look like?

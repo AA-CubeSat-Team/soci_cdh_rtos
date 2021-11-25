@@ -1,15 +1,12 @@
+#include "peripherals.h"
 #include "gyro_wrap.h"
 #include "gnc_task.h"
-//#include "FSW_Lib_types.h"
 #include "act_wrap.h"
 #include "sen_wrap.h"
 #include "idle_task.h"
-#include "peripherals.h"
 #include "sun_wrap.h"
 #include "fsl_debug_console.h"
-
-//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
-//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
+#include "com_protocol_helper.h"
 
 extern bool g_senActive, g_rwaActive, g_mtqActive;
 

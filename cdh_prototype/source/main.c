@@ -7,27 +7,35 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+/* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"
-#include "semphr.h"
-#include "fsl_common.h"
-#include "power_mode_switch.h"
-#include "board.h"
-#include "fsl_debug_console.h"
-#include "lpm.h"
-#include "fsl_lpuart.h"
-#include "specific.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-#include "clock_config.h"
 #include "queue.h"
 #include "timers.h"
-#include <stdbool.h>
+
+/* Freescale includes. */
+//#include "fsl_device_registers.h"
+#include "fsl_debug_console.h"
+#include "fsl_common.h"
+#include "pin_mux.h"
+#include "clock_config.h"
+#include "board.h"
+
+/* Peripherals includes. */
+//#include "fsl_lpuart_freertos.h"
+//#include "fsl_lpuart.h"
+#include "peripherals.h"
+
+/* Tasks includes.*/
 #include "idle_task.h"
 #include "imag_task.h"
 #include "gnc_task.h"
 #include "com_task.h"
-#include "semc_sdram.h"
+
+/* Standard libraries includes.*/
+//#include "semphr.h"
+#include <stdbool.h>
+//#include "semc_sdram.h"
 
 /*******************************************************************************
  * Definitions
@@ -38,7 +46,7 @@
 /* Task priorities. */
 #define idle_task_PRIORITY	 			1
 #define imag_task_PRIORITY 				1
-#define com_task_PRIORITY				  2
+#define com_task_PRIORITY				2
 #define gnc_task_PRIORITY 				3
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 

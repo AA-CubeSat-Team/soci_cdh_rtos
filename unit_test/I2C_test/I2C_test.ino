@@ -31,9 +31,4 @@ void requestEvent() {
   for(int i=0; i<32; i++){
     Wire.write(byt--);
   }
-
-
-  
-//  if (ch > 'z')
-//    ch = '0';
 }
