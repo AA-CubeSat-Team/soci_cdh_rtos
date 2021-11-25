@@ -16,12 +16,6 @@ void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
-	gnc_build_init();
-	if (gnc_build_flag == 0x1) {
-		PRINTF("entered Interrupt\n");
-		rt_OneStep();
-		PRINTF("finished Interrupt\n");
-	}
 #if SPI_TEST
 		/* Initialize data in transfer buffers */
 		for (int i = 0; i < 16; i++)
@@ -39,9 +33,9 @@ void gnc_task(void *pvParameters)
 #if GNC_ENABLE
 	PRINTF("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
+	FSW_Lib_initialize();
 //	sens_init();
 //  act_init();
-//	FSW_Lib_initialize(); //GNC initialization
 #endif
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
@@ -64,7 +58,7 @@ void gnc_task(void *pvParameters)
 		}
 
 		/* call GNC rt_OneStep() */
-//		 rt_OneStep(); // TODO: enable rt_OneStep() after include
+		rt_OneStep();
 		/* write to actuators */
 		if (g_rwaActive) {
 //			writeRWA();

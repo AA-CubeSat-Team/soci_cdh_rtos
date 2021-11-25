@@ -3,7 +3,6 @@
  * A helper function that initializes the GNC build and sets up the periodic interrupt timer
  * with rt_onestep()
  */
-#include "gnc_build.h"
 #include "fsl_pit.h"
 
 //from ert_main.c
@@ -13,61 +12,7 @@
 #include "rtwtypes.h"
 #include "fsl_debug_console.h"
 
-char gnc_build_flag;
-
-void PIT_IRQHandler(void)
-{
-    /* Clear interrupt flag.*/
-    PIT_ClearStatusFlags(PIT, kPIT_Chnl_0, kPIT_TimerFlag);
-    /* Attach rt_OneStep to a timer or interrupt service routine with
-	 * period 0.0125 seconds (the model's base sample time) here.  The
-	 * call syntax for rt_OneStep is
-	 */
-    gnc_build_flag = 0x1;
-    __DSB();
-}
-
-void gnc_build_init(void)
-{
-	/* Initialize model */
-	FSW_Lib_initialize();
-	timer_init();
-}
-
-void timer_init(void)
-{
-    /* Structure of initialize PIT */
-    pit_config_t pitConfig;
-
-    /* Enable clock gate for GPIO1 */
-    CLOCK_EnableClock(kCLOCK_Gpio1);
-
-    /* Set PERCLK_CLK source to OSC_CLK*/
-    CLOCK_SetMux(kCLOCK_PerclkMux, 1U);
-    /* Set PERCLK_CLK divider to 1 */
-    CLOCK_SetDiv(kCLOCK_PerclkDiv, 0U);
-
-    /*
-     * pitConfig.enableRunInDebug = false;
-     */
-    PIT_GetDefaultConfig(&pitConfig);
-
-    /* Init pit module */
-    PIT_Init(PIT, &pitConfig);
-
-    /* Set timer period for channel 0 */
-    PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, USEC_TO_COUNT(12500U, CLOCK_GetFreq(kCLOCK_OscClk)));
-
-    /* Enable timer interrupts for channel 0 */
-    PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
-
-    /* Enable at the NVIC */
-    EnableIRQ(PIT_IRQn);
-
-    /* Start channel 0 */
-    PRINTF("\r\nStarting channel No.0 ...");
-    PIT_StartTimer(PIT, kPIT_Chnl_0);
-}
+#include "gnc_build.h"
 
 void rt_OneStep(void)
 {
@@ -78,7 +23,6 @@ void rt_OneStep(void)
   static int_T taskCounter[2] = { 0, 0 };
 
   /* Disable interrupts here */
-  PIT_DisableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
 
   /* Check base rate for overrun */
   if (OverrunFlags[0]) {
@@ -90,7 +34,7 @@ void rt_OneStep(void)
 
   /* Save FPU context here (if necessary) */
   /* Re-enable timer or interrupt here */
-  PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
+
   /*
    * For a bare-board target (i.e., no operating system), the
    * following code checks whether any subrate overruns,
@@ -150,8 +94,6 @@ void rt_OneStep(void)
   }
 
   /* Disable interrupts here */
-  PIT_DisableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
   /* Restore FPU context here (if necessary) */
   /* Enable interrupts here */
-  PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
 }
