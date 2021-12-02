@@ -7,7 +7,6 @@
 
 
 #define ARDUINO_CODE     			0
-#define WHEELS_INDEPANDANT 			1
 
 #if ARDUINO_CODE
   #include <Arduino.h>
@@ -18,11 +17,10 @@
   #include "peripherals.h"
 #endif
 
-// set timeout between request and reply (milliseconds)
-#define SPI_TIMEOUT 20
-
 #if ARDUINO_CODE
 SPISettings spiSet(125000, MSBFIRST, SPI_MODE0); // SPI driver is initialized
+// set timeout between request and reply (milliseconds)
+#define SPI_TIMEOUT 20
 // assigns GPIO pins to be SS pins (Arduino only)
 #define SS1 3
 #define SS2 4
@@ -34,16 +32,10 @@ SPISettings spiSet(125000, MSBFIRST, SPI_MODE0); // SPI driver is initialized
 #define EN3 A3
 #define EN4 A4
 #else
-// assigns GPIO pins
-// TODO: Fix this
-#define SS1 0
-#define SS2 1
-#define SS3 2
-#define SS4 3
-//#define SS1 RWA0
-//#define SS2 RWA1
-//#define SS3 RWA2
-//#define SS4 RWA3
+#define SS1 RWA0
+#define SS2 RWA1
+#define SS3 RWA2
+#define SS4 RWA3
 #endif
 
 #define MAX_REQ_PAYLOAD 6 + 1     // N_max = 6 plus comID
@@ -94,11 +86,7 @@ typedef struct rw_data
 //    uint32_t uid3;
 } rw_data_t;
 
-#if WHEELS_INDEPANDANT
 extern rw_data_t rw1, rw2, rw3, rw4;   // saving SRAM
-#else
-extern struct rw_data rw1;
-#endif
 
 // test only
 extern bool debug_mode;
@@ -117,7 +105,7 @@ void reqPayloadWrite_cmd7(uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, 
 void rplPayloadRead_cmd7(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt);
 void reqPayloadWrite_cmd10(uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt);
 void rplPayloadRead_cmd10(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt);
-void commandAll(uint8_t com_id);
+void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id);
 
 
 #endif /* ACTUATOR_WRAP_RWA_WRAP_H_ */
