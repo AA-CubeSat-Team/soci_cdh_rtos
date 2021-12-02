@@ -1,6 +1,5 @@
 #include <imag_wrap.h>
 #include <stdbool.h>
-#include "idle_task.h"
 #include "eps_wrap.h"
 #include "sen_wrap.h"
 #include <stdint.h>
@@ -11,6 +10,8 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "idle_task.h"
+#include "com_protocol_helper.h"
 
 /*******************************************************************************
  * Flags
@@ -47,6 +48,9 @@ static void idle_phase3();
 TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_img;
 extern TaskHandle_t TaskHandler_com;
+
+uint8_t i2c1_tx_buff[32];
+uint8_t i2c1_rx_buff[32];
 
 //
 double voltage;
@@ -223,7 +227,7 @@ static void idle_phase2() {
 		/*task control*/
 //		suspendTask(TaskHandler_img);
 //		resumeTask(TaskHandler_com);
-		voltage = 7.0;
+		voltage = 8.0;
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
@@ -231,7 +235,7 @@ static void idle_phase2() {
 		//i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
 //		resumeTask(TaskHandler_com);
 //		resumeTask(TaskHandler_img);
-		voltage = 7.5;
+		voltage = 8.0;
 		//GNC task will always be active
 	}
 	setMCUPowerMode();
@@ -261,7 +265,7 @@ static void idle_phase3() {
 		g_comHealthy = com_healthcheck();
 	}*/
 }
-
+void print_buff(uint8_t* arr, int size);
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
@@ -285,15 +289,35 @@ void idle_task(void *pvParameters) {
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	voltage = 8;
+
+	uint32_t i = 0;
+
+	/* Set up i2c master to send data to slave */
+	for (i = 0; i < 32; i++)
+	{
+		i2c1_tx_buff[i] = i;
+	}
+#endif
+
 	//at this point, GNC will take over and run init and do main task for once, come back to IDLE to run its main task (check voltages)
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+#if IDLE_ENABLE
 		idle_phase1(); //Commission Phase I Checks
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem
+		PRINTF ("Send I2C Data\r\n");
+
+		/*Test code for I2C1*/
+
+//		I2C_send(&LPI2C1_masterHandle, 0x7E, 0, i2c1_tx_buff, (32));
+//		I2C_request(&LPI2C1_masterHandle, 0x7E, 0, i2c1_rx_buff, (32));
+
+		/*Test code for I2C2*/
+
+		I2C_send(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_tx_buff, (32));
+		I2C_request(&LPI2C2_masterHandle, &LPI2C2_masterTransfer, 0x7E, 0, i2c1_rx_buff, (32));
+#endif
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
-#else
-	vTaskDelayUntil(&xLastWakeTime, xDelayms);
-#endif
 }

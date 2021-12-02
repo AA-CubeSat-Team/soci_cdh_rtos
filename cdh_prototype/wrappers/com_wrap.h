@@ -29,6 +29,7 @@ bool com_i2c_checkDeploy(); /* TODO: Test by replacing I2C request with pre-prog
 // Rithu: adding these for possible additional checks to see if sendConfigCommand works
 void com_exitCommandMode();
 void com_enterCommandMode();
+void testSending();
 
 void com_deployAntenna_algorithmOne(); // TODO: Test w/ COM_A once programmed
 void com_deployAntenna_algorithmTwo(); // TODO: Test w/ COM_A once programmed
