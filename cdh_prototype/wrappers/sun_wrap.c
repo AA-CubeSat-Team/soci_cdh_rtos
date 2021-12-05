@@ -3,6 +3,7 @@
 const uint8_t anglesComm[4] = {0x60, 0x04, 0x01, 0x05};
 const TickType_t xDelay10ms = pdMS_TO_TICKS(10);
 
+
 /* number of bytes returned for angle command */
 const int angleRespLength = 17;
 // sun sensor struct
@@ -86,9 +87,13 @@ void getSunAngles(sun_t * Sun){
       }
    #else
       size_t n = 0;
-      printf("preparing to read response");
+      printf("preparing to read response\n");
       error = LPUART_RTOS_Receive(&LPUART3_rtos_handle, &sun_recv_buffer, angleRespLength, &n);
+      printf("error: %d\n", error);
       printf("reading response\n");
+      for (int i = 0; i < 17; i++){
+    	  printf("Data[i]: %d\n", sun_recv_buffer[i]);
+      }
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;
@@ -98,6 +103,17 @@ void getSunAngles(sun_t * Sun){
          printf("error in response\n");
          return;
       }
+
+      if (error == kStatus_LPUART_RxHardwareOverrun)
+  		{
+  			printf("HARDWARE BUFFER OVERRUN\n");
+  			/* Notify about hardware buffer overrun */
+  		}
+  		if (error == kStatus_LPUART_RxRingBufferOverrun)
+  		{
+  			printf("RXRINGBUFFEROVERRUN\n");
+  			/* Notify about ring buffer overrun */
+  		}
       printf("response read\n");
    #endif
    /* check response */
