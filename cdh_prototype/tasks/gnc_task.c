@@ -16,6 +16,7 @@ void gnc_task(void *pvParameters)
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	SPI_GPIO_init();
+	UART_test(&LPUART3_rtos_handle);
 
 #if GNC_ENABLE
 	printf("\ninitialize gnc.\r\n");
@@ -26,6 +27,7 @@ void gnc_task(void *pvParameters)
 #endif
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
+		UART_test(&LPUART3_rtos_handle);
 #if GNC_ENABLE
 		xLastWakeTime = xTaskGetTickCount();
 		printf("\nGNC TASK START.\r\n");

@@ -64,7 +64,7 @@ extern "C" {
 /* Definition of peripheral ID */
 #define LPUART3_PERIPHERAL LPUART3
 /* Definition of the backround buffer size */
-#define LPUART3_BACKGROUND_BUFFER_SIZE 128
+#define LPUART3_BACKGROUND_BUFFER_SIZE 64
 /* LPUART3 interrupt vector ID (number). */
 #define LPUART3_IRQN LPUART3_IRQn
 /* LPUART3 interrupt vector priority. */

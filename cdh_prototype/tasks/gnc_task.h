@@ -1,3 +1,3 @@
-#define GNC_ENABLE	1
+#define GNC_ENABLE	0
 
 void gnc_task(void *pvParameters);
