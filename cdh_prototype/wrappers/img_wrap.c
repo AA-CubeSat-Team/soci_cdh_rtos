@@ -6,7 +6,7 @@ IMG:
 80	GPIO_AD_B1_10	UART4_TX	CIA Board
 79	GPIO_AD_B1_11	UART4_RX	CIA Board
  */
-#include <imag_wrap.h>
+#include <img_wrap.h>
 #include <imag_task.h>
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
@@ -14,7 +14,7 @@ IMG:
 #include <stdbool.h>
 #include "peripherals.h"
 
-extern uint8_t recv_buffer[RESPONSE_LENGTH]; // Receive 5 bytes
+uint8_t recv_buffer[RESPONSE_LENGTH]; // Receive 5 bytes
 uint8_t package_buffer[EXTERNAL_PACKAGE_SIZE]; // Packages sent from IMG are 32 bytes or less
 unsigned int returnedSize[IMAGES_COUNT]; //size of image at each slot
 
@@ -36,7 +36,7 @@ status_t sendCommand(uint8_t command, uint8_t param){
 	// Send command to IMG (Max. 3 attempts)
 	for (int attempt = 1; attempt <= 3; attempt++){
 
-		status = LPUART_WriteBlocking(LPUART_4, toSend, sizeof(toSend)/sizeof(toSend[0]));
+		status = LPUART_RTOS_Send(&LPUART4_rtos_handle, toSend, sizeof(toSend)/sizeof(toSend[0]));
 
 		if(status == kStatus_Success){
 			PRINTF("Sending command succeeded!\r\n");
@@ -57,14 +57,16 @@ status_t sendCommand(uint8_t command, uint8_t param){
 // Receive response from IMG system, response should be 5 bytes long fixed
 status_t getResponse(){
 	status_t status;
+    size_t n = 0;
+
 	if (receivePackageFlag) {
-		status = LPUART_ReadBlocking(LPUART4, package_buffer, EXTERNAL_PACKAGE_SIZE);
+		status = LPUART_RTOS_Receive(&LPUART4_rtos_handle, package_buffer, EXTERNAL_PACKAGE_SIZE, &n);
 		receivePackageFlag = 0;
 	} else if (receiveLastPackageFlag) {
-		status = LPUART_ReadBlocking(LPUART4, package_buffer, remainingBytes);
+		status = LPUART_RTOS_Receive(&LPUART4_rtos_handle, package_buffer, remainingBytes, &n);
 		receiveLastPackageFlag = 0;
 	} else {
-		status =  LPUART_ReadBlocking(LPUART_4, recv_buffer, RESPONSE_LENGTH);
+		status =  LPUART_RTOS_Receive(&LPUART4_rtos_handle, recv_buffer, RESPONSE_LENGTH, &n);
 	}
 	/*PRINTF("%d", recv_buffer[0]);
 	PRINTF("%d", recv_buffer[1]);
@@ -158,15 +160,15 @@ IMG_system_response getPicture(uint8_t IMG_param) {
 		for (int i = 0; i < fullPackages; i++) {
 			memset(package_buffer, 0, sizeof(package_buffer)); // clear buffer before receiving package
 			receivePackageFlag = 1; // reset flag before sending ACK
-			 if (kStatus_Success == LPUART_WriteBlocking(LPUART_4, &ACK, 1)) {
+			 if (kStatus_Success == LPUART_RTOS_Send(&LPUART4_rtos_handle, &ACK, 1)) {
 				 	while(1) {// retry until package received is correct
 				 		// wait for package
 				 		while(receivePackageFlag == 1){delay(1);}
 				 		if (package_buffer[EXTERNAL_PACKAGE_SIZE - 1] != 0xFF) {
 				 			PRINTF("verification byte is not 0xFF, need to resend package.\n");
-				 			LPUART_WriteBlocking(LPUART_4, &NAK, 1); //NAK, request resend package
+				 			LPUART_RTOS_Send(&LPUART4_rtos_handle, &NAK, 1); //NAK, request resend package
 				 		} else {
-				 			LPUART_WriteBlocking(LPUART_4, &ACK, 1);
+				 			LPUART_RTOS_Send(&LPUART4_rtos_handle, &ACK, 1);
 				 			// print out package_buffer, excluding verification byte
 				 			char tmp[3] = {0};
 				 			for (int j = 0; j < EXTERNAL_PACKAGE_SIZE - 1; j++) {
@@ -174,7 +176,7 @@ IMG_system_response getPicture(uint8_t IMG_param) {
 				 				PRINTF("%s", tmp);
 				 			}
 				 			PRINTF("\n");
-				 			if (i == fullPackages - 1) LPUART_WriteBlocking(LPUART_4, &ACK, 1); // ACK for last package
+				 			if (i == fullPackages - 1) LPUART_RTOS_Send(&LPUART4_rtos_handle, &ACK, 1); // ACK for last package
 				 			break;
 				 		}
 				 	}
@@ -185,15 +187,15 @@ IMG_system_response getPicture(uint8_t IMG_param) {
 		memset(package_buffer, 0, sizeof(package_buffer)); // clear buffer before receiving package
 		while(1) {// retry until package received is correct
 			receiveLastPackageFlag = 1;
-			if (kStatus_Success == LPUART_WriteBlocking(LPUART_4, &ACK, 1)) {
+			if (kStatus_Success == LPUART_RTOS_Send(&LPUART4_rtos_handle, &ACK, 1)) {
 				while(1) {// retry until package received is correct
 					// wait for package
 					while(receiveLastPackageFlag == 1);
 					if (package_buffer[EXTERNAL_PACKAGE_SIZE - 1] != 0xFF) {
 						PRINTF("verification byte is not 0xFF, need to resend package.\n");
-						LPUART_WriteBlocking(LPUART_4, &NAK, 1); //NAK, request resend package
+						LPUART_RTOS_Send(&LPUART4_rtos_handle, &NAK, 1); //NAK, request resend package
 					} else {
-						LPUART_WriteBlocking(LPUART_4, &ACK, 1);
+						LPUART_RTOS_Send(&LPUART4_rtos_handle, &ACK, 1);
 						// print out package_buffer, excluding verification byte
 						char tmp[3] = {0};
 						for (int j = 0; j < EXTERNAL_PACKAGE_SIZE - 1; j++) {

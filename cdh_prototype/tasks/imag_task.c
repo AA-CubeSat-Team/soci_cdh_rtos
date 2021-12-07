@@ -2,7 +2,7 @@
 //TODO:
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
 
-#include <imag_wrap.h>
+#include <img_wrap.h>
 #include "imag_task.h"
 #include "semc_sdram.h"
 #include <stdbool.h>
