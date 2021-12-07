@@ -230,5 +230,3 @@ IMG_system_response setExposure(uint8_t IMG_param) {
 IMG_system_response setSleepTime(uint8_t IMG_param) {
 	return SUCCESS;
 }
-
-

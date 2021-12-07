@@ -1,7 +1,5 @@
 #define IMAG_ENABLE	1
 
-<<<<<<< HEAD
-=======
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -39,5 +37,4 @@ extern TaskHandle_t TaskHandler_img;
  * Function declarations
  ******************************************************************************/
 void UART4_IRQHandler(void);
->>>>>>> dev_yijie
 void imag_task(void *pvParameters);

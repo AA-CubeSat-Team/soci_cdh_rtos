@@ -1,26 +1,10 @@
 //TODO: tell Lachlan to extern the recv_buff in wrapper.
 //TODO:
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
-<<<<<<< HEAD
-#include "FreeRTOS.h"
-#include "task.h"
-#include "img_wrap.h"
-=======
 
 #include <imag_wrap.h>
->>>>>>> dev_yijie
 #include "imag_task.h"
-#include "fsl_common.h"
 #include "semc_sdram.h"
-<<<<<<< HEAD
-#include "com_protocol_helper.h"
-
-//static uint8_t recv_buffer[5]; // Receive 5 bytes
-
-TaskHandle_t TaskHandler_img;
-extern uint8_t IMG_command; //TODO: what does img command look like?
-extern uint8_t IMG_param; //TODO: what does img command look like?
-=======
 #include <stdbool.h>
 
 TaskHandle_t TaskHandler_img;
@@ -43,7 +27,6 @@ void UART4_IRQHandler(void)
 	responseReceivedFlag = 1;
     SDK_ISR_EXIT_BARRIER;
 }
->>>>>>> dev_yijie
 
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
@@ -51,19 +34,6 @@ void imag_task(void *pvParameters)
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
-<<<<<<< HEAD
-    // sdram example
-//    memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
-//    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
-//    SEMC_SDRAM_Read(0, 10, 1);
-//    memset(sdram_writeBuffer, 1, sizeof(sdram_writeBuffer));
-//    SEMC_SDRAM_Write(0, 10, 1);
-//    SEMC_SDRAM_Read(0, 10, 1);
-//	for (int i = 0; i < 10; i++) {
-//		//read into the readBuffer to access later
-//		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
-//	}
-=======
 
 	/*initiate UART 4*/
     lpuart_config_t config;
@@ -81,7 +51,6 @@ void imag_task(void *pvParameters)
 	EnableIRQ(UART4_IRQn);
     /*UART 4 initialisation done */
 
->>>>>>> dev_yijie
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
