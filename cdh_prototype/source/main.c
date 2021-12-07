@@ -76,6 +76,9 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
+    UART_test(&LPUART4_rtos_handle);
+
+
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
