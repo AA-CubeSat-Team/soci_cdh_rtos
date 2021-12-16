@@ -31,11 +31,6 @@ SPISettings spiSet(125000, MSBFIRST, SPI_MODE0); // SPI driver is initialized
 #define EN2 A2
 #define EN3 A3
 #define EN4 A4
-#else
-#define SS1 RWA0
-#define SS2 RWA1
-#define SS3 RWA2
-#define SS4 RWA3
 #endif
 
 #define MAX_REQ_PAYLOAD 6 + 1     // N_max = 6 plus comID
@@ -86,12 +81,11 @@ typedef struct rw_data
 //    uint32_t uid3;
 } rw_data_t;
 
-extern rw_data_t rw1, rw2, rw3, rw4;   // saving SRAM
+extern rw_data_t rw0, rw1, rw2, rw3;   // saving SRAM
 
 // test only
 extern bool debug_mode;
 extern int16_t time_0;
-
 
 void reqPacketProcess(uint8_t *req_payload_pt, uint8_t *req_packet_pt, uint8_t *req_payload_len_pt, uint8_t *req_packet_len_pt);
 void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t SS_id);
@@ -106,8 +100,7 @@ void rplPayloadRead_cmd7(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, s
 void reqPayloadWrite_cmd10(uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt);
 void rplPayloadRead_cmd10(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt);
 void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id);
-
+void statusCheck(struct rw_data *rwX_pt, uint8_t SS_id);
 
 #endif /* ACTUATOR_WRAP_RWA_WRAP_H_ */
-
 
