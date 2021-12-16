@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #endif
 
-rw_data_t rw1, rw2, rw3, rw4;    // saving SRAM
+rw_data_t rw0, rw1, rw2, rw3;    // saving SRAM
 
 void reqPacketProcess(uint8_t *req_payload_pt, uint8_t *req_packet_pt, uint8_t *req_payload_len_pt, uint8_t *req_packet_len_pt) { // --- --- --- --- --- --- --- --- ---
   uint8_t req_array_A[MAX_REQ_PACKET] = {0}; // need to allocate max possible size of uint8_t
@@ -151,10 +151,9 @@ void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t 
   SPI.transfer(tx_buffer, *req_packet_len_pt);
   digitalWrite(SS_id, HIGH);
   SPI.endTransaction();
-
-  // DevBoard SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
+  // FreeRtos SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
   #else
-  SPI_transfer(tx_buffer, rx_buffer, req_packet_len_pt, SS_id);     // pcsPin for req_packet must be a struct defined in the .h file
+  SPI_transfer(tx_buffer, rx_buffer, *req_packet_len_pt, SS_id);
   #endif
 }
 
@@ -165,7 +164,7 @@ void rplSpiTransfer(uint8_t *rpl_packet_pt, uint8_t *rpl_packet_len_pt, uint8_t 
 
   for (int ii = 0; ii < MAX_RPL_PACKET; ii++) {
     rx_buffer[ii] = 0x7E;
-    tx_buffer[ii] = 0x7B;
+    tx_buffer[ii] = 0x7E;
   }
 
   //  Arduino SPI Driver format
@@ -176,7 +175,7 @@ void rplSpiTransfer(uint8_t *rpl_packet_pt, uint8_t *rpl_packet_len_pt, uint8_t 
   digitalWrite(SS_id, HIGH);
   SPI.endTransaction();
   #else
-  SPI_transfer(tx_buffer, rx_buffer, rpl_packet_len_pt, SS_id);
+  SPI_transfer(tx_buffer, rx_buffer, *rpl_packet_len_pt, SS_id);
   #endif
 
   for (int ii = 0; ii < *rpl_packet_len_pt; ii++) {
@@ -474,7 +473,6 @@ void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id) {
   rplPacketProcess(&rpl_payload_rwX[0], &rpl_packet_rwX[0], &rpl_payload_len_rwX, &rpl_packet_len_rwX);
   rplPayloadReadSwitcher(com_id, &rpl_payload_rwX[0], &rpl_payload_len_rwX, rwX_pt);
 
-
 //            if (debug_mode == 1){
 //                      Serial.print("req_packet_rwX:\t\t");
 //                      for (uint8_t yy = 0; yy < req_packet_len_rwX; yy++) {
@@ -491,6 +489,22 @@ void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id) {
 //                      Serial.println(" ");
 //                    }
 //            }
+}
+
+void statusCheck(struct rw_data *rwX_pt, uint8_t SS_id) {
+  commandRW(4, rwX_pt, SS_id);
+  printf("\n RW staus is %d \n", rwX_pt->state);
+  printf("\n RW speed is %d \n", rwX_pt->currSpeed);
+
+  if (rwX_pt->state == 0) {
+    // error present
+    // Initialize RWA, return to nominal state
+    commandRW(5, rwX_pt, SS_id);
+  }
+  if (rwX_pt->lastResetStatus != 6 && rwX_pt->lastResetStatus != 7) {
+    commandRW(3, rwX_pt, SS_id);
+    commandRW(7, rwX_pt, SS_id);
+  }
 }
 
 
