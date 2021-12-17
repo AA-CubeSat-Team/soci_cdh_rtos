@@ -243,24 +243,27 @@ bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
  */
 bool UART_test(lpuart_rtos_handle_t *LPUART_rtos_handle)
 {
-	uint8_t recv_buffer[18];
+	uint8_t recv_buffer[17];
 	int error;
 	int try;
 	size_t n = 0;
+	try = 0;
 	char *send_message     = "123456789123456789";
-
+	uint8_t anglesComm[4] = {0x60, 0x04, 0x01, 0x05};
 	while(try < 3) {
 		error = 0;
 
 		/* Send introduction message. */
-		LPUART_RTOS_Send(&(*LPUART_rtos_handle), (uint8_t *)send_message, strlen(send_message));
+		LPUART_RTOS_Send(&(*LPUART_rtos_handle), anglesComm, strlen(anglesComm));
 		LPUART_RTOS_Receive(&(*LPUART_rtos_handle), recv_buffer, sizeof(recv_buffer), &n);
-
-		for(int i = 0; i < 18; i++) {
-			if(send_message[i] != recv_buffer[i]) {
-				error++;
-			}
+		for(int i = 0; i < 17; i++) {
+			PRINTF("%d -> %d /r/n", i, recv_buffer[i]);
 		}
+//		for(int i = 0; i < 18; i++) {
+//			if(send_message[i] != recv_buffer[i]) {
+//				error++;
+//			}
+//		}
 		if(error == 0) {
 			try = 3;
 		} else {

@@ -62,10 +62,17 @@ void getSunAngles(sun_t * Sun){
       }
       delay(10);
    #else
-      int error;
-      error = LPUART_RTOS_Send(&LPUART3_rtos_handle, &anglesComm, sizeof(anglesComm));
+      int sendError;
+      sendError = LPUART_RTOS_Send(&LPUART3_rtos_handle, anglesComm, sizeof(anglesComm));
+      size_t n;
+      int recvError;
+      recvError = LPUART_RTOS_Receive(&LPUART3_rtos_handle, sun_recv_buffer, sizeof(sun_recv_buffer), &n);
+      printf("response:\n");
+      for(int i = 0; i < 17; i++){
+    	  printf("ith byte: %d\n",sun_recv_buffer[i]);
+      }
       printf("sending command\n");
-      if(error != kStatus_Success){
+      if(sendError != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;
          *(Sun->angles + 2) = -2000.0;
@@ -75,46 +82,8 @@ void getSunAngles(sun_t * Sun){
          return;
       }
       printf("command sent\n");
-      vTaskDelay(xDelay10ms);
       printf("delayed for response\n");
 
-   #endif
-   /* read response */
-
-   #if ARDUINO_CODE
-      for(int i = 0; i < angleRespLength; i++){
-         sun_recv_buffer[i] = Serial1.read();
-      }
-   #else
-      size_t n = 0;
-      printf("preparing to read response\n");
-      error = LPUART_RTOS_Receive(&LPUART3_rtos_handle, &sun_recv_buffer, angleRespLength, &n);
-      printf("error: %d\n", error);
-      printf("reading response\n");
-      for (int i = 0; i < 17; i++){
-    	  printf("Data[i]: %d\n", sun_recv_buffer[i]);
-      }
-      if(error != kStatus_Success){
-         *(Sun->angles) = -2000.0;
-         *(Sun->angles + 1) = -2000.0;
-         *(Sun->angles + 2) = -2000.0;
-         Sun->error = 16;
-         Sun->isValid = 0;
-         printf("error in response\n");
-         return;
-      }
-
-      if (error == kStatus_LPUART_RxHardwareOverrun)
-  		{
-  			printf("HARDWARE BUFFER OVERRUN\n");
-  			/* Notify about hardware buffer overrun */
-  		}
-  		if (error == kStatus_LPUART_RxRingBufferOverrun)
-  		{
-  			printf("RXRINGBUFFEROVERRUN\n");
-  			/* Notify about ring buffer overrun */
-  		}
-      printf("response read\n");
    #endif
    /* check response */
    if(anglesComm[1] == sun_recv_buffer[1]){
