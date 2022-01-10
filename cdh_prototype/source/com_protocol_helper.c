@@ -243,9 +243,10 @@ bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
  */
 bool UART_test(lpuart_rtos_handle_t *LPUART_rtos_handle)
 {
-	uint8_t recv_buffer[18];
+	PRINTF("Starting UART TEST: \n");
+	uint8_t recv_buffer[60];
 	int error;
-	int try;
+	int try = 0;
 	size_t n = 0;
 	char *send_message     = "123456789123456789";
 
@@ -253,9 +254,26 @@ bool UART_test(lpuart_rtos_handle_t *LPUART_rtos_handle)
 		error = 0;
 
 		/* Send introduction message. */
-		LPUART_RTOS_Send(&(*LPUART_rtos_handle), (uint8_t *)send_message, strlen(send_message));
-		LPUART_RTOS_Receive(&(*LPUART_rtos_handle), recv_buffer, sizeof(recv_buffer), &n);
-
+		PRINTF("TRYING TO SEND  ...\n");
+		int sendError = LPUART_RTOS_Send(&(*LPUART_rtos_handle), (uint8_t *)send_message, strlen(send_message));
+		if(sendError == kStatus_Success){
+			PRINTF("SUCCESS SENDING\n");
+		}
+		else{
+			PRINTF("ERROR SENDING\n");
+		}
+		PRINTF("TRYING TO RECIEVE  ...\n");
+		int recvError = LPUART_RTOS_Receive(&(*LPUART_rtos_handle), recv_buffer, sizeof(recv_buffer), &n);
+		if(recvError == kStatus_Success){
+			PRINTF("SUCCESS RECEIVING\n");
+		}
+		else{
+			PRINTF("ERROR RECEIVING\n");
+			PRINTF("ERROR: %d", recvError);
+		}
+		for(int i = 0; i < sizeof(recv_buffer); i++) {
+			PRINTF("recv_buffer[]: %c\n", recv_buffer[i]);
+		}
 		for(int i = 0; i < 18; i++) {
 			if(send_message[i] != recv_buffer[i]) {
 				error++;
@@ -266,6 +284,7 @@ bool UART_test(lpuart_rtos_handle_t *LPUART_rtos_handle)
 		} else {
 			try++;
 		}
+		memset(recv_buffer, 0, sizeof(recv_buffer));
 	}
 	if(error == 0) {
 		return true;

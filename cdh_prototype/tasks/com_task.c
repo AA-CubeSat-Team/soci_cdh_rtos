@@ -27,19 +27,29 @@ void com_task(void *pvParameters)
 //	PRINTF("TESTING CONTINOUS SENDING\n");
 //	testSending();
 
-	PRINTF("Testing enterCommandMode function:\n");
+//	PRINTF("config radio: \n"); TODO: Get right configuration settings
+//	com_radio_init();
+
+//	PRINTF("Testing enterCommandMode function:\n");
 	com_enterCommandMode();
 	PRINTF("\n");
 
-	//Testing if sending a command to the radio (non delay dependent) works
-	PRINTF("Testing exitCommandMode function:\n");;
+//	Testing if sending a command to the radio (non delay dependent) works
+	PRINTF("Testing exitCommandMode function:\n");
 	com_exitCommandMode();
 	PRINTF("\n");
 
-	//Test sending data to radio in data mode
-//	PRINTF("Testing data mode: \n");
-//	testSending();
-//	PRINTF("\n");
+//	Test sending data to radio in data mode
+	for(int i = 0; i < 10; i++){
+		PRINTF("Testing data mode: \n");
+		testSending();
+		PRINTF("\n");
+	}
+	PRINTF("DONE TESTING SENDING \n");
+	PRINTF("\n");
+
+//	PRINTF("Testing UART w/ Arduino: \n");
+//	UART_test(&LPUART4_rtos_handle);
 
 //	PRINTF("CONFIGURING THE RADIO\n");
 //	com_radio_init();
@@ -97,7 +107,7 @@ void com_task(void *pvParameters)
 #endif
 
 	for (;;) {
-		xLastWakeTime = xTaskGetTickCount();
+//		xLastWakeTime = xTaskGetTickCount();
 
 #if COM_ENABLE
 			com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
@@ -119,7 +129,7 @@ void com_task(void *pvParameters)
 			vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+//		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #endif
 }

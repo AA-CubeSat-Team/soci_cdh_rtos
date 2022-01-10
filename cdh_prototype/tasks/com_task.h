@@ -1,5 +1,5 @@
 #define COM_ENABLE	0
-#define COM_WRAP_DEBUG 0
+#define COM_WRAP_DEBUG 1
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
