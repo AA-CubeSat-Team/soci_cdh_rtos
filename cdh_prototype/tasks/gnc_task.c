@@ -1,13 +1,12 @@
-#include "wrappers/sensor_wrap/gyro_wrap.h"
+#include "peripherals.h"
+#include "gyro_wrap.h"
 #include "gnc_task.h"
-//#include "FSW_Lib_types.h"
-#include "act_wrap/act_wrap.h"
+#include "act_wrap.h"
 #include "sen_wrap.h"
 #include "idle_task.h"
-#include "peripherals.h"
-
-//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib_types.h>
-//#include <gnc_build/FSW_Lib_ert_rtw/FSW_Lib.h>
+#include "sun_wrap.h"
+#include "fsl_debug_console.h"
+#include "com_protocol_helper.h"
 
 extern bool g_senActive, g_rwaActive, g_mtqActive;
 
@@ -16,23 +15,10 @@ void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
-
-#if SPI_TEST
-		/* Initialize data in transfer buffers */
-		for (int i = 0; i < 16; i++)
-		{
-			masterSendBuffer[i]    = i;
-
-			slaveSendBuffer[i] = masterSendBuffer[i];//checks match with slave response
-		}
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA0);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA1);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA2);
-		SPI_transfer(masterSendBuffer, masterReceiveBuffer, 16, RWA3);
-#endif
+	SPI_GPIO_init();
 
 #if GNC_ENABLE
-	PRINTF("\ninitialize gnc.\r\n");
+	printf("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
 //	sens_init();
 //  act_init();
@@ -42,7 +28,15 @@ void gnc_task(void *pvParameters)
 		xLastWakeTime = xTaskGetTickCount();
 #if GNC_ENABLE
 		xLastWakeTime = xTaskGetTickCount();
-		PRINTF("\nGNC TASK START.\r\n");
+		printf("\nGNC TASK START.\r\n");
+
+		getSunAngles(&Sun1);
+
+		int a1 = (int) (Sun1.angles[0]*1000);
+		int a2 = (int) (Sun1.angles[1]*1000);
+		printf("\n");
+		printf("a1: %d\n", a1);
+		printf("a2: %d\n", a2);
 
 		/* read sensors and actuator measurements to sensor_bus */
 		if (g_senActive) {

@@ -13,6 +13,9 @@ EPS:
 74	GPIO_AD_B1_15	I2C1_SDA	EPS, MAG1, GYRO1
  */
 
+
+#include <stdio.h>
+#include <stdlib.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -62,11 +65,12 @@ EPS:
 
 #define BYTE16CAST 0xFF
 #define VERIFIED_COM_MASK 0x67D6
+#define VOLTAGE_MASK 0xFF0000000000000000
 #define NO_RETURN 9999
 
 
-#define EPS_SLAVE_ADDR 0 //change
-#define I2C_DATA_LENGTH 4 //?
+#define EPS_SLAVE_ADDR 0x51
+#define I2C_DATA_LENGTH 4
 
 bool eps_healthy;
 
@@ -77,10 +81,10 @@ bool eps_healthcheck() {
 	PRINTF("checking the health of eps!\r\n");
 	//	TickType_t xLastWakeTime = xTaskGetTickCount();
 	//	vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( 10 ));
+	i2c_eps_idRegister();
 	i2c_eps_powerModuleStatus();
 	i2c_eps_batteryModuleStatus();
 	i2c_eps_FDIRflag();
-	i2c_eps_idRegister();
 	PRINTF("Finish delay\r\n");
 	return eps_healthy;
 }
@@ -92,50 +96,17 @@ bool eps_healthcheck() {
  * So, this register address is just temporary. A more complete i2c library is needed.
  */
 
-uint8_t I2C_EPS_REG_ADDR = 1;
-
-
 static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint8_t * i2c_recv_buffer, size_t rx_size, time_t d) {
 
-	// send gmb0, gmb1, gmb2, gmb3 in order
 	size_t n;
-	// TODO: send the delay as well?
 
 	I2C_send(&LPI2C1_masterHandle, EPS_SLAVE_ADDR, 0, i2c_send_buffer, tx_size);
 
 	if (d != NO_RETURN) {
-		//delay(d);
 		I2C_request(&LPI2C1_masterHandle, EPS_SLAVE_ADDR, 0, i2c_recv_buffer, rx_size);
 	}
 
-
 	adc_count = 0;
-
-//
-//
-//	//OBC: getStatus() in idle_task -> helper -> FreeRTOS_send gmb
-//	//EPS: gets a message via I2C -> I need to send back the status -> I2C send(status)
-//	//OBC: received status -> read g_slave_buff -> use that to do the next operation
-//
-//
-//	delay(d);
-//
-//	//i2c read
-//	I2C_read_write_lp(&master_rtos_handle, &status, I2C_EPS_ADDR, kLPI2C_Read, I2C_EPS_REG_ADDR, g_slave_buff, datasize);
-//
-//	delay(d);
-//
-//	PRINTF("Master received data from slave: ");
-//	print_i2c_data(g_slave_buff);
-//
-//	uint32_t adc_count = 0;
-//	/* get the ADC count returned using bitwise operations
-//	 * adc_count will be a 32-bit int of the form:
-//	 * {0x00     0x00     g_slave_buff[1]     g_slave_buff[0]}
-//	 * I don't know if this calculation is correct
-//	 */
-
-//	adc_count = (g_slave_buff[1] << 8) | g_slave_buff[0]);
 
 }
 
@@ -145,23 +116,22 @@ static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint
 
 double i2c_eps_getBatteryLevel()
 {
-	PRINTF("get the battery value!\r\n");
-	memset(buffer, 0, I2C_DATA_LENGTH);
-	buffer[0] = I2C_EPS_TELE_POWER_BUSES;
-	buffer[1] = 0x00;
-	buffer[2] = 0x04;
+	memset(buffer, 0, 2);
+	buffer[0] = 0x0B;
+	buffer[1] = 0x02;
 
 	uint8_t recv_buffer[24];
-	i2c_read_write_helper(buffer, 3, recv_buffer, 24, 5000);
 
-	adc_count = 0;
-	for (int i=5; i>=4; i--) {
-		adc_count <<= 8;
-		adc_count |= recv_buffer[i];
-	}
+	i2c_read_write_helper(buffer, sizeof(buffer), recv_buffer, sizeof(recv_buffer), 5000);
 
-	double voltage = adc_count * 0.0030945;
-	return 0.0;
+	// select bits of buffer for vbat
+	uint16_t voltage_buff = 0;
+	voltage_buff = (recv_buffer[17] << 8) | recv_buffer[16];
+
+	// apply correction for voltage
+	double correction = 0.0030945;
+	double voltage = voltage_buff * correction;
+	return voltage;
 }
 
 uint32_t i2c_eps_powerModuleStatus()
@@ -169,16 +139,11 @@ uint32_t i2c_eps_powerModuleStatus()
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_POWER_MODULE_STATUS;
 
-	// send and read
-	// returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
-	// delay is unknown?
-	// thought: regardless if all bytes are moved, it should still return the same adc_count
-	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 1, recv_buffer, 4, 5000);
+	uint8_t recv_buffer[2];
+	i2c_read_write_helper(buffer, 1, recv_buffer, 2, 5000);
 
 	adc_count = 0;
-	for(int i=0; i<4; i++)
+	for(int i=1; i>=0; i--)
 	{
 		adc_count <<= 8;
 		adc_count |= recv_buffer[i];
@@ -187,38 +152,47 @@ uint32_t i2c_eps_powerModuleStatus()
 	if (adc_count & (1 << 0))
 	{
 		PRINTF("3V3 output error\n");
+		i2c_eps_fixedPowerBusReset(0x03);
 	}
 	if (adc_count & (1 << 1))
 	{
 		PRINTF("5V output error\n");
+		i2c_eps_fixedPowerBusReset(0x0C);
 	}
 	if (adc_count & (1 << 2))
 	{
 		PRINTF("12V output error\n");
+		i2c_eps_fixedPowerBusReset(0x30);
 	}
 	if (adc_count & (1 << 8))
 	{
 		PRINTF("PDM1 error\n");
+		i2c_eps_resetPdm();
 	}
 	if (adc_count & (1 << 9))
 	{
 		PRINTF("PDM2 error\n");
+		i2c_eps_resetPdm();
 	}
 	if (adc_count & (1 << 10))
 	{
 		PRINTF("PDM3 error\n");
+		i2c_eps_resetPdm();
 	}
 	if (adc_count & (1 << 11))
 	{
 		PRINTF("PDM4 error\n");
+		i2c_eps_resetPdm();
 	}
 	if (adc_count & (1 << 12))
 	{
 		PRINTF("PDM5 error\n");
+		i2c_eps_resetPdm();
 	}
 	if (adc_count & (1 << 13))
 	{
 		PRINTF("PDM6 error\n");
+		i2c_eps_resetPdm();
 	}
 	if (adc_count != 0) {
 		eps_healthy = false;
@@ -233,16 +207,11 @@ uint32_t i2c_eps_batteryModuleStatus()
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_BATTERY_MODULE_STATUS;
 
-	// send and read
-	//  returns 2 bytes <- remember to adjust so it can return multiple different selection of bytes
-	// delay is unknown?
-	// thought: regardless if all bytes are moved, it should still return the same adc_count
-	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 1, recv_buffer, 4, 5000);
+	uint8_t recv_buffer[2];
+	i2c_read_write_helper(buffer, 1, recv_buffer, 2, 5000);
 
 	adc_count = 0;
-	for(int i=0; i<4; i++)
+	for(int i=1; i>=0; i--)
 	{
 		adc_count <<= 8;
 		adc_count |= recv_buffer[i];
@@ -251,34 +220,39 @@ uint32_t i2c_eps_batteryModuleStatus()
 	if (adc_count & (1 << 0))
 	{
 		PRINTF("CC, Charge Control Flag. Set if battery charge is disabled.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 1))
 	{
 		PRINTF("DC, Discharge Control Flag. Set if battery discharge is disabled.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 2))
 	{
 		PRINTF(" CHGTF, Charge-Termination Flag. Set if battery is fully charged.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 4))
 	{
 		PRINTF("SEF, Standby-Empty Flag. Set if capacity is below 10%%, unset if above 15 %%.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 8))
 	{
 		PRINTF("Set if heater is active.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 12))
 	{
 		PRINTF("Set if battery balancing is happening from top cell to bottom cell.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 13))
 	{
 		PRINTF("Set if battery balancing is happening from bottom cell to top cell.\n");
+		eps_healthy = true;
 	}
-	if (adc_count != 0) {
-		eps_healthy = false;
-	} else {
+	if (adc_count == 0) {
 		eps_healthy = true;
 	}
 	return adc_count;
@@ -289,16 +263,11 @@ void i2c_eps_FDIRflag()
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_FDIR;
 
-	// send and read
-	// returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
-	// delay is unknown?
-	// thought: regardless if all bytes are moved, it should still return the same adc_count
-	//          which can still be checked, so it would be best to adjust so all bytes are moved
-	uint8_t recv_buffer[4];
-	i2c_read_write_helper(buffer, 1, recv_buffer, 4, 5000);
+	uint8_t recv_buffer[2];
+	i2c_read_write_helper(buffer, 1, recv_buffer, 2, 5000);
 
 	adc_count = 0;
-	for(int i=0; i<4; i++) //converts byte array into 32 bit adc_count
+	for(int i=1; i>=0; i--) //converts byte array into 32 bit adc_count
 	{
 		adc_count <<= 8;
 		adc_count |= recv_buffer[i];
@@ -307,50 +276,59 @@ void i2c_eps_FDIRflag()
 	if (adc_count & (1 << 0))
 	{
 		PRINTF("0 Set if last was command unknown\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 1))
 	{
 		PRINTF("Set if last command parameter was invalid.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 2))
 	{
 		PRINTF("Set if watchdog was triggered.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 3))
 	{
 		PRINTF("Set if BOR was triggered.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 5))
 	{
 		PRINTF("Set if battery manager is unavailable.\n");
+		eps_healthy = true;
 	}
 	if (adc_count & (1 << 6))
 	{
 		PRINTF("Set if VBAT1_ADC is out of range.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 7))
 	{
 		PRINTF("Set if VBAT2_ADC is out of range.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 8))
 	{
 		PRINTF("Set if IBAT_BM is out of range.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 9))
 	{
 		PRINTF("Set if TEMP_BM is out of range.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 10))
 	{
 		PRINTF("Set if TEMP_MB is out of range.\n");
+		eps_healthy = false;
 	}
 	if (adc_count & (1 << 11))
 	{
 		PRINTF("Set if TEMP_DB1 is out of range.\n");
-	}
-	if (adc_count != 0) {
 		eps_healthy = false;
-	} else {
+	}
+	if (adc_count == 0) {
 		eps_healthy = true;
 	}
 	return;
@@ -361,20 +339,8 @@ void i2c_eps_idRegister() ///make bool?
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_ID;
 
-	// send and read
-	// returns 1 bytes <- remember to adjust so it can return multiple different selection of bytes
-	// delay is unknown?
-	// thought: regardless if all bytes are moved, it should still return the same adc_count
-	//          which can still be checked, so it would be best to adjust so all bytes are moved
 	uint8_t recv_buffer;
 	i2c_read_write_helper(buffer, 1, &recv_buffer, 1, 5000);
-
-//	adc_count = 0;
-//	for(int i=0; i<4; i++)
-//	{
-//		adc_count <<= 8;
-//		adc_count |= recv_buffer[i];
-//	}
 
 	bool verified_com;
 	verified_com = recv_buffer && VERIFIED_COM_MASK;
@@ -388,17 +354,15 @@ void i2c_eps_idRegister() ///make bool?
 	}
 	return;
 }
-//
-//// for watchdog, userinput period
-//// only accepts 1, 2, 4 for each period in minutes
+
+// for watchdog, userinput period
+// only accepts 1, 2, 4 for each period in minutes
 void i2c_eps_watchdogPeriod(uint8_t period)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
-	buffer[0] = I2C_EPS_CMD_ID;
+	buffer[0] = I2C_EPS_CMD_SET_WATCHDOG_PERIOD;
 	buffer[1] = 0x0000 | period;
-	//buffer[3] = period;
 	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
-	//(void)adc_count; //unused
 
 	return;
 }
@@ -411,24 +375,19 @@ void i2c_eps_setPdmsInitialState(uint8_t pdm_state)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_SET_PDMS_INTIAL_STATE;
-	buffer[1] = 0x00;
-	buffer[2] = 0x00 | pdm_state; // initial pdms - bit 6 and 7 are reserved
+	buffer[1] = 0x00 | pdm_state;
 
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
-	//(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 	return;
 }
 
-// Does this only turn everything on or does it do the reset?
 void i2c_eps_resetPdm()
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_RESET_PDMS;
-	buffer[1] = 0x00;
-	buffer[2] = 0xFF; //all ON?
+	buffer[1] = 0xFF;
 
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
-	//(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 	return;
 }
 
@@ -440,13 +399,10 @@ void i2c_eps_switchOnOffPdms(uint8_t newPdmState)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_SWITCH_ON_OFF_PDMS;
-	buffer[1] = 0x00;
-	buffer[2] = newPdmState;
+	buffer[1] = 0x00 | newPdmState;
 
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
-	//(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 
-	// TODO: do we want an acknowledgement?
 	return;
 }
 
@@ -455,11 +411,9 @@ void i2c_eps_setHousekeepingPeriod(uint8_t period)
 {
 	memset(buffer, 0, sizeof(*buffer)*I2C_DATA_LENGTH);
 	buffer[0] = I2C_EPS_CMD_SET_HOUSEKEEPING_PERIOD;
-	buffer[1] = 0x00;
-	buffer[2] = period;
+	buffer[1] = 0x00 | period;
 
-	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
-	//(void)adc_count; //unused
+	i2c_read_write_helper(buffer, 2, 0, 0, NO_RETURN);
 
 	return;
 }
@@ -476,7 +430,6 @@ void i2c_eps_setSafetyHazardEnvironment()
 	buffer[2] = 0xFF;
 
 	i2c_read_write_helper(buffer, 3, 0, 0, NO_RETURN);
-	//(void)adc_count; //unused
 
 	return;
 }
@@ -489,21 +442,19 @@ void i2c_eps_setSafetyHazardEnvironment()
 //// may want to add a user input line instead of families input
 //
 
-
-
 // twos compliment times 0.5 which is needed to convert the temperatures below
 static int twosComp(uint16_t x)
 {
-	return (~x)+1; //TODO: Check this!
+	return (1 + ~(unsigned)x) & BYTE16CAST; //TODO: Check this!
 }
 
 // telemetry helper function declarations
-char telemetry_bcrs(uint32_t * data);
-char telemetry_solarPanelSensors(uint32_t * data);
-char telemetry_powerBuses(uint32_t * data);
-char telemetry_switchablePowerBuses(uint32_t * data);
-char telemetry_batteryModule(uint32_t * data);
-char telemetry_systemData(uint32_t * data);
+void telemetry_bcrs(uint8_t * data);
+void telemetry_solarPanelSensors(uint8_t * data);
+void telemetry_powerBuses(uint8_t * data);
+void telemetry_switchablePowerBuses(uint8_t * data);
+void telemetry_batteryModule(uint8_t * data);
+void telemetry_systemData(uint8_t * data);
 
 // VERSION 2 OF TELEMETRY - SAVES RUNTIME AND SPACE____________________________________
 // I feel like for convenience we can have user type the family they want and it will be
@@ -524,7 +475,6 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	// add user input here
 	buffer[1] = families; //TODO: this is 16 bits being written into 8 bits!
 
-
 	uint8_t recv_buffer[24]; //holds array of 24 bytes
 
 	i2c_read_write_helper(buffer, 2, recv_buffer, 24, 5000);
@@ -544,32 +494,30 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 	 // 16 bytes		Battery Module Telemetry
 	 // 12 bytes		System Data
 
-	uint32_t * returnArray = (uint32_t *)recv_buffer; // TODO: make sure this works OR modify telemetry helper functions
-
 	// for calculations on which family
 	if (families == 0x00)
 	{
-		telemetry_bcrs(returnArray);
+		telemetry_bcrs(recv_buffer);
 	}
 	else if (families == 0x01)
 	{
-		telemetry_solarPanelSensors(returnArray);
+		telemetry_solarPanelSensors(recv_buffer);
 	}
 	else if (families == 0x02)
 	{
-		telemetry_powerBuses(returnArray);
+		telemetry_powerBuses(recv_buffer);
 	}
 	else if (families == 0x03)
 	{
-		telemetry_switchablePowerBuses(returnArray);
+		telemetry_switchablePowerBuses(recv_buffer);
 	}
 	else if (families == 0x04)
 	{
-		telemetry_batteryModule(returnArray);
+		telemetry_batteryModule(recv_buffer);
 	}
 	else if (families == 0x05)
 	{
-		telemetry_systemData(returnArray);
+		telemetry_systemData(recv_buffer);
 	}
 
 	return;
@@ -578,155 +526,189 @@ void i2c_eps_getTelemetryGroup(uint16_t families)
 
 // TELEMETRY HELPER FUNCTIONS
 
-char telemetry_bcrs(uint32_t * data)
+void telemetry_bcrs(uint8_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 0.008;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 2;
-	int tm3 = (data[1] & BYTE16CAST) * 0.008;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 2;
-	int tm5 = (data[2] & BYTE16CAST) * 0.008;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 2;
-	int tm7 = (data[3] & BYTE16CAST) * 0.008;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 2;
-	int tm9 = (data[4] & BYTE16CAST) * 0.008;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 5;
-	int tm11 = (data[5] & BYTE16CAST) * 0.008;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 2;
+	PRINTF ("\r\n");
+	PRINTF ("BCRs Telemetry\r\n");
+	PRINTF ("------------------\r\n");
 
-	PRINTF("BCR8W_1 Input Voltage = %d V \n", tm1);
-	PRINTF("BCR8W_1 Input Current = %d mA \n", tm2);
-	PRINTF("BCR8W_1 Output Voltage = %d V \n", tm3);
-	PRINTF("BCR8W_1 Output Current = %d mA \n", tm4);
-	PRINTF("BCR8W_2 Input Voltage = %d V \n", tm5);
-	PRINTF("BCR8W_2 Input Current = %d mA \n", tm6);
-	PRINTF("BCR8W_2 Output Voltage = %d V \n", tm7);
-	PRINTF("BCR8W_2 Output Current = %d mA \n", tm8);
-	PRINTF("BCR3W Input Voltage = %d V \n", tm9);
-	PRINTF("BCR3W Input Current = %d mA \n", tm10);
-	PRINTF("BCR3W Output Voltage = %d V \n", tm11);
-	PRINTF("BCR3W Output Current = %d mA \n", tm12);
+	double tm1 = ((data[1] << 8) | data[0]) * 0.008;
+	double tm2 = ((data[3] << 8) | data[2]) * 2;
+	double tm3 = ((data[5] << 8) | data[4]) * 0.008;
+	double tm4 = ((data[7] << 8) | data[6]) * 2;
+	double tm5 = ((data[9] << 8) | data[8]) * 0.008;
+	double tm6 = ((data[11] << 8) | data[10]) * 2;
+	double tm7 = ((data[13] << 8) | data[12]) * 0.008;
+	double tm8 = ((data[15] << 8) | data[14]) * 2;
+	double tm9 = ((data[17] << 8) | data[16]) * 0.008;
+	double tm10 = ((data[19] << 8) | data[18]) * 5;
+	double tm11 = ((data[21] << 8) | data[20]) * 0.008;
+	double tm12 = ((data[23] << 8) | data[22]) * 2;
 
+	PRINTF("BCR8W_1 Input Voltage = %.4f V \n", tm1);
+	PRINTF("BCR8W_1 Input Current = %.4f mA \n", tm2);
+	PRINTF("BCR8W_1 Output Voltage = %.4f V \n", tm3);
+	PRINTF("BCR8W_1 Output Current = %.4f mA \n", tm4);
+	PRINTF("BCR8W_2 Input Voltage = %.4f V \n", tm5);
+	PRINTF("BCR8W_2 Input Current = %.4f mA \n", tm6);
+	PRINTF("BCR8W_2 Output Voltage = %.4f V \n", tm7);
+	PRINTF("BCR8W_2 Output Current = %.4f mA \n", tm8);
+	PRINTF("BCR3W Input Voltage = %.4f V \n", tm9);
+	PRINTF("BCR3W Input Current = %.4f mA \n", tm10);
+	PRINTF("BCR3W Output Voltage = %.4f V \n", tm11);
+	PRINTF("BCR3W Output Current = %.4f mA \n", tm12);
+
+	return;
 }
 
-char telemetry_solarPanelSensors(uint32_t * data)
+void telemetry_solarPanelSensors(uint8_t * data)
 {
-	int tm1 = twosComp(data[0] & BYTE16CAST) * 0.5;
-	int tm2 = twosComp((data[0] >> 16) & BYTE16CAST) * 0.5;
-	int tm3 = twosComp(data[1] & BYTE16CAST) * 0.5;
-	int tm4 = twosComp((data[1] >> 16) & BYTE16CAST) * 0.5;
-	int tm5 = twosComp(data[2] & BYTE16CAST) * 0.5;
+	PRINTF ("\r\n");
+	PRINTF ("Solar Panel Sensors Telemetry\r\n");
+	PRINTF ("---------------------------------\r\n");
 
-	PRINTF("M_SP Temperature X+ = %d C \n", tm1);
-	PRINTF("M_SP Temperature X- = %d C \n", tm2);
-	PRINTF("M_SP Temperature Y+ = %d C \n", tm3);
-	PRINTF("M_SP Temperature Y- = %d C \n", tm4);
-	PRINTF("M_SP Temperature Z+ = %d C \n", tm5);
+	double tm1 = twosComp((data[1] << 8) | data[0]) * 0.5;
+	double tm2 = twosComp((data[3] << 8) | data[2]) * 0.5;
+	double tm3 = twosComp((data[5] << 8) | data[4]) * 0.5;
+	double tm4 = twosComp((data[7] << 8) | data[6]) * 0.5;
+	double tm5 = twosComp((data[9] << 8) | data[8]) * 0.5;
 
+	PRINTF("M_SP Temperature X+ = %.4f C \n", tm1);
+	PRINTF("M_SP Temperature X- = %.4f C \n", tm2);
+	PRINTF("M_SP Temperature Y+ = %.4f C \n", tm3);
+	PRINTF("M_SP Temperature Y- = %.4f C \n", tm4);
+	PRINTF("M_SP Temperature Z+ = %.4f C \n", tm5);
+
+	return;
 }
 
-char telemetry_powerBuses(uint32_t * data)
+void telemetry_powerBuses(uint8_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm3 = (data[1] & BYTE16CAST) * 0.0030945;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm5 = (data[2] & BYTE16CAST) * 0.0030945;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm7 = (data[3] & BYTE16CAST) * 0.0030945;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm9 = (data[4] & BYTE16CAST) * 0.0030945;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0020676;
-	int tm11 = (data[5] & BYTE16CAST) * 0.0030945;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0020676;
+	PRINTF ("\r\n");
+	PRINTF ("Power Buses Telemetry\r\n");
+	PRINTF ("-------------------------\r\n");
 
-	PRINTF("BCR Output Voltage = %d V \n", tm1);
-	PRINTF("BCR Output Current = %d A \n", tm2);
-	PRINTF("PCM Input Voltage = %d V \n", tm3);
-	PRINTF("PCM Input Current = %d A \n", tm4);
-	PRINTF("3V3 Power Bus Voltage = %d V \n", tm5);
-	PRINTF("3V3 Power Bus Current = %d A \n", tm6);
-	PRINTF("5V Power Bus Voltage = %d V \n", tm7);
-	PRINTF("5V Power Bus Current = %d A \n", tm8);
-	PRINTF("Vbat Power Bus Voltage = %d V \n", tm9);
-	PRINTF("Vbat Power Bus Current = %d A \n", tm10);
-	PRINTF("12V Power Bus Voltage = %d V \n", tm11);
-	PRINTF("12V Power Bus Current = %d A \n", tm12);
+	double tm1 = ((data[1] << 8) | data[0]) * 0.0030945;
+	double tm2 = ((data[3] << 8) | data[2]) * 0.0020676;
+	double tm3 = ((data[5] << 8) | data[4]) * 0.0030945;
+	double tm4 = ((data[7] << 8) | data[6]) * 0.0020676;
+	double tm5 = ((data[9] << 8) | data[8]) * 0.0030945;
+	double tm6 = ((data[11] << 8) | data[10]) * 0.0020676;
+	double tm7 = ((data[13] << 8) | data[12]) * 0.0030945;
+	double tm8 = ((data[15] << 8) | data[14]) * 0.0020676;
+	double tm9 = ((data[17] << 8) | data[16]) * 0.0030945;
+	double tm10 = ((data[19] << 8) | data[18]) * 0.0020676;
+	double tm11 = ((data[21] << 8) | data[20]) * 0.0030945;
+	double tm12 = ((data[23] << 8) | data[22]) * 0.0020676;
 
+	PRINTF("BCR Output Voltage = %.4f V \n", tm1);
+	PRINTF("BCR Output Current = %.4f A \n", tm2);
+	PRINTF("PCM Input Voltage = %.4f V \n", tm3);
+	PRINTF("PCM Input Current = %.4f A \n", tm4);
+	PRINTF("3V3 Power Bus Voltage = %.4f V \n", tm5);
+	PRINTF("3V3 Power Bus Current = %.4f A \n", tm6);
+	PRINTF("5V Power Bus Voltage = %.4f V \n", tm7);
+	PRINTF("5V Power Bus Current = %.4f A \n", tm8);
+	PRINTF("Vbat Power Bus Voltage = %.4f V \n", tm9);
+	PRINTF("Vbat Power Bus Current = %.4f A \n", tm10);
+	PRINTF("12V Power Bus Voltage = %.4f V \n", tm11);
+	PRINTF("12V Power Bus Current = %.4f A \n", tm12);
+
+	return;
 }
 
-char telemetry_switchablePowerBuses(uint32_t * data)
+void telemetry_switchablePowerBuses(uint8_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 0.0030945;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
-	int tm3 = (data[1] & BYTE16CAST) * 0.0030945;
-	int tm4 = ((data[1] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
-	int tm5 = (data[2] & BYTE16CAST) * 0.0030945;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
-	int tm7 = (data[3] & BYTE16CAST) * 0.0030945;
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
-	int tm9 = (data[4] & BYTE16CAST) * 0.0030945;
-	int tm10 = ((data[4] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
-	int tm11 = (data[5] & BYTE16CAST) * 0.0030945;
-	int tm12 = ((data[5] >> 16) & BYTE16CAST) * 0.0008336 - 0.010;
+	PRINTF ("\r\n");
+	PRINTF ("Switchable Power Buses Telemetry\r\n");
+	PRINTF ("------------------------------------\r\n");
 
-	PRINTF("SW1_V = %d V \n", tm1);
-	PRINTF("SW1_C = %d A \n", tm2);
-	PRINTF("SW2_V = %d V \n", tm3);
-	PRINTF("SW2_C = %d A \n", tm4);
-	PRINTF("SW3_V = %d V \n", tm5);
-	PRINTF("SW3_C = %d A \n", tm6);
-	PRINTF("SW4_V = %d V \n", tm7);
-	PRINTF("SW4_C = %d A \n", tm8);
-	PRINTF("SW5_V = %d V \n", tm9);
-	PRINTF("SW5_C = %d A \n", tm10);
-	PRINTF("SW6_V = %d V \n", tm11);
-	PRINTF("SW6_C = %d A \n", tm12);
+	double tm1 = ((data[1] << 8) | data[0]) * 0.0030945;
+	double tm2 = ((data[3] << 8) | data[2]) * 0.0008336 - 0.010;
+	double tm3 = ((data[5] << 8) | data[4]) * 0.0030945;
+	double tm4 = ((data[7] << 8) | data[6]) * 0.0008336 - 0.010;
+	double tm5 = ((data[9] << 8) | data[8]) * 0.0030945;
+	double tm6 = ((data[11] << 8) | data[10]) * 0.0008336 - 0.010;
+	double tm7 = ((data[13] << 8) | data[12]) * 0.0030945;
+	double tm8 = ((data[15] << 8) | data[14]) * 0.0008336 - 0.010;
+	double tm9 = ((data[17] << 8) | data[16]) * 0.0030945;
+	double tm10 = ((data[19] << 8) | data[18]) * 0.0008336 - 0.010;
+	double tm11 = ((data[21] << 8) | data[20]) * 0.0030945;
+	double tm12 = ((data[23] << 8) | data[22]) * 0.0008336 - 0.010;
 
+	PRINTF("SW1_V = %.4f V \n", tm1);
+	PRINTF("SW1_C = %.4f A \n", tm2);
+	PRINTF("SW2_V = %.4f V \n", tm3);
+	PRINTF("SW2_C = %.4f A \n", tm4);
+	PRINTF("SW3_V = %.4f V \n", tm5);
+	PRINTF("SW3_C = %.4f A \n", tm6);
+	PRINTF("SW4_V = %.4f V \n", tm7);
+	PRINTF("SW4_C = %.4f A \n", tm8);
+	PRINTF("SW5_V = %.4f V \n", tm9);
+	PRINTF("SW5_C = %.4f A \n", tm10);
+	PRINTF("SW6_V = %.4f V \n", tm11);
+	PRINTF("SW6_C = %.4f A \n", tm12);
+
+	return;
 }
 
-char telemetry_batteryModule(uint32_t * data)
+void telemetry_batteryModule(uint8_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST) * 4.883;
-	int tm2 = ((data[0] >> 16) & BYTE16CAST) * 4.883;
-	int tm3 = twosComp(data[1] & BYTE16CAST) * 0.26;
-	int tm4 = twosComp((data[1] >> 16) & BYTE16CAST) * 0.1;
-	int tm5 = twosComp(data[2] & BYTE16CAST) * 0.125;
-	int tm6 = ((data[2] >> 16) & BYTE16CAST) * 1.6;
-	int tm7 = (data[3] & BYTE16CAST);
-	int tm8 = ((data[3] >> 16) & BYTE16CAST) * 1.042;
+	PRINTF ("\r\n");
+	PRINTF ("Battery Module Telemetry\r\n");
+	PRINTF ("----------------------------\r\n");
 
-	PRINTF("VBAT_1 = %d mV \n", tm1);
-	PRINTF("VBAT_2 = %d mV \n", tm2);
-	PRINTF("IBAT = %d mA \n", tm3);
-	PRINTF("BAT_TEMP = %d C \n", tm4);
-	PRINTF("PCB_TEMP = %d C \n", tm5);
-	PRINTF("Available Capacity = %d mAh \n", tm6);
-	PRINTF("Remaining Capacity = %d %% \n", tm7);
-	PRINTF("Accumulated Battery Current = %d mAh \n", tm8);
+	double tm1 = ((data[1] << 8) | data[0]) * 4.883;
+	double tm2 = ((data[3] << 8) | data[2]) * 4.883;
+//	PRINTF ("Before: %4x\r\n", (data[5] << 8) | data[4]);
+//	PRINTF ("Complement: %u\r\n", ~(signed)((data[5] << 8) | data[4]));
+//	PRINTF ("After: %4x \r\n", twosComp((signed)((data[5] << 8) | data[4])));
+	double tm3 = twosComp((data[5] << 8) | data[4]) * 0.26;
+	double tm4 = twosComp((data[7] << 8) | data[6]) * 0.1;
+	double tm5 = twosComp((data[9] << 8) | data[8]) * 0.125;
+	double tm6 = ((data[11] << 8) | data[10]) * 1.6;
+	double tm7 = ((data[13] << 8) | data[12]);
+	double tm8 = ((data[15] << 8) | data[14]) * 1.042;
 
+	PRINTF("VBAT_1 = %.4f mV \n", tm1);
+	PRINTF("VBAT_2 = %.4f mV \n", tm2);
+	PRINTF("IBAT = %.4f mA \n", tm3);
+	PRINTF("BAT_TEMP = %.4f C \n", tm4);
+	PRINTF("PCB_TEMP = %.4f C \n", tm5);
+	PRINTF("Available Capacity = %.4f mAh \n", tm6);
+	PRINTF("Remaining Capacity = %.4f %% \n", tm7);
+	PRINTF("Accumulated Battery Current = %.4f mAh \n", tm8);
+
+	return;
 }
 
-char telemetry_systemData(uint32_t * data)
+void telemetry_systemData(uint8_t * data)
 {
-	int tm1 = (data[0] & BYTE16CAST);
-	int tm2 = ((data[0] >> 16) & BYTE16CAST);
-	int tm3 = (data[1] & BYTE16CAST);
-	int tm4 = ((data[1] >> 16) & BYTE16CAST);
-	int tm5 = (data[2] & BYTE16CAST);
-	int tm6 = ((data[2] >> 16) & BYTE16CAST);
+	PRINTF ("\r\n");
+	PRINTF ("System Data Telemetry\r\n");
+	PRINTF ("-------------------------\r\n");
+
+	int tm1 = ((data[1] << 8) | data[0]);
+	int tm2 = ((data[3] << 8) | data[2]);
+	int tm3 = ((data[5] << 8) | data[4]);
+	int tm4 = ((data[7] << 8) | data[6]);
+	int tm5 = ((data[9] << 8) | data[8]);
+	int tm6 = ((data[11] << 8) | data[10]);
 
 	PRINTF("Watchdog period = %d \n", tm1);
 	PRINTF("PDMs Initial State = %d \n", tm2);
 	PRINTF("PDMs State = %d \n", tm3);
 	PRINTF("Housekeeping period = %d \n", tm4);
 	if (tm5 == 0) {
-		PRINTF("Battery Heater Status = OFF \n", tm5);
+		PRINTF("Battery Heater Status = OFF \n\r");
 	}
 	else {
-		PRINTF("Battery Heater Status = ON \n", tm5);
+		PRINTF("Battery Heater Status = ON \n\r");
 
 	}
-	PRINTF("Safety hazard environment = %d \n", tm6);
+	PRINTF("Safety hazard environment = %d \n\r", tm6);
+
+	return;
 }
 
 

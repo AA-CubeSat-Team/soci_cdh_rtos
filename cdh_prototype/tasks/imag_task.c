@@ -1,12 +1,15 @@
 //TODO: tell Lachlan to extern the recv_buff in wrapper.
 //TODO:
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
-
+#include "FreeRTOS.h"
+#include "task.h"
 #include "img_wrap.h"
 #include "imag_task.h"
+#include "fsl_common.h"
 #include "semc_sdram.h"
+#include "com_protocol_helper.h"
 
-static uint8_t recv_buffer[5]; // Receive 5 bytes
+//static uint8_t recv_buffer[5]; // Receive 5 bytes
 
 TaskHandle_t TaskHandler_img;
 extern uint8_t IMG_command; //TODO: what does img command look like?
@@ -19,16 +22,16 @@ void imag_task(void *pvParameters)
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 
     // sdram example
-    memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
-    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
-    SEMC_SDRAM_Read(0, 10, 1);
-    memset(sdram_writeBuffer, 1, sizeof(sdram_writeBuffer));
-    SEMC_SDRAM_Write(0, 10, 1);
-    SEMC_SDRAM_Read(0, 10, 1);
-	for (int i = 0; i < 10; i++) {
-		//read into the readBuffer to access later
-		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
-	}
+//    memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
+//    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
+//    SEMC_SDRAM_Read(0, 10, 1);
+//    memset(sdram_writeBuffer, 1, sizeof(sdram_writeBuffer));
+//    SEMC_SDRAM_Write(0, 10, 1);
+//    SEMC_SDRAM_Read(0, 10, 1);
+//	for (int i = 0; i < 10; i++) {
+//		//read into the readBuffer to access later
+//		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
+//	}
 #if IMAG_ENABLE
 	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();

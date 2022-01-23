@@ -1,17 +1,5 @@
-/* FreeRTOS kernel includes. */
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "timers.h"
-#include "clock_config.h"
+#define IDLE_ENABLE	0
 
-/* Freescale includes. */
-#include "fsl_device_registers.h"
-#include "fsl_debug_console.h"
-#include "board.h"
-#include "lpm.h"
-
-#define IDLE_ENABLE	1
 
 /*******************************************************************************
  * Variable Declarations

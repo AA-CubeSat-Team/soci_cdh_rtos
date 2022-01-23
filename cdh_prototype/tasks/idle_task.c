@@ -79,7 +79,7 @@ static void obc_reset(){
 
 /* Reset the priority of the task */
 void resetPriority(TaskHandle_t handler) {
-	vTaskPrioritySet(handler, 0);
+	vTaskPrioritySet(handler, 1);
 }
 
 /* Check if the task is suspended or not, if not, suspend it. */
@@ -101,17 +101,16 @@ void resumeTask (TaskHandle_t handler) {
 /* Step 1. Commission Phase I Checks */
 static void idle_phase1() {
 	PRINTF("idle: Commission Phase 1 Checks\r\n");
-	while (!g_epsHealthy || !g_obcHealthy){
-		g_epsHealthy = true; //eps_healthcheck(); //TODO: replace with whatever function eps is using to healthcheck
-		g_obcHealthy = obc_healthcheck();
-		if (!g_epsHealthy){
-			//i2c_eps_manualReset();
-		}
-		if (!g_obcHealthy){
-			obc_reset();
-		}
+	g_epsHealthy = eps_healthcheck();
+	g_obcHealthy = obc_healthcheck();
+	if (!g_epsHealthy){
+		PRINTF ("Resetting EPS!\r\n");
+		i2c_eps_manualReset();
+		idle_phase1();
 	}
-
+	if (!g_obcHealthy){
+		obc_reset();
+	}
 }
 
 //extern lpm_power_mode_t s_targetPowerMode;
@@ -206,36 +205,34 @@ static void UpdateFlags() {
 
 /* Step 2. Get the battery voltage and decides the appropriate pdm */
 static void idle_phase2() {
+
 	/* Battery Voltage Check */
 	PRINTF("idle: Get Voltage from EPS\r\n");
-	// TODO: Create a task to get the voltage from EPS system through I2C Communication
-	//double voltage = i2c_eps_getBatteryLevel();
+	voltage = i2c_eps_getBatteryLevel();
+	PRINTF ("Battery Voltage = %.4f\r\n", voltage);
+
 	if (voltage <= 7.4 ) // CRITICALLY LOW POWER
 	{
 		operatingMode = CRIT_LOW_POWER;
-//		i2c_eps_switchOnOffPdms(PDM_OBC);
+		i2c_eps_switchOnOffPdms(PDM_OBC);
 		/*task control*/
-//		suspendTask(TaskHandler_com);
-//		suspendTask(TaskHandler_img);
-		voltage = 8.0;
+		//suspendTask(TaskHandler_com); // do not turn off COM task, need to keep sending beacons
+		suspendTask(TaskHandler_img);
 	}
 	else if (voltage <= 7.9 && voltage > 7.4) // LOW POWER
 	{
 		operatingMode = LOW_POWER;
-		//i2c_eps_switchOnOffPdms(PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
+		i2c_eps_switchOnOffPdms(PDM6_RWA | PDM8_COM | PDM9_SEN | PDM_OBC); //not mentioned PDMs are automatically set 0 in the bits
 		/*task control*/
-//		suspendTask(TaskHandler_img);
-//		resumeTask(TaskHandler_com);
-		voltage = 8.0;
+		suspendTask(TaskHandler_img);
+		//resumeTask(TaskHandler_com);
 	}
 	else // Normal Mode: 7.9 < voltage < 8.26
 	{
 		operatingMode = NOMINAL_POWER;
-		//i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
-//		resumeTask(TaskHandler_com);
-//		resumeTask(TaskHandler_img);
-		voltage = 8.0;
-		//GNC task will always be active
+		i2c_eps_switchOnOffPdms(PDM5_MTQ | PDM6_RWA | PDM7_IMG | PDM8_COM | PDM9_SEN | PDM_OBC);
+		//resumeTask(TaskHandler_com);
+		resumeTask(TaskHandler_img);
 	}
 	setMCUPowerMode();
 	APP_PrintRunFrequency(0);
@@ -280,22 +277,12 @@ void idle_task(void *pvParameters) {
 	/*initial boot-up operations, IDLE remains the highest priority*/
 	operatingMode = CRIT_LOW_POWER;
     LPM_Init(s_curRunMode);
-	//i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
+	i2c_eps_switchOnOffPdms(PDM_OBC); //ensures only OBC is turned on, the rest are off
 	idle_phase1();
 	//no subsystem healthcheck in CLPM
-//	vTaskSuspend(TaskHandler_com); //suspend inactive tasks in CLPM mode
-//	vTaskSuspend(TaskHandler_img);
+	vTaskSuspend(TaskHandler_img);
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
-	voltage = 8;
-
-	uint32_t i = 0;
-
-	/* Set up i2c master to send data to slave */
-	for (i = 0; i < 32; i++)
-	{
-		i2c1_tx_buff[i] = i;
-	}
 
 	//at this point, GNC will take over and run init and do main task for once, come back to IDLE to run its main task (check voltages)
 	for (;;) {
@@ -303,17 +290,6 @@ void idle_task(void *pvParameters) {
 		idle_phase1(); //Commission Phase I Checks
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem
-		PRINTF ("Send I2C Data\r\n");
-
-		/*Test code for I2C1*/
-
-		I2C_send(&LPI2C1_masterHandle, 0x7E, 0, i2c1_tx_buff, (32));
-		I2C_request(&LPI2C1_masterHandle, 0x7E, 0, i2c1_rx_buff, (32));
-
-		/*Test code for I2C2*/
-
-//		I2C_send(&LPI2C2_masterHandle, 0x7E, 0, i2c1_tx_buff, (32));
-//		I2C_request(&LPI2C2_masterHandle, 0x7E, 0, i2c1_rx_buff, (32));
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}

@@ -1,18 +1,12 @@
 
 // rwa_wrap.c
 
-
 #include "rwa_wrap.h"
 #if ARDUINO_CODE
 #include <Arduino.h>
 #endif
 
-
-#if WHEELS_INDEPANDANT
-rw_data_t rw1, rw2, rw3, rw4;    // saving SRAM
-#else
-rw_data rw1;
-#endif
+rw_data_t rw0, rw1, rw2, rw3;    // saving SRAM
 
 void reqPacketProcess(uint8_t *req_payload_pt, uint8_t *req_packet_pt, uint8_t *req_payload_len_pt, uint8_t *req_packet_len_pt) { // --- --- --- --- --- --- --- --- ---
   uint8_t req_array_A[MAX_REQ_PACKET] = {0}; // need to allocate max possible size of uint8_t
@@ -157,10 +151,9 @@ void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t 
   SPI.transfer(tx_buffer, *req_packet_len_pt);
   digitalWrite(SS_id, HIGH);
   SPI.endTransaction();
-
-  // DevBoard SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
+  // FreeRtos SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
   #else
-  SPI_transfer(tx_buffer, rx_buffer, req_packet_len_pt, SS_id);     // pcsPin for req_packet must be a struct defined in the .h file
+  SPI_transfer(tx_buffer, rx_buffer, *req_packet_len_pt, SS_id);
   #endif
 }
 
@@ -171,7 +164,7 @@ void rplSpiTransfer(uint8_t *rpl_packet_pt, uint8_t *rpl_packet_len_pt, uint8_t 
 
   for (int ii = 0; ii < MAX_RPL_PACKET; ii++) {
     rx_buffer[ii] = 0x7E;
-    tx_buffer[ii] = 0x7B;
+    tx_buffer[ii] = 0x7E;
   }
 
   //  Arduino SPI Driver format
@@ -182,7 +175,7 @@ void rplSpiTransfer(uint8_t *rpl_packet_pt, uint8_t *rpl_packet_len_pt, uint8_t 
   digitalWrite(SS_id, HIGH);
   SPI.endTransaction();
   #else
-  SPI_transfer(tx_buffer, rx_buffer, rpl_packet_len_pt, SS_id);
+  SPI_transfer(tx_buffer, rx_buffer, *rpl_packet_len_pt, SS_id);
   #endif
 
   for (int ii = 0; ii < *rpl_packet_len_pt; ii++) {
@@ -394,7 +387,6 @@ void rplPayloadRead_cmd10(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, 
   rwX_pt->result = *(rpl_payload_pt+1);
 }
 
-
 void reqPayloadWriteSwitcher(uint8_t com_id, uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt){
   switch (com_id){
     case 4:
@@ -429,55 +421,37 @@ void rplPayloadReadSwitcher(uint8_t com_id, uint8_t *rpl_payload_pt, uint8_t *rp
   }
 }
 
-void commandAll(uint8_t com_id) {
+void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id) {
 
-  uint8_t req_payload_rw1[MAX_REQ_PAYLOAD] = {0};
-  uint8_t req_payload_len_rw1 = MAX_REQ_PAYLOAD;
-  uint8_t req_packet_rw1[MAX_REQ_PACKET] = {0};
-  uint8_t req_packet_len_rw1 = MAX_REQ_PACKET;
+  uint8_t req_payload_rwX[MAX_REQ_PAYLOAD] = {0};
+  uint8_t req_payload_len_rwX = MAX_REQ_PAYLOAD;
+  uint8_t req_packet_rwX[MAX_REQ_PACKET] = {0};
+  uint8_t req_packet_len_rwX = MAX_REQ_PACKET;
 
-  uint8_t req_payload_rw2[MAX_REQ_PAYLOAD] = {0};
-  uint8_t req_payload_len_rw2 = MAX_REQ_PAYLOAD;
-  uint8_t req_packet_rw2[MAX_REQ_PACKET] = {0};
-  uint8_t req_packet_len_rw2 = MAX_REQ_PACKET;
-
-  uint8_t req_payload_rw3[MAX_REQ_PAYLOAD] = {0};
-  uint8_t req_payload_len_rw3 = MAX_REQ_PAYLOAD;
-  uint8_t req_packet_rw3[MAX_REQ_PACKET] = {0};
-  uint8_t req_packet_len_rw3 = MAX_REQ_PACKET;
-
-  uint8_t req_payload_rw4[MAX_REQ_PAYLOAD] = {0};
-  uint8_t req_payload_len_rw4 = MAX_REQ_PAYLOAD;
-  uint8_t req_packet_rw4[MAX_REQ_PACKET] = {0};
-  uint8_t req_packet_len_rw4 = MAX_REQ_PACKET;
-
-  uint8_t rpl_payload_rw1[MAX_RPL_PAYLOAD] = {0};
-  uint8_t rpl_payload_len_rw1 = MAX_RPL_PAYLOAD;
-  uint8_t rpl_packet_rw1[MAX_RPL_PACKET] = {0};
-  uint8_t rpl_packet_len_rw1 = MAX_RPL_PACKET;
-
-  uint8_t rpl_payload_rw2[MAX_RPL_PAYLOAD] = {0};
-  uint8_t rpl_payload_len_rw2 = MAX_RPL_PAYLOAD;
-  uint8_t rpl_packet_rw2[MAX_RPL_PACKET] = {0};
-  uint8_t rpl_packet_len_rw2 = MAX_RPL_PACKET;
-
-  uint8_t rpl_payload_rw3[MAX_RPL_PAYLOAD] = {0};
-  uint8_t rpl_payload_len_rw3 = MAX_RPL_PAYLOAD;
-  uint8_t rpl_packet_rw3[MAX_RPL_PACKET] = {0};
-  uint8_t rpl_packet_len_rw3 = MAX_RPL_PACKET;
-
-  uint8_t rpl_payload_rw4[MAX_RPL_PAYLOAD] = {0};
-  uint8_t rpl_payload_len_rw4 = MAX_RPL_PAYLOAD;
-  uint8_t rpl_packet_rw4[MAX_RPL_PACKET] = {0};
-  uint8_t rpl_packet_len_rw4 = MAX_RPL_PACKET;
+  uint8_t rpl_payload_rwX[MAX_RPL_PAYLOAD] = {0};
+  uint8_t rpl_payload_len_rwX = MAX_RPL_PAYLOAD;
+  uint8_t rpl_packet_rwX[MAX_RPL_PACKET] = {0};
+  uint8_t rpl_packet_len_rwX = MAX_RPL_PACKET;
 
   int rpl_data_len;
 
   switch (com_id){
+    case 2:
+      rpl_data_len = 1;
+      break;
+    case 3:
+      rpl_data_len = 0;
+      break;
     case 4:
       rpl_data_len = 10;
       break;
+    case 5:
+      rpl_data_len = 0;
+      break;
     case 6:
+      rpl_data_len = 0;
+      break;
+    case 7:
       rpl_data_len = 0;
       break;
     case 10:
@@ -485,57 +459,52 @@ void commandAll(uint8_t com_id) {
       break;
   }
 
-  rpl_packet_len_rw1 = 2*(rpl_data_len + 4) + 3;
-  rpl_packet_len_rw2 = 2*(rpl_data_len + 4) + 3;
-  rpl_packet_len_rw3 = 2*(rpl_data_len + 4) + 3;
-  rpl_packet_len_rw4 = 2*(rpl_data_len + 4) + 3;
+  rpl_packet_len_rwX = 2*(rpl_data_len + 4) + 3;
 
-  // rw1
-  reqPayloadWriteSwitcher(com_id, &req_payload_rw1[0], &req_payload_len_rw1, &rw1);
-  reqPacketProcess(&req_payload_rw1[0], &req_packet_rw1[0], &req_payload_len_rw1, &req_packet_len_rw1);
-  reqSpiTransfer(&req_packet_rw1[0], &req_packet_len_rw1, SS1);
-
-  #if WHEELS_INDEPANDANT
-  // rw2
-  reqPayloadWriteSwitcher(com_id, &req_payload_rw2[0], &req_payload_len_rw2, &rw2);
-  reqPacketProcess(&req_payload_rw2[0], &req_packet_rw2[0], &req_payload_len_rw2, &req_packet_len_rw2);
-  reqSpiTransfer(&req_packet_rw2[0], &req_packet_len_rw2, SS2);
-
-  // rw3
-  reqPayloadWriteSwitcher(com_id, &req_payload_rw3[0], &req_payload_len_rw3, &rw3);
-  reqPacketProcess(&req_payload_rw1[0], &req_packet_rw3[0], &req_payload_len_rw3, &req_packet_len_rw3);
-  reqSpiTransfer(&req_packet_rw3[0], &req_packet_len_rw3, SS3);
-
-  // rw4
-  reqPayloadWriteSwitcher(com_id, &req_payload_rw4[0], &req_payload_len_rw4, &rw4);
-  reqPacketProcess(&req_payload_rw4[0], &req_packet_rw4[0], &req_payload_len_rw4, &req_packet_len_rw4);
-  reqSpiTransfer(&req_packet_rw4[0], &req_packet_len_rw4, SS4);
-  #endif
+  reqPayloadWriteSwitcher(com_id, &req_payload_rwX[0], &req_payload_len_rwX, rwX_pt);
+  reqPacketProcess(&req_payload_rwX[0], &req_packet_rwX[0], &req_payload_len_rwX, &req_packet_len_rwX);
+  reqSpiTransfer(&req_packet_rwX[0], &req_packet_len_rwX, SS_id);
 
   #if ARDUINO_CODE
   delay(SPI_TIMEOUT);
   #endif
 
-  // rw1
-  rplSpiTransfer(&rpl_packet_rw1[0], &rpl_packet_len_rw1, SS1);
-  rplPacketProcess(&rpl_payload_rw1[0], &rpl_packet_rw1[0], &rpl_payload_len_rw1, &rpl_packet_len_rw1);
-  rplPayloadReadSwitcher(com_id, &rpl_payload_rw1[0], &rpl_payload_len_rw1, &rw1);
+  rplSpiTransfer(&rpl_packet_rwX[0], &rpl_packet_len_rwX, SS_id);
+  rplPacketProcess(&rpl_payload_rwX[0], &rpl_packet_rwX[0], &rpl_payload_len_rwX, &rpl_packet_len_rwX);
+  rplPayloadReadSwitcher(com_id, &rpl_payload_rwX[0], &rpl_payload_len_rwX, rwX_pt);
 
-  #if WHEELS_INDEPANDANT
-  // rw2
-  rplSpiTransfer(&rpl_packet_rw2[0], &rpl_packet_len_rw2, SS2);
-  rplPacketProcess(&rpl_payload_rw2[0], &rpl_packet_rw2[0], &rpl_payload_len_rw2, &rpl_packet_len_rw2);
-  rplPayloadReadSwitcher(com_id, &rpl_payload_rw2[0], &rpl_payload_len_rw2, &rw2);
-
-  // rw3
-  rplSpiTransfer(&rpl_packet_rw3[0], &rpl_packet_len_rw3, SS3);
-  rplPacketProcess(&rpl_payload_rw3[0], &rpl_packet_rw3[0], &rpl_payload_len_rw3, &rpl_packet_len_rw3);
-  rplPayloadReadSwitcher(com_id, &rpl_payload_rw3[0], &rpl_payload_len_rw3, &rw3);
-
-  // rw4
-  rplSpiTransfer(&rpl_packet_rw4[0], &rpl_packet_len_rw4, SS4);
-  rplPacketProcess(&rpl_payload_rw4[0], &rpl_packet_rw4[0], &rpl_payload_len_rw4, &rpl_packet_len_rw4);
-  rplPayloadReadSwitcher(com_id, &rpl_payload_rw4[0], &rpl_payload_len_rw4, &rw4);
-  #endif
+//            if (debug_mode == 1){
+//                      Serial.print("req_packet_rwX:\t\t");
+//                      for (uint8_t yy = 0; yy < req_packet_len_rwX; yy++) {
+//                        Serial.print(req_packet_rw1[yy], HEX);
+//                        Serial.print("\t");
+//                      }
+//                      Serial.println(" ");
+//                      Serial.print("rpl_packet_rwX:\t\t");
+//                      for (uint8_t yy = 0; yy < rpl_packet_len_rwX; yy++) {
+//                        Serial.print(rpl_packet_rw1[yy], HEX);
+//                        Serial.print("\t");
+//                      }
+//                      Serial.println(" ");
+//                      Serial.println(" ");
+//                    }
+//            }
 }
+
+void statusCheck(struct rw_data *rwX_pt, uint8_t SS_id) {
+  commandRW(4, rwX_pt, SS_id);
+  printf("\n RW staus is %d \n", rwX_pt->state);
+  printf("\n RW speed is %d \n", rwX_pt->currSpeed);
+
+  if (rwX_pt->state == 0) {
+    // error present
+    // Initialize RWA, return to nominal state
+    commandRW(5, rwX_pt, SS_id);
+  }
+  if (rwX_pt->lastResetStatus != 6 && rwX_pt->lastResetStatus != 7) {
+    commandRW(3, rwX_pt, SS_id);
+    commandRW(7, rwX_pt, SS_id);
+  }
+}
+
 
