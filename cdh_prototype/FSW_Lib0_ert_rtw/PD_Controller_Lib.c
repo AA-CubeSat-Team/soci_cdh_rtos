@@ -1,0 +1,52 @@
+/*
+ * Academic License - for use in teaching, academic research, and meeting
+ * course requirements at degree granting institutions only.  Not for
+ * government, commercial, or other organizational use.
+ *
+ * File: PD_Controller_Lib.c
+ *
+ * Code generated for Simulink model 'FSW_Lib0'.
+ *
+ * Model version                  : 1.374
+ * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
+ * C/C++ source code generated on : Fri Jan 14 15:17:15 2022
+ *
+ * Target selection: ert.tlc
+ * Embedded hardware selection: ARM Compatible->ARM Cortex
+ * Code generation objectives:
+ *    1. Execution efficiency
+ *    2. RAM efficiency
+ * Validation result: Not run
+ */
+
+#include "PD_Controller_Lib.h"
+
+/* Include model header file for global data */
+#include "FSW_Lib0.h"
+#include "FSW_Lib0_private.h"
+
+/*
+ * Output and update for atomic system:
+ *    '<S235>/PD_Controller_Lib'
+ *    '<S237>/PD_Controller_Lib'
+ */
+void PD_Controller_Lib(const real_T rtu_quat_err[4], const real_T
+  rtu_w_err_radps[3], real_T rty_cmd_Nm[3])
+{
+  /* Sum: '<S247>/Sum' incorporates:
+   *  Gain: '<S247>/Kp'
+   *  Gain: '<S247>/kd'
+   */
+  rty_cmd_Nm[0] = rtP.fswParams.controllers.tracking.Kp[0] * rtu_quat_err[1] -
+    rtP.fswParams.controllers.tracking.Kd[0] * rtu_w_err_radps[0];
+  rty_cmd_Nm[1] = rtP.fswParams.controllers.tracking.Kp[1] * rtu_quat_err[2] -
+    rtP.fswParams.controllers.tracking.Kd[1] * rtu_w_err_radps[1];
+  rty_cmd_Nm[2] = rtP.fswParams.controllers.tracking.Kp[2] * rtu_quat_err[3] -
+    rtP.fswParams.controllers.tracking.Kd[2] * rtu_w_err_radps[2];
+}
+
+/*
+ * File trailer for generated code.
+ *
+ * [EOF]
+ */
