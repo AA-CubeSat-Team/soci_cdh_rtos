@@ -153,7 +153,7 @@ void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t 
   SPI.endTransaction();
   // FreeRtos SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
   #else
-  SPI_transfer(tx_buffer, rx_buffer, *req_packet_len_pt, SS_id);
+  SPI_transfer(tx_buffer, rx_buffer, *req_packet_len_pt, SS_id); // to-do list: the parameter is passed in wrong
   #endif
 }
 

@@ -1,6 +1,5 @@
 #define IDLE_ENABLE	0
 
-
 /*******************************************************************************
  * Variable Declarations
  ******************************************************************************/
@@ -20,7 +19,6 @@ extern bool rwaHealthy;
 extern bool imgHealthy;
 
 extern int operatingMode;
-extern TaskHandle_t TaskHandler_idle;
 
 
 

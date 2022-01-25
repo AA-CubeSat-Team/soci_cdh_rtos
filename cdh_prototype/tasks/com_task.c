@@ -20,6 +20,8 @@ extern bool i2c_com_antennaDeployed;
 
 void com_task(void *pvParameters)
 {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	PRINTF("COM task initialization");
 #if COM_WRAP_DEBUG
 	// Delay to test "soft-break" into command mode via com_init function
 	// delay(1);
@@ -65,14 +67,10 @@ void com_task(void *pvParameters)
 	//PRINTF("\n");
 
 #else
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-
     // Moved uart initialization up so both if/else statements can use
 #endif
 
 #if COM_ENABLE
-		PRINTF("\ninitialize comm.\r\n");
 		com_init();
 
 		/***deploy antenna****/
@@ -95,10 +93,9 @@ void com_task(void *pvParameters)
 		}
 		/****end of deployment of antenna****/
 #endif
-
+	vTaskDelay(xDelayms);
 	for (;;) {
-		xLastWakeTime = xTaskGetTickCount();
-
+		PRINTF("COM TASK loop\r\n");
 #if COM_ENABLE
 			com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
 			if (command_request){
@@ -116,10 +113,10 @@ void com_task(void *pvParameters)
 			if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
 				com_sendBeacons();
 			}
-			vTaskDelayUntil(&xLastWakeTime, xDelayms);
+			vTaskDelay(xDelayms);
 	}
 #else
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		vTaskDelay(xDelayms);
 	}
 #endif
 }

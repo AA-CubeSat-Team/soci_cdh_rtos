@@ -5,6 +5,8 @@
  *      Author: joshperry
  */
 
+// to-do list: update the i2c function with the function from comm_helper inside the source folder
+
 #include "act_feedback.h"
 
 

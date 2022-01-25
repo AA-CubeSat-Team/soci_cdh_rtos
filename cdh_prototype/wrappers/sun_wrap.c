@@ -1,4 +1,5 @@
 #include "sun_wrap.h"
+#include "fsl_debug_console.h"
 
 const uint8_t anglesComm[4] = {0x60, 0x04, 0x01, 0x05};
 const TickType_t xDelay10ms = pdMS_TO_TICKS(10);
@@ -63,7 +64,7 @@ void getSunAngles(sun_t * Sun){
    #else
       int error;
       error = LPUART_RTOS_Send(&LPUART3_rtos_handle, &anglesComm, sizeof(anglesComm));
-      printf("sending command\n");
+      PRINTF("sending command\n");
       if(error != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;

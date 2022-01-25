@@ -1,3 +1,7 @@
+// Name: Jay Lee
+// Notes: simple GNC build integrated
+// TO-DO list: Make sure GNC task runs every 250 ms
+
 #include "peripherals.h"
 #include "gyro_wrap.h"
 #include "gnc_task.h"
@@ -8,39 +12,72 @@
 #include "fsl_debug_console.h"
 #include "com_protocol_helper.h"
 
+//GNC BUILD include
+#include <stddef.h>
+#include <stdio.h>                     /* This ert_main.c example uses printf/fflush */
+#include "FSW_0123.h"                  /* Model's header file */
+#include "rtwtypes.h"
+
 extern bool g_senActive, g_rwaActive, g_mtqActive;
+
+void rt_OneStep(void)
+{
+  static boolean_T OverrunFlag = false;
+
+  /* Disable interrupts here */
+
+  /* Check for overrun */
+  if (OverrunFlag) {
+    rtmSetErrorStatus(rtM, "Overrun");
+    return;
+  }
+
+  OverrunFlag = true;
+
+  /* Save FPU context here (if necessary) */
+  /* Re-enable timer or interrupt here */
+  /* Set model inputs here */
+
+  /* Step the model */
+  FSW_0123_step();
+
+  /* Get model outputs here */
+
+  /* Indicate task complete */
+  OverrunFlag = false;
+
+  /* Disable interrupts here */
+  /* Restore FPU context here (if necessary) */
+  /* Enable interrupts here */
+}
 
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
 {
-	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	const TickType_t xDelayms = pdMS_TO_TICKS( 250 ); //delay 250 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+	PRINTF("initialize gnc.\r\n");
 	SPI_GPIO_init();
-
+	FSW_0123_initialize();
 #if GNC_ENABLE
-	printf("\ninitialize gnc.\r\n");
 	/* gnc, sens, act initialization */
 //	sens_init();
 //  act_init();
-//	FSW_Lib_initialize(); //GNC initialization
+	/* Initialize model */
+	FSW_0123_initialize();
 #endif
+	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	for (;;) {
 		xLastWakeTime = xTaskGetTickCount();
+		PRINTF("GNC task loop\r\n");
+		rt_OneStep();
 #if GNC_ENABLE
 		xLastWakeTime = xTaskGetTickCount();
 		printf("\nGNC TASK START.\r\n");
 
-		getSunAngles(&Sun1);
-
-		int a1 = (int) (Sun1.angles[0]*1000);
-		int a2 = (int) (Sun1.angles[1]*1000);
-		printf("\n");
-		printf("a1: %d\n", a1);
-		printf("a2: %d\n", a2);
-
 		/* read sensors and actuator measurements to sensor_bus */
 		if (g_senActive) {
-//			sens_readSun();
+//			sens_readSun(); //getSunAngles(&Sun1);
 //			sens_readMag();
 //			sens_readPhd();
 //			sens_readGyr();
@@ -53,7 +90,7 @@ void gnc_task(void *pvParameters)
 		}
 
 		/* call GNC rt_OneStep() */
-//		 rt_OneStep(); // TODO: enable rt_OneStep() after include
+		 rt_OneStep();
 		/* write to actuators */
 		if (g_rwaActive) {
 //			writeRWA();

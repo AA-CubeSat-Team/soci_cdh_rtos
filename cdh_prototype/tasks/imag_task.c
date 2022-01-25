@@ -20,7 +20,7 @@ void imag_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
-
+	PRINTF("\ninitialize imag.\r\n");
     // sdram example
 //    memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
 //    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
@@ -33,11 +33,10 @@ void imag_task(void *pvParameters)
 //		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
 //	}
 #if IMAG_ENABLE
-	PRINTF("\ninitialize imag.\r\n");
 //	imag_init();
 #endif
 	for (;;) {
-		xLastWakeTime = xTaskGetTickCount();
+		PRINTF("imag task loop\r\n");
 #if IMAG_ENABLE
 		PRINTF("\nimag work\r\n");
 		/* sending commands to IMG */
@@ -82,7 +81,7 @@ void imag_task(void *pvParameters)
 		vTaskSuspend( NULL );
 	}
 #else
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		vTaskDelay(xDelayms);
 	}
 #endif
 }

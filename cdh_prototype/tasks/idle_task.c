@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "fsl_debug_console.h"
 #include "idle_task.h"
 #include "eps_wrap.h"
 #include "sen_wrap.h"
@@ -43,8 +44,8 @@ static void UpdateFlags();
 static void idle_phase2();
 static void idle_phase3();
 
-
 TaskHandle_t TaskHandler_idle;
+extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_img;
 extern TaskHandle_t TaskHandler_com;
 
@@ -265,7 +266,7 @@ static void idle_phase3() {
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+	PRINTF("idle task initialization");
 #if IDLE_ENABLE
 	//TODO: (1) when booting up, only turn on PDM of GNC (i.e. CLPM mode, no subsystem should be init already).
 	//			(1-1) do health checks in CLPM mode, init GNC and run GNC once.
@@ -294,6 +295,11 @@ void idle_task(void *pvParameters) {
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
-	vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
+	vTaskDelay(xDelayms);
+	for(;;){
+		PRINTF("idle task loop\r\n");
+		vTaskDelay(xDelayms);
+	}
 #endif
 }
