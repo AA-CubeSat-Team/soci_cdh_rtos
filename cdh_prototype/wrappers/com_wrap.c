@@ -40,6 +40,37 @@ uint8_t rcv_buffer[I2C_COM_RX_SIZE];  //error thrown here for some reason?
 static bool i2c_com_antennaDeployed;
 static uint8_t algorithmOne[] = {0x00, 0x00, 0x00, 0x1F};
 static uint8_t algorithmTwo[] = {0x00, 0x00, 0x00, 0x2F};
+
+// various deployment combinations (lines 45-71)
+static uint8_t interuptCommand[] = {0x00, 0x00, 0x00, 0x00};
+
+// using algorithm 1
+static uint8_t alg1Ant1 = {0x00, 0x00, 0x00, 0x11};
+static uint8_t alg1Ant2 = {0x00, 0x00, 0x00, 0x12};
+static uint8_t alg1Ant3 = {0x00, 0x00, 0x00, 0x14};
+static uint8_t alg1Ant4 = {0x00, 0x00, 0x00, 0x18};
+static uint8_t alg1Ant1_2 = {0x00, 0x00, 0x00, 0x13};
+static uint8_t alg1Ant1_3 = {0x00, 0x00, 0x00, 0x15};
+static uint8_t alg1Ant1_4 = {0x00, 0x00, 0x00, 0x19};
+static uint8_t alg1Ant2_3 = {0x00, 0x00, 0x00, 0x16};
+static uint8_t alg1Ant3_4 = {0x00, 0x00, 0x00, 0x1C};
+static uint8_t alg1Ant1_2_3 = {0x00, 0x00, 0x00, 0x17};
+static uint8_t alg1Ant2_3_4 = {0x00, 0x00, 0x00, 0x1E};
+
+// using algorithm 2
+static uint8_t alg2Ant1 = {0x00, 0x00, 0x00, 0x21};
+static uint8_t alg2Ant2 = {0x00, 0x00, 0x00, 0x22};
+static uint8_t alg2Ant3= {0x00, 0x00, 0x00, 0x24};
+static uint8_t alg2Ant4 = {0x00, 0x00, 0x00, 0x28};
+static uint8_t alg2Ant1_2 = {0x00, 0x00, 0x00, 0x23};
+static uint8_t alg2Ant1_3 = {0x00, 0x00, 0x00, 0x25};
+static uint8_t alg2Ant1_4 = {0x00, 0x00, 0x00, 0x29};
+static uint8_t alg2Ant2_3 = {0x00, 0x00, 0x00, 0x26};
+static uint8_t alg2Ant3_4 = {0x00, 0x00, 0x00, 0x2C};
+static uint8_t alg2Ant1_2_3 = {0x00, 0x00, 0x00, 0x27};
+static uint8_t alg2Ant2_3_4 = {0x00, 0x00, 0x00, 0x2E};
+
+
 static clock_t deploy_initiated;
 static char START_OF_HEADER = 0x01;
 static bool DEALER= false;
@@ -357,18 +388,28 @@ void com_getCommands() //highest priority
 
 //proper code below:
 
+// test version of deploy antenna so that you can plug in different algorithms
+//void com_deployAntenna(uint8_t * algorithm, size_t algSize)
+//{
+//    I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithm, algSize);
+//	deploy_initiated = clock();
+//    delay(15); //longest time possible to deploy is 15 seconds
+//    PRINTF("Antennas deployed");
+//}
+
 void com_deployAntenna()
 {
 	//using algorithm one as the default
-    I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmOne, sizeof(algorithmOne));
+    I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmOne, sizeof(algorithmOne));
 	deploy_initiated = clock();
     delay(15); //longest time possible to deploy is 15 seconds
+    PRINTF("Antenna deployed");
 }
 
 void com_deployAntenna_algorithmTwo()
 {
 	//TODO: Uncomment this! Comment below statement if testing i2c
-	I2C_send(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
+	I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
 	delay(30); //longest time possible to deploy is 30 seconds
 }
 
@@ -540,13 +581,13 @@ bool com_i2c_checkDeploy() //returns a true if doors are deployed
 {
 	clock_t current_time = clock();
 	//TODO: Uncomment this! Comment below if statement if testing w/o antenna setup
-	if ((current_time-deploy_initiated)/CLOCKS_PER_SECOND < 900) {
-		PRINTF("Not enough time has elapsed for the antenna to deploy\r\n");
-		return false;
-	}
+//	if ((current_time-deploy_initiated)/CLOCKS_PER_SECOND < 900) {
+//		PRINTF("Not enough time has elapsed for the antenna to deploy\r\n");
+//		return false;
+//	}
 	memset(rcv_buffer, 0, sizeof(*rcv_buffer));
     //TODO: Uncomment this! Comment below if statement if testing I2C
-	I2C_request(&LPI2C1_masterHandle, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, rcv_buffer, sizeof(rcv_buffer));
+	I2C_request(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, rcv_buffer, sizeof(rcv_buffer));
 	//Receive 4 bytes back with status of antenna
 	//First byte of rx_buffer is:
 	//MSB LSB D4 D3 D2 D1 0 M S2 S1
@@ -560,28 +601,38 @@ bool com_i2c_checkDeploy() //returns a true if doors are deployed
 	int what_bit_i_am_testing = 0;
 	bool allDeployed = true;
 
+	PRINTF("first byte: %d\n", rcv_buffer[0]);
+
+	// 0x04 is 00000100 in binary, so 1 is in the place of the bit we want and 0 is in every other place
+	if (rcv_buffer[0] & 0x04) {
+		PRINTF("Antenna is in test mode.\n");
+	} else {
+		PRINTF("Antenna is in normal operation mode.\n");
+	}
+
 	while (what_bit_i_am_testing < 8) {
+//		PRINTF("Bit number: %d\n", what_bit_i_am_testing);
 		if(what_bit_i_am_testing > 3) {
 			if (rcv_byteZero & 0x01) {
-				PRINTF("bit %d is 1\n", what_bit_i_am_testing);
+				PRINTF("Door No. %d is open\n", what_bit_i_am_testing - 3);
 	        }
 	        else {
-	        	printf("bit %d is 0\n", what_bit_i_am_testing);
+	        	printf("Door No. %d is not open\n", what_bit_i_am_testing - 3);
 	        	allDeployed = false;
 	        }
 		}
 
-	what_bit_i_am_testing++;
-	rcv_byteZero = rcv_byteZero >> 1;
+	    what_bit_i_am_testing++;
+	    rcv_byteZero = rcv_byteZero >> 1;
 	}
 
     if (allDeployed) {
     	i2c_com_antennaDeployed = true;
         PRINTF("Antenna deployed\r\n");
-    } else {
-    	i2c_com_antennaDeployed = false;
-        PRINTF("Antenna not deployed, trying again.\r\n");
-        com_deployAntenna_algorithmTwo();
+//    } else {
+//    	i2c_com_antennaDeployed = false;
+//        PRINTF("Antenna not deployed, trying again.\r\n");
+//       com_deployAntenna_algorithmTwo();
     }
     return i2c_com_antennaDeployed;
 }

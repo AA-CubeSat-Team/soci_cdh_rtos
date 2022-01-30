@@ -31,22 +31,22 @@ void com_task(void *pvParameters)
 //	com_radio_init();
 
 //	PRINTF("Testing enterCommandMode function:\n");
-	com_enterCommandMode();
-	PRINTF("\n");
+//	com_enterCommandMode();
+//	PRINTF("\n");
 
 //	Testing if sending a command to the radio (non delay dependent) works
-	PRINTF("Testing exitCommandMode function:\n");
-	com_exitCommandMode();
-	PRINTF("\n");
+//	PRINTF("Testing exitCommandMode function:\n");
+//	com_exitCommandMode();
+//	PRINTF("\n");
 
 //	Test sending data to radio in data mode
-	for(int i = 0; i < 10; i++){
-		PRINTF("Testing data mode: \n");
-		testSending();
-		PRINTF("\n");
-	}
-	PRINTF("DONE TESTING SENDING \n");
-	PRINTF("\n");
+//	for(int i = 0; i < 10; i++){
+//		PRINTF("Testing data mode: \n");
+//		testSending();
+//		PRINTF("\n");
+//	}
+//	PRINTF("DONE TESTING SENDING \n");
+//	PRINTF("\n");
 
 //	PRINTF("Testing UART w/ Arduino: \n");
 //	UART_test(&LPUART4_rtos_handle);
@@ -70,9 +70,17 @@ void com_task(void *pvParameters)
 	//com_set_burn_wire2();
 	//PRINTF("\n");
 
-	//PRINTF("Testing checkDeploy()\n");
-	//com_i2c_checkDeploy();
-	//PRINTF("\n");
+	PRINTF("Testing checkDeploy()\n");
+	com_i2c_checkDeploy();
+	PRINTF("\n");
+
+//	PRINTF("Testing deployAntenna()\n");
+//	com_deployAntenna();
+//	PRINTF("\n");
+//
+//	PRINTF("Testing checkDeploy()\n");
+//	com_i2c_checkDeploy();
+//	PRINTF("\n");
 
 #else
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
