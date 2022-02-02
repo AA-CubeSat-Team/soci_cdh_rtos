@@ -17,8 +17,8 @@
 #include "com_task.h"
 #include "clock_config.h"
 
-#define CLOCKS_PER_SECOND 1000000
-
+/* PIT */
+#include "fsl_pit.h"
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
@@ -41,6 +41,12 @@ bool g_imgActive = false;
 extern bool g_comActive;
 extern bool g_imgActive;
 #endif
+
+/* Macros and Global Variable for PIT Timer */
+#define PIT_SOURCE_CLOCK CLOCK_GetFreq(kCLOCK_OscClk) // TO DO: check if the OSC won't turn of during low power mode
+#define DAY_COUNT 5 // (24 * 60)
+uint16_t minute_count;
+
 ////////////////////////////////////////// Testing interrupt handling
 /*UART 1
   Ring buffer for data input and output, input data are saved
@@ -231,28 +237,53 @@ com_state comCurrentState = INIT;
 bool GNC_DetumbleFlag = false; //TODO: verify with GNC
 bool GNC_PassingFlag = false; //TODO: verify with GNC
 
-// TODO: not send if critically low power
-void vBeaconTimerCallback( TimerHandle_t xTimer ) {
-    /* Optionally do something if the pxTimer parameter is NULL. */
-    configASSERT( xTimer );
-
-    PRINTF("Sending Beacon\n");
+// Sends Beacon Message every minute and Healthcheck message everyday
+//TODO: integrate wrapper function to beacon message once COM wrapper is finished
+void PIT_IRQHandler(void)
+{
+    /* Clear interrupt flag.*/
+    PIT_ClearStatusFlags(PIT, kPIT_Chnl_0, kPIT_TimerFlag);
+    PRINTF("Beacon Message\r\n"); // TODO: not send if critically low power
     //com_sendBeacons();
+    minute_count++;
+    if(minute_count == DAY_COUNT) {
+    	minute_count = 0;
+#if !COM_TASK_DEBUG
+    	if(!com_healthcheck()) {
+			PRINTF("Health check failed, resetting radio\n");
+			//com_radio_init();
+			//TODO: double check resetting radio won't cause antenna to disconnect/un-deploy
+    	}
+#endif
+    	PRINTF("healthcheck!\r\n");
+    }
+    __DSB();
 }
 
-void vHealthCheckTimerCallback( TimerHandle_t xTimer ) {
-    /* Optionally do something if the pxTimer parameter is NULL. */
-    configASSERT( xTimer );
+void initialization_PIT()
+{
+    pit_config_t pitConfig; // Structure of initialize PIT
+	minute_count = 0;
+	/*
+	 * pitConfig.enableRunInDebug = false;
+	 */
+	PIT_GetDefaultConfig(&pitConfig);
 
-#if !COM_TASK_DEBUG
-    if(!com_healthcheck()) {
-    	PRINTF("Health check failed, resetting radio\n");
-    	//com_radio_init();
-    	//TODO: double check resetting radio won't cause antenna to disconnect/un-deploy
-    }
-#endif
-    PRINTF("Health check normal\n");
+	/* Init pit module */
+	PIT_Init(PIT, &pitConfig);
 
+	/* Set timer period for channel 0 */
+	PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, USEC_TO_COUNT(1000000U, PIT_SOURCE_CLOCK));
+
+	/* Enable timer interrupts for channel 0 */
+	PIT_EnableInterrupts(PIT, kPIT_Chnl_0, kPIT_TimerInterruptEnable);
+
+	/* Enable at the NVIC */
+	EnableIRQ(PIT_IRQn);
+
+	/* Start channel 0 */
+	PRINTF("\r\nStarting channel No.0 ...");
+	PIT_StartTimer(PIT, kPIT_Chnl_0);
 }
 
 void com_task(void *pvParameters)
@@ -284,9 +315,6 @@ void com_task(void *pvParameters)
 	////// uart 1 initialization END ////////
 	/////////////////////////////////////////
 
-
-
-
 	// Creating TIL and CMD message struct and test using one megId and one message
 	// struct should be global and can be accessed by other subsystem
 	volatile TIL_Prototype til_struct;
@@ -300,7 +328,6 @@ void com_task(void *pvParameters)
 	cmd_struct.new_cmd = false;
 	cmd_struct.cmdID = 0x01;
 	memset( &( cmd_struct.cmd ), 0x01, 8);
-
 
 	if(com_wrap_debug){
 		// Delay to test "soft-break" into command mode via com_init function
@@ -336,56 +363,7 @@ void com_task(void *pvParameters)
 		PRINTF("\n");
 
 	} else {
-
-		const TickType_t minute_delay = pdMS_TO_TICKS( 60 * 1000 );
-
-		TimerHandle_t beaconTimer = xTimerCreate(
-                 /* Just a text name, not used by the RTOS
-                  kernel. */
-                  "Beacon Timer",
-                  /* The timer period in ticks, must be
-                  greater than 0. 60s interval */
-				  minute_delay,
-                  /* The timers will auto-reload themselves
-                  when they expire. */
-                  pdTRUE,
-                  /* The ID is used to store a count of the
-                  number of times the timer has expired, which
-                  is initialised to 0. */
-                  ( void * ) 0,
-                  /* Each timer calls the same callback when
-                  it expires. */
-				  vBeaconTimerCallback
-                );
-
-
-		TimerHandle_t healthCheckTimer = xTimerCreate(
-                 /* Just a text name, not used by the RTOS
-                  kernel. */
-                  "Health Check Timer",
-                  /* The timer period in ticks, must be
-                  greater than 0. 24hr interval */
-				  24 * 60 * minute_delay,
-                  /* The timers will auto-reload themselves
-                  when they expire. */
-                  pdTRUE,
-                  /* The ID is used to store a count of the
-                  number of times the timer has expired, which
-                  is initialised to 0. */
-                  ( void * ) 0,
-                  /* Each timer calls the same callback when
-                  it expires. */
-				  vHealthCheckTimerCallback
-                );
-
-// 24 * 60 * 60 * 1000
-		if (pdPASS != xTimerStart(beaconTimer, 0)) {
-			PRINTF("BEACON timer failed to start");
-		}
-		if (pdPASS != xTimerStart(healthCheckTimer, 0)) {
-			PRINTF("BEACON timer failed to start");
-		}
-
+		initialization_PIT();
 
 		while(1) {
 			TickType_t xLastWakeTime = xTaskGetTickCount();

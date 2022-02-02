@@ -32,3 +32,5 @@ void com_task(void *pvParameters);
 
 /*! @brief Ring buffer size for UART 1 (Unit: Byte). */
 #define UART1_RING_BUFFER_SIZE 16
+
+void initialization_PIT(void);
