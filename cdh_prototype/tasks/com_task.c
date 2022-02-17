@@ -288,33 +288,6 @@ void initialization_PIT()
 
 void com_task(void *pvParameters)
 {
-	/////////////////////////////////////////
-	////// uart 1 initialization START //////
-	/////////////////////////////////////////
-	/*initiate UART 1*/
-//    lpuart_config_t config;
-//    uint16_t tmprxIndex = rxIndex_1;
-//    uint16_t tmptxIndex = txIndex_1;
-//
-//    LPUART_GetDefaultConfig(&config);
-//    config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
-//    config.enableRx     = true;
-//
-//    LPUART_Init(LPUART_1, &config, LPUART1_CLK_FREQ);
-//
-//    /* Send g_tipString out. */
-//    LPUART_WriteBlocking(LPUART_1, UART_1, sizeof(UART_1) / sizeof(UART_1[0]));
-//
-//    /* Enable RX interrupt. */
-//    LPUART_EnableInterrupts(LPUART_1, kLPUART_RxDataRegFullInterruptEnable);
-//    EnableIRQ(UART1_IRQn);
-
-    /*UART 1 initialisation done */
-
-	/////////////////////////////////////////
-	////// uart 1 initialization END ////////
-	/////////////////////////////////////////
-
 	// Creating TIL and CMD message struct and test using one megId and one message
 	// struct should be global and can be accessed by other subsystem
 	volatile TIL_Prototype til_struct;
@@ -364,6 +337,7 @@ void com_task(void *pvParameters)
 
 	} else {
 		initialization_PIT();
+		comCurrentState = INIT;
 
 		while(1) {
 			TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -409,7 +383,7 @@ void com_task(void *pvParameters)
 					PRINTF("Waiting for commands\r\n");
 					// Note: user uart recieve right here to test, consider modifying the wrapper later
 					//cmd_struct.new_cmd = com_getCommands(cmd_struct.cmd); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
-
+					// TO DO: figure out different types of command
 
 //					// taken from the com_getCommands()
 //					int n = 0;
@@ -449,7 +423,7 @@ void com_task(void *pvParameters)
 
 					//sending data based on priority
 					if (payload_check) {
-						//com_sendPayloads();
+						//com_sendPayloads(); // TO DO: how to send payload with Global Structs
 					} else if (image_check) {
 						PRINTF("resuming img task\r\n");
 						//vTaskResume(TaskHandler_img);
@@ -459,7 +433,7 @@ void com_task(void *pvParameters)
 
 					comCurrentState = NORMAL;
 					break;
-			}
+			} // TO DO: add default state
 
 		}
 	}
