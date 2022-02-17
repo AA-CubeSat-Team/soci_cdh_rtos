@@ -55,37 +55,39 @@ void readFloats(double* data, uint8_t* error, uint8_t* isValid){
 /* and then call readFloats to interpret and check the data */
 /* it needs the pointer to the sun structure */
 void getSunAngles(sun_t * Sun){
-   /* issue command */
+   /* issue command and read response */
    #if ARDUINO_CODE
       for(int i = 0; i < 4; i++){
          Serial1.write(anglesComm[i]);
       }
-      delay(10);
+      for(int i = 0; i < 17; i++){
+         sun_recv_buffer[i] = Serial1.read();
+      }
    #else
       int sendError;
       sendError = LPUART_RTOS_Send(&LPUART3_rtos_handle, anglesComm, sizeof(anglesComm));
       size_t n;
       int recvError;
       recvError = LPUART_RTOS_Receive(&LPUART3_rtos_handle, sun_recv_buffer, sizeof(sun_recv_buffer), &n);
-      printf("response:\n");
-      for(int i = 0; i < 17; i++){
-    	  printf("ith byte: %d\n",sun_recv_buffer[i]);
-      }
-      printf("sending command\n");
-      if(sendError != kStatus_Success){
+      // printf("response:\n");
+//       for(int i = 0; i < 17; i++){
+//     	  printf("ith byte: %d\n",sun_recv_buffer[i]);
+//       }
+//       printf("sending command\n");
+      /* check if there was a UART error - if there was raise an error and return */
+      if(sendError != kStatus_Success || recvError != kStatus_Success){
          *(Sun->angles) = -2000.0;
          *(Sun->angles + 1) = -2000.0;
          *(Sun->angles + 2) = -2000.0;
          Sun->error = 16;
          Sun->isValid = 0;
-         printf("error when sending\n");
+         //printf("error when sending\n");
          return;
       }
-      printf("command sent\n");
-      printf("delayed for response\n");
-
+      //printf("command sent\n");
+      //printf("delayed for response\n");
    #endif
-   /* check response */
+   /* check response - does the data returned correspond to the command sent? if it does, continue, otherwise, raise an error and return */
    if(anglesComm[1] == sun_recv_buffer[1]){
       readFloats(Sun->angles, &(Sun->error), &(Sun->isValid));
    }else{
