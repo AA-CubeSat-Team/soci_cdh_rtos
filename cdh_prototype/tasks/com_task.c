@@ -74,13 +74,17 @@ void com_task(void *pvParameters)
 	com_i2c_checkDeploy();
 	PRINTF("\n");
 
-//	PRINTF("Testing deployAntenna()\n");
-//	com_deployAntenna();
-//	PRINTF("\n");
-//
-//	PRINTF("Testing checkDeploy()\n");
-//	com_i2c_checkDeploy();
-//	PRINTF("\n");
+	PRINTF("Testing deployAntenna()\n");
+	com_deployAntenna();
+	//com_deployAntenna_algorithmTwo();
+	PRINTF("\n");
+
+	PRINTF("Testing checkDeploy()\n");
+	com_i2c_checkDeploy();
+	PRINTF("\n");
+
+	PRINTF("Clearing commands()\n");
+	com_clearAntennaCommands();
 
 #else
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms

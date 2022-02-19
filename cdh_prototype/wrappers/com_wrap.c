@@ -38,37 +38,37 @@ COM:
 //Everything but buffer should be static?
 uint8_t rcv_buffer[I2C_COM_RX_SIZE];  //error thrown here for some reason?
 static bool i2c_com_antennaDeployed;
-static uint8_t algorithmOne[] = {0x00, 0x00, 0x00, 0x1F};
-static uint8_t algorithmTwo[] = {0x00, 0x00, 0x00, 0x2F};
+static uint8_t algorithmOne[] = {0x1F}; //changing to one byte
+static uint8_t algorithmTwo[] = {0x2F};
 
 // various deployment combinations (lines 45-71)
-static uint8_t interuptCommand[] = {0x00, 0x00, 0x00, 0x00};
+static uint8_t interuptCommand[] = {0x00};
 
 // using algorithm 1
-static uint8_t alg1Ant1 = {0x00, 0x00, 0x00, 0x11};
-static uint8_t alg1Ant2 = {0x00, 0x00, 0x00, 0x12};
-static uint8_t alg1Ant3 = {0x00, 0x00, 0x00, 0x14};
-static uint8_t alg1Ant4 = {0x00, 0x00, 0x00, 0x18};
-static uint8_t alg1Ant1_2 = {0x00, 0x00, 0x00, 0x13};
-static uint8_t alg1Ant1_3 = {0x00, 0x00, 0x00, 0x15};
-static uint8_t alg1Ant1_4 = {0x00, 0x00, 0x00, 0x19};
-static uint8_t alg1Ant2_3 = {0x00, 0x00, 0x00, 0x16};
-static uint8_t alg1Ant3_4 = {0x00, 0x00, 0x00, 0x1C};
-static uint8_t alg1Ant1_2_3 = {0x00, 0x00, 0x00, 0x17};
-static uint8_t alg1Ant2_3_4 = {0x00, 0x00, 0x00, 0x1E};
+static uint8_t alg1Ant1 = {0x11};
+static uint8_t alg1Ant2 = {0x12};
+static uint8_t alg1Ant3 = {0x14};
+static uint8_t alg1Ant4 = {0x18};
+static uint8_t alg1Ant1_2 = {0x13};
+static uint8_t alg1Ant1_3 = {0x15};
+static uint8_t alg1Ant1_4 = {0x19};
+static uint8_t alg1Ant2_3 = {0x16};
+static uint8_t alg1Ant3_4 = {0x1C};
+static uint8_t alg1Ant1_2_3 = {0x17};
+static uint8_t alg1Ant2_3_4 = {0x1E};
 
 // using algorithm 2
-static uint8_t alg2Ant1 = {0x00, 0x00, 0x00, 0x21};
-static uint8_t alg2Ant2 = {0x00, 0x00, 0x00, 0x22};
-static uint8_t alg2Ant3= {0x00, 0x00, 0x00, 0x24};
-static uint8_t alg2Ant4 = {0x00, 0x00, 0x00, 0x28};
-static uint8_t alg2Ant1_2 = {0x00, 0x00, 0x00, 0x23};
-static uint8_t alg2Ant1_3 = {0x00, 0x00, 0x00, 0x25};
-static uint8_t alg2Ant1_4 = {0x00, 0x00, 0x00, 0x29};
-static uint8_t alg2Ant2_3 = {0x00, 0x00, 0x00, 0x26};
-static uint8_t alg2Ant3_4 = {0x00, 0x00, 0x00, 0x2C};
-static uint8_t alg2Ant1_2_3 = {0x00, 0x00, 0x00, 0x27};
-static uint8_t alg2Ant2_3_4 = {0x00, 0x00, 0x00, 0x2E};
+static uint8_t alg2Ant1 = {0x21};
+static uint8_t alg2Ant2 = {0x22};
+static uint8_t alg2Ant3= {0x24};
+static uint8_t alg2Ant4 = {0x28};
+static uint8_t alg2Ant1_2 = {0x23};
+static uint8_t alg2Ant1_3 = {0x25};
+static uint8_t alg2Ant1_4 = {0x29};
+static uint8_t alg2Ant2_3 = {0x26};
+static uint8_t alg2Ant3_4 = {0x2C};
+static uint8_t alg2Ant1_2_3 = {0x27};
+static uint8_t alg2Ant2_3_4 = {0x2E};
 
 
 static clock_t deploy_initiated;
@@ -403,13 +403,22 @@ void com_deployAntenna()
     I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmOne, sizeof(algorithmOne));
 	deploy_initiated = clock();
     delay(15); //longest time possible to deploy is 15 seconds
-    PRINTF("Antenna deployed");
+    PRINTF("Antenna supposedly deployed"); \
 }
 
+void com_clearAntennaCommands()
+{
+	//using algorithm one as the default
+    I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, interuptCommand, sizeof(interuptCommand));
+	deploy_initiated = clock();
+    delay(15); //longest time possible to deploy is 15 seconds
+    PRINTF("Antenna supposedly deployed"); \
+}
 void com_deployAntenna_algorithmTwo()
 {
 	//TODO: Uncomment this! Comment below statement if testing i2c
-	I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
+	//I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, algorithmTwo, sizeof(algorithmTwo));
+	I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, I2C_COM_ANTENNA_SLAVE_ADDRESS, 0, alg1Ant4, sizeof(alg1Ant4));
 	delay(30); //longest time possible to deploy is 30 seconds
 }
 
