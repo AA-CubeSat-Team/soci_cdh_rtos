@@ -73,6 +73,19 @@ int main(void)
     BOARD_ConfigMPU();
     BOARD_InitPins();
     BOARD_InitBootClocks();
+
+    /* Configure UART divider to default */
+//	CLOCK_SetMux(kCLOCK_UartMux, 1); /* Set UART source to OSC 24M */
+//	CLOCK_SetDiv(kCLOCK_UartDiv, 5); /* Set UART divider to 1 */
+
+	/*Clock setting for LPI2C*/
+	CLOCK_SetMux(kCLOCK_Lpi2cMux, 1);
+	CLOCK_SetDiv(kCLOCK_Lpi2cDiv, 5);
+
+	/*Clock setting for LPSPI*/
+//	CLOCK_SetMux(kCLOCK_LpspiMux, 1);
+//	CLOCK_SetDiv(kCLOCK_LpspiDiv, 0);
+
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
@@ -83,27 +96,27 @@ int main(void)
         while (1)
             ;
     }
-   if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
-		   pdPASS)
-	 {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-          ;
-	 }
-   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
-	 	    pdPASS)
-	 {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-          ;
-	 }
-   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-		    pdPASS)
-	 {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-          ;
-	 }
+//   if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
+//		   pdPASS)
+//	 {
+//        PRINTF("Task creation failed!.\r\n");
+//        while (1)
+//          ;
+//	 }
+//   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
+//	 	    pdPASS)
+//	 {
+//        PRINTF("Task creation failed!.\r\n");
+//        while (1)
+//          ;
+//	 }
+//   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+//		    pdPASS)
+//	 {
+//        PRINTF("Task creation failed!.\r\n");
+//        while (1)
+//          ;
+//	 }
     vTaskStartScheduler();
     for (;;)
         ;

@@ -12,6 +12,7 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "com_protocol_helper.h"
 
 /*******************************************************************************
  * Flags
@@ -264,6 +265,7 @@ static void idle_phase3() {
 }
 
 /* The main operation of the idle task: */
+/* AVOID RUNNING IN LPM FOR NOW, SDRAM CLK SOURCE CONFIGURED FOR SYS PLL */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("idle task initialization");
@@ -301,12 +303,7 @@ void idle_task(void *pvParameters) {
 	LPM_Init(s_curRunMode);
 	for(;;){
 		PRINTF("idle task loop\r\n");
-//		SEMC_SDRAMCR3_REN(1);
-//		SEMC_IPCMD_CMD(0xA55A000D);
-//		setMCUPowerMode();
-//		APP_PrintRunFrequency(0);
-//		SEMC_IPCMD_CMD(0xA55A000A);
-//		vTaskDelay(xDelayms);
+
 	}
 #endif
 }
