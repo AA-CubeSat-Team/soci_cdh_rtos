@@ -173,6 +173,9 @@ void BOARD_ConfigMPU(void)
         i++;
     }
 
+    MPU->RBAR = ARM_MPU_RBAR(8, 0x81E00000U);
+    MPU->RASR = ARM_MPU_RASR(0, ARM_MPU_AP_FULL, 1, 0, 0, 0, 0, ARM_MPU_REGION_SIZE_2MB);
+
     if (i != 0)
     {
         /* The MPU region size should be 2^N, 5<=N<=32, region base should be multiples of size. */
@@ -189,12 +192,15 @@ void BOARD_ConfigMPU(void)
     MPU->RBAR = ARM_MPU_RBAR(10, 0x40000000);
     MPU->RASR = ARM_MPU_RASR(0, ARM_MPU_AP_FULL, 2, 0, 0, 0, 0, ARM_MPU_REGION_SIZE_4MB);
 
+//    MPU->RBAR = ARM_MPU_RBAR(8, 0x81E00000U);
+//   MPU->RASR = ARM_MPU_RASR(0, ARM_MPU_AP_FULL, 1, 0, 0, 0, 0, ARM_MPU_REGION_SIZE_2MB);
+
     /* Enable MPU */
     ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk);
 
     /* Enable I cache and D cache */
-    SCB_EnableDCache();
-    SCB_EnableICache();
+//    SCB_EnableDCache();
+//    SCB_EnableICache();
 }
 
 #if defined(SDK_I2C_BASED_COMPONENT_USED) && SDK_I2C_BASED_COMPONENT_USED

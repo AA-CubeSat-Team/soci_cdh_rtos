@@ -297,9 +297,16 @@ void idle_task(void *pvParameters) {
 #else
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelay(xDelayms);
+	operatingMode = CRIT_LOW_POWER;
+	LPM_Init(s_curRunMode);
 	for(;;){
 		PRINTF("idle task loop\r\n");
-		vTaskDelay(xDelayms);
+//		SEMC_SDRAMCR3_REN(1);
+//		SEMC_IPCMD_CMD(0xA55A000D);
+//		setMCUPowerMode();
+//		APP_PrintRunFrequency(0);
+//		SEMC_IPCMD_CMD(0xA55A000A);
+//		vTaskDelay(xDelayms);
 	}
 #endif
 }
