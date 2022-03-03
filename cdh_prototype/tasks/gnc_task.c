@@ -15,87 +15,36 @@
 //GNC BUILD include
 #include <stddef.h>
 #include <stdio.h>                     /* This ert_main.c example uses printf/fflush */
-#include "FSW_Lib0.h"                  /* Model's header file */
+#include "FSW_0123.h"                  /* Model's header file */
 #include "rtwtypes.h"
-#include "zero_crossing_types.h"
 
 extern bool g_senActive, g_rwaActive, g_mtqActive;
 
-// TO DO: Double check if we need to disable interrupts and save FPU context
 void rt_OneStep(void)
 {
-  static boolean_T OverrunFlags[2] = { 0, 0 };
-
-  static boolean_T eventFlags[2] = { 0, 0 };/* Model has 2 rates */
-
-  static int_T taskCounter[2] = { 0, 0 };
+  static boolean_T OverrunFlag = false;
 
   /* Disable interrupts here */
 
-  /* Check base rate for overrun */
-  if (OverrunFlags[0]) {
+  /* Check for overrun */
+  if (OverrunFlag) {
     rtmSetErrorStatus(rtM, "Overrun");
     return;
   }
 
-  OverrunFlags[0] = true;
+  OverrunFlag = true;
 
   /* Save FPU context here (if necessary) */
   /* Re-enable timer or interrupt here */
+  /* Set model inputs here */
 
-  /*
-   * For a bare-board target (i.e., no operating system), the
-   * following code checks whether any subrate overruns,
-   * and also sets the rates that need to run this time step.
-   */
-  if (taskCounter[1] == 0) {
-    if (eventFlags[1]) {
-      OverrunFlags[0] = false;
-      OverrunFlags[1] = true;
-
-      /* Sampling too fast */
-      rtmSetErrorStatus(rtM, "Overrun");
-      return;
-    }
-
-    eventFlags[1] = true;
-  }
-
-  taskCounter[1]++;
-  if (taskCounter[1] == 20) {
-    taskCounter[1]= 0;
-  }
-
-  /* Set model inputs associated with base rate here */
-
-  /* Step the model for base rate */
-  FSW_Lib0_step0();
+  /* Step the model */
+  FSW_0123_step();
 
   /* Get model outputs here */
 
-  /* Indicate task for base rate complete */
-  OverrunFlags[0] = false;
-
-  /* If task 1 is running, don't run any lower priority task */
-  if (OverrunFlags[1]) {
-    return;
-  }
-
-  /* Step the model for subrate */
-  if (eventFlags[1]) {
-    OverrunFlags[1] = true;
-
-    /* Set model inputs associated with subrates here */
-
-    /* Step the model for subrate 1 */
-    FSW_Lib0_step1();
-
-    /* Get model outputs here */
-
-    /* Indicate task complete for subrate */
-    OverrunFlags[1] = false;
-    eventFlags[1] = false;
-  }
+  /* Indicate task complete */
+  OverrunFlag = false;
 
   /* Disable interrupts here */
   /* Restore FPU context here (if necessary) */
@@ -109,12 +58,13 @@ void gnc_task(void *pvParameters)
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	PRINTF("initialize gnc.\r\n");
 	SPI_GPIO_init();
+	FSW_0123_initialize();
 #if GNC_ENABLE
 	/* gnc, sens, act initialization */
 //	sens_init();
 //  act_init();
 	/* Initialize model */
-	FSW_Lib0_initialize();
+	FSW_0123_initialize();
 #endif
 	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	for (;;) {
