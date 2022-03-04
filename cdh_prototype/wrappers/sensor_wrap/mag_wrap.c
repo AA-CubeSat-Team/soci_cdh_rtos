@@ -6,6 +6,7 @@
 //
 
 #include "mag_wrap.h"
+#include "com_protocol_helper.h"
 
 // initialize struct.
 #if MULTI_MAGS
@@ -14,7 +15,7 @@ mag_t Mag1, Mag2, Mag3;
 mag_t Mag1;
 #endif
 
-void readRegsMag(uint8_t reg, uint8_t *value, uint8_t valueSize, mag_t * Mag)
+void readRegsMag(uint8_t reg, uint8_t * value, uint8_t valueSize, mag_t * Mag)
 {
 #if ARDUINO_CODE
     Wire.beginTransmission(LSM303_ADDRESS_MAG);
@@ -27,7 +28,8 @@ void readRegsMag(uint8_t reg, uint8_t *value, uint8_t valueSize, mag_t * Mag)
       i++;
     }
 #else
-    I2C_request(Mag->magHandle, LSM303_ADDRESS_MAG, reg, value, valueSize);
+//    I2C_send(Mag->magHandle, &LPI2C1_masterTransfer, LSM303_ADDRESS_MAG, 0, &reg, 1); // ToDo: figure out which version is correct
+    I2C_request(Mag->magHandle, &LPI2C1_masterTransfer, LSM303_ADDRESS_MAG, reg, value, valueSize);
 #endif
 }
 
@@ -39,7 +41,7 @@ void writeRegMag(uint8_t reg, uint8_t value, mag_t * Mag)
     Wire.write((uint8_t)value);
     Wire.endTransmission();
 #else
-  I2C_send(Mag->magHandle, LSM303_ADDRESS_MAG, reg, &value, 1);
+    I2C_send(Mag->magHandle, &LPI2C1_masterTransfer, LSM303_ADDRESS_MAG, reg, &value, 1);
 #endif
 }
 
@@ -76,13 +78,13 @@ void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle)
 void startMag(mag_t * Mag)
 {
   if (Mag->magInitialized){
-    writeRegMag(LSM303_REGISTER_MAG_MR_REG_M, 0x00, Mag);
+    writeRegMag(LSM303_REGISTER_MAG_MR_REG_M, 0x00, Mag); // LSM303_REGISTER_MAG_MR_REG_M subadress might be the problem
     
     // LSM303DLHC has no WHOAMI register so read CRA_REG_M to check
     // the default value (0b00010000/0x10)
     uint8_t reg1_a;
     readRegsMag(LSM303_REGISTER_MAG_CRA_REG_M, &reg1_a, 1, Mag);
-    if (reg1_a != 0x10) { Mag->errorFlag = 1;}
+    if (reg1_a != 0x10) { printf ("ERROR Initializing Mag\r\n"); Mag->errorFlag = 1;}
     writeRegMag(LSM303_REGISTER_MAG_CRB_REG_M, LSM303_MAGGAIN_1_3, Mag);
   }
 }
@@ -106,12 +108,13 @@ void readMagData(mag_t * Mag)
     uint8_t reg_mg;
     readRegsMag(LSM303_REGISTER_MAG_SR_REG_Mg, &reg_mg, 1, Mag);
     if (!(reg_mg & 0x1)) {
+    	printf("ERROR");
       Mag->errorFlag = 2;
     }
 
     // Read the magnetometer
     uint8_t raw[6];
-    readRegsMag(LSM303_REGISTER_MAG_OUT_X_H_M, raw, (uint8_t)6, Mag);
+    readRegsMag(LSM303_REGISTER_MAG_OUT_X_H_M, raw, sizeof(raw), Mag);
 
     // Note high before low (different than accel)
     uint8_t xhi = raw[0];
@@ -126,9 +129,9 @@ void readMagData(mag_t * Mag)
     int16_t raw_y = (int16_t)((int16_t)ylo | ((int16_t)yhi << 8));
     int16_t raw_z = (int16_t)((int16_t)zlo | ((int16_t)zhi << 8));
     
-    if ((raw_x >= 2040) | (raw_x <= -2040) |
-        (raw_y >= 2040) | (raw_y <= -2040) |
-        (raw_z >= 2040) | (raw_z <= -2040) )  {Mag->errorFlag = 3; }
+    if ((raw_x >= 2040) || (raw_x <= -2040) ||
+        (raw_y >= 2040) || (raw_y <= -2040) ||
+        (raw_z >= 2040) || (raw_z <= -2040) )  { printf ("ERROR\r\n"); Mag->errorFlag = 3; }
 
     Mag->magXYZ[0] = Mag->magCalCoe[0]*(((float)raw_x/_lsm303Mag_Gauss_LSB_XY*GAUSS_TO_MICROTESLA) - Mag->magCalVec[0]);
     Mag->magXYZ[1] = Mag->magCalCoe[1]*(((float)raw_y/_lsm303Mag_Gauss_LSB_XY*GAUSS_TO_MICROTESLA) - Mag->magCalVec[1]);

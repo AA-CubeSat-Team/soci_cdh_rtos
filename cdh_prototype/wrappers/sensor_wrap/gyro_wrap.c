@@ -7,6 +7,7 @@
 
 
 #include "gyro_wrap.h"
+#include "com_protocol_helper.h"
 #if !ARDUINO_CODE
 #include "peripherals.h"
 #endif
@@ -14,15 +15,15 @@
 // register addresses FXAS21002C_H_
 #define GYRO_OUT_X_MSB        0x01
 #define GYRO_CTRL_REG0        0x0D
-#define GYRO_TEMP         0x12
+#define GYRO_TEMP         	  0x12
 #define GYRO_CTRL_REG1        0x13
 #define GYRO_INT_SRC_FLAG     0x0B
 
 // gyro parameters
 
-#define GYRO_ODR_NUM        0b110
-#define GYRO_FSR_NUM        0b11
-#define GYRO_SENSITIVITY      7.8125e-3
+#define GYRO_ODR_NUM        0x06
+#define GYRO_FSR_NUM        0x03
+#define GYRO_SENSITIVITY    7.8125e-3
 #define GYRO_TEMP_0         23
 #define GYRO_ADDRESS        (uint8_t)0x20
 
@@ -60,11 +61,13 @@ void readRegs(uint8_t reg, uint8_t *value, uint8_t valueSize, gyro_t * Gyro)
       i++;
     }
 #else
-  Gyro->gyroTransfer->direction = kLPI2C_Read;
-  Gyro->gyroTransfer->subaddress = reg;
-  Gyro->gyroTransfer->data = value;
-  Gyro->gyroTransfer->dataSize = valueSize;
-  LPI2C_RTOS_Transfer(Gyro->gyroHandle, Gyro->gyroTransfer);
+//  Gyro->gyroTransfer->direction = kLPI2C_Read;
+//  Gyro->gyroTransfer->subaddress = reg;
+//  Gyro->gyroTransfer->data = value;
+//  Gyro->gyroTransfer->dataSize = valueSize;
+//  LPI2C_RTOS_Transfer(Gyro->gyroHandle, Gyro->gyroTransfer);
+//    I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, &reg, 1);
+    I2C_request(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, reg, value, valueSize);
 #endif
 }
 
@@ -87,11 +90,14 @@ void writeReg(uint8_t reg, uint8_t value, gyro_t * Gyro)
   (Gyro->gyroWire).write(value);
   (Gyro->gyroWire).endTransmission();
 #else
-  Gyro->gyroTransfer->direction = kLPI2C_Write;
-  Gyro->gyroTransfer->subaddress = reg;
-  *(uint8_t*)(Gyro->gyroTransfer->data) = value;
-  Gyro->gyroTransfer->dataSize = 1;
-  LPI2C_RTOS_Transfer(Gyro->gyroHandle, Gyro->gyroTransfer);
+//  Gyro->gyroTransfer->direction = kLPI2C_Write;
+//  Gyro->gyroTransfer->slaveAddress = GYRO_ADDRESS;
+//  Gyro->gyroTransfer->subaddress = reg;
+//  *(uint8_t*)(Gyro->gyroTransfer->data) = value; // did not pass in value
+//  Gyro->gyroTransfer->dataSize = 1;
+//  LPI2C_RTOS_Transfer(Gyro->gyroHandle, Gyro->gyroTransfer);
+  I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, reg, &value, 1);
+//  I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, &reg, 1);
 #endif
 }
 
@@ -112,15 +118,15 @@ void writeReg(uint8_t reg, uint8_t value, gyro_t * Gyro)
 void startGyro(gyro_t * Gyro)
 {
 #else
-void startGyro(gyro_t * Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_transfer_t *gyroTransfer)
+void startGyro(gyro_t *Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_transfer_t *gyroTransfer)
 {
 #endif
 #if !ARDUINO_CODE
   Gyro->gyroHandle = gyroHandle;
 
-  gyroTransfer->slaveAddress = GYRO_ADDRESS;
-  gyroTransfer->subaddressSize = 1;
-  Gyro->gyroTransfer = gyroTransfer;
+//  gyroTransfer->slaveAddress = GYRO_ADDRESS;
+//  gyroTransfer->subaddressSize = 1;
+//  Gyro->gyroTransfer = gyroTransfer;
 #endif
 
 #if DIFF_TEMP_BIAS_COE
@@ -164,7 +170,7 @@ void startGyro(gyro_t * Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_tran
 #endif
 
   writeReg(GYRO_CTRL_REG0, GYRO_FSR_NUM, Gyro);
-  writeReg(GYRO_CTRL_REG1, (GYRO_ODR_NUM<<2 | 0b10), Gyro);
+  writeReg(GYRO_CTRL_REG1, (GYRO_ODR_NUM<<2 | 0x02), Gyro);
 }
 
 /*!

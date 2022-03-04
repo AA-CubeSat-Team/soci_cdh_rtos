@@ -2,11 +2,12 @@
 // rwa_wrap.c
 
 #include "rwa_wrap.h"
+#include "com_protocol_helper.h"
 #if ARDUINO_CODE
 #include <Arduino.h>
 #endif
 
-rw_data_t rw0, rw1, rw2, rw3;    // saving SRAM
+//rw_data_t rw1, rw2, rw3, rw4;    // saving SRAM
 
 void reqPacketProcess(uint8_t *req_payload_pt, uint8_t *req_packet_pt, uint8_t *req_payload_len_pt, uint8_t *req_packet_len_pt) { // --- --- --- --- --- --- --- --- ---
   uint8_t req_array_A[MAX_REQ_PACKET] = {0}; // need to allocate max possible size of uint8_t
@@ -129,7 +130,7 @@ void reqPacketProcess(uint8_t *req_payload_pt, uint8_t *req_packet_pt, uint8_t *
   *req_packet_len_pt = req_len_E;
 }
 
-void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t SS_id)
+void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint32_t SS_id)
 {
   uint8_t tx_buffer[MAX_REQ_PACKET] = {0};
 
@@ -140,9 +141,13 @@ void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t 
   //  defining placeholder for buffer not in use during request
   uint8_t rx_buffer[MAX_REQ_PACKET] = {0};
 
-  for (int jj = 0; jj < MAX_REQ_PACKET; jj++) {
-    rx_buffer[jj] = 0x7A;
-  }
+//  for (int jj = 0; jj < MAX_REQ_PACKET; jj++) {
+//    rx_buffer[jj] = 0x7A;
+//  }
+
+//  for (int i = *req_packet_len_pt; i < MAX_REQ_PACKET; i++) {
+//      tx_buffer[i] = 0x7E;
+//    }
 
   // Arduino SPI driver format
   #if ARDUINO_CODE
@@ -151,9 +156,10 @@ void reqSpiTransfer(uint8_t *req_packet_pt, uint8_t *req_packet_len_pt, uint8_t 
   SPI.transfer(tx_buffer, *req_packet_len_pt);
   digitalWrite(SS_id, HIGH);
   SPI.endTransaction();
-  // FreeRtos SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
+
+  // DevBoard SPI driver format: SPI_transfer(uint8_t *txBuffer, uint8_t *rxBuffer, size_t transferSize, uint32_t pcsPin)
   #else
-  SPI_transfer(tx_buffer, rx_buffer, *req_packet_len_pt, SS_id); // to-do list: the parameter is passed in wrong
+  SPI_transfer(tx_buffer, rx_buffer, *req_packet_len_pt, SS_id);     // pcsPin for req_packet must be a struct defined in the .h file
   #endif
 }
 
@@ -175,10 +181,11 @@ void rplSpiTransfer(uint8_t *rpl_packet_pt, uint8_t *rpl_packet_len_pt, uint8_t 
   digitalWrite(SS_id, HIGH);
   SPI.endTransaction();
   #else
-  SPI_transfer(tx_buffer, rx_buffer, *rpl_packet_len_pt, SS_id);
+  SPI_transfer(tx_buffer, rx_buffer, MAX_RPL_PACKET, SS_id);
   #endif
 
-  for (int ii = 0; ii < *rpl_packet_len_pt; ii++) {
+  for (int ii = 0; ii < MAX_RPL_PACKET; ii++) {
+//	  printf ("0x2%\n", rx_buffer[ii]);
     *(rpl_packet_pt+ii) = rx_buffer[ii];
   }
 }
@@ -301,6 +308,34 @@ void rplPacketProcess(uint8_t *rpl_payload_pt, uint8_t *rpl_packet_pt, uint8_t *
   *rpl_payload_len_pt = rpl_len_W;
 }
 
+// command 2 - get last reset status
+void reqPayloadWrite_cmd2(uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt) {
+  uint8_t com_id = 2;
+
+  *req_payload_pt = com_id;
+
+  *req_payload_len_pt = 1;
+}
+
+void rplPayloadRead_cmd2(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt) {
+
+  rwX_pt->lastResetStatus = *(rpl_payload_pt+1);
+}
+
+// command 3 - clear last reset status
+void reqPayloadWrite_cmd3(uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt) {
+  uint8_t com_id = 3;
+
+  *req_payload_pt = com_id;
+
+  *req_payload_len_pt = 1;
+}
+
+void rplPayloadRead_cmd3(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt) {
+
+  rwX_pt->result = *(rpl_payload_pt+1);
+}
+
 // command 4 - get reaction wheel status --- --- --- --- --- ---
 void reqPayloadWrite_cmd4(uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt) {
   uint8_t com_id = 4;
@@ -327,6 +362,20 @@ void rplPayloadRead_cmd4(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, s
   #if ADUINO_CODE
   rwX_pt->time_N = millis() - time_0;
   #endif
+
+}
+
+// command5 - reset individual wheel
+void reqPayloadWrite_cmd5 (uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt) {
+	uint8_t com_id = 5;
+
+	*req_payload_pt = com_id;
+
+	*req_payload_len_pt = 1;
+}
+
+void rplPayloadRead_cmd5 (uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt) {
+	rwX_pt->result = *(rpl_payload_pt+1);
 }
 
 
@@ -389,8 +438,17 @@ void rplPayloadRead_cmd10(uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, 
 
 void reqPayloadWriteSwitcher(uint8_t com_id, uint8_t *req_payload_pt, uint8_t *req_payload_len_pt, struct rw_data *rwX_pt){
   switch (com_id){
+    case 2:
+      reqPayloadWrite_cmd2(req_payload_pt, req_payload_len_pt, rwX_pt);
+      break;
+    case 3:
+      reqPayloadWrite_cmd3(req_payload_pt, req_payload_len_pt, rwX_pt);
+      break;
     case 4:
       reqPayloadWrite_cmd4(req_payload_pt, req_payload_len_pt, rwX_pt);
+      break;
+    case 5:
+      reqPayloadWrite_cmd5(req_payload_pt, req_payload_len_pt, rwX_pt);
       break;
     case 6:
       reqPayloadWrite_cmd6(req_payload_pt, req_payload_len_pt, rwX_pt);
@@ -406,8 +464,17 @@ void reqPayloadWriteSwitcher(uint8_t com_id, uint8_t *req_payload_pt, uint8_t *r
 
 void rplPayloadReadSwitcher(uint8_t com_id, uint8_t *rpl_payload_pt, uint8_t *rpl_payload_len_pt, struct rw_data *rwX_pt){
   switch (com_id){
+    case 2:
+	  rplPayloadRead_cmd2(rpl_payload_pt, rpl_payload_len_pt, rwX_pt);
+	  break;
+    case 3:
+      rplPayloadRead_cmd3(rpl_payload_pt, rpl_payload_len_pt, rwX_pt);
+      break;
     case 4:
       rplPayloadRead_cmd4(rpl_payload_pt, rpl_payload_len_pt, rwX_pt);
+      break;
+    case 5:
+      rplPayloadRead_cmd5(rpl_payload_pt, rpl_payload_len_pt, rwX_pt);
       break;
     case 6:
       rplPayloadRead_cmd6(rpl_payload_pt, rpl_payload_len_pt, rwX_pt);
@@ -421,7 +488,25 @@ void rplPayloadReadSwitcher(uint8_t com_id, uint8_t *rpl_payload_pt, uint8_t *rp
   }
 }
 
-void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id) {
+void ErrorCheck (struct rw_data *rwX_pt, uint8_t SS_id) {
+	printf ("Checking error\r\n");
+	if (rwX_pt->state == 0) {
+		// error present
+		// reset wheel
+		printf ("Error present, resetting wheels\r\n");
+		// ToDo: make command 5 to reset wheels
+		commandRW(5, rwX_pt, SS_id);
+		printf ("Result of wheel reset: %u\r\n", rwX_pt->result);
+	}
+
+
+	if (rwX_pt->lastResetStatus != 6 && rwX_pt->lastResetStatus != 7) {
+		commandRW(3, rwX_pt, SS_id);
+		commandRW(7, rwX_pt, SS_id);
+	}
+}
+
+void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint32_t SS_id) {
 
   uint8_t req_payload_rwX[MAX_REQ_PAYLOAD] = {0};
   uint8_t req_payload_len_rwX = MAX_REQ_PAYLOAD;
@@ -473,38 +558,4 @@ void commandRW(uint8_t com_id, struct rw_data *rwX_pt, uint8_t SS_id) {
   rplPacketProcess(&rpl_payload_rwX[0], &rpl_packet_rwX[0], &rpl_payload_len_rwX, &rpl_packet_len_rwX);
   rplPayloadReadSwitcher(com_id, &rpl_payload_rwX[0], &rpl_payload_len_rwX, rwX_pt);
 
-//            if (debug_mode == 1){
-//                      Serial.print("req_packet_rwX:\t\t");
-//                      for (uint8_t yy = 0; yy < req_packet_len_rwX; yy++) {
-//                        Serial.print(req_packet_rw1[yy], HEX);
-//                        Serial.print("\t");
-//                      }
-//                      Serial.println(" ");
-//                      Serial.print("rpl_packet_rwX:\t\t");
-//                      for (uint8_t yy = 0; yy < rpl_packet_len_rwX; yy++) {
-//                        Serial.print(rpl_packet_rw1[yy], HEX);
-//                        Serial.print("\t");
-//                      }
-//                      Serial.println(" ");
-//                      Serial.println(" ");
-//                    }
-//            }
 }
-
-void statusCheck(struct rw_data *rwX_pt, uint8_t SS_id) {
-  commandRW(4, rwX_pt, SS_id);
-  printf("\n RW staus is %d \n", rwX_pt->state);
-  printf("\n RW speed is %d \n", rwX_pt->currSpeed);
-
-  if (rwX_pt->state == 0) {
-    // error present
-    // Initialize RWA, return to nominal state
-    commandRW(5, rwX_pt, SS_id);
-  }
-  if (rwX_pt->lastResetStatus != 6 && rwX_pt->lastResetStatus != 7) {
-    commandRW(3, rwX_pt, SS_id);
-    commandRW(7, rwX_pt, SS_id);
-  }
-}
-
-
