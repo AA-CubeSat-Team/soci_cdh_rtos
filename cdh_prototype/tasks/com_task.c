@@ -47,20 +47,6 @@ extern bool g_imgActive;
 #define DAY_COUNT 5 // (24 * 60)
 uint16_t minute_count;
 
-////////////////////////////////////////// Testing interrupt handling
-/*UART 1
-  Ring buffer for data input and output, input data are saved
-  to ring buffer in IRQ handler. The main function polls the ring buffer status,
-  if there is new data, then send them out.
-  Ring buffer full: (((rxIndex + 1) % DEMO_RING_BUFFER_SIZE) == txIndex)
-  Ring buffer empty: (rxIndex == txIndex)
-*/
-uint8_t UART1RingBuffer[UART1_RING_BUFFER_SIZE];
-volatile uint16_t txIndex_1; /* Index of the data to send out. */
-volatile uint16_t rxIndex_1; /* Index of the memory to save new arrived data. */
-uint8_t UART_1[] =
-    "UART 1 initialised \r\n";
-
 /////////////////////////////////////////////////////////////////////
 ///// Example message queues code (functions not used yet) START ////
 ////////////////////////////////////////////////////////////////////
@@ -191,35 +177,6 @@ struct AMessage xRxedStructure, *pxRxedPointer;
 
    /* ... Rest of task code goes here. */
 }
-
-///////////////////////////////////////////////////////////////////
-///// Example message queues code (functions not used yet) END ////
-//////////////////////////////////////////////////////////////////
-
-void UART1_IRQHandler(void)
-{
-    uint8_t data;
-    uint16_t tmprxIndex = rxIndex_1;
-    uint16_t tmptxIndex = txIndex_1;
-
-    /* If new data arrived. */
-    if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(LPUART_1))
-    {
-        data = LPUART_ReadByte(LPUART_1);
-
-        /* If ring buffer is not full, add data to ring buffer. */
-        if (((tmprxIndex + 1) % UART1_RING_BUFFER_SIZE) != tmptxIndex)
-        {
-        	UART1RingBuffer[rxIndex_1] = data;
-            rxIndex_1++;
-            rxIndex_1 %= UART1_RING_BUFFER_SIZE;
-        }
-    }
-    SDK_ISR_EXIT_BARRIER;
-}
-/////////////////////////////////////////
-
-
 
 /*
  * States for COM_task

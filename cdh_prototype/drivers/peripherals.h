@@ -11,119 +11,98 @@
  **********************************************************************************************************************/
 #include "fsl_common.h"
 #include "fsl_clock.h"
-
+#include "fsl_lpi2c.h"
+#include "fsl_lpspi.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpuart_freertos.h"
-
-#include "fsl_lpi2c.h"
-#include "fsl_lpi2c_freertos.h"
-
-#include "fsl_lpspi.h"
-#include "fsl_lpspi_freertos.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */
 
-///***********************************************************************************************************************
-// * Definitions
-// **********************************************************************************************************************/
-///* Definitions for BOARD_InitPeripherals functional group */
-///* Definition of peripheral ID */
-//#define LPUART1_PERIPHERAL LPUART1
-///* Definition of the clock source frequency */
-//#define LPUART1_CLOCK_SOURCE 80000000UL
-///* Definition of peripheral ID */
-//#define LPUART3_PERIPHERAL LPUART3
-///* Definition of the clock source frequency */
-//#define LPUART3_CLOCK_SOURCE 80000000UL
-///* Definition of peripheral ID */
-//#define LPUART4_PERIPHERAL LPUART4
-///* Definition of the clock source frequency */
-//#define LPUART4_CLOCK_SOURCE 80000000UL
-///* BOARD_InitPeripherals defines for LPI2C2 */
-///* Definition of peripheral ID */
-//#define LPI2C2_PERIPHERAL LPI2C2
-///* Definition of clock source */
-//#define LPI2C2_CLOCK_FREQ 60000000UL
-///* Transfer buffer size */
-//#define LPI2C2_MASTER_BUFFER_SIZE 1
-///* BOARD_InitPeripherals defines for LPI2C1 */
-///* Definition of peripheral ID */
-//#define LPI2C1_PERIPHERAL LPI2C1
-///* Definition of clock source */
-//#define LPI2C1_CLOCK_FREQ 60000000UL
-///* Transfer buffer size */
-//#define LPI2C1_MASTER_BUFFER_SIZE 1
-///* BOARD_InitPeripherals defines for LPSPI1 */
-///* Definition of peripheral ID */
-//#define LPSPI1_PERIPHERAL LPSPI1
-///* Definition of clock source */
-//#define LPSPI1_CLOCK_FREQ 105600000UL
-///* BOARD_InitPeripherals defines for LPI2C3 */
-///* Definition of peripheral ID */
-//#define LPI2C3_PERIPHERAL LPI2C3
-///* Definition of clock source */
-//#define LPI2C3_CLOCK_FREQ 60000000UL
-///* Transfer buffer size */
-//#define LPI2C3_MASTER_BUFFER_SIZE 1
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+/* Definitions for BOARD_InitPeripherals functional group */
+/* BOARD_InitPeripherals defines for LPI2C1 */
+/* Definition of peripheral ID */
+#define LPI2C1_PERIPHERAL LPI2C1
+/* Definition of clock source */
+#define LPI2C1_CLOCK_FREQ 60000000UL
+/* Transfer buffer size */
+#define LPI2C1_MASTER_BUFFER_SIZE 1
+/* Definition of slave address */
+#define LPI2C1_MASTER_SLAVE_ADDRESS 0
+/* BOARD_InitPeripherals defines for LPI2C2 */
+/* Definition of peripheral ID */
+#define LPI2C2_PERIPHERAL LPI2C2
+/* Definition of clock source */
+#define LPI2C2_CLOCK_FREQ 60000000UL
+/* Transfer buffer size */
+#define LPI2C2_MASTER_BUFFER_SIZE 1
+/* Definition of slave address */
+#define LPI2C2_MASTER_SLAVE_ADDRESS 0
+/* BOARD_InitPeripherals defines for LPI2C3 */
+/* Definition of peripheral ID */
+#define LPI2C3_PERIPHERAL LPI2C3
+/* Definition of clock source */
+#define LPI2C3_CLOCK_FREQ 60000000UL
+/* Transfer buffer size */
+#define LPI2C3_MASTER_BUFFER_SIZE 1
+/* Definition of slave address */
+#define LPI2C3_MASTER_SLAVE_ADDRESS 0
+/* BOARD_InitPeripherals defines for LPSPI1 */
+/* Definition of peripheral ID */
+#define LPSPI1_PERIPHERAL LPSPI1
+/* Definition of clock source */
+#define LPSPI1_CLOCK_FREQ 105600000UL
+/* Definition of peripheral ID */
+#define LPUART1_PERIPHERAL LPUART1
+/* Definition of the clock source frequency */
+#define LPUART1_CLOCK_SOURCE 80000000UL
+/* Definition of peripheral ID */
+#define LPUART3_PERIPHERAL LPUART3
+/* Definition of the clock source frequency */
+#define LPUART3_CLOCK_SOURCE 80000000UL
+/* Definition of peripheral ID */
+#define LPUART4_PERIPHERAL LPUART4
+/* Definition of the backround buffer size */
+#define LPUART4_BACKGROUND_BUFFER_SIZE 1
+/* LPUART4 interrupt vector ID (number). */
+#define LPUART4_IRQN LPUART4_IRQn
 
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
-//extern lpuart_rtos_config_t lpuart1_config;
-//extern lpuart_rtos_config_t lpuart3_config;
-//extern lpuart_rtos_config_t lpuart4_config;
-//
-//extern lpspi_master_config_t spi_master_config;
-//
-//extern lpi2c_master_config_t i2c1Master_config;
-//extern lpi2c_master_config_t i2c2Master_config;
-//extern lpi2c_master_config_t i2c3Master_config;
-
-
-
-extern lpuart_rtos_handle_t uart1_handle;
-extern lpuart_rtos_handle_t uart3_handle;
-extern lpuart_rtos_handle_t uart4_handle;
-
-extern lpspi_rtos_handle_t spi_m_rtos_handle;
-
-extern lpi2c_rtos_handle_t i2c1_m_rtos_handle;
-extern lpi2c_rtos_handle_t i2c2_m_rtos_handle;
-extern lpi2c_rtos_handle_t i2c3_m_rtos_handle;
-
-
-
-//
-//
-//extern const lpi2c_master_config_t LPI2C2_masterConfig;
-//extern lpi2c_master_transfer_t LPI2C2_masterTransfer;
-//extern uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
-//extern lpi2c_master_handle_t LPI2C2_masterHandle;
-//extern const lpi2c_master_config_t LPI2C1_masterConfig;
-//extern lpi2c_master_transfer_t LPI2C1_masterTransfer;
-//extern uint8_t LPI2C1_masterBuffer[LPI2C1_MASTER_BUFFER_SIZE];
-//extern lpi2c_master_handle_t LPI2C1_masterHandle;
-//extern const lpspi_master_config_t LPSPI1_config;
-//extern const lpi2c_master_config_t LPI2C3_masterConfig;
-//extern lpi2c_master_transfer_t LPI2C3_masterTransfer;
-//extern uint8_t LPI2C3_masterBuffer[LPI2C3_MASTER_BUFFER_SIZE];
-//extern lpi2c_master_handle_t LPI2C3_masterHandle;
-
-
-void LPSPI1_send(uint8_t* masterSendBuffer, uint8_t* masterReceiveBuffer);
-
-void LPI2C1_send_receive(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t sendDataSize, uint32_t * masterRecvBuffer, size_t * recvDataSize);
-void LPI2C2_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize);
-void LPI2C3_send(uint8_t slaveAddress, uint8_t* masterSendBuffer, size_t dataSize);
+extern const lpi2c_master_config_t LPI2C1_masterConfig;
+extern lpi2c_master_transfer_t LPI2C1_masterTransfer;
+extern uint8_t LPI2C1_masterBuffer[LPI2C1_MASTER_BUFFER_SIZE];
+extern lpi2c_master_handle_t LPI2C1_masterHandle;
+extern const lpi2c_master_config_t LPI2C2_masterConfig;
+extern lpi2c_master_transfer_t LPI2C2_masterTransfer;
+extern uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
+extern lpi2c_master_handle_t LPI2C2_masterHandle;
+extern const lpi2c_master_config_t LPI2C3_masterConfig;
+extern lpi2c_master_transfer_t LPI2C3_masterTransfer;
+extern uint8_t LPI2C3_masterBuffer[LPI2C3_MASTER_BUFFER_SIZE];
+extern lpi2c_master_handle_t LPI2C3_masterHandle;
+extern const lpspi_master_config_t LPSPI1_config;
+extern const lpuart_config_t LPUART1_config;
+extern const lpuart_config_t LPUART3_config;
+extern lpuart_rtos_handle_t LPUART4_rtos_handle;
+extern lpuart_handle_t LPUART4_lpuart_handle;
+extern lpuart_rtos_config_t LPUART4_rtos_config;
 
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
+
 void BOARD_InitPeripherals(void);
 
-
+/***********************************************************************************************************************
+ * BOARD_InitBootPeripherals function
+ **********************************************************************************************************************/
+void BOARD_InitBootPeripherals(void);
 
 #if defined(__cplusplus)
 }

@@ -46,10 +46,10 @@
  ******************************************************************************/
 
 /* Task priorities. */
-#define idle_task_PRIORITY	 			0
-#define imag_task_PRIORITY 				1
+#define idle_task_PRIORITY	 			2
+#define imag_task_PRIORITY 				2
 #define com_task_PRIORITY				2
-#define gnc_task_PRIORITY 				3
+#define gnc_task_PRIORITY 				2
 #define max_PRIORITY 	   				(configMAX_PRIORITIES - 1)
 
 
@@ -65,8 +65,6 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
-extern SemaphoreHandle_t s_wakeupSig;
-
 int main(void)
 {
     /* System Power Buses ON: Init board hardware. */
@@ -75,23 +73,6 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
-
-//    if (BOARD_InitSEMC() != kStatus_Success)
-//	{
-//		PRINTF("\r\n SEMC SDRAM Init Failed\r\n");
-//	}
-//    /*powermode init*/
-//    if (true != LPM_Init(s_curRunMode))
-//	{
-//		PRINTF("LPM Init Failed!\r\n");
-//	}
-//    s_wakeupSig = xSemaphoreCreateBinary();
-//	/* Make current resource count 0 for signal purpose */
-//	if (xSemaphoreTake(s_wakeupSig, 0) == pdTRUE)
-//	{
-//		assert(0);
-//	}
-//	/****/
 
 //    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_idle) != //initialize priority to the highest +1
 //        pdPASS)
@@ -125,17 +106,3 @@ int main(void)
     vTaskStartScheduler();
     for (;;);
 }
-
-/////////////////////////////////////////////////
-
-    /*Testing a auto-reloaded task for potential use for gyro*/
-//    TimerHandle_t xTimerGryo = xTimerCreate("GyroRead2s", pdMS_TO_TICKS(250), pdTRUE, (void*)0, vTimerReadGyro);
-//    if (xTimerGryo==NULL)
-//    {
-//    	PRINTF("Creating auto-reload task failed. \r\n");
-//    	for(;;); /* failure! */
-//    }
-//    if (xTimerStart(xTimerGryo, 0)!=pdPASS) {
-//    	for(;;); /* failure!?! */
-//    }
-//    /************************************************************/
