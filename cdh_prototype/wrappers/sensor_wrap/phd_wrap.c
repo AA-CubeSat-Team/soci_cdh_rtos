@@ -45,7 +45,7 @@ void readRegsPhd(uint8_t reg, uint8_t *value, uint8_t valueSize, phd_t * Phd)
     i++;
   }
 #else
-  I2C_request(Phd->PhdHandle, PHD_ADC_SER_ADDRESS, reg, value, valueSize);
+  I2C_request(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, reg, value, valueSize);
 #endif
 }
 
@@ -59,7 +59,7 @@ void writeRegPhd(uint8_t reg, uint8_t value, phd_t * Phd)
   Wire.write(value);
   Wire.endTransmission();
   #else
-  I2C_send(Phd->PhdHandle, PHD_ADC_SER_ADDRESS, reg, &value, 1);
+  I2C_send(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, reg, value, 1);
   #endif
 }
 
