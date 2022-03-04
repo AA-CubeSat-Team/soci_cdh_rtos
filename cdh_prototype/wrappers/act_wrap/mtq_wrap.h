@@ -72,4 +72,3 @@ void setMoments(float rqt_x, float rqt_y, float rqt_z, mtq_t * mtq);
 
 #endif /* mtq_wrap_h */
 
-
