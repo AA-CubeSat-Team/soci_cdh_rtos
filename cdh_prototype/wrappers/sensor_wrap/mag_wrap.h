@@ -25,7 +25,7 @@
 #define _lsm303Mag_Gauss_LSB_XY                   1100
 #define _lsm303Mag_Gauss_LSB_Z                    980
 // Address
-#define LSM303_ADDRESS_MAG                        (uint8_t)(0x3C >> 1)   // 0011110x
+#define LSM303_ADDRESS_MAG                  (uint8_t)(0x3C >> 1)   // 0011110x*/
 
 // Registers
 #define LSM303_REGISTER_MAG_CRA_REG_M             0x00
@@ -56,7 +56,7 @@ typedef struct _Mag
 
 extern mag_t Mag1, Mag2, Mag3;
 
-void readRegsMag(uint8_t reg, uint8_t *value, uint8_t valueSize, mag_t * Mag);
+void readRegsMag(uint8_t reg, uint8_t * value, uint8_t valueSize, mag_t * Mag);
 void writeRegMag(uint8_t reg, uint8_t value, mag_t * Mag);
 
 #if ARDUINO_CODE
