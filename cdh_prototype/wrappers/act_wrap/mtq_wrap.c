@@ -1,5 +1,6 @@
 
 #include "mtq_wrap.h"
+#include "com_protocol_helper.h"
 
 #define lowByte(w) ((uint8_t) ((w) & 0xff))
 
@@ -16,7 +17,7 @@ uint8_t readRegMtq(uint8_t reg, mtq_t * mtq) {
     return Wire.read();
   #else
 	uint8_t value;
-    I2C_request(mtq->mtqHandle, PWM_ADDR, reg, &value, 1);
+    I2C_request(mtq->mtqHandle, &LPI2C1_masterTransfer, PWM_ADDR, reg, &value, 1);
     return value;
   #endif
 }
@@ -28,7 +29,10 @@ void writeRegMtq(uint8_t reg, uint8_t value, mtq_t * mtq) {
   Wire.write((uint8_t)value);
   Wire.endTransmission();
 #else
-  I2C_send(mtq->mtqHandle, PWM_ADDR, reg, &value, 1);
+  uint8_t send [2];
+  send[0] = reg;
+  send[1] = value;
+  I2C_send(mtq->mtqHandle, &LPI2C1_masterTransfer, PWM_ADDR, 0, send, 2);
 #endif
 }
 
@@ -42,7 +46,7 @@ void writeRegsMtq(uint8_t reg, uint8_t values[4], mtq_t * mtq) {
     }
     Wire.endTransmission();
   #else
-    I2C_send(mtq->mtqHandle, PWM_ADDR, reg, values, 4);
+    I2C_send(mtq->mtqHandle, &LPI2C1_masterTransfer, PWM_ADDR, reg, values, 4);
   #endif
 }
 
@@ -62,7 +66,7 @@ void SetPWMFreq(float freq, mtq_t * mtq) {
 
   uint8_t oldmode = readRegMtq(PCA9685_MODE1, mtq);
   uint8_t newmode = (oldmode & ~MODE1_RESTART) | MODE1_SLEEP; // sleep
-  writeRegMtq(PCA9685_MODE1, newmode, mtq);                             // go to sleep
+  writeRegMtq(PCA9685_MODE1, newmode, mtq);                   // go to sleep
   writeRegMtq(PCA9685_PRESCALE, prescale, mtq); // set the prescaler
   writeRegMtq(PCA9685_MODE1, oldmode, mtq);
 
@@ -178,36 +182,3 @@ void setMoments(float rqt_x, float rqt_y, float rqt_z, mtq_t * mtq)
 	    writeRegsMtq(Z_NEG_ADDR, offData, mtq);
 	}
 }
-
-//void writeFeedbackMtq(mtq_t * mtq, mtqFeed_t * mtqFeed) {
-//
-//  // Create union of shared memory space
-//  union {
-//    float fData;
-//    uint8_t tempArr[4];
-//  } u1;
-//  union {
-//    float fData;
-//    uint8_t tempArr[4];
-//  } u2;
-//  union {
-//    float fData;
-//    uint8_t tempArr[4];
-//  } u3;
-//
-//  // Overite bytes of union with float variable
-//  u1.fData = mtq->requestedMoment[0];
-//  u2.fData = mtq->requestedMoment[1];
-//  u3.fData = mtq->requestedMoment[2];
-//
-//  uint8_t sendBytes[12];
-//  for (uint8_t i = 0; i < 4; i++) {
-//	  sendBytes[i] = u1.tempArr[i];
-//	  sendBytes[i+4] = u2.tempArr[i];
-//	  sendBytes[i+8] = u3.tempArr[i];
-//  }
-//
-//  I2C_send(mtqFeed->mtqFeedHandle, FEED_ADDR, 0xF7, sendBytes, 12);
-//}
-
-
