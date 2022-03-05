@@ -54,9 +54,9 @@ void com_task(void *pvParameters)
 //	PRINTF("CONFIGURING THE RADIO\n");
 //	com_radio_init();
 
-	//PRINTF("Testing com_init() function:\n");
-	//com_init();
-	//PRINTF("\n");
+	PRINTF("Testing com_init() function:\n");
+	com_init();
+	PRINTF("\n");
 
 	//PRINTF("Testing com_healthcheck() function:\n");
 	//com_healthcheck(); // exits command mode afterwards
@@ -70,21 +70,21 @@ void com_task(void *pvParameters)
 	//com_set_burn_wire2();
 	//PRINTF("\n");
 
-	PRINTF("Testing checkDeploy()\n");
-	com_i2c_checkDeploy();
-	PRINTF("\n");
-
-	PRINTF("Testing deployAntenna()\n");
-	com_deployAntenna();
-	//com_deployAntenna_algorithmTwo();
-	PRINTF("\n");
-
-	PRINTF("Testing checkDeploy()\n");
-	com_i2c_checkDeploy();
-	PRINTF("\n");
-
-	PRINTF("Clearing commands()\n");
-	com_clearAntennaCommands();
+//	PRINTF("Testing checkDeploy()\n");
+//	com_i2c_checkDeploy();
+//	PRINTF("\n");
+//
+//	PRINTF("Testing deployAntenna()\n");
+//	com_deployAntenna();
+//	//com_deployAntenna_algorithmTwo();
+//	PRINTF("\n");
+//
+//	PRINTF("Testing checkDeploy()\n");
+//	com_i2c_checkDeploy();
+//	PRINTF("\n");
+//
+//	PRINTF("Clearing commands()\n");
+//	com_clearAntennaCommands();
 
 #else
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms

@@ -76,7 +76,8 @@ static char START_OF_HEADER = 0x01;
 static bool DEALER= false;
 
 //Initialize all the commands we will use
-static char set_dealer_mode_buf[] = {0x01, 0x44, 0x00, 0xBB};
+static char set_dealer_mode_buf[] = {0x01, 0x44, 0x01, 0xBA};
+static char set_user_level_mode_buf[] = {0x01, 0x44, 0x00, 0xBB};
 static char set_current_power[] = {0x01, 0x71, 0x01, 0x8D};//set to 0.5W, Changed checksum, from 0x8E to 0x8D
 static char get_current_power[] = {0x01, 0x72, 0x8E};
 static char set_tx_freq[] = {0x01, 0x37, 0x01, 0x19, 0xf5, 0xf7, 0x30, 0x92, 0x00};//435.6MHz channel 3 //{0x01, 0x37, 0x03, 0x19, 0xf5, 0xf7, 0x30, 0x90, 0x00}; //set to 335MHz @ channel 3
@@ -85,7 +86,7 @@ static char get_tx_freq[] = {0x01, 0x3B, 0x03, 0xC1}; // haven't tested
 static char get_rx_freq[] = {0x01, 0x3A, 0x03, 0xC2}; // haven't tested
 static char set_channel[] = {0x01, 0x03, 0x03, 0xF9}; //set to channel 3 // Rithu edit: changed checksum, need to test for correctness
 static char set_bandwidth[] = {0x01, 0x70, 0x04, 0x01, 0x8A}; //set to 12.5k
-static char set_modulation[] = {0x01, 0x2b, 0x01, 0xe1, 0x00}; //last 2 should be replaced when setting is determined
+static char set_modulation[] = {0x01, 0x2b, 0x00, 0xD4, 0x00}; //last 2 should be replaced when setting is determined
 static char program_buf[] = {0x01, 0x1E, 0xE1};
 static char warm_reset[] = {0x01, 0x1D, 0x01, 0xE1};
 static char set_led_rx[] = {0x70, 0x36, 0x00, 0x5A}; // haven't tested //checksum = 0xC9? Not sure since starting value is 0x70
@@ -93,10 +94,11 @@ static char set_led_rx[] = {0x70, 0x36, 0x00, 0x5A}; // haven't tested //checksu
 
 //Program the expected responses for each command
 static char set_dealer_response[] = {0x01, 0xC4, 0x00, 0x3B}; 
+static char set_user_level_mode_response[] = {0x01, 0xC4, 0x00, 0x3B};
 static char set_power_response[] = {0x01, 0xF1, 0x00, 0x0E}; //Changed checksum from 0x0F to 0x0E
 static char get_power_response[] = {0x01, 0xF2, 0x01, 0x0C}; //Changed checksum from 0x0D to 0x0C
-static char set_tx_freq_response[] = {0x01, 0xB7, 0x00}; //TBD once we figure out what to value to set it to
-static char set_rx_freq_response[] = {0x01, 0xB9, 0x00}; //TBD once we figure out what to value to set it to
+static char set_tx_freq_response[] = {0x01, 0xB7, 0x00, 0x48}; //TBD once we figure out what to value to set it to
+static char set_rx_freq_response[] = {0x01, 0xB9, 0x00, 0x46}; //TBD once we figure out what to value to set it to
 static char set_channel_response[] = {0x01, 0x83, 0x00, 0x7C};
 static char set_bandwidth_response[] = {0x01, 0xF0, 0x00, 0x0F}; //Changed checksum from 0x10 to 0x0F
 static char set_modulation_response[] = {0x01, 0xAB}; //TBD
@@ -340,7 +342,7 @@ bool com_healthcheck() //checks power
 	}
 	exitCommandMode();
 	PRINTF("COM is not operating properly. Trying to reconfigure.\r\n");
-	//configRadio();
+	configRadio();
 	return false;
 }
 
@@ -677,6 +679,18 @@ static bool setDealerMode() {
      return false;
 }
 
+static bool setUserLevelMode() {
+	int sizeOfTx = sizeof(set_user_level_mode_buf) / sizeof(set_user_level_mode_buf[0]);
+	int sizeExpectedResponse = sizeof(set_user_level_mode_response) / sizeof(set_user_level_mode_response[0]);
+    bool successDealer = sendConfigCommand(set_user_level_mode_buf, set_user_level_mode_response, sizeOfTx, sizeExpectedResponse);
+    if (successDealer) {
+        PRINTF("Dealer allows user access\n");
+        return true;
+    }
+     PRINTF("Failure to change dealer mode\n");
+     return false;
+}
+
 
 //Set to a default channel of 1
 static bool setChannel() {
@@ -802,22 +816,44 @@ static bool getPower() {
 static void configRadio(){
     bool checkMode = enterCommandMode();
     PRINTF("Entering command mode\n");
+    PRINTF("\n");
+
     bool checkDealerMode = setDealerMode();
-    PRINTF("Setting Dealer Mode off\n");
+    PRINTF("Setting Dealer Mode on\n");
+    PRINTF("\n");
+
     bool checkChannel = setChannel();
     PRINTF("Setting Channel\n");
+    PRINTF("\n");
+
     bool checkRxFreq = setRxFreq();
     PRINTF("Setting Rx Frequency\n");
+    PRINTF("\n");
+
     bool checkTxFreq = setTxFreq();
     PRINTF("Setting Tx Frequency\n");
+    PRINTF("\n");
+
     bool checkBandwidth = setBandwidth();
     PRINTF("Setting Bandwidth\n");
+    PRINTF("\n");
+
     bool checkPower = setPower();
     PRINTF("Setting Power.\n");
+    PRINTF("\n");
+
     bool checkModulation = setModulation();
     PRINTF("Setting Modulation\n");
+    PRINTF("\n");
+
+    bool checkUserLevelMode = setUserLevelMode();
+    PRINTF("Setting Dealer Mode off\n");
+    PRINTF("\n");
+
     bool checkProgramming = setProgramming();
     PRINTF("Programming to memory\n");
+    PRINTF("\n");
+
     exitCommandMode();
 
     PRINTF("checkMode: %d\n", checkMode);
@@ -828,10 +864,11 @@ static void configRadio(){
     PRINTF("checkBandwidth: %d\n", checkBandwidth);
     PRINTF("checkPower: %d\n", checkPower);
     PRINTF("checkModulation: %d\n", checkModulation);
+    PRINTF("checkMode: %d\n", checkUserLevelMode);
     PRINTF("checkProgramming: %d\n", checkProgramming);
 
     if (checkMode && checkChannel && checkRxFreq && checkTxFreq && checkBandwidth
-    && checkBandwidth && checkModulation && checkProgramming && exit) {
+    && checkBandwidth && checkModulation && checkProgramming && checkUserLevelMode && exit) {
         PRINTF("Radio Properly Configured\n");
     } else {
         PRINTF("Error configuring radio\n");
