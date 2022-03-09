@@ -7,7 +7,7 @@
 #include <Arduino.h>
 #endif
 
-//rw_data_t rw1, rw2, rw3, rw4;    // saving SRAM
+rw_data_t rw0, rw1, rw2, rw3;    // saving SRAM
 
 void reqPacketProcess(uint8_t *req_payload_pt, uint8_t *req_packet_pt, uint8_t *req_payload_len_pt, uint8_t *req_packet_len_pt) { // --- --- --- --- --- --- --- --- ---
   uint8_t req_array_A[MAX_REQ_PACKET] = {0}; // need to allocate max possible size of uint8_t
