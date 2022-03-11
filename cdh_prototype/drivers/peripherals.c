@@ -312,118 +312,6 @@ static void LPI2C2_init(void) {
 }
 
 /***********************************************************************************************************************
- * LPUART3 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'LPUART3'
-- type: 'lpuart'
-- mode: 'freertos'
-- custom_name_enabled: 'false'
-- type_id: 'lpuart_54a65a580e3462acdbacefd5299e0cac'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'LPUART3'
-- config_sets:
-  - fsl_lpuart_freertos:
-    - lpuart_rtos_configuration:
-      - clockSource: 'LpuartClock'
-      - srcclk: 'BOARD_BootClockRUN'
-      - baudrate: '115200'
-      - parity: 'kLPUART_ParityDisabled'
-      - stopbits: 'kLPUART_OneStopBit'
-      - buffer_size: '64'
-      - enableRxRTS: 'false'
-      - enableTxCTS: 'false'
-      - txCtsSource: 'kLPUART_CtsSourcePin'
-      - txCtsConfig: 'kLPUART_CtsSampleAtStart'
-    - interrupt_rx_tx:
-      - IRQn: 'LPUART3_IRQn'
-      - enable_priority: 'true'
-      - priority: '5'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-lpuart_rtos_handle_t LPUART3_rtos_handle;
-lpuart_handle_t LPUART3_lpuart_handle;
-uint8_t LPUART3_background_buffer[LPUART3_BACKGROUND_BUFFER_SIZE];
-lpuart_rtos_config_t LPUART3_rtos_config = {
-  .base = LPUART3_PERIPHERAL,
-  .baudrate = 115200UL,
-  .srcclk = 80000000UL,
-  .parity = kLPUART_ParityDisabled,
-  .stopbits = kLPUART_OneStopBit,
-  .buffer = LPUART3_background_buffer,
-  .buffer_size = LPUART3_BACKGROUND_BUFFER_SIZE,
-  .enableRxRTS = false,
-  .enableTxCTS = false,
-  .txCtsSource = kLPUART_CtsSourcePin,
-  .txCtsConfig = kLPUART_CtsSampleAtStart,
-};
-
-static void LPUART3_init(void) {
-  /* LPUART rtos initialization */
-  LPUART_RTOS_Init(&LPUART3_rtos_handle, &LPUART3_lpuart_handle, &LPUART3_rtos_config);
-  /* Interrupt vector LPUART3_IRQn priority settings in the NVIC. */
-  NVIC_SetPriority(LPUART3_IRQN, LPUART3_IRQ_PRIORITY);
-}
-
-/***********************************************************************************************************************
- * LPUART4 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'LPUART4'
-- type: 'lpuart'
-- mode: 'freertos'
-- custom_name_enabled: 'false'
-- type_id: 'lpuart_54a65a580e3462acdbacefd5299e0cac'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'LPUART4'
-- config_sets:
-  - fsl_lpuart_freertos:
-    - lpuart_rtos_configuration:
-      - clockSource: 'LpuartClock'
-      - srcclk: 'BOARD_BootClockRUN'
-      - baudrate: '115200'
-      - parity: 'kLPUART_ParityDisabled'
-      - stopbits: 'kLPUART_OneStopBit'
-      - buffer_size: '64'
-      - enableRxRTS: 'false'
-      - enableTxCTS: 'false'
-      - txCtsSource: 'kLPUART_CtsSourcePin'
-      - txCtsConfig: 'kLPUART_CtsSampleAtStart'
-    - interrupt_rx_tx:
-      - IRQn: 'LPUART4_IRQn'
-      - enable_priority: 'true'
-      - priority: '5'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-lpuart_rtos_handle_t LPUART4_rtos_handle;
-lpuart_handle_t LPUART4_lpuart_handle;
-uint8_t LPUART4_background_buffer[LPUART4_BACKGROUND_BUFFER_SIZE];
-lpuart_rtos_config_t LPUART4_rtos_config = {
-  .base = LPUART4_PERIPHERAL,
-  .baudrate = 115200UL,
-  .srcclk = 80000000UL,
-  .parity = kLPUART_ParityDisabled,
-  .stopbits = kLPUART_OneStopBit,
-  .buffer = LPUART4_background_buffer,
-  .buffer_size = LPUART4_BACKGROUND_BUFFER_SIZE,
-  .enableRxRTS = false,
-  .enableTxCTS = false,
-  .txCtsSource = kLPUART_CtsSourcePin,
-  .txCtsConfig = kLPUART_CtsSampleAtStart,
-};
-
-static void LPUART4_init(void) {
-  /* LPUART rtos initialization */
-  LPUART_RTOS_Init(&LPUART4_rtos_handle, &LPUART4_lpuart_handle, &LPUART4_rtos_config);
-  /* Interrupt vector LPUART4_IRQn priority settings in the NVIC. */
-  NVIC_SetPriority(LPUART4_IRQN, LPUART4_IRQ_PRIORITY);
-}
-
-/***********************************************************************************************************************
  * LPI2C3 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -586,6 +474,118 @@ static void LPSPI1_init(void) {
 }
 
 /***********************************************************************************************************************
+ * LPUART3 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'LPUART3'
+- type: 'lpuart'
+- mode: 'freertos'
+- custom_name_enabled: 'false'
+- type_id: 'lpuart_bf01db7d964092f3cf860852cba17f7e'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'LPUART3'
+- config_sets:
+  - fsl_lpuart_freertos:
+    - lpuart_rtos_configuration:
+      - clockSource: 'LpuartClock'
+      - srcclk: 'BOARD_BootClockRUN'
+      - baudrate: '115200'
+      - parity: 'kLPUART_ParityDisabled'
+      - stopbits: 'kLPUART_OneStopBit'
+      - buffer_size: '64'
+      - enableRxRTS: 'false'
+      - enableTxCTS: 'false'
+      - txCtsSource: 'kLPUART_CtsSourcePin'
+      - txCtsConfig: 'kLPUART_CtsSampleAtStart'
+    - interrupt_rx_tx:
+      - IRQn: 'LPUART3_IRQn'
+      - enable_priority: 'true'
+      - priority: '5'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+lpuart_rtos_handle_t LPUART3_rtos_handle;
+lpuart_handle_t LPUART3_lpuart_handle;
+uint8_t LPUART3_background_buffer[LPUART3_BACKGROUND_BUFFER_SIZE];
+lpuart_rtos_config_t LPUART3_rtos_config = {
+  .base = LPUART3_PERIPHERAL,
+  .baudrate = 115200UL,
+  .srcclk = 80000000UL,
+  .parity = kLPUART_ParityDisabled,
+  .stopbits = kLPUART_OneStopBit,
+  .buffer = LPUART3_background_buffer,
+  .buffer_size = LPUART3_BACKGROUND_BUFFER_SIZE,
+  .enableRxRTS = false,
+  .enableTxCTS = false,
+  .txCtsSource = kLPUART_CtsSourcePin,
+  .txCtsConfig = kLPUART_CtsSampleAtStart,
+};
+
+static void LPUART3_init(void) {
+  /* LPUART rtos initialization */
+  LPUART_RTOS_Init(&LPUART3_rtos_handle, &LPUART3_lpuart_handle, &LPUART3_rtos_config);
+  /* Interrupt vector LPUART3_IRQn priority settings in the NVIC. */
+  NVIC_SetPriority(LPUART3_IRQN, LPUART3_IRQ_PRIORITY);
+}
+
+/***********************************************************************************************************************
+ * LPUART4 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'LPUART4'
+- type: 'lpuart'
+- mode: 'freertos'
+- custom_name_enabled: 'false'
+- type_id: 'lpuart_bf01db7d964092f3cf860852cba17f7e'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'LPUART4'
+- config_sets:
+  - fsl_lpuart_freertos:
+    - lpuart_rtos_configuration:
+      - clockSource: 'LpuartClock'
+      - srcclk: 'BOARD_BootClockRUN'
+      - baudrate: '56700'
+      - parity: 'kLPUART_ParityDisabled'
+      - stopbits: 'kLPUART_OneStopBit'
+      - buffer_size: '64'
+      - enableRxRTS: 'false'
+      - enableTxCTS: 'false'
+      - txCtsSource: 'kLPUART_CtsSourcePin'
+      - txCtsConfig: 'kLPUART_CtsSampleAtStart'
+    - interrupt_rx_tx:
+      - IRQn: 'LPUART4_IRQn'
+      - enable_priority: 'true'
+      - priority: '5'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+lpuart_rtos_handle_t LPUART4_rtos_handle;
+lpuart_handle_t LPUART4_lpuart_handle;
+uint8_t LPUART4_background_buffer[LPUART4_BACKGROUND_BUFFER_SIZE];
+lpuart_rtos_config_t LPUART4_rtos_config = {
+  .base = LPUART4_PERIPHERAL,
+  .baudrate = 56700UL,
+  .srcclk = 80000000UL,
+  .parity = kLPUART_ParityDisabled,
+  .stopbits = kLPUART_OneStopBit,
+  .buffer = LPUART4_background_buffer,
+  .buffer_size = LPUART4_BACKGROUND_BUFFER_SIZE,
+  .enableRxRTS = false,
+  .enableTxCTS = false,
+  .txCtsSource = kLPUART_CtsSourcePin,
+  .txCtsConfig = kLPUART_CtsSampleAtStart,
+};
+
+static void LPUART4_init(void) {
+  /* LPUART rtos initialization */
+  LPUART_RTOS_Init(&LPUART4_rtos_handle, &LPUART4_lpuart_handle, &LPUART4_rtos_config);
+  /* Interrupt vector LPUART4_IRQn priority settings in the NVIC. */
+  NVIC_SetPriority(LPUART4_IRQN, LPUART4_IRQ_PRIORITY);
+}
+
+/***********************************************************************************************************************
  * LPUART1 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -595,7 +595,7 @@ instance:
 - type: 'lpuart'
 - mode: 'freertos'
 - custom_name_enabled: 'false'
-- type_id: 'lpuart_54a65a580e3462acdbacefd5299e0cac'
+- type_id: 'lpuart_bf01db7d964092f3cf860852cba17f7e'
 - functional_group: 'BOARD_InitPeripherals'
 - peripheral: 'LPUART1'
 - config_sets:
@@ -662,10 +662,10 @@ void BOARD_InitPeripherals(void)
   GPT_init();
   LPI2C1_init();
   LPI2C2_init();
-  LPUART3_init();
-  LPUART4_init();
   LPI2C3_init();
   LPSPI1_init();
+  LPUART3_init();
+  LPUART4_init();
   LPUART1_init();
   /* Common post-initialization */
   BOARD_InitPeripherals_CommonPostInit();

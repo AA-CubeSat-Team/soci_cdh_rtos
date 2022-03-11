@@ -4,3 +4,4 @@
 **/Backup/
 **/*.bak
 **/.~lock.*
+/.metadata/

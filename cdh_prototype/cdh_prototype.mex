@@ -493,16 +493,6 @@
                   <data type="Version">2.2.0</data>
                </feature>
             </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="LPUART Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
-               <feature name="enabled" evaluation="equal">
-                  <data type="Boolean">true</data>
-               </feature>
-            </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="Unsupported version of the LPUART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
-               <feature name="version" evaluation="greaterOrEqual">
-                  <data type="Version">2.2.8</data>
-               </feature>
-            </dependency>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.lpspi" description="LPSPI Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
                   <data type="Boolean">true</data>
@@ -513,6 +503,16 @@
                   <data type="Version">2.0.3</data>
                </feature>
             </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="LPUART Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
+               <feature name="enabled" evaluation="equal">
+                  <data type="Boolean">true</data>
+               </feature>
+            </dependency>
+            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="Unsupported version of the LPUART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
+               <feature name="version" evaluation="equivalent">
+                  <data type="Version">2.5.1</data>
+               </feature>
+            </dependency>
          </dependencies>
          <generated_project_files>
             <file path="drivers/peripherals.c" update_enabled="true"/>
@@ -520,6 +520,7 @@
          </generated_project_files>
          <peripherals_profile>
             <processor_version>11.0.1</processor_version>
+            <ignored_component_migration_offer/>
          </peripherals_profile>
          <functional_groups>
             <functional_group name="BOARD_InitPeripherals" uuid="866434d8-d5d8-49f5-9bd0-90c806985966" called_from_default_init="true" id_prefix="" core="core0">
@@ -581,56 +582,6 @@
                         <data type="Version">2.2.0</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART3.uart_tx" description="Signal TX of the peripheral LPUART3 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART3.uart_rx" description="Signal RX of the peripheral LPUART3 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The fsl_uart_freertos driver is missing in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="enabled" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The compatible version of the fsl_uart_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="version" evaluation="compatible">
-                        <data type="Version">2.2.8</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="ClockOutput" resourceId="UART_CLK_ROOT" description="UART_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="frequency" evaluation="greaterThan">
-                        <data type="Frequency" unit="Hz">0</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART4.uart_tx" description="Signal TX of the peripheral LPUART4 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART4.uart_rx" description="Signal RX of the peripheral LPUART4 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The fsl_uart_freertos driver is missing in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="enabled" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The compatible version of the fsl_uart_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="version" evaluation="compatible">
-                        <data type="Version">2.2.8</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="ClockOutput" resourceId="UART_CLK_ROOT" description="UART_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="frequency" evaluation="greaterThan">
-                        <data type="Frequency" unit="Hz">0</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="ClockOutput" resourceId="LPI2C_CLK_ROOT" description="LPI2C_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="frequency" evaluation="greaterThan">
                         <data type="Frequency" unit="Hz">0</data>
@@ -686,6 +637,56 @@
                         <data type="Version">2.0.2</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART3.uart_tx" description="Signal TX of the peripheral LPUART3 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART3.uart_rx" description="Signal RX of the peripheral LPUART3 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The fsl_uart_freertos driver is missing in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The compatible version of the fsl_uart_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.5.0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="UART_CLK_ROOT" description="UART_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART4.uart_tx" description="Signal TX of the peripheral LPUART4 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART4.uart_rx" description="Signal RX of the peripheral LPUART4 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The fsl_uart_freertos driver is missing in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="enabled" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The compatible version of the fsl_uart_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="version" evaluation="compatible">
+                        <data type="Version">2.5.0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="UART_CLK_ROOT" description="UART_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART1.uart_tx" description="Signal TX of the peripheral LPUART1 is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="routed" evaluation="equal">
                         <data type="Boolean">true</data>
@@ -703,7 +704,7 @@
                   </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart_freertos" description="The compatible version of the fsl_uart_freertos driver is not available in the project (required for the FreeRTOS mode)." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="version" evaluation="compatible">
-                        <data type="Version">2.2.8</data>
+                        <data type="Version">2.5.0</data>
                      </feature>
                   </dependency>
                   <dependency resourceType="ClockOutput" resourceId="UART_CLK_ROOT" description="UART_CLK_ROOT is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
@@ -863,48 +864,6 @@
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="LPUART3" uuid="fba39f30-fb5d-4d7f-9a4a-acc50f590a77" type="lpuart" type_id="lpuart_54a65a580e3462acdbacefd5299e0cac" mode="freertos" peripheral="LPUART3" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="fsl_lpuart_freertos">
-                        <struct name="lpuart_rtos_configuration">
-                           <setting name="clockSource" value="LpuartClock"/>
-                           <setting name="srcclk" value="BOARD_BootClockRUN"/>
-                           <setting name="baudrate" value="115200"/>
-                           <setting name="parity" value="kLPUART_ParityDisabled"/>
-                           <setting name="stopbits" value="kLPUART_OneStopBit"/>
-                           <setting name="buffer_size" value="64"/>
-                           <setting name="enableRxRTS" value="false"/>
-                           <setting name="enableTxCTS" value="false"/>
-                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
-                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
-                        </struct>
-                        <struct name="interrupt_rx_tx">
-                           <setting name="IRQn" value="LPUART3_IRQn"/>
-                           <setting name="enable_priority" value="true"/>
-                           <setting name="priority" value="5"/>
-                        </struct>
-                     </config_set>
-                  </instance>
-                  <instance name="LPUART4" uuid="a82d276f-909d-4189-a586-cd9dcd18a0a7" type="lpuart" type_id="lpuart_54a65a580e3462acdbacefd5299e0cac" mode="freertos" peripheral="LPUART4" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="fsl_lpuart_freertos">
-                        <struct name="lpuart_rtos_configuration">
-                           <setting name="clockSource" value="LpuartClock"/>
-                           <setting name="srcclk" value="BOARD_BootClockRUN"/>
-                           <setting name="baudrate" value="115200"/>
-                           <setting name="parity" value="kLPUART_ParityDisabled"/>
-                           <setting name="stopbits" value="kLPUART_OneStopBit"/>
-                           <setting name="buffer_size" value="64"/>
-                           <setting name="enableRxRTS" value="false"/>
-                           <setting name="enableTxCTS" value="false"/>
-                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
-                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
-                        </struct>
-                        <struct name="interrupt_rx_tx">
-                           <setting name="IRQn" value="LPUART4_IRQn"/>
-                           <setting name="enable_priority" value="true"/>
-                           <setting name="priority" value="5"/>
-                        </struct>
-                     </config_set>
-                  </instance>
                   <instance name="LPI2C3" uuid="14d02b31-e23f-4688-964e-42e491dfe227" type="lpi2c" type_id="lpi2c_6b71962515c3208facfccd030afebc98" mode="master" peripheral="LPI2C3" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="main">
                         <setting name="clockSource" value="Lpi2cClock"/>
@@ -995,27 +954,6 @@
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="LPUART1" uuid="97226141-0fa4-4ace-bd4e-a1fffb0e20e7" type="lpuart" type_id="lpuart_54a65a580e3462acdbacefd5299e0cac" mode="freertos" peripheral="LPUART1" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="fsl_lpuart_freertos">
-                        <struct name="lpuart_rtos_configuration">
-                           <setting name="clockSource" value="LpuartClock"/>
-                           <setting name="srcclk" value="BOARD_BootClockRUN"/>
-                           <setting name="baudrate" value="115200"/>
-                           <setting name="parity" value="kLPUART_ParityDisabled"/>
-                           <setting name="stopbits" value="kLPUART_OneStopBit"/>
-                           <setting name="buffer_size" value="64"/>
-                           <setting name="enableRxRTS" value="false"/>
-                           <setting name="enableTxCTS" value="false"/>
-                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
-                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
-                        </struct>
-                        <struct name="interrupt_rx_tx">
-                           <setting name="IRQn" value="LPUART1_IRQn"/>
-                           <setting name="enable_priority" value="true"/>
-                           <setting name="priority" value="5"/>
-                        </struct>
-                     </config_set>
-                  </instance>
                   <instance name="GPIO1" uuid="50ef7558-722e-4e7a-b971-55459bbd1f6c" type="igpio" type_id="igpio_b1c1fa279aa7069dca167502b8589cb7" mode="GPIO" peripheral="GPIO1" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="fsl_gpio">
                         <setting name="enable_irq_comb_0_15" value="false"/>
@@ -1097,6 +1035,69 @@
                            <setting name="enable_priority" value="false"/>
                            <setting name="priority" value="0"/>
                            <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="LPUART3" uuid="fba39f30-fb5d-4d7f-9a4a-acc50f590a77" type="lpuart" type_id="lpuart_bf01db7d964092f3cf860852cba17f7e" mode="freertos" peripheral="LPUART3" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_lpuart_freertos">
+                        <struct name="lpuart_rtos_configuration">
+                           <setting name="clockSource" value="LpuartClock"/>
+                           <setting name="srcclk" value="BOARD_BootClockRUN"/>
+                           <setting name="baudrate" value="115200"/>
+                           <setting name="parity" value="kLPUART_ParityDisabled"/>
+                           <setting name="stopbits" value="kLPUART_OneStopBit"/>
+                           <setting name="buffer_size" value="64"/>
+                           <setting name="enableRxRTS" value="false"/>
+                           <setting name="enableTxCTS" value="false"/>
+                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
+                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
+                        </struct>
+                        <struct name="interrupt_rx_tx">
+                           <setting name="IRQn" value="LPUART3_IRQn"/>
+                           <setting name="enable_priority" value="true"/>
+                           <setting name="priority" value="5"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="LPUART4" uuid="a82d276f-909d-4189-a586-cd9dcd18a0a7" type="lpuart" type_id="lpuart_bf01db7d964092f3cf860852cba17f7e" mode="freertos" peripheral="LPUART4" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_lpuart_freertos">
+                        <struct name="lpuart_rtos_configuration">
+                           <setting name="clockSource" value="LpuartClock"/>
+                           <setting name="srcclk" value="BOARD_BootClockRUN"/>
+                           <setting name="baudrate" value="56700"/>
+                           <setting name="parity" value="kLPUART_ParityDisabled"/>
+                           <setting name="stopbits" value="kLPUART_OneStopBit"/>
+                           <setting name="buffer_size" value="64"/>
+                           <setting name="enableRxRTS" value="false"/>
+                           <setting name="enableTxCTS" value="false"/>
+                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
+                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
+                        </struct>
+                        <struct name="interrupt_rx_tx">
+                           <setting name="IRQn" value="LPUART4_IRQn"/>
+                           <setting name="enable_priority" value="true"/>
+                           <setting name="priority" value="5"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="LPUART1" uuid="97226141-0fa4-4ace-bd4e-a1fffb0e20e7" type="lpuart" type_id="lpuart_bf01db7d964092f3cf860852cba17f7e" mode="freertos" peripheral="LPUART1" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="fsl_lpuart_freertos">
+                        <struct name="lpuart_rtos_configuration">
+                           <setting name="clockSource" value="LpuartClock"/>
+                           <setting name="srcclk" value="BOARD_BootClockRUN"/>
+                           <setting name="baudrate" value="115200"/>
+                           <setting name="parity" value="kLPUART_ParityDisabled"/>
+                           <setting name="stopbits" value="kLPUART_OneStopBit"/>
+                           <setting name="buffer_size" value="64"/>
+                           <setting name="enableRxRTS" value="false"/>
+                           <setting name="enableTxCTS" value="false"/>
+                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
+                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
+                        </struct>
+                        <struct name="interrupt_rx_tx">
+                           <setting name="IRQn" value="LPUART1_IRQn"/>
+                           <setting name="enable_priority" value="true"/>
+                           <setting name="priority" value="5"/>
                         </struct>
                      </config_set>
                   </instance>
