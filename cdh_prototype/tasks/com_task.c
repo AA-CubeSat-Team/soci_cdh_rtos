@@ -30,23 +30,23 @@ void com_task(void *pvParameters)
 //	PRINTF("config radio: \n"); TODO: Get right configuration settings
 //	com_radio_init();
 
-//	PRINTF("Testing enterCommandMode function:\n");
-//	com_enterCommandMode();
-//	PRINTF("\n");
+	PRINTF("Testing enterCommandMode function:\n");
+	com_enterCommandMode();
+	PRINTF("\n");
 
-//	Testing if sending a command to the radio (non delay dependent) works
-//	PRINTF("Testing exitCommandMode function:\n");
-//	com_exitCommandMode();
-//	PRINTF("\n");
+	//Testing if sending a command to the radio (non delay dependent) works
+	PRINTF("Testing exitCommandMode function:\n");
+	com_exitCommandMode();
+	PRINTF("\n");
 
 //	Test sending data to radio in data mode
-//	for(int i = 0; i < 10; i++){
-//		PRINTF("Testing data mode: \n");
-//		testSending();
-//		PRINTF("\n");
-//	}
-//	PRINTF("DONE TESTING SENDING \n");
-//	PRINTF("\n");
+	for(int i = 0; i < 10; i++){
+		PRINTF("Testing data mode: \n");
+		testSending();
+		PRINTF("\n");
+	}
+	PRINTF("DONE TESTING SENDING \n");
+	PRINTF("\n");
 
 //	PRINTF("Testing UART w/ Arduino: \n");
 //	UART_test(&LPUART4_rtos_handle);
@@ -54,9 +54,13 @@ void com_task(void *pvParameters)
 //	PRINTF("CONFIGURING THE RADIO\n");
 //	com_radio_init();
 
-	PRINTF("Testing com_init() function:\n");
-	com_init();
-	PRINTF("\n");
+//	PRINTF("Testing com_init() function:\n");
+//	com_init();
+//	PRINTF("\n");
+
+//	 PRINTF("Testing sending an image: \n");
+//	 com_sendImages();
+//	 PRINTF("\n");
 
 	//PRINTF("Testing com_healthcheck() function:\n");
 	//com_healthcheck(); // exits command mode afterwards
