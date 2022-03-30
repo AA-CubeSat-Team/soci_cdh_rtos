@@ -20,11 +20,11 @@ __attribute__((section(".boot_hdr.dcd_data"), used))
 
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: DCDx V2.0
+product: DCDx v3.0
 processor: MIMXRT1021xxxxx
 package_id: MIMXRT1021DAG5A
 mcu_data: ksdk2_0
-processor_version: 9.0.1
+processor_version: 10.0.0
 board: MIMXRT1020-EVK
 output_format: c_array
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/

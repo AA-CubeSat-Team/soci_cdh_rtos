@@ -28,17 +28,19 @@ void com_task(void *pvParameters)
 //	testSending();
 
 	PRINTF("Testing enterCommandMode function:\n");
-	//com_enterCommandMode();
+	com_enterCommandMode();
 	PRINTF("\n");
 
 	//Testing if sending a command to the radio (non delay dependent) works
 	PRINTF("Testing exitCommandMode function:\n");;
-	//com_exitCommandMode();
+	com_exitCommandMode();
 	PRINTF("\n");
 
 	//Test sending data to radio in data mode
 	PRINTF("Testing data mode: \n");
-	testSending();
+	for(int i = 0; i < 10; i++){
+		testSending();
+	}
 	PRINTF("\n");
 
 //	PRINTF("CONFIGURING THE RADIO\n");

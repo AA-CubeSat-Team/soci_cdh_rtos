@@ -6,11 +6,11 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Peripherals v9.0
+product: Peripherals v10.0
 processor: MIMXRT1021xxxxx
 package_id: MIMXRT1021DAG5A
 mcu_data: ksdk2_0
-processor_version: 9.0.1
+processor_version: 10.0.0
 board: MIMXRT1020-EVK
 functionalGroups:
 - name: BOARD_InitPeripherals
@@ -26,6 +26,14 @@ component:
 - global_system_definitions:
   - user_definitions: ''
   - user_includes: ''
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+component:
+- type: 'uart_cmsis_common'
+- type_id: 'uart_cmsis_common_9cb8e302497aa696fdbb5a4fd622c2a8'
+- global_USART_CMSIS_common:
+  - quick_selection: 'default'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -321,7 +329,7 @@ instance:
     - lpuart_rtos_configuration:
       - clockSource: 'LpuartClock'
       - srcclk: 'BOARD_BootClockRUN'
-      - baudrate: '115200'
+      - baudrate: '38400'
       - parity: 'kLPUART_ParityDisabled'
       - stopbits: 'kLPUART_OneStopBit'
       - buffer_size: '64'
@@ -536,6 +544,11 @@ instance:
       - pcsActiveHighOrLow: 'kLPSPI_PcsActiveLow'
       - pinCfg: 'kLPSPI_SdiInSdoOut'
       - dataOutConfig: 'kLpspiDataOutRetained'
+    - allPcsPolarityEnable: 'false'
+    - allPcsPolarity:
+      - kLPSPI_Pcs1Active: 'kLPSPI_PcsActiveHigh'
+      - kLPSPI_Pcs2Active: 'kLPSPI_PcsActiveHigh'
+      - kLPSPI_Pcs3Active: 'kLPSPI_PcsActiveHigh'
     - interrupt_priority:
       - IRQn: 'LPSPI1_IRQn'
       - enable_priority: 'true'

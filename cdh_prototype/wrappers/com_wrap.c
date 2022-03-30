@@ -166,23 +166,24 @@ void testSending(){
 	memset(tx_buffer, 0, sizeof(tx_buffer));
 
 	int start = 97;
-	for(int i = 0; i < 300; i++){
-		char letter = (char) start;
-		PRINTF("0x%c ", letter);
-		tx_buffer[i] = letter;
+//	for(int i = 0; i < 300; i++){
+//		char letter = (char) start;
+//		PRINTF("0x%c ", letter);
+//		tx_buffer[i] = letter;
+//
+//		if(start == 122){
+//			start = 97;
+//		}
+//		else{
+//			start = start + 1;
+//		}
+//	}
 
-		if(start == 122){
-			start = 97;
-		}
-		else{
-			start = start + 1;
-		}
-	}
+	tx_buffer[0] = 0x01;
 
-	delay(1);
-	LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)tx_buffer, 300);
+	LPUART_RTOS_Send(&LPUART3_rtos_handle, (uint8_t *)tx_buffer, 1);
 	PRINTF("WRITE SUCCESS\n");
-	delay(5);
+	delay(1);
 }
 
 
