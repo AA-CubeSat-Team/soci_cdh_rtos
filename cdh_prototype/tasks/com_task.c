@@ -27,16 +27,17 @@ void com_task(void *pvParameters)
 //	PRINTF("TESTING CONTINOUS SENDING\n");
 //	testSending();
 
-	PRINTF("Testing enterCommandMode function:\n");
-	com_enterCommandMode();
-	PRINTF("\n");
+	//PRINTF("Testing enterCommandMode function:\n");
+	//com_enterCommandMode();
+	//PRINTF("\n");
 
-	PRINTF("Testing exitCommandMode function:\n");
-	com_exitCommandMode();
-	PRINTF("\n");
+	//PRINTF("Testing exitCommandMode function:\n");
+	//com_exitCommandMode();
+	//PRINTF("\n");
 
 	PRINTF("CONFIGURING THE RADIO\n");
 	com_radio_init();
+	PRINTF("\n");
 
 	//Test sending data to radio in data mode
 	PRINTF("Testing data mode: \n");

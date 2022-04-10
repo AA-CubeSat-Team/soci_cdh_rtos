@@ -105,8 +105,32 @@
                   </pin>
                   <pin peripheral="LPUART4" signal="RX" pin_num="79" pin_signal="GPIO_AD_B1_11"/>
                   <pin peripheral="LPUART4" signal="TX" pin_num="80" pin_signal="GPIO_AD_B1_10"/>
-                  <pin peripheral="LPUART3" signal="RX" pin_num="93" pin_signal="GPIO_AD_B0_15"/>
-                  <pin peripheral="LPUART3" signal="TX" pin_num="94" pin_signal="GPIO_AD_B0_14"/>
+                  <pin peripheral="LPUART3" signal="RX" pin_num="93" pin_signal="GPIO_AD_B0_15">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Slow"/>
+                        <pin_feature name="software_input_on" value="Disable"/>
+                        <pin_feature name="open_drain" value="Disable"/>
+                        <pin_feature name="speed" value="MHZ_100"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="pull_keeper_enable" value="Disable"/>
+                        <pin_feature name="pull_up_down_config" value="no_init"/>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPUART3" signal="TX" pin_num="94" pin_signal="GPIO_AD_B0_14">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Slow"/>
+                        <pin_feature name="software_input_on" value="Disable"/>
+                        <pin_feature name="open_drain" value="Disable"/>
+                        <pin_feature name="speed" value="MHZ_100"/>
+                        <pin_feature name="drive_strength" value="R0_7"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="pull_keeper_enable" value="Disable"/>
+                        <pin_feature name="pull_up_down_config" value="no_init"/>
+                        <pin_feature name="hysteresis_enable" value="Enable"/>
+                     </pin_features>
+                  </pin>
                   <pin peripheral="LPI2C1" signal="SCL" pin_num="75" pin_signal="GPIO_AD_B1_14">
                      <pin_features>
                         <pin_feature name="slew_rate" value="Slow"/>
@@ -871,10 +895,10 @@
                            <setting name="parity" value="kLPUART_ParityDisabled"/>
                            <setting name="stopbits" value="kLPUART_OneStopBit"/>
                            <setting name="buffer_size" value="64"/>
-                           <setting name="enableRxRTS" value="false"/>
-                           <setting name="enableTxCTS" value="false"/>
-                           <setting name="txCtsSource" value="kLPUART_CtsSourcePin"/>
-                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtStart"/>
+                           <setting name="enableRxRTS" value="true"/>
+                           <setting name="enableTxCTS" value="true"/>
+                           <setting name="txCtsSource" value="kLPUART_CtsSourceMatchResult"/>
+                           <setting name="txCtsConfig" value="kLPUART_CtsSampleAtIdle"/>
                         </struct>
                         <struct name="interrupt_rx_tx">
                            <setting name="IRQn" value="LPUART3_IRQn"/>

@@ -333,10 +333,10 @@ instance:
       - parity: 'kLPUART_ParityDisabled'
       - stopbits: 'kLPUART_OneStopBit'
       - buffer_size: '64'
-      - enableRxRTS: 'false'
-      - enableTxCTS: 'false'
-      - txCtsSource: 'kLPUART_CtsSourcePin'
-      - txCtsConfig: 'kLPUART_CtsSampleAtStart'
+      - enableRxRTS: 'true'
+      - enableTxCTS: 'true'
+      - txCtsSource: 'kLPUART_CtsSourceMatchResult'
+      - txCtsConfig: 'kLPUART_CtsSampleAtIdle'
     - interrupt_rx_tx:
       - IRQn: 'LPUART3_IRQn'
       - enable_priority: 'true'
@@ -354,10 +354,10 @@ lpuart_rtos_config_t LPUART3_rtos_config = {
   .stopbits = kLPUART_OneStopBit,
   .buffer = LPUART3_background_buffer,
   .buffer_size = LPUART3_BACKGROUND_BUFFER_SIZE,
-  .enableRxRTS = false,
-  .enableTxCTS = false,
-  .txCtsSource = kLPUART_CtsSourcePin,
-  .txCtsConfig = kLPUART_CtsSampleAtStart,
+  .enableRxRTS = true,
+  .enableTxCTS = true,
+  .txCtsSource = kLPUART_CtsSourceMatchResult,
+  .txCtsConfig = kLPUART_CtsSampleAtIdle,
 };
 
 static void LPUART3_init(void) {
