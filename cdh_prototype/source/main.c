@@ -14,7 +14,6 @@
 #include "timers.h"
 
 /* Freescale includes. */
-//#include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "fsl_common.h"
 #include "pin_mux.h"
@@ -22,9 +21,8 @@
 #include "board.h"
 
 /* Peripherals includes. */
-//#include "fsl_lpuart_freertos.h"
-//#include "fsl_lpuart.h"
 #include "peripherals.h"
+#include "telemetry.h"
 
 /* Tasks includes.*/
 #include "idle_task.h"
@@ -32,10 +30,7 @@
 #include "gnc_task.h"
 #include "com_task.h"
 
-/* Standard libraries includes.*/
-//#include "semphr.h"
 #include <stdbool.h>
-//#include "semc_sdram.h"
 
 /*******************************************************************************
  * Definitions
@@ -63,6 +58,9 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
+QueueHandle_t queue_IMG;
+QueueHandle_t queue_COM;
+
 /*!
  * @brief main demo function.
  */
@@ -75,6 +73,10 @@ int main(void)
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
+
+    /* Create Queue */
+    queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    queue_COM = xQueueCreate( xQueue_len, sizeof(struct tel));
 
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)

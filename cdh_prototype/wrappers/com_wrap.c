@@ -1,13 +1,3 @@
-/*
- * MCU Pinouts:
-
-COM:
-
-105	GPIO_AD_B0_06	UART1_TX	COM Board
-101	GPIO_AD_B0_07	UART1_RX	COM Board
-83	GPIO_AD_B1_07	ANT_BURN_WIRE1	Antenna Burn Wire 1
-78	GPIO_AD_B1_12	ANT_BURN_WIRE2	Antenna Burn Wire 2
- */
 #include "fsl_gpio.h"
 #include "com_wrap.h"
 #include "fsl_lpuart.h"
@@ -20,6 +10,7 @@ COM:
 #include "peripherals.h"
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
+#include "cdh_prototype.h"
 
 // Rithu: Including com_task.h file here so I can use LPUART1 TODO: Check if this is the right way to include LPUART1
 #include "com_task.h"
@@ -278,18 +269,18 @@ void com_init()
 			kGPIO_DigitalOutput, 0, kGPIO_NoIntmode
 	};
 	// Setting burn wire pins to 0 I think
-	GPIO_PinInit(GPIO1, 23, &gpioConfig); //GPIO_AD_B1_07
-	GPIO_PinInit(GPIO1, 28, &gpioConfig); //GPIO_AD_B1_12
+	GPIO_PinInit(GPIO1, ANTENNA_WIRE_1, &gpioConfig);
+	GPIO_PinInit(GPIO1, ANTENNA_WIRE_2, &gpioConfig);
 }
 
 void com_set_burn_wire1()
 {
-	GPIO_PinWrite(GPIO1, 23, 1); //GPIO_AD_B1_07, J19-1
+	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_1, 1); //GPIO_AD_B1_07, J19-1
 }
 
 void com_set_burn_wire2()
 {
-	GPIO_PinWrite(GPIO1, 28, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
+	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_2, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
 }
 
 
@@ -773,4 +764,93 @@ static void configRadio(){
         PRINTF("Error configuring radio\n");
     }
 
+}
+
+void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready, bool* picture_ready) {
+	if(!gnc_ready) { //get GNC payload
+
+	} else if (!eps_ready) { // get EPS payload
+
+	} else if(!com_ready) { // get COM payload
+
+	} else if(!pictureReady) { // get IMG payload
+		xQueueSend( queue_IMG, &getPicture, ( TickType_t ) 0 ); // get Picture
+	}
+
+	/* EXAMPLE OF HOW IT MIGHT SEND DOWN DATA */
+	if ( xQueueReceive( queue_COM, &(tel_COM), ( TickType_t ) 10 ) == pdPASS ) {
+		// execute IMG cmd
+		switch (tel_COM.cmdID) {
+			case(takePicture):
+				break;
+			case(getPicture):
+				break;
+			case(imgReady):
+				img_ready = true;
+				break;
+			case(setContrast):
+				break;
+			case(setBrightness):
+				break;
+			case(setExposure):
+				break;
+			case(checkStatus):
+				break;
+			case(getPictureSize):
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+void uplink_handshake(uint32_t* cmd_packet_size) {
+	/*
+	* For this portion of the code it should pull data from the background
+	* buffer needed to execute the HMAC Algorithm
+	*/
+	size_t n = 0;
+
+#if COM_ENABLE
+	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
+		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
+		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
+	}
+#elif COSMOS_TEST
+	// receive char
+	u_primary_tel1.crc = 0;
+	u_primary_tel1.packetLength 	=  (uint8_t)GETCHAR();
+	u_primary_tel1.packetID 		=  (uint8_t)GETCHAR();
+	u_primary_tel1.messageLength 	=  (uint8_t)GETCHAR();
+	u_primary_tel1.packetVersion 	=  (uint8_t)GETCHAR();
+	u_primary_tel1.packetType 		=  (uint8_t)GETCHAR();
+	u_primary_tel1.crc 			    |= (uint8_t)GETCHAR();    	// first byte
+	u_primary_tel1.crc 			    |= ((uint8_t)GETCHAR())<<8; // second byte
+
+	u_ack_tel1.packetLength			=  (uint8_t)GETCHAR();
+	u_ack_tel1.packetID 			=  (uint8_t)GETCHAR();
+	u_ack_tel1.ackMessage			=  (uint8_t)GETCHAR();
+	u_ack_tel1.crc 			   	    |= (uint8_t)GETCHAR();    	// first byte
+	u_ack_tel1.crc 			        |= ((uint8_t)GETCHAR())<<8; // second byte
+
+	for(int i = 0; i < u_primary_tel1.messageLength; i++) {
+		u_tel1[i].packetLength 		=  (uint8_t)GETCHAR();
+		u_tel1[i].packetID			=  (uint8_t)GETCHAR();
+		u_tel1[i].packetMessage 	=  (uint8_t)GETCHAR();
+		u_tel1[i].crc				|= (uint8_t)GETCHAR();		// first byte
+		u_tel1[i].crc				|= ((uint8_t)GETCHAR())<<8; // second byte
+	}
+#else // Pseudo code
+	// set up fake data
+#endif
+
+	bool noError = true; // add if receive all function successfully
+
+	/* Process Incoming Message */
+	if(noError) { // successful uplink handshake
+		COM_State = UPLINKING;
+	}
+	// based packet structure
+
+	cmd_packet_size = 0; //set cmd packet size
 }

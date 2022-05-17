@@ -246,21 +246,29 @@ bool UART_test(lpuart_rtos_handle_t *LPUART_rtos_handle)
 	uint8_t recv_buffer[18];
 	int error;
 	int try;
+	try = 0;
 	size_t n = 0;
 	char *send_message     = "123456789123456789";
+	PRINTF("receive buffer size: %d\n", sizeof(recv_buffer));
 
 	while(try < 3) {
 		error = 0;
-
+		PRINTF("Send Message: [%c", send_message[0]);
+		for(int i = 1; i < 18; i++) {
+			PRINTF(", %c", send_message[i]);
+		}
+		PRINTF("]\n");
 		/* Send introduction message. */
 		LPUART_RTOS_Send(&(*LPUART_rtos_handle), (uint8_t *)send_message, strlen(send_message));
 		LPUART_RTOS_Receive(&(*LPUART_rtos_handle), recv_buffer, sizeof(recv_buffer), &n);
-
-		for(int i = 0; i < 18; i++) {
+		PRINTF("Receive Buffer: [%c", recv_buffer[0]);
+		for(int i = 1; i < 18; i++) {
+			PRINTF(", %c", recv_buffer[i]);
 			if(send_message[i] != recv_buffer[i]) {
 				error++;
 			}
 		}
+		PRINTF("]\n");
 		if(error == 0) {
 			try = 3;
 		} else {
