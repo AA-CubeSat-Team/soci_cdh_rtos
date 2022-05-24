@@ -24,27 +24,24 @@ void com_task(void *pvParameters)
 	// Delay to test "soft-break" into command mode via com_init function
 	// delay(1);
 
-//	PRINTF("TESTING CONTINOUS SENDING\n");
-//	testSending();
-
-	PRINTF("Testing enterCommandMode function:\n");
-	com_enterCommandMode();
-	PRINTF("\n");
-
-	PRINTF("Testing exitCommandMode function:\n");
-	com_exitCommandMode();
-	PRINTF("\n");
+//	PRINTF("Testing enterCommandMode function:\n");
+//	com_enterCommandMode();
+//	PRINTF("\n");
+//
+//	PRINTF("Testing exitCommandMode function:\n");
+//	com_exitCommandMode();
+//	PRINTF("\n");
 
 	//PRINTF("CONFIGURING THE RADIO\n");
 	//com_radio_init();
 	//PRINTF("\n");
 
 	//Test sending data to radio in data mode
-	PRINTF("Testing data mode: \n");
-	for(int i = 0; i < 100; i++){
-		testSending();
-	}
-	PRINTF("\n");
+//	PRINTF("Testing data mode: \n");
+//	for(int i = 0; i < 500; i++){
+//		testSending();
+//	}
+//	PRINTF("\n");
 
 
 	//PRINTF("Testing com_healthcheck() function:\n");
@@ -59,9 +56,23 @@ void com_task(void *pvParameters)
 	//com_set_burn_wire2();
 	//PRINTF("\n");
 
-	//PRINTF("Testing checkDeploy()\n");
-	//com_i2c_checkDeploy();
-	//PRINTF("\n");
+
+	PRINTF("Testing checkDeploy()\n");
+	com_i2c_checkDeploy();
+	PRINTF("\n");
+
+//	PRINTF("Testing deployAntenna()\n");
+//	com_deployAntenna();
+//	//com_deployAntenna_algorithmTwo();
+//	PRINTF("\n");
+//
+//	PRINTF("Testing checkDeploy()\n");
+//	com_i2c_checkDeploy();
+//	PRINTF("\n");
+
+	PRINTF("Clearing commands()\n");
+	com_clearAntennaCommands();
+
 
 #else
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms

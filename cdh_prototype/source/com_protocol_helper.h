@@ -17,7 +17,7 @@
 #define RWA2 28U //PcsPin2 AD_B1_12
 #define RWA3 29U //PcsPin3 AD_B1_13
 
-#define SHOW_DATA 0
+#define SHOW_DATA 1
 
 bool UART_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length);
 bool UART_receive(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length, size_t *received);

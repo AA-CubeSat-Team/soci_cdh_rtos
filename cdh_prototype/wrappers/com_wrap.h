@@ -26,6 +26,8 @@ bool com_i2c_checkDeploy(); /* TODO: Test by replacing I2C request with pre-prog
                                program slave Arduino via I2C to send fake antenna response, possibly
                                w/ COM_A as well*/
 
+void com_clearAntennaCommands();
+
 // Rithu: adding these for possible additional checks to see if sendConfigCommand works
 void com_exitCommandMode();
 void com_enterCommandMode();
