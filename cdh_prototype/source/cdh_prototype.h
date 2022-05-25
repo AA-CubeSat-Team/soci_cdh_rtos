@@ -28,7 +28,7 @@
 #if OBC
 #define ANTENNA_WIRE_1 23 // For OBC Board
 #define ANTENNA_WIRE_2 28
-#else
+#else // DEV BOARD
 #define ANTENNA_WIRE_1 19 // For DEV Board
 #define ANTENNA_WIRE_2 18
 #endif

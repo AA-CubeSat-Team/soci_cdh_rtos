@@ -1,7 +1,7 @@
 #include "cdh_prototype.h"
 #include "telemetry.h"
-#include "com_wrap.h"
 #include "com_task.h"
+#include "com_wrap.h"
 #include "com_protocol_helper.h"
 
 //flags to check if there's data to send
@@ -12,7 +12,6 @@ bool image_check = false;
 bool beacon_check = false;
 
 /* Global Variables */
-uint8_t image_CIA[IMG_SIZE];
 uint8_t uplink_recv_buffer[UPLINK_SIZE];
 
 struct u_primary_tel u_primary_tel1;
@@ -21,13 +20,13 @@ struct u_tel u_tel1[MAX_TEL_SIZE];
 
 struct d_primary_tel d_primary_tel1;
 struct d_ack_tel d_ack_tel1;
-struct u_tel u_cmd_tel1[MAX_CMD_SIZE];
+struct u_tel d_cmd_tel1[MAX_CMD_SIZE];
 
 TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 extern bool i2c_com_antennaDeployed;
 
-enum COM_States { INIT, UPLINKING, DOWNLINKING, NORMAL, PASSING } COM_State;
+enum COM_States COM_State;
 
 void com_task(void *pvParameters)
 {
@@ -89,7 +88,7 @@ void com_task(void *pvParameters)
 				// HMAC Algorithm Initialize
 
 				COM_State = NORMAL;
-				vTaskDelayUntil(&xLastWakeTime, xDelayms);
+				vTaskDelay(xDelayms);
 				break;
 
 			case NORMAL:
@@ -105,7 +104,7 @@ void com_task(void *pvParameters)
 					if(!(img_ready & gnc_ready &eps_ready & com_ready)) { // downlink ready?
 						prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
 					}
-					vTaskDelayUntil(&xLastWakeTime, xDelayms);
+					vTaskDelay(xDelayms);
 				}
 				break;
 			case UPLINKING:
@@ -134,11 +133,10 @@ void com_task(void *pvParameters)
 				} else {
 					send_payload();
 					COM_State = NORMAL;
-					vTaskDelayUntil(&xLastWakeTime, xDelayms);
+					vTaskDelay(xDelayms);
 				}
 				//TODO: add tick measure to make sure PASSING is over
 			default:
-				//TODO: is there a way to test if COM is working fine
 				COM_State = INIT;
 				break;
 		}

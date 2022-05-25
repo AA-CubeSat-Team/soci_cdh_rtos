@@ -3,17 +3,17 @@
 #include "fsl_lpuart.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_debug_console.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 #include "peripherals.h"
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
-#include "cdh_prototype.h"
-
-// Rithu: Including com_task.h file here so I can use LPUART1 TODO: Check if this is the right way to include LPUART1
 #include "com_task.h"
+#include "cdh_prototype.h"
 
 #define I2C_COM_RX_SIZE 4
 #define I2C_COM_ANTENNA_SLAVE_ADDRESS 0x33   //should this be 16bit?
@@ -831,9 +831,9 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	* For this portion of the code it should pull data from the background
 	* buffer needed to execute the HMAC Algorithm
 	*/
-	size_t n = 0;
 
 #if COM_ENABLE
+	size_t n = 0;
 	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
 		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
 		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
@@ -877,18 +877,18 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 void send_payload() {
 	// primary
-	char* primary_tx_buffer = (const char *)&d_primary_tel1;
+	char* primary_tx_buffer = (char *)&d_primary_tel1;
 	for(int i=0; i<(D_PRIMARY_SIZE); i++) {
 		PRINTF("%c", primary_tx_buffer[i]);
 	}
 	// ack
-	char* ack_tx_buffer = (const char *)&d_ack_tel1;
+	char* ack_tx_buffer = (char *)&d_ack_tel1;
 	for(int i=0; i<(D_ACK_SIZE); i++) {
 		PRINTF("%c", ack_tx_buffer[i]);
 	}
 	// cmd
 	for(int j=0; j<d_primary_tel1.messageLength; j++) {
-		char* cmd_tx_buffer= (const char *)&d_cmd_tel1[j];
+		char* cmd_tx_buffer= (char *)&d_cmd_tel1[j];
 		for(int i=0; i<(D_CMD_SIZE); i++) {
 			PRINTF("%c", cmd_tx_buffer[i]);
 		}

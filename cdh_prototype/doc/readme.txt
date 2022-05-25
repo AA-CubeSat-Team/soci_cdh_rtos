@@ -29,6 +29,12 @@ COSMOS GUIDE
 /tasks/com_task.*		| contains the COM task flow
 /wrappers.com_wrapper.*	| contains the wrapper functions for com task
 
+COSMO TEST Project overview
+-----------------------------
+The CDH prototype with COSMOS_TEST set as 1 is a simple software that receive all the payload
+then send what ever payload is stored by the prep_payload(). The payloads are stored in the file
+described below.
+
 setting up to test COSMOS with the Dev Board
 --------------------------------------------
 1) on cdh_prototype.h, make sure the preprocessor is defined as:
@@ -39,8 +45,10 @@ setting up to test COSMOS with the Dev Board
 3) com_wrap.c, prep_payload() | to store the necessary data
 4) com_wrap.c, send_payload() | send all the payload
 
-The CDH prototype with COSMOS_TEST set as 1 is a simple software that receive all the payload
-then send what ever payload is stored by the prep_payload().
+Running the Program
+-------------------
+Go to the quickstart panel -> on the bottom left press quick settings>> -> hover over SDK Debug Console -> select UART console
+Press debug
 
 NOTES:
 *Applies to only when the debug console is UART not semihost*
