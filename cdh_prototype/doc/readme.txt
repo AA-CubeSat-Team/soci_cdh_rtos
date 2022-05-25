@@ -21,6 +21,32 @@ Serial Communication Protocol Driver Issue
    the same as the one in dev branch. if not copy and past the the one from dev branch.
 4. Use a logic analyzer to read the signals coming out from the drivers if issue still persist
    contact one of the members in CDH.
+   
+COSMOS GUIDE
+============
+/tasks/telemetry.h		| contains the definition of the packet structures
+/source/cdh_prototype.h | contains the preprocessor to turn on different modes of the software.
+/tasks/com_task.*		| contains the COM task flow
+/wrappers.com_wrapper.*	| contains the wrapper functions for com task
+
+setting up to test COSMOS with the Dev Board
+--------------------------------------------
+1) on cdh_prototype.h, make sure the preprocessor is defined as:
+#define OBC 0			
+#define COM_ENABLE	0 	// Change it 1 if testing with the COM Radio (not ready)
+#define COSMOS_TEST 1 	// ENABLES COSMOS Test
+2) modify the data structures on telemetry.h
+3) com_wrap.c, prep_payload() | to store the necessary data
+4) com_wrap.c, send_payload() | send all the payload
+
+The CDH prototype with COSMOS_TEST set as 1 is a simple software that receive all the payload
+then send what ever payload is stored by the prep_payload().
+
+NOTES:
+*Applies to only when the debug console is UART not semihost*
+GETCHAR() | serves as a receive function
+PRINTF()  | serves as a send function
+ 
 
 Hardware requirements
 =====================

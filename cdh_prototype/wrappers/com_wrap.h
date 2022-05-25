@@ -41,8 +41,9 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 void uplink_handshake(uint32_t* cmd_packet_size);
 
 /*
- * uplink_handshake | process commands
+ * send_payload | sends all the telemetry
  */
+void send_payload();
 
 /* TODO: There might be a few other methods in the XDL manual u might want to decide if we
  * should implement. Id say take a look through, and see if we would want to implement

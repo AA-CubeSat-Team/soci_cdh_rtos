@@ -275,12 +275,12 @@ void com_init()
 
 void com_set_burn_wire1()
 {
-	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_1, 1); //GPIO_AD_B1_07, J19-1
+	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_1, 1);
 }
 
 void com_set_burn_wire2()
 {
-	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_2, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
+	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_2, 1);
 }
 
 
@@ -766,7 +766,28 @@ static void configRadio(){
 
 }
 
-void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready, bool* picture_ready) {
+void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready) {
+#if COSMOS_TEST
+	/* downlink primary telemetry */
+	d_primary_tel1.packetLength = 1;
+	d_primary_tel1.packetID = 1;
+	d_primary_tel1.messageLength = 1;
+	d_primary_tel1.encryptionLayer = 1;
+	d_primary_tel1.crc = 1;
+
+	d_ack_tel1.packetLength = 1;
+	d_ack_tel1.packetID = 1;
+	d_ack_tel1.ackMessage = 1;
+	d_ack_tel1.crc = 1;
+
+	for(int i=0; i<d_primary_tel1.messageLength; i++) {
+		d_cmd_tel1[i].packetLength = 1;
+		d_cmd_tel1[i].packetID = 1;
+		d_cmd_tel1[i].packetMessage = 1;
+		d_cmd_tel1[i].crc = 1;
+	}
+
+#else
 	if(!gnc_ready) { //get GNC payload
 
 	} else if (!eps_ready) { // get EPS payload
@@ -802,6 +823,7 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 				break;
 		}
 	}
+#endif
 }
 
 void uplink_handshake(uint32_t* cmd_packet_size) {
@@ -840,8 +862,6 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 		u_tel1[i].crc				|= (uint8_t)GETCHAR();		// first byte
 		u_tel1[i].crc				|= ((uint8_t)GETCHAR())<<8; // second byte
 	}
-#else // Pseudo code
-	// set up fake data
 #endif
 
 	bool noError = true; // add if receive all function successfully
@@ -853,4 +873,24 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	// based packet structure
 
 	cmd_packet_size = 0; //set cmd packet size
+}
+
+void send_payload() {
+	// primary
+	char* primary_tx_buffer = (const char *)&d_primary_tel1;
+	for(int i=0; i<(D_PRIMARY_SIZE); i++) {
+		PRINTF("%c", primary_tx_buffer[i]);
+	}
+	// ack
+	char* ack_tx_buffer = (const char *)&d_ack_tel1;
+	for(int i=0; i<(D_ACK_SIZE); i++) {
+		PRINTF("%c", ack_tx_buffer[i]);
+	}
+	// cmd
+	for(int j=0; j<d_primary_tel1.messageLength; j++) {
+		char* cmd_tx_buffer= (const char *)&d_cmd_tel1[j];
+		for(int i=0; i<(D_CMD_SIZE); i++) {
+			PRINTF("%c", cmd_tx_buffer[i]);
+		}
+	}
 }

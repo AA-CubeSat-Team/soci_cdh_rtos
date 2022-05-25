@@ -19,6 +19,10 @@ struct u_primary_tel u_primary_tel1;
 struct u_ack_tel u_ack_tel1;
 struct u_tel u_tel1[MAX_TEL_SIZE];
 
+struct d_primary_tel d_primary_tel1;
+struct d_ack_tel d_ack_tel1;
+struct u_tel u_cmd_tel1[MAX_CMD_SIZE];
+
 TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 extern bool i2c_com_antennaDeployed;
@@ -31,16 +35,10 @@ void com_task(void *pvParameters)
 
 	/* COM Setup */
 	COM_State = INIT;
-	uint8_t tel_IMG_cmdID;
-	struct tel tel_COM;
-    bool downlink_ready = false;
     bool img_ready = false;
     bool com_ready = false;
     bool gnc_ready = false;
-    bool com_ready = false;
-
-    /* img payload */
-    picture_ready = false;
+    bool eps_ready = false;
 
     /* UPLINKING */
     size_t n = 0;
@@ -77,10 +75,10 @@ void com_task(void *pvParameters)
 					}
 					tel_IMG_cmdID++;
 				}
-#endif
 				// Waiting to detumble
 
 				vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
+#endif
 
 				// Detumble time limit hit
 
@@ -90,7 +88,7 @@ void com_task(void *pvParameters)
 				/* Initialize HMAC Algorithm */
 				// HMAC Algorithm Initialize
 
-				comCurrentState = NORMAL;
+				COM_State = NORMAL;
 				vTaskDelayUntil(&xLastWakeTime, xDelayms);
 				break;
 
@@ -104,20 +102,18 @@ void com_task(void *pvParameters)
 					// health beacon message
 
 					/* algorithm to get all the data */
-					if(!downlink_ready) {
-						if(!(img_ready & gnc_ready & eps_ready & com_ready)) { // downlink ready?
-							prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
-						}
+					if(!(img_ready & gnc_ready &eps_ready & com_ready)) { // downlink ready?
+						prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
 					}
 					vTaskDelayUntil(&xLastWakeTime, xDelayms);
 				}
 				break;
 			case UPLINKING:
-
+				/* Implement HMAC */
 				/*
 				//check CRC bytes
 				if(error) {
-					// send NACK
+					// downlink/send NACK
 					COM_State = Normal;
 					break;
 			    else {
@@ -125,30 +121,22 @@ void com_task(void *pvParameters)
 			    }
 				 */
 
+				/* execute any uplink command */
+				COM_State = DOWNLINKING;
 				break;
 
 			case DOWNLINKING:
 				break;
 				//TODO: Send Beacon
 				//TODO: Listen for response | how to respond to commands from MCC
-				if(!downlink_ready) {
-					/* get IMG Payload */
-					if(img_ready) {
-
-					}
-					/* get GNC Payload */
-
-					/* get EPS Payload */
-
-					/* get COM Payload */
-
-				} else  {
-					/* Prepare Packets */
-					// CRC, Priority for downlinking
-
-					/* send all the Payload */
+				if(!(img_ready & gnc_ready & eps_ready & com_ready)) { // downlink ready?
+					prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
+				} else {
+					send_payload();
+					COM_State = NORMAL;
+					vTaskDelayUntil(&xLastWakeTime, xDelayms);
 				}
-
+				//TODO: add tick measure to make sure PASSING is over
 			default:
 				//TODO: is there a way to test if COM is working fine
 				COM_State = INIT;

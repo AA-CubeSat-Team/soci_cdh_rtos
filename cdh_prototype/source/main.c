@@ -31,6 +31,7 @@
 #include "com_task.h"
 
 #include <stdbool.h>
+#include "cdh_prototype.h"
 
 /*******************************************************************************
  * Definitions
@@ -60,6 +61,8 @@ extern TaskHandle_t TaskHandler_img;
 
 QueueHandle_t queue_IMG;
 QueueHandle_t queue_COM;
+QueueHandle_t queue_GNC;
+QueueHandle_t queue_EPS;
 
 /*!
  * @brief main demo function.
@@ -76,8 +79,11 @@ int main(void)
 
     /* Create Queue */
     queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
-    queue_COM = xQueueCreate( xQueue_len, sizeof(struct tel));
+    queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    queue_GNC = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
 
+#if !COSMOS_TEST
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
@@ -92,15 +98,16 @@ int main(void)
         while (1)
           ;
 	 }
-   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
-	 	    pdPASS)
+   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+		    pdPASS)
 	 {
         PRINTF("Task creation failed!.\r\n");
         while (1)
           ;
 	 }
-   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-		    pdPASS)
+#endif
+   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
+	 	    pdPASS)
 	 {
         PRINTF("Task creation failed!.\r\n");
         while (1)
