@@ -1,7 +1,4 @@
-#include "cdh_prototype.h"
-#include "telemetry.h"
 #include "com_task.h"
-#include "com_wrap.h"
 #include "com_protocol_helper.h"
 
 //flags to check if there's data to send

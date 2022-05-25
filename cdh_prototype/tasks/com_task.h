@@ -3,9 +3,11 @@
  * TODO: Rethink how to grab all data from COM task loop
  * TODO: Increase UART Buffer Size
  */
+#include "cdh_prototype.h"
+#include "telemetry.h"
+#include "com_wrap.h"
 
 #define CLOCKS_PER_SECOND 1000000
-#include "telemetry.h"
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to

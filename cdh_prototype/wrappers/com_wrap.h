@@ -2,8 +2,6 @@
  * MCU Pinouts: Check the pin header in the google drive
  */
 
-#include <stdbool.h>
-
 // TODO: Modify code to include interrupt-based receiving/sending functions as Harshal talked about
 
 // TODO: (NOT SURE) Figure out if way to test uplinking/downlinking functions (After fixing) w/o radios

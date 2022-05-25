@@ -1,19 +1,17 @@
 #include "fsl_gpio.h"
-#include "com_wrap.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_debug_console.h"
+#include "fsl_lpi2c_freertos.h"
+#include "fsl_lpi2c.h"
+#include "peripherals.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "peripherals.h"
-#include "fsl_lpi2c_freertos.h"
-#include "fsl_lpi2c.h"
 #include "com_task.h"
-#include "cdh_prototype.h"
 
 #define I2C_COM_RX_SIZE 4
 #define I2C_COM_ANTENNA_SLAVE_ADDRESS 0x33   //should this be 16bit?
