@@ -47,8 +47,8 @@ setting up to test COSMOS with the Dev Board
 
 Running the Program
 -------------------
-Go to the quickstart panel -> on the bottom left press quick settings>> -> hover over SDK Debug Console -> select UART console
-Press debug
+Go to the quickstart panel -> on the bottom left press quick settings>> -> hover over SDK Debug 
+Console -> select UART console -> Press debug
 
 NOTES:
 *Applies to only when the debug console is UART not semihost*

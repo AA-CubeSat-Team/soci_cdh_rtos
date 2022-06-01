@@ -59,10 +59,11 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
-QueueHandle_t queue_IMG;
-QueueHandle_t queue_COM;
-QueueHandle_t queue_GNC;
-QueueHandle_t queue_EPS;
+QueueHandle_t cmd_queue_IMG; // IMG receiving cmds from COM task
+QueueHandle_t cmd_queue_GNC;
+QueueHandle_t cmd_queue_EPS;
+QueueHandle_t tlm_queue_COM; // IMG/GNC/IDLE task to send tlm to COM task
+
 
 /*!
  * @brief main demo function.
@@ -78,10 +79,10 @@ int main(void)
     BOARD_InitPeripherals();
 
     /* Create Queue */
-    queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
-    queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
-    queue_GNC = xQueueCreate( xQueue_len, sizeof(uint8_t));
-    queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    cmd_queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    cmd_queue_GNC = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    cmd_queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    tlm_queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
 
 #if !COSMOS_TEST
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1

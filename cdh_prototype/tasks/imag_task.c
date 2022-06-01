@@ -37,45 +37,46 @@ void imag_task(void *pvParameters)
 		PRINTF("IMG task loop\r\n");
 
 #if QUEUE_DEMO_ENABLE // Demo receives CMD from COM task and executes it
-		// TO-DO: how to handle an IMAGE
-		if(queue_IMG != NULL) {
-			if( xQueueReceive( queue_IMG, &(IMG_cmdID), ( TickType_t ) 0 ) == pdPASS ) {
-				// execute IMG cmd
-				PRINTF("IMG task received %d cmd\r\n", IMG_cmdID);
-				switch (IMG_cmdID) {
-					case checkStatus:
-						break;
-					case takePicture:
-						break;
-					case getPictureSize:
-						break;
-					case getPicture:
-						// sets telemetry
-						tel_COM.cmdID = imgReady;
-						memset(tel_COM.data, 0, 8*sizeof(uint8_t));
+		/* pseudocode*/
+		if( xQueueReceive( cmd_queue_IMG, &(IMG_cmdID), ( TickType_t ) 5 ) == pdPASS ) { // <- Instead of if(new command flag)
+			// execute IMG cmd
+			PRINTF("IMG task received %d cmd\r\n", IMG_cmdID);
+			switch (IMG_cmdID) {
+				/* goal is to set communication between com and img */
+				/*
+				 * cmd_queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
+                 * cmd_queue_GNC = xQueueCreate( xQueue_len, sizeof(uint8_t));
+                 * cmd_queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
+                 * tlm_queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
+				 */
+				case getPicture:
+					uint8_t cmdID;
+					uint8_t data_length;
+					uint8_t data;
 
-						/* preps image */
+					// sets telemetry
+					image_CIA[IMG_SIZE] = set pictures;
 
-						/* circular buffer */
-//						uint8_t temp_image[IMG_SIZE];
-//						memset(temp_image, 1, IMG_SIZE*sizeof(uint8_t));
-//						cb_push_back(&IMG_PAYLOAD, &temp_image);
+					if(success) {
+						cmdID = imgReady;
+						data_length = 1;
+						data = 1;
+					} else {
+						cmdID = imgReady;
+						data_length = 1;
+						data = 1;
+					}
 
-						/* brute force */
-						memset(image_CIA, 1, IMG_SIZE*sizeof(uint8_t));
-
-						// sends telemetry to COM once image is prepped
-						xQueueSend( queue_COM, ( void * ) &(tel_COM), ( TickType_t ) 0 );
-						break;
-					case setContrast:
-						break;
-					case setBrightness:
-						break;
-					case setExposure:
-						break;
-					default:
-						break;
-				}
+					//always send data in this format
+					//data_length + packetID + data
+					// 0 | getPicture
+					// sends telemetry to COM once image is prepped
+					xQueueSend( tlm_queue_COM, ( void * ) &(data_length), ( TickType_t ) 0 );
+					xQueueSend( queue_COM, ( void * ) &(cmdID)), ( TickType_t ) 0 );
+					xQueueSend( queue_COM, ( void * ) &(data)), ( TickType_t ) 0 );
+					break;
+				default:
+					break;
 			}
 		}
 		vTaskDelay(xDelayms);
