@@ -27,6 +27,8 @@
 #define RADIO_FREQ_STEP_HZ 6250
 #define RADIO_DEFAULT_BANDWIDTH 12500
 #define SHA256_HASH_SIZE 32
+#define PACKET_HEADER_SIZE 2
+
 
 //Everything but buffer should be static?
 uint8_t rcv_buffer[I2C_COM_RX_SIZE];  //error thrown here for some reason?
@@ -786,6 +788,7 @@ static void configRadio(){
 }
 
 void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready) {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 #if COSMOS_TEST
 	/* downlink primary telemetry */
 	d_primary_tel1.packetLength = 1;
@@ -808,41 +811,51 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 
 #else
 	if(!gnc_ready) { //get GNC payload
-
+		xQueueSend(queue_GNC, &CMD_PAYLOAD_GNC, ( TickType_t ) 0 );
 	} else if (!eps_ready) { // get EPS payload
-
+		xQueueSend(queue_GNC, &PAYLOAD_EPS, ( TickType_t ) 0 );
 	} else if(!com_ready) { // get COM payload
-
+		//TODO: COM Payload
+		// MCC Comand config radio -> config radio
+		// Downlink: Radio config improperly
+		// COM Healthcheck:
+		// Downlink: COM is operating properly
+		// MCC command: Option to shut down transmission.
 	} else if(!pictureReady) { // get IMG payload
-		xQueueSend( queue_IMG, &getPicture, ( TickType_t ) 0 ); // get Picture
+		xQueueSend( queue_IMG, &PAYLOAD_IMG, ( TickType_t ) 0 ); // get Picture
 	}
 
+	vTaskDelay(xDelayms);
+
+	uint8_t packetLength = 0;
 	/* EXAMPLE OF HOW IT MIGHT SEND DOWN DATA */
-	if ( xQueueReceive( queue_COM, &(tel_COM), ( TickType_t ) 10 ) == pdPASS ) {
+	if ( xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS ) {
+		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
 		// execute IMG cmd
 		switch (tel_COM.cmdID) {
-			case(takePicture):
+			case(EPS_READY):
+				eps_ready = true;
 				break;
-			case(getPicture):
+			case(GNC_READY):
+				gnc_ready = true;
 				break;
-			case(imgReady):
-				img_ready = true;
+			case(IMG_READY):
+				pictureReady = true;
 				break;
-			case(setContrast):
-				break;
-			case(setBrightness):
-				break;
-			case(setExposure):
-				break;
-			case(checkStatus):
-				break;
-			case(getPictureSize):
-				break;
+			/* add more packetID */
 			default:
 				break;
 		}
 	}
 #endif
+}
+
+void* get_payload(uint8_t* payload_buffer, uint8_t messageLength) {
+	uint8_t payload = 0;
+	for(int i = 0; i < messageLength - PACKET_HEADER_SIZE; i++) {
+		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
+		payloadBuffer[i] =
+	}
 }
 
 void uplink_handshake(uint32_t* cmd_packet_size) {

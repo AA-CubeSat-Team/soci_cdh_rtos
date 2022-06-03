@@ -55,21 +55,17 @@ void com_task(void *pvParameters)
 				/* deploy antenna */
 				// TODO: do we need wait for deployment for antenna
 				// TODO: whwere do we slot the 15 min wait
-				tel_IMG_cmdID = 0; // used temporarily as a count local variable
-				com_deployAntenna_alorithmOne();
+				antennaDeployState = 0; // used temporarily as a count local variable
 				while (!i2c_com_antennaDeployed) { // did antenna deployed
 					switch(tel_IMG_cmdID) {
 						case 0:
-							com_deployAntenna_algorithmTwo();
+							com_deployAntenna_alorithmOne();
+							antennaDeployState++;
 							break;
 						case 1:
-							com_set_burn_wire1();
-							break;
-						case 2:
-							com_set_burn_wire2();
+							com_deployAntenna_algorithmTwo();
 							break;
 					}
-					tel_IMG_cmdID++;
 				}
 				// Waiting to detumble
 

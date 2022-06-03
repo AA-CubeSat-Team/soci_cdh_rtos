@@ -42,6 +42,18 @@
 #define NUM_IMG 5
 #define IMG_SIZE     600000
 
+// EPS Command ID
+#define CMD_PAYLOAD_EPS 1
+
+// GNC Command ID
+#define CMD_PAYLOAD_GNC 1
+
+// COM Command ID
+#define EPS_READY 1
+#define GNC_READY 2
+#define IMG_READY 3
+
+
 //static circular_buffer IMG_PAYLOAD;
 extern uint8_t image_CIA[IMG_SIZE]; // IMG size
 
@@ -51,10 +63,10 @@ extern uint8_t image_CIA[IMG_SIZE]; // IMG size
 #define xQueue_len 		20
 
 // Queue handlers
-extern QueueHandle_t queue_COM;
-extern QueueHandle_t queue_IMG;
-extern QueueHandle_t queue_GNC;
-extern QueueHandle_t queue_EPS;
+extern QueueHandle_t cmd_queue_IMG;
+extern QueueHandle_t cmd_queue_GNC;
+extern QueueHandle_t cmd_queue_EPS;
+extern QueueHandle_t tlm_queue_COM;
 
 /****************** UPLINK *********************/
 #define PRIMARY_HEADER_SIZE 50
@@ -114,4 +126,19 @@ struct __attribute__((__packed__)) d_cmd_tel{
 };
 /*********************************************/
 
+/******************GNC PAYLOAD****************/
+struct __attribute__((__packed__)) payload_GNC{
+	uint8_t packetLength;
+	uint8_t packetID;
+	uint64_t tlm;
+};
+/*********************************************/
+
+/******************EPS PAYLOAD****************/
+struct __attribute__((__packed__)) payload_EPS{
+	uint8_t packetLength;
+	uint8_t packetID;
+	uint64_t tlm;
+};
+/*********************************************/
 #endif /* TELEMETRY_H_ */
