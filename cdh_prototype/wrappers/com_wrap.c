@@ -11,6 +11,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
+#include <string.h>
+
 #include "com_task.h"
 
 #define I2C_COM_RX_SIZE 4
@@ -22,7 +26,7 @@
 #define DEFAULT_RETRY_DELAY 0.4
 #define RADIO_FREQ_STEP_HZ 6250
 #define RADIO_DEFAULT_BANDWIDTH 12500
-
+#define SHA256_HASH_SIZE 32
 
 //Everything but buffer should be static?
 uint8_t rcv_buffer[I2C_COM_RX_SIZE];  //error thrown here for some reason?
@@ -248,8 +252,6 @@ void com_enterCommandMode()
 
 }
 
-
-
 void com_radio_init()
 {
 	configRadio();
@@ -280,7 +282,6 @@ void com_set_burn_wire2()
 {
 	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_2, 1);
 }
-
 
 bool com_healthcheck() //checks power
 {
@@ -338,7 +339,27 @@ void com_getCommands() //highest priority
 	PRINTF("getting commands from the ground station\r\n");
 }
 
+unsigned char *hmac_sha256(const void *key, 			/* pointer to authentication key */
+						   int keylen,					/* length of authentication key  */
+                           const unsigned char *data, 	/* pointer to data stream        */
+						   int datalen,					/* length of data stream         */
+                           unsigned char *result, 		/* caller digest to be filled in */
+						   unsigned int *resultlen) 	/* length of result digest       */
+{
+    return HMAC(EVP_sha256(), key, keylen, data, datalen, result, resultlen);
+}
 
+void createHMAC()
+{
+	char *key = strdup("Start uplinking");
+	int keylen = strlen(key);
+	const unsigned char *data = (const unsigned char *)strdup("Security verify");
+	int datalen = strlen((char *)data);
+	unsigned char *result = NULL;
+	unsigned int resultlen = -1;
+
+	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
+}
 
 //proper code below:
 
@@ -862,7 +883,48 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	}
 #endif
 
-	bool noError = true; // add if receive all function successfully
+#if HMAC_ENABLE
+	// the key to hash
+	char *key = strdup("Start uplinking");
+	int keylen = strlen(key);
+
+	// the data that we're going to hash using HMAC
+	const unsigned char *data = (const unsigned char *)strdup("Security verify");
+	int datalen = strlen((char *)data);
+
+	unsigned char *result = NULL;
+	unsigned int resultlen = -1;
+
+	// call sha256 hash engine function
+	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
+
+	// get hash key from the ground station in COSMOS
+	// unsigned char *hashkey = (unsigned char*)
+
+	static char res_hexstring[SHA256_HASH_SIZE * 2];
+
+	int result_length = SHA256_HASH_SIZE;
+
+	// convert the result to string with printf
+	// SHA256 is 256-bit long which rendered as 64 characters
+	// (be careful of the length of string with the choosen hash engine)
+	for (int i = 0; i < result_length; i++) {
+	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+	}
+
+	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
+	if (strcmp((char *) res_hexstring, (char *) hashkey) == 0) {
+		PRINTF("Passed security verify, start uplinking.\n");
+		bool noError = true;
+	}
+
+	//if strings not matched or if there's no HMAC from ground station
+	PRINTF("Not from AACT ground station, waiting for the next response.\n");
+	noError = false;
+
+#endif
+
+	//bool noError = true; // add if receive all function successfully
 
 	/* Process Incoming Message */
 	if(noError) { // successful uplink handshake
