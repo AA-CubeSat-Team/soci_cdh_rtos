@@ -909,9 +909,10 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	unsigned int resultlen = -1;
 
 	// call sha256 hash engine function
+	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
 	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
 
-	// get hash key from the ground station in COSMOS
+	// get the hash key (256 bits - 64 characters) from the header packet (the last 256 bits of the packet)
 	// unsigned char *hashkey = (unsigned char*)
 
 	static char res_hexstring[SHA256_HASH_SIZE * 2];
@@ -919,7 +920,7 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	int result_length = SHA256_HASH_SIZE;
 
 	// convert the result to string with printf
-	// SHA256 is 256-bit long which rendered as 64 characters
+	// SHA256 is 256 bits long which rendered as 64 characters
 	// (be careful of the length of string with the choosen hash engine)
 	for (int i = 0; i < result_length; i++) {
 	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
@@ -928,16 +929,14 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
 	if (strcmp((char *) res_hexstring, (char *) hashkey) == 0) {
 		PRINTF("Passed security verify, start uplinking.\n");
-		bool noError = true;
+		bool noError = true; // receive all function successfully
 	}
 
-	//if strings not matched or if there's no HMAC from ground station
+	// if strings not matched or if there's no HMAC from ground station
 	PRINTF("Not from AACT ground station, waiting for the next response.\n");
-	noError = false;
+	noError = false; // security verification fails
 
 #endif
-
-	//bool noError = true; // add if receive all function successfully
 
 	/* Process Incoming Message */
 	if(noError) { // successful uplink handshake
