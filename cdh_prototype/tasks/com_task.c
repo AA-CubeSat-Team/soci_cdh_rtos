@@ -24,54 +24,41 @@ void com_task(void *pvParameters)
 	// Delay to test "soft-break" into command mode via com_init function
 	// delay(1);
 
-//	PRINTF("Testing enterCommandMode function:\n");
-//	com_enterCommandMode();
-//	PRINTF("\n");
-//
-//	PRINTF("Testing exitCommandMode function:\n");
-//	com_exitCommandMode();
-//	PRINTF("\n");
+	PRINTF("Testing enterCommandMode function:\n");
+	com_enterCommandMode();
+	PRINTF("\n");
+
+	PRINTF("Testing exitCommandMode function:\n");
+	com_exitCommandMode();
+	PRINTF("\n");
 
 	//PRINTF("CONFIGURING THE RADIO\n");
 	//com_radio_init();
 	//PRINTF("\n");
 
 	//Test sending data to radio in data mode
-//	PRINTF("Testing data mode: \n");
-//	for(int i = 0; i < 500; i++){
-//		testSending();
-//	}
-//	PRINTF("\n");
+	//PRINTF("Testing data mode: \n");
+	//for(int i = 0; i < 500; i++){
+	//	testSending();
+	//}
+	//PRINTF("\n");
+
+
+	//receive();
 
 
 	//PRINTF("Testing com_healthcheck() function:\n");
-	//com_healthcheck(); // exits command mode afterwards
-	//PRINTF("\n");
-
-	//PRINTF("Testing com_set_burn_wire1()\n");
-	//com_set_burn_wire1();
-	//PRINTF("\n");
-
-	//PRINTF("Testing com_set_burn_wire2()\n");
-	//com_set_burn_wire2();
+	com_healthcheck(); // exits command mode afterwards
 	//PRINTF("\n");
 
 
-	PRINTF("Testing checkDeploy()\n");
-	com_i2c_checkDeploy();
-	PRINTF("\n");
+	// JUST UNCOMMENT THIS CHECK DEPLOY FUNCTION FOR ASSMEBLY TEST! MAKE SURE EVERYTHING ELSE IS COMMENTED OUT
+	//PRINTF("Testing checkDeploy()\n");
+	//com_i2c_checkDeploy();
+	//PRINTF("\n");
 
-//	PRINTF("Testing deployAntenna()\n");
-//	com_deployAntenna();
-//	//com_deployAntenna_algorithmTwo();
-//	PRINTF("\n");
-//
-//	PRINTF("Testing checkDeploy()\n");
-//	com_i2c_checkDeploy();
-//	PRINTF("\n");
-
-	PRINTF("Clearing commands()\n");
-	com_clearAntennaCommands();
+	//PRINTF("Clearing commands()\n");
+	//com_clearAntennaCommands();
 
 
 #else
