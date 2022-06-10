@@ -177,6 +177,8 @@
                   <pin peripheral="LPUART1" signal="TX" pin_num="105" pin_signal="GPIO_AD_B0_06"/>
                   <pin peripheral="SEMC" signal="semc_rdy" pin_num="92" pin_signal="GPIO_AD_B1_00"/>
                   <pin peripheral="SEMC" signal="CSX, 0" pin_num="91" pin_signal="GPIO_AD_B1_01"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 19" pin_num="89" pin_signal="GPIO_AD_B1_03"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 18" pin_num="90" pin_signal="GPIO_AD_B1_02"/>
                </pins>
             </function>
          </functions_list>
@@ -1124,6 +1126,9 @@
             </component>
             <component name="generic_enet" uuid="9e9e8f2c-217a-47a0-82d8-0c132177aa48" type_id="generic_enet_74db5c914f0ddbe47d86af40cb77a619">
                <config_set_global name="global_enet"/>
+            </component>
+            <component name="gpio_adapter_common" uuid="e2aafb7f-1a93-4329-9cb2-fb20108364b0" type_id="gpio_adapter_common_57579b9ac814fe26bf95df0a384c36b6">
+               <config_set_global name="global_gpio_adapter_common" quick_selection="default"/>
             </component>
          </components>
       </periphs>

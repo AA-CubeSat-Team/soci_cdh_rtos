@@ -1,13 +1,6 @@
 /*
- * MCU Pinouts:
-
-COM:
-
-105	GPIO_AD_B0_06	UART1_TX	COM Board
-101	GPIO_AD_B0_07	UART1_RX	COM Board
+ * MCU Pinouts: Check the pin header in the google drive
  */
-
-#include <stdbool.h>
 
 // TODO: Modify code to include interrupt-based receiving/sending functions as Harshal talked about
 
@@ -33,6 +26,22 @@ void testSending();
 
 void com_deployAntenna_algorithmOne(); // TODO: Test w/ COM_A once programmed
 void com_deployAntenna_algorithmTwo(); // TODO: Test w/ COM_A once programmed
+
+/*
+ * prep_payload: prepares all the payload
+ * xxx_ready | payload for respective task ready
+ */
+void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready);
+
+/*
+ * uplink_handshake: process the upcoming header packet;
+ */
+void uplink_handshake(uint32_t* cmd_packet_size);
+
+/*
+ * send_payload | sends all the telemetry
+ */
+void send_payload();
 
 /* TODO: There might be a few other methods in the XDL manual u might want to decide if we
  * should implement. Id say take a look through, and see if we would want to implement

@@ -1,27 +1,20 @@
-/*
- * MCU Pinouts:
-
-COM:
-
-105	GPIO_AD_B0_06	UART1_TX	COM Board
-101	GPIO_AD_B0_07	UART1_RX	COM Board
-83	GPIO_AD_B1_07	ANT_BURN_WIRE1	Antenna Burn Wire 1
-78	GPIO_AD_B1_12	ANT_BURN_WIRE2	Antenna Burn Wire 2
- */
 #include "fsl_gpio.h"
-#include "com_wrap.h"
 #include "fsl_lpuart.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_debug_console.h"
+#include "fsl_lpi2c_freertos.h"
+#include "fsl_lpi2c.h"
+#include "peripherals.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "peripherals.h"
-#include "fsl_lpi2c_freertos.h"
-#include "fsl_lpi2c.h"
 
-// Rithu: Including com_task.h file here so I can use LPUART1 TODO: Check if this is the right way to include LPUART1
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
+#include <string.h>
+
 #include "com_task.h"
 
 #define I2C_COM_RX_SIZE 4
@@ -33,6 +26,8 @@ COM:
 #define DEFAULT_RETRY_DELAY 0.4
 #define RADIO_FREQ_STEP_HZ 6250
 #define RADIO_DEFAULT_BANDWIDTH 12500
+#define SHA256_HASH_SIZE 32
+#define PACKET_HEADER_SIZE 2
 
 
 //Everything but buffer should be static?
@@ -259,8 +254,6 @@ void com_enterCommandMode()
 
 }
 
-
-
 void com_radio_init()
 {
 	configRadio();
@@ -278,20 +271,19 @@ void com_init()
 			kGPIO_DigitalOutput, 0, kGPIO_NoIntmode
 	};
 	// Setting burn wire pins to 0 I think
-	GPIO_PinInit(GPIO1, 23, &gpioConfig); //GPIO_AD_B1_07
-	GPIO_PinInit(GPIO1, 28, &gpioConfig); //GPIO_AD_B1_12
+	GPIO_PinInit(GPIO1, ANTENNA_WIRE_1, &gpioConfig);
+	GPIO_PinInit(GPIO1, ANTENNA_WIRE_2, &gpioConfig);
 }
 
 void com_set_burn_wire1()
 {
-	GPIO_PinWrite(GPIO1, 23, 1); //GPIO_AD_B1_07, J19-1
+	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_1, 1);
 }
 
 void com_set_burn_wire2()
 {
-	GPIO_PinWrite(GPIO1, 28, 1); //GPIO_AD_B1_12, J18-3, GND->J20-6
+	GPIO_PinWrite(GPIO1, ANTENNA_WIRE_2, 1);
 }
-
 
 bool com_healthcheck() //checks power
 {
@@ -349,7 +341,27 @@ void com_getCommands() //highest priority
 	PRINTF("getting commands from the ground station\r\n");
 }
 
+unsigned char *hmac_sha256(const void *key, 			/* pointer to authentication key */
+						   int keylen,					/* length of authentication key  */
+                           const unsigned char *data, 	/* pointer to data stream        */
+						   int datalen,					/* length of data stream         */
+                           unsigned char *result, 		/* caller digest to be filled in */
+						   unsigned int *resultlen) 	/* length of result digest       */
+{
+    return HMAC(EVP_sha256(), key, keylen, data, datalen, result, resultlen);
+}
 
+void createHMAC()
+{
+	char *key = strdup("Start uplinking");
+	int keylen = strlen(key);
+	const unsigned char *data = (const unsigned char *)strdup("Security verify");
+	int datalen = strlen((char *)data);
+	unsigned char *result = NULL;
+	unsigned int resultlen = -1;
+
+	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
+}
 
 //proper code below:
 
@@ -773,4 +785,184 @@ static void configRadio(){
         PRINTF("Error configuring radio\n");
     }
 
+}
+
+void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready) {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+#if COSMOS_TEST
+	/* downlink primary telemetry */
+	d_primary_tel1.packetLength = 1;
+	d_primary_tel1.packetID = 1;
+	d_primary_tel1.messageLength = 1;
+	d_primary_tel1.encryptionLayer = 1;
+	d_primary_tel1.crc = 1;
+
+	d_ack_tel1.packetLength = 1;
+	d_ack_tel1.packetID = 1;
+	d_ack_tel1.ackMessage = 1;
+	d_ack_tel1.crc = 1;
+
+	for(int i=0; i<d_primary_tel1.messageLength; i++) {
+		d_cmd_tel1[i].packetLength = 1;
+		d_cmd_tel1[i].packetID = 1;
+		d_cmd_tel1[i].packetMessage = 1;
+		d_cmd_tel1[i].crc = 1;
+	}
+
+#else
+	if(!gnc_ready) { //get GNC payload
+		xQueueSend(queue_GNC, &CMD_PAYLOAD_GNC, ( TickType_t ) 0 );
+	} else if (!eps_ready) { // get EPS payload
+		xQueueSend(queue_GNC, &PAYLOAD_EPS, ( TickType_t ) 0 );
+	} else if(!com_ready) { // get COM payload
+		//TODO: COM Payload
+		// MCC Comand config radio -> config radio
+		// Downlink: Radio config improperly
+		// COM Healthcheck:
+		// Downlink: COM is operating properly
+		// MCC command: Option to shut down transmission.
+	} else if(!pictureReady) { // get IMG payload
+		xQueueSend( queue_IMG, &PAYLOAD_IMG, ( TickType_t ) 0 ); // get Picture
+	}
+
+	vTaskDelay(xDelayms);
+
+	uint8_t packetLength = 0;
+	/* EXAMPLE OF HOW IT MIGHT SEND DOWN DATA */
+	if ( xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS ) {
+		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
+		// execute IMG cmd
+		switch (tel_COM.cmdID) {
+			case(EPS_READY):
+				eps_ready = true;
+				break;
+			case(GNC_READY):
+				gnc_ready = true;
+				break;
+			case(IMG_READY):
+				pictureReady = true;
+				break;
+			/* add more packetID */
+			default:
+				break;
+		}
+	}
+#endif
+}
+
+void* get_payload(uint8_t* payload_buffer, uint8_t messageLength) {
+	uint8_t payload = 0;
+	for(int i = 0; i < messageLength - PACKET_HEADER_SIZE; i++) {
+		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
+		payloadBuffer[i] =
+	}
+}
+
+void uplink_handshake(uint32_t* cmd_packet_size) {
+	/*
+	* For this portion of the code it should pull data from the background
+	* buffer needed to execute the HMAC Algorithm
+	*/
+
+#if COM_ENABLE
+	size_t n = 0;
+	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
+		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
+		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
+	}
+#elif COSMOS_TEST
+	// receive char
+	u_primary_tel1.crc = 0;
+	u_primary_tel1.packetLength 	=  (uint8_t)GETCHAR();
+	u_primary_tel1.packetID 		=  (uint8_t)GETCHAR();
+	u_primary_tel1.messageLength 	=  (uint8_t)GETCHAR();
+	u_primary_tel1.packetVersion 	=  (uint8_t)GETCHAR();
+	u_primary_tel1.packetType 		=  (uint8_t)GETCHAR();
+	u_primary_tel1.crc 			    |= (uint8_t)GETCHAR();    	// first byte
+	u_primary_tel1.crc 			    |= ((uint8_t)GETCHAR())<<8; // second byte
+
+	u_ack_tel1.packetLength			=  (uint8_t)GETCHAR();
+	u_ack_tel1.packetID 			=  (uint8_t)GETCHAR();
+	u_ack_tel1.ackMessage			=  (uint8_t)GETCHAR();
+	u_ack_tel1.crc 			   	    |= (uint8_t)GETCHAR();    	// first byte
+	u_ack_tel1.crc 			        |= ((uint8_t)GETCHAR())<<8; // second byte
+
+	for(int i = 0; i < u_primary_tel1.messageLength; i++) {
+		u_tel1[i].packetLength 		=  (uint8_t)GETCHAR();
+		u_tel1[i].packetID			=  (uint8_t)GETCHAR();
+		u_tel1[i].packetMessage 	=  (uint8_t)GETCHAR();
+		u_tel1[i].crc				|= (uint8_t)GETCHAR();		// first byte
+		u_tel1[i].crc				|= ((uint8_t)GETCHAR())<<8; // second byte
+	}
+#endif
+
+#if HMAC_ENABLE
+	// the key to hash
+	char *key = strdup("Start uplinking");
+	int keylen = strlen(key);
+
+	// the data that we're going to hash using HMAC
+	const unsigned char *data = (const unsigned char *)strdup("Security verify");
+	int datalen = strlen((char *)data);
+
+	unsigned char *result = NULL;
+	unsigned int resultlen = -1;
+
+	// call sha256 hash engine function
+	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
+	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
+
+	// get the hash key (256 bits - 64 characters) from the header packet (the last 256 bits of the packet)
+	// unsigned char *hashkey = (unsigned char*)
+
+	static char res_hexstring[SHA256_HASH_SIZE * 2];
+
+	int result_length = SHA256_HASH_SIZE;
+
+	// convert the result to string with printf
+	// SHA256 is 256 bits long which rendered as 64 characters
+	// (be careful of the length of string with the choosen hash engine)
+	for (int i = 0; i < result_length; i++) {
+	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+	}
+
+	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
+	if (strcmp((char *) res_hexstring, (char *) hashkey) == 0) {
+		PRINTF("Passed security verify, start uplinking.\n");
+		bool noError = true; // receive all function successfully
+	}
+
+	// if strings not matched or if there's no HMAC from ground station
+	PRINTF("Not from AACT ground station, waiting for the next response.\n");
+	noError = false; // security verification fails
+
+#endif
+
+	/* Process Incoming Message */
+	if(noError) { // successful uplink handshake
+		COM_State = UPLINKING;
+	}
+	// based packet structure
+
+	cmd_packet_size = 0; //set cmd packet size
+}
+
+void send_payload() {
+	// primary
+	char* primary_tx_buffer = (char *)&d_primary_tel1;
+	for(int i=0; i<(D_PRIMARY_SIZE); i++) {
+		PRINTF("%c", primary_tx_buffer[i]);
+	}
+	// ack
+	char* ack_tx_buffer = (char *)&d_ack_tel1;
+	for(int i=0; i<(D_ACK_SIZE); i++) {
+		PRINTF("%c", ack_tx_buffer[i]);
+	}
+	// cmd
+	for(int j=0; j<d_primary_tel1.messageLength; j++) {
+		char* cmd_tx_buffer= (char *)&d_cmd_tel1[j];
+		for(int i=0; i<(D_CMD_SIZE); i++) {
+			PRINTF("%c", cmd_tx_buffer[i]);
+		}
+	}
 }

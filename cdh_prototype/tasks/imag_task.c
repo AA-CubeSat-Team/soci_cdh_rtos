@@ -1,12 +1,7 @@
-//TODO: tell Lachlan to extern the recv_buff in wrapper.
-//TODO:
 //interact with the sdram, when we getPicture from IMG, store it in sdram, and retrieve the image from sdram to send to the MCC
-#include "FreeRTOS.h"
-#include "task.h"
+#include "telemetry.h"
 #include "img_wrap.h"
 #include "imag_task.h"
-#include "fsl_common.h"
-#include "semc_sdram.h"
 #include "com_protocol_helper.h"
 
 //static uint8_t recv_buffer[5]; // Receive 5 bytes
@@ -14,29 +9,79 @@
 TaskHandle_t TaskHandler_img;
 extern uint8_t IMG_command; //TODO: what does img command look like?
 extern uint8_t IMG_param; //TODO: what does img command look like?
+uint8_t image_CIA[IMG_SIZE];
 
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+	//TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 	PRINTF("\ninitialize imag.\r\n");
-    // sdram example
-//    memset(sdram_writeBuffer, 0, sizeof(sdram_writeBuffer));
-//    memset(sdram_readBuffer, 0, sizeof(sdram_readBuffer));
-//    SEMC_SDRAM_Read(0, 10, 1);
-//    memset(sdram_writeBuffer, 1, sizeof(sdram_writeBuffer));
-//    SEMC_SDRAM_Write(0, 10, 1);
-//    SEMC_SDRAM_Read(0, 10, 1);
-//	for (int i = 0; i < 10; i++) {
-//		//read into the readBuffer to access later
-//		PRINTF("reading 0x%2x from sdram at %ith byte", sdram_readBuffer[i], i);
-//	}
+
+
+#if QUEUE_DEMO_ENABLE
+	struct tel tel_COM;
+	uint8_t IMG_cmdID;
+
+	/* Create IMG Ring Buffer */
+	//cb_init(&IMG_PAYLOAD, 5, IMG_SIZE);
+
+	vTaskDelay(xDelayms);
+
+#endif
+
 #if IMAG_ENABLE
 //	imag_init();
 #endif
 	for (;;) {
-		PRINTF("imag task loop\r\n");
+		PRINTF("IMG task loop\r\n");
+
+#if QUEUE_DEMO_ENABLE // Demo receives CMD from COM task and executes it
+		/* pseudocode*/
+		if( xQueueReceive( cmd_queue_IMG, &(IMG_cmdID), ( TickType_t ) 5 ) == pdPASS ) { // <- Instead of if(new command flag)
+			// execute IMG cmd
+			PRINTF("IMG task received %d cmd\r\n", IMG_cmdID);
+			switch (IMG_cmdID) {
+				/* goal is to set communication between com and img */
+				/*
+				 * cmd_queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
+                 * cmd_queue_GNC = xQueueCreate( xQueue_len, sizeof(uint8_t));
+                 * cmd_queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
+                 * tlm_queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
+				 */
+				case getPicture:
+					uint8_t cmdID;
+					uint8_t data_length;
+					uint8_t data;
+
+					// sets telemetry
+					image_CIA[IMG_SIZE] = set pictures;
+
+					if(success) {
+						cmdID = imgReady;
+						data_length = 1;
+						data = 1;
+					} else {
+						cmdID = imgReady;
+						data_length = 1;
+						data = 1;
+					}
+
+					//always send data in this format
+					//data_length + packetID + data
+					// 0 | getPicture
+					// sends telemetry to COM once image is prepped
+					xQueueSend( tlm_queue_COM, ( void * ) &(data_length), ( TickType_t ) 0 );
+					xQueueSend( queue_COM, ( void * ) &(cmdID)), ( TickType_t ) 0 );
+					xQueueSend( queue_COM, ( void * ) &(data)), ( TickType_t ) 0 );
+					break;
+				default:
+					break;
+			}
+		}
+		vTaskDelay(xDelayms);
+#endif
+
 #if IMAG_ENABLE
 		PRINTF("\nimag work\r\n");
 		/* sending commands to IMG */

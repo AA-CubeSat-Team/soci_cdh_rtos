@@ -14,7 +14,6 @@
 #include "timers.h"
 
 /* Freescale includes. */
-//#include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "fsl_common.h"
 #include "pin_mux.h"
@@ -22,9 +21,8 @@
 #include "board.h"
 
 /* Peripherals includes. */
-//#include "fsl_lpuart_freertos.h"
-//#include "fsl_lpuart.h"
 #include "peripherals.h"
+#include "telemetry.h"
 
 /* Tasks includes.*/
 #include "idle_task.h"
@@ -32,10 +30,8 @@
 #include "gnc_task.h"
 #include "com_task.h"
 
-/* Standard libraries includes.*/
-//#include "semphr.h"
 #include <stdbool.h>
-//#include "semc_sdram.h"
+#include "cdh_prototype.h"
 
 /*******************************************************************************
  * Definitions
@@ -63,6 +59,12 @@ extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 
+QueueHandle_t cmd_queue_IMG; // IMG receiving cmds from COM task
+QueueHandle_t cmd_queue_GNC;
+QueueHandle_t cmd_queue_EPS;
+QueueHandle_t tlm_queue_COM; // IMG/GNC/IDLE task to send tlm to COM task
+
+
 /*!
  * @brief main demo function.
  */
@@ -76,6 +78,13 @@ int main(void)
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
 
+    /* Create Queue */
+    cmd_queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    cmd_queue_GNC = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    cmd_queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
+    tlm_queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
+
+#if !COSMOS_TEST
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
@@ -90,15 +99,16 @@ int main(void)
         while (1)
           ;
 	 }
-   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
-	 	    pdPASS)
+   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
+		    pdPASS)
 	 {
         PRINTF("Task creation failed!.\r\n");
         while (1)
           ;
 	 }
-   if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
-		    pdPASS)
+#endif
+   if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
+	 	    pdPASS)
 	 {
         PRINTF("Task creation failed!.\r\n");
         while (1)
