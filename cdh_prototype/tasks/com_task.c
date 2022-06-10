@@ -10,6 +10,7 @@ bool beacon_check = false;
 
 /* Global Variables */
 uint8_t uplink_recv_buffer[UPLINK_SIZE];
+uint8_t queue_flag[4];
 
 struct u_primary_tel u_primary_tel1;
 struct u_ack_tel u_ack_tel1;
@@ -28,6 +29,10 @@ enum COM_States COM_State;
 void com_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	/* Error checking */
+	// bit 0: HMAC error
+	// bit 1: buffer overflow
+	uint8_t error;
 
 	/* COM Setup */
 	COM_State = INIT;
@@ -35,10 +40,13 @@ void com_task(void *pvParameters)
     bool com_ready = false;
     bool gnc_ready = false;
     bool eps_ready = false;
+    queue_flag[0] = 0;
+    queue_flag[0] = 1;
+    queue_flag[0] = 2;
+    queue_flag[0] = 3;
 
     /* UPLINKING */
     size_t n = 0;
-    uint32_t cmd_packet_size = 0;
 
 #if  QUEUE_DEMO_ENABLE
 	bool downlink_ready = true;
@@ -72,64 +80,34 @@ void com_task(void *pvParameters)
 					tel_IMG_cmdID++;
 				}
 				// Waiting to detumble
-
 				vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
 #endif
-
-				// Detumble time limit hit
-
-				/* Initialize PIT Timer */
-				// PIT_TIMER_INTIALIZE
-
-				/* Initialize HMAC Algorithm */
-				// HMAC Algorithm Initialize
-
-				COM_State = NORMAL;
+				COM_State = IDLE;
 				vTaskDelay(xDelayms);
 				break;
 
-			case NORMAL:
+			case IDLE:
 				/* receive all uplink data */
-				uplink_handshake(&cmd_packet_size); //TODO: add HMAC algorithm
-				if(COM_State == UPLINKING) {
+				uplink_handshake(); //TODO: Listen for response | how to respond to commands from MCC
+				if(COM_State == PASSING) {
 					break;
 				} else { // prepare data for passing
-					/* send health beacon */
-					// health beacon message
+					//TODO: Send Beacon
 
 					/* algorithm to get all the data */
 					if(!(img_ready & gnc_ready &eps_ready & com_ready)) { // downlink ready?
 						prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
+					} else {
+						vTaskDelay(xDelayms);
 					}
-					vTaskDelay(xDelayms);
 				}
 				break;
-			case UPLINKING:
-				/* Implement HMAC */
-				/*
-				//check CRC bytes
-				if(error) {
-					// downlink/send NACK
-					COM_State = Normal;
-					break;
-			    else {
-			    	// send CMDs to different tasks
-			    }
-				 */
-
-				/* execute any uplink command */
-				COM_State = DOWNLINKING;
-				break;
-
-			case DOWNLINKING:
-				break;
-				//TODO: Send Beacon
-				//TODO: Listen for response | how to respond to commands from MCC
+			case PASSING:
 				if(!(img_ready & gnc_ready & eps_ready & com_ready)) { // downlink ready?
 					prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
 				} else {
 					send_payload();
-					COM_State = NORMAL;
+					COM_State = IDLE;
 					vTaskDelay(xDelayms);
 				}
 				//TODO: add tick measure to make sure PASSING is over

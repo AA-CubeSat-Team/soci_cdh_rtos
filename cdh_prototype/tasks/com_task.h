@@ -16,6 +16,8 @@ extern bool payload_check;
 extern bool image_check;
 extern bool beacon_check;
 
+extern uint8_t queue_flags[4];
+
 /* uplink */
 extern struct u_primary_tel u_primary_tel1;
 extern struct u_ack_tel u_ack_tel1;
@@ -29,7 +31,7 @@ extern struct u_tel d_cmd_tel1[MAX_CMD_SIZE];
 extern uint8_t uplink_recv_buffer[UPLINK_SIZE];
 
 /* COM Task State Machine*/
-enum COM_States { INIT, UPLINKING, DOWNLINKING, NORMAL, PASSING };
+enum COM_States { INIT, IDLE, PASSING };
 extern enum COM_States COM_State;
 extern TaskHandle_t TaskHandler_com;
 

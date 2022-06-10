@@ -5,6 +5,7 @@
 // TODO: Modify code to include interrupt-based receiving/sending functions as Harshal talked about
 
 // TODO: (NOT SURE) Figure out if way to test uplinking/downlinking functions (After fixing) w/o radios
+extern uint8_t queue_flags[4];
 
 void com_radio_init(); // TODO: Ensure correct response is received from radio, lower priority
 void com_init(); //
@@ -34,9 +35,16 @@ void com_deployAntenna_algorithmTwo(); // TODO: Test w/ COM_A once programmed
 void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_ready);
 
 /*
+ * get_payload: gets data from the queue
+ * payload_buffer | any array to receive the data
+ * messageLength | length of data to receive
+ */
+void get_payload(uint8_t* payload_buffer, uint8_t messageLength);
+
+/*
  * uplink_handshake: process the upcoming header packet;
  */
-void uplink_handshake(uint32_t* cmd_packet_size);
+void uplink_handshake();
 
 /*
  * send_payload | sends all the telemetry

@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#if HMAC_ENABLE
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
+#endif
 #include <string.h>
 
 #include "com_task.h"
@@ -809,40 +811,57 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 		d_cmd_tel1[i].crc = 1;
 	}
 
-#else
-	if(!gnc_ready) { //get GNC payload
-		xQueueSend(queue_GNC, &CMD_PAYLOAD_GNC, ( TickType_t ) 0 );
-	} else if (!eps_ready) { // get EPS payload
-		xQueueSend(queue_GNC, &PAYLOAD_EPS, ( TickType_t ) 0 );
-	} else if(!com_ready) { // get COM payload
-		//TODO: COM Payload
-		// MCC Comand config radio -> config radio
-		// Downlink: Radio config improperly
-		// COM Healthcheck:
-		// Downlink: COM is operating properly
-		// MCC command: Option to shut down transmission.
-	} else if(!pictureReady) { // get IMG payload
-		xQueueSend( queue_IMG, &PAYLOAD_IMG, ( TickType_t ) 0 ); // get Picture
+#elif COM_ENABLE
+	char delay = false;
+	if(!gnc_ready & !queue_flag[0]) { //get GNC payload
+		if(xQueueSend(queue_GNC, &CMD_PAYLOAD_GNC, ( TickType_t ) 0 ) == pdPass) { queue_flag[0] = 1; delay = true; }
+	} else if (!eps_ready & !queue_flag[1]) { // get EPS payload
+		if(xQueueSend(queue_GNC, &PAYLOAD_EPS, ( TickType_t ) 0 ) == pdPass) { queue_flag[1] = 1; delay = true; }
+	} else if(!pictureReady & !queue_flag[2]) { // get IMG payload
+		if(xQueueSend( queue_IMG, &PAYLOAD_IMG, ( TickType_t ) 0 ) == pdPass) { queue_flag[2] = 1; delay = true; }
+	}
+	if(!com_ready) { // get COM payload
+	//TODO: COM Payload
+	// MCC Comand config radio -> config radio
+	// Downlink: Radio config improperly
+	// COM Healthcheck:
+	// Downlink: COM is operating properly
+	// MCC command: Option to shut down transmission.
 	}
 
-	vTaskDelay(xDelayms);
+	// delay tasks only when asked info from a queue this loop with no other queue waiting
+	if( (queue_flag[0] + queue_flag[1] + queue_flag[2]) < 2) & delay) { vTaskDelay(xDelayms); }
 
-	uint8_t packetLength = 0;
+	uint8_t packetLength;
+	uint8_t cmdID;
+	uint8_t data[100];
 	/* EXAMPLE OF HOW IT MIGHT SEND DOWN DATA */
 	if ( xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS ) {
-		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
-		// execute IMG cmd
-		switch (tel_COM.cmdID) {
-			case(EPS_READY):
-				eps_ready = true;
-				break;
-			case(GNC_READY):
-				gnc_ready = true;
-				break;
-			case(IMG_READY):
-				pictureReady = true;
-				break;
+		xQueueReceive( queue_COM, &(cmdID), ( TickType_t ) 10 );
+		for(int i = 0; i < packetLength; i++) {
+			xQueueReceive( queue_COM, &(data[i]), ( TickType_t ) 10 );
+		}
+
+		switch (cmdID) {
 			/* add more packetID */
+			//TODO: EPS Packets
+			case(EPS_READY):
+				if(data[0]) { eps_ready = true; queue_flag[1] = 0; }
+				break;
+			//TODO: GNC Packets
+			case(GNC_READY):
+				if(data[0]) { gnc_ready = true; queue_flag[0] = 0;}
+				break;
+			//TODO: IMG Packets
+			case(IMG_READY):
+				if(data[0]) { IMG_ready = true; queue_flag[2] = 0;}
+				break;
+			/* Example of Other Packet Data */
+			/*
+			case(SOME_PACKET_ID) // define in telemetry.h
+				get_payload( some_array, data_length);
+
+			 */
 			default:
 				break;
 		}
@@ -850,25 +869,28 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 #endif
 }
 
-void* get_payload(uint8_t* payload_buffer, uint8_t messageLength) {
-	uint8_t payload = 0;
-	for(int i = 0; i < messageLength - PACKET_HEADER_SIZE; i++) {
-		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
-		payloadBuffer[i] =
+void get_payload(uint8_t* payload_buffer, uint8_t messageLength) {
+	for(int i = 0; i < messageLength; i++) {
+		xQueueReceive( tlm_queue_COM, &(payload_buffer[i]), ( TickType_t ) 10 );
 	}
 }
 
-void uplink_handshake(uint32_t* cmd_packet_size) {
-	/*
-	* For this portion of the code it should pull data from the background
-	* buffer needed to execute the HMAC Algorithm
-	*/
-
+void uplink_handshake() {
+	bool noError = true;
+	bool buffer_overflow = false;
 #if COM_ENABLE
 	size_t n = 0;
 	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
 		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
-		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
+		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &u_primary_tel1, (uint32_t)(sizeof(u_primary_tel)), &n);
+		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &u_ack_tel1, (uint32_t)(sizeof(u_ack_tel)), &n);
+		if(u_primary_tel1.messageLength > MAX_CMD_SIZE) {
+			u_primary_tel1.messageLength = MAX_CMD_SIZE;
+			buffer_overflow = true;
+		}
+		for(int i = 0; i < u_primary_tel1.messageLength; i++) {
+			LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &u_tel1[i], (uint32_t)(sizeof(u_tel)), &n);
+		}
 	}
 #elif COSMOS_TEST
 	// receive char
@@ -887,6 +909,10 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	u_ack_tel1.crc 			   	    |= (uint8_t)GETCHAR();    	// first byte
 	u_ack_tel1.crc 			        |= ((uint8_t)GETCHAR())<<8; // second byte
 
+	if(u_primary_tel1.messageLength > MAX_CMD_SIZE) {
+		u_primary_tel1.messageLength = MAX_CMD_SIZE;
+		buffer_overflow = true;
+	}
 	for(int i = 0; i < u_primary_tel1.messageLength; i++) {
 		u_tel1[i].packetLength 		=  (uint8_t)GETCHAR();
 		u_tel1[i].packetID			=  (uint8_t)GETCHAR();
@@ -923,31 +949,38 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	// SHA256 is 256 bits long which rendered as 64 characters
 	// (be careful of the length of string with the choosen hash engine)
 	for (int i = 0; i < result_length; i++) {
-	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+#if !COSMOS_TEST
+		sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+#endif
 	}
 
 	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
 	if (strcmp((char *) res_hexstring, (char *) hashkey) == 0) {
+#if !COSMOS_TEST
 		PRINTF("Passed security verify, start uplinking.\n");
-		bool noError = true; // receive all function successfully
+#endif
+		noError = true; // receive all function successfully
+	} else {
+		// if strings not matched or if there's no HMAC from ground station
+	#if !COSMOS_TEST
+		PRINTF("Not from AACT ground station, waiting for the next response.\n");
+	#endif
+		noError = false; // security verification fails
 	}
-
-	// if strings not matched or if there's no HMAC from ground station
-	PRINTF("Not from AACT ground station, waiting for the next response.\n");
-	noError = false; // security verification fails
-
 #endif
 
 	/* Process Incoming Message */
-	if(noError) { // successful uplink handshake
-		COM_State = UPLINKING;
+	if(noError && !buffer_overflow) { // successful uplink handshake
+		COM_State = PASSING;
+	} else {
+		if(!noError) { PRINTF("NACK: error with receiving data"); }
+		if(buffer_overflow) { PRINTF("NACK: increase u_tel size"); }
+		//TODO: What to send when the UPLINK fails
 	}
-	// based packet structure
-
-	cmd_packet_size = 0; //set cmd packet size
 }
 
 void send_payload() {
+#if COSMOS_TEST
 	// primary
 	char* primary_tx_buffer = (char *)&d_primary_tel1;
 	for(int i=0; i<(D_PRIMARY_SIZE); i++) {
@@ -965,4 +998,11 @@ void send_payload() {
 			PRINTF("%c", cmd_tx_buffer[i]);
 		}
 	}
+#elif COM_ENABLE
+	LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE,  &d_primary_tel1, (uint32_t)(sizeof(d_primary_tel)) );
+	LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, &d_ack_tel1, (uint32_t)(sizeof(d_ack_tel)) );
+	for(int i = 0; i < d_primary_tel1.messageLength; i++) {
+		LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, &d_tel1[i], (uint32_t)(sizeof(d_tel)) );
+	}
+#endif
 }
