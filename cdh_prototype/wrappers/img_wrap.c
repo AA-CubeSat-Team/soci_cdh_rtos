@@ -12,6 +12,7 @@ IMG:
 #include <stdbool.h>
 #include "peripherals.h"
 #include <stdio.h>
+#include "cdh_prototype.h"
 
 uint8_t recv_buffer[RESPONSE_LENGTH]; // Receive 5 bytes
 uint8_t package_buffer[EXTERNAL_PACKAGE_SIZE]; // Packages sent from IMG are 32 bytes or less
@@ -90,7 +91,9 @@ IMG_system_response checkStatus(uint8_t IMG_param) {
 // take picture
 IMG_system_response takePicture(uint8_t IMG_param) {
 	status = LPUART_RTOS_Receive(&LPUART4_rtos_handle, recv_buffer, RESPONSE_LENGTH, &n);
+#if DEBUG_ENABLE
 	PRINTF("Taking picture at slot: %d.\n", IMG_param);
+#endif
 	if (recv_buffer[0] != ACK) return HANDSHAKEFAILURE;
 	else if (recv_buffer[1] != TAKE_PICTURE) return CMDFAILURE;
 	else if (recv_buffer[2] != IMG_param) return PARAMFAILURE;

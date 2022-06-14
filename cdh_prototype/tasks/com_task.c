@@ -52,6 +52,8 @@ void com_task(void *pvParameters)
 	bool downlink_ready = true;
     bool commandReceived = true;
 #endif
+    /* IMG Initialization */
+    //send check status img_cmd 0 param 0
 
 	for (;;) {
 
