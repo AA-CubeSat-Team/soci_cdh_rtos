@@ -1,0 +1,14 @@
+-IC:/Users/Nick/Documents/GitHub/soci-gnc/Src
+-IC:/Users/Nick/Documents/GitHub/soci-gnc/Src/FSW_Lib_ert_rtw
+-IC:/Users/Nick/Documents/GitHub/soci-gnc/Lib/FSW/soar/include
+-IC:/Users/Nick/Documents/GitHub/soci-gnc/Lib/FSW/soar/include/ecos/src
+-IC:/Program\ Files/MATLAB/R2020b/extern/include
+-IC:/Program\ Files/MATLAB/R2020b/simulink/include
+-IC:/Program\ Files/MATLAB/R2020b/rtw/c/src
+-IC:/Program\ Files/MATLAB/R2020b/rtw/c/src/ext_mode/common
+-IC:/Program\ Files/MATLAB/R2020b/rtw/c/ert
+-IC:/Program\ Files/MATLAB/R2020b/toolbox/dsp/include
+-IC:/Program\ Files/MATLAB/R2020b/toolbox/dsp/extern/src/export/include/src
+-IC:/Program\ Files/MATLAB/R2020b/toolbox/dsp/extern/src/export/include
+-IC:/Program\ Files/MATLAB/R2020b/toolbox/shared/dsp/vision/matlab/include
+-IC:/Users/Nick/Documents/GitHub/soci-gnc/Src/slprj/ert/_sharedutils

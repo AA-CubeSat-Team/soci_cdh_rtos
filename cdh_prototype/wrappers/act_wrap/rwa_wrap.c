@@ -185,7 +185,7 @@ void rplSpiTransfer(uint8_t *rpl_packet_pt, uint8_t *rpl_packet_len_pt, uint8_t 
   #endif
 
   for (int ii = 0; ii < MAX_RPL_PACKET; ii++) {
-//	  printf ("0x2%\n", rx_buffer[ii]);
+	  printf ("0x2%\n", rx_buffer[ii]);
     *(rpl_packet_pt+ii) = rx_buffer[ii];
   }
 }

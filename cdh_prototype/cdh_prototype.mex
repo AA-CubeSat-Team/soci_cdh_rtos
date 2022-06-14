@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="MIMXRT1021xxxxx" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_11 http://mcuxpresso.nxp.com/XSD/mex_configuration_11.xsd" uuid="8f709dec-fafa-4fcc-990f-095cc6257052" version="11" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="MIMXRT1021xxxxx" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9.xsd" uuid="8f709dec-fafa-4fcc-990f-095cc6257052" version="1.9" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>MIMXRT1021xxxxx</processor>
       <package>MIMXRT1021DAG5A</package>
@@ -14,17 +14,15 @@
       <validate_boot_init_only>true</validate_boot_init_only>
       <generate_extended_information>false</generate_extended_information>
       <generate_code_modified_registers_only>false</generate_code_modified_registers_only>
-      <update_include_paths>true</update_include_paths>
-      <generate_registers_defines>false</generate_registers_defines>
    </preferences>
    <tools>
-      <pins name="Pins" version="11.0" enabled="true" update_project_code="true">
+      <pins name="Pins" version="9.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/pin_mux.c" update_enabled="true"/>
             <file path="board/pin_mux.h" update_enabled="true"/>
          </generated_project_files>
          <pins_profile>
-            <processor_version>11.0.1</processor_version>
+            <processor_version>9.0.1</processor_version>
             <power_domains>
                <power_domain name="NVCC_GPIO" value="3.3"/>
             </power_domains>
@@ -168,8 +166,32 @@
                   <pin peripheral="JTAG" signal="TMS" pin_num="111" pin_signal="GPIO_AD_B0_00"/>
                   <pin peripheral="JTAG" signal="TRSTB" pin_num="106" pin_signal="GPIO_AD_B0_05"/>
                   <pin peripheral="LPSPI1" signal="SCK" pin_num="98" pin_signal="GPIO_AD_B0_10"/>
-                  <pin peripheral="LPSPI1" signal="SDI" pin_num="95" pin_signal="GPIO_AD_B0_13"/>
-                  <pin peripheral="LPSPI1" signal="SDO" pin_num="96" pin_signal="GPIO_AD_B0_12"/>
+                  <pin peripheral="LPSPI1" signal="SDI" pin_num="95" pin_signal="GPIO_AD_B0_13">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Slow"/>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="open_drain" value="Enable"/>
+                        <pin_feature name="speed" value="MHZ_100"/>
+                        <pin_feature name="drive_strength" value="R0_6"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="pull_keeper_enable" value="Enable"/>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_22K_Ohm"/>
+                        <pin_feature name="hysteresis_enable" value="Disable"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPSPI1" signal="SDO" pin_num="96" pin_signal="GPIO_AD_B0_12">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Slow"/>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="open_drain" value="Enable"/>
+                        <pin_feature name="speed" value="MHZ_100"/>
+                        <pin_feature name="drive_strength" value="R0_6"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="pull_keeper_enable" value="Enable"/>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up_22K_Ohm"/>
+                        <pin_feature name="hysteresis_enable" value="Disable"/>
+                     </pin_features>
+                  </pin>
                   <pin peripheral="GPIO1" signal="gpio_io, 09" pin_num="99" pin_signal="GPIO_AD_B0_09"/>
                   <pin peripheral="GPIO1" signal="gpio_io, 28" pin_num="78" pin_signal="GPIO_AD_B1_12"/>
                   <pin peripheral="GPIO1" signal="gpio_io, 29" pin_num="76" pin_signal="GPIO_AD_B1_13"/>
@@ -181,16 +203,16 @@
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="9.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="7.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/clock_config.c" update_enabled="true"/>
             <file path="board/clock_config.h" update_enabled="true"/>
          </generated_project_files>
          <clocks_profile>
-            <processor_version>11.0.1</processor_version>
+            <processor_version>9.0.1</processor_version>
          </clocks_profile>
          <clock_configurations>
-            <clock_configuration name="BOARD_BootClockRUN" id_prefix="" prefix_user_defined="false">
+            <clock_configuration name="BOARD_BootClockRUN">
                <description></description>
                <options/>
                <dependencies>
@@ -332,7 +354,7 @@
             <file path="board/dcd.h" update_enabled="true"/>
          </generated_project_files>
          <dcdx_profile>
-            <processor_version>11.0.1</processor_version>
+            <processor_version>9.0.1</processor_version>
             <output_format>c_array</output_format>
          </dcdx_profile>
          <dcdx_configurations>
@@ -471,7 +493,7 @@
             </dcdx_configuration>
          </dcdx_configurations>
       </dcdx>
-      <periphs name="Peripherals" version="11.0" enabled="true" update_project_code="true">
+      <periphs name="Peripherals" version="9.0" enabled="true" update_project_code="true">
          <dependencies>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.gpt" description="gpt not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">
@@ -489,7 +511,7 @@
                </feature>
             </dependency>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.lpi2c" description="Unsupported version of the LPI2C Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
-               <feature name="version" evaluation="greaterOrEqual">
+               <feature name="version" evaluation="equivalent">
                   <data type="Version">2.2.0</data>
                </feature>
             </dependency>
@@ -519,7 +541,7 @@
             <file path="drivers/peripherals.h" update_enabled="true"/>
          </generated_project_files>
          <peripherals_profile>
-            <processor_version>11.0.1</processor_version>
+            <processor_version>9.0.1</processor_version>
          </peripherals_profile>
          <functional_groups>
             <functional_group name="BOARD_InitPeripherals" uuid="866434d8-d5d8-49f5-9bd0-90c806985966" called_from_default_init="true" id_prefix="" core="core0">
@@ -982,12 +1004,6 @@
                            <setting name="pinCfg" value="kLPSPI_SdiInSdoOut"/>
                            <setting name="dataOutConfig" value="kLpspiDataOutRetained"/>
                         </struct>
-                        <setting name="allPcsPolarityEnable" value="false"/>
-                        <struct name="allPcsPolarity">
-                           <setting name="kLPSPI_Pcs1Active" value="kLPSPI_PcsActiveHigh"/>
-                           <setting name="kLPSPI_Pcs2Active" value="kLPSPI_PcsActiveHigh"/>
-                           <setting name="kLPSPI_Pcs3Active" value="kLPSPI_PcsActiveHigh"/>
-                        </struct>
                         <struct name="interrupt_priority">
                            <setting name="IRQn" value="LPSPI1_IRQn"/>
                            <setting name="enable_priority" value="true"/>
@@ -1122,9 +1138,6 @@
             <component name="uart_cmsis_common" uuid="c17948ec-7107-40c4-82cd-8df64961c985" type_id="uart_cmsis_common_9cb8e302497aa696fdbb5a4fd622c2a8">
                <config_set_global name="global_USART_CMSIS_common" quick_selection="default"/>
             </component>
-            <component name="generic_enet" uuid="9e9e8f2c-217a-47a0-82d8-0c132177aa48" type_id="generic_enet_74db5c914f0ddbe47d86af40cb77a619">
-               <config_set_global name="global_enet"/>
-            </component>
          </components>
       </periphs>
       <tee name="TEE" version="2.0" enabled="false" update_project_code="true">
@@ -1132,6 +1145,8 @@
          <tee_profile>
             <processor_version>N/A</processor_version>
          </tee_profile>
+         <global_options/>
+         <user_memory_regions/>
       </tee>
    </tools>
 </configuration>

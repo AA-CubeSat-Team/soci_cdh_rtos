@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?debugstack-directory version="1.0"?>
+<directory xmlns:xi="http://www.w3.org/2001/XInclude">
+   <xi:include href="file:/C:/CubeSat/IDE/soci_cdh_rtos/cdh_prototype/.mcuxpressoide_packages_support/MIMXRT1021xxxxx_support/MIMXRT1020_dir_part.xml"/>
+   <xi:include href="file:/C:/CubeSat/IDE/soci_cdh_rtos/cdh_prototype/.mcuxpressoide_packages_support/MIMXRT1052xxxxx_support/MIMXRT1050_dir_part.xml"/>
+</directory>

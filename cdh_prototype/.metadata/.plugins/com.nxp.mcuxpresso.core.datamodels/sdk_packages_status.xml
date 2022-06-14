@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdk-packages>
+<package hash="1626572392378" path="C:\Users\tristan\mcuxpresso\02\SDKPackages\SDK_2_10_0_EVK-MIMXRT1020.zip" schema="manifest-schema/sdk_manifest_v3.8.xsd"/>
+<package hash="1617386580000" path="C:\nxp\MCUXpressoIDE_11.3.1_5262\ide\plugins\com.nxp.mcuxpresso.core.datamodels.resources_11.3.0.202009091825\fragments" schema="manifest-schema/sdk_manifest_v3.3.xsd"/>
+<package hash="1644630093074" path="C:\Users\tristan\mcuxpresso\02\SDKPackages\SDK_2_3_0_EVK-MIMXRT1050.zip" schema="manifest-schema/sdk_manifest_v3.3.xsd"/>
+<package hash="1617386580000" path="C:\nxp\MCUXpressoIDE_11.3.1_5262\ide\plugins\com.nxp.mcuxpresso.core.datamodels.resources_11.3.0.202009091825\override" schema="manifest-schema/sdk_manifest_v3.3.xsd"/>
+</sdk-packages>

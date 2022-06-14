@@ -10,6 +10,7 @@
 #include "idle_task.h"
 #include "sun_wrap.h"
 #include "fsl_debug_console.h"
+#include "rwa_wrap.h"
 #include "com_protocol_helper.h"
 
 //GNC BUILD include
@@ -163,6 +164,13 @@ void gnc_task(void *pvParameters)
 		// Question: do we call rt_OneStep before getting new sensor reads
 		// AND after getting new sensor reads?
 //		rt_OneStep();
+
+		commandRW(7, &rw0, RWA0);
+		commandRW(7, &rw1, RWA1);
+		commandRW(7, &rw2, RWA2);
+		commandRW(7, &rw3, RWA3);
+
+		getSunAngles(&Sun1);
 
 
 #if GNC_ENABLE

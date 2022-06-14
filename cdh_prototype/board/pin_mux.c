@@ -6,11 +6,11 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v11.0
+product: Pins v9.0
 processor: MIMXRT1021xxxxx
 package_id: MIMXRT1021DAG5A
 mcu_data: ksdk2_0
-processor_version: 11.0.1
+processor_version: 9.0.1
 board: MIMXRT1020-EVK
 pin_labels:
 - {pin_num: '52', pin_signal: WAKEUP, label: USER_BUTTON, identifier: USER_BUTTON}
@@ -58,8 +58,10 @@ BOARD_InitPins:
   - {pin_num: '111', peripheral: JTAG, signal: TMS, pin_signal: GPIO_AD_B0_00}
   - {pin_num: '106', peripheral: JTAG, signal: TRSTB, pin_signal: GPIO_AD_B0_05}
   - {pin_num: '98', peripheral: LPSPI1, signal: SCK, pin_signal: GPIO_AD_B0_10}
-  - {pin_num: '95', peripheral: LPSPI1, signal: SDI, pin_signal: GPIO_AD_B0_13}
-  - {pin_num: '96', peripheral: LPSPI1, signal: SDO, pin_signal: GPIO_AD_B0_12}
+  - {pin_num: '95', peripheral: LPSPI1, signal: SDI, pin_signal: GPIO_AD_B0_13, slew_rate: Slow, software_input_on: Enable, open_drain: Enable, speed: MHZ_100, drive_strength: R0_6,
+    pull_keeper_select: Keeper, pull_keeper_enable: Enable, pull_up_down_config: Pull_Up_22K_Ohm, hysteresis_enable: Disable}
+  - {pin_num: '96', peripheral: LPSPI1, signal: SDO, pin_signal: GPIO_AD_B0_12, slew_rate: Slow, software_input_on: Enable, open_drain: Enable, speed: MHZ_100, drive_strength: R0_6,
+    pull_keeper_select: Keeper, pull_keeper_enable: Enable, pull_up_down_config: Pull_Up_22K_Ohm, hysteresis_enable: Disable}
   - {pin_num: '99', peripheral: GPIO1, signal: 'gpio_io, 09', pin_signal: GPIO_AD_B0_09}
   - {pin_num: '78', peripheral: GPIO1, signal: 'gpio_io, 28', pin_signal: GPIO_AD_B1_12}
   - {pin_num: '76', peripheral: GPIO1, signal: 'gpio_io, 29', pin_signal: GPIO_AD_B1_13}
@@ -89,13 +91,9 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_07_LPUART1_RX, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_09_GPIO1_IO09, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_10_LPSPI1_SCK, 0U); 
-#if FSL_IOMUXC_DRIVER_VERSION >= MAKE_VERSION(2, 0, 3)
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_11_ARM_TRACE_SWO, 0U); 
-#else
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_11_ARM_CM7_TRACE_SWO, 0U); 
-#endif
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_12_LPSPI1_SDO, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_13_LPSPI1_SDI, 0U); 
+  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_12_LPSPI1_SDO, 1U); 
+  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_13_LPSPI1_SDI, 1U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_14_LPUART3_TX, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_15_LPUART3_RX, 0U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_00_SEMC_READY, 0U); 
@@ -110,11 +108,9 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_14_LPI2C1_SCL, 1U); 
   IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_15_LPI2C1_SDA, 1U); 
   IOMUXC_SetPinMux(IOMUXC_SNVS_WAKEUP_GPIO5_IO00, 0U); 
-#if FSL_IOMUXC_DRIVER_VERSION >= MAKE_VERSION(2, 0, 3)
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_11_ARM_TRACE_SWO, 0x10B0U); 
-#else
   IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_11_ARM_CM7_TRACE_SWO, 0x10B0U); 
-#endif
+  IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_12_LPSPI1_SDO, 0xD8B0U); 
+  IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_13_LPSPI1_SDI, 0xD8B0U); 
   IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_08_LPI2C2_SCL, 0xD8B0U); 
   IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_09_LPI2C2_SDA, 0xD8B0U); 
   IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_14_LPI2C1_SCL, 0xD8B0U); 
