@@ -12,9 +12,11 @@
 
 /* Serial Communication Definition */
 #if OBC
-#define COM_RTOS_UART_HANDLE LPUART1_rtos_handle
+#define COM_RTOS_UART_HANDLE 	LPUART1_rtos_handle
+#define COM_UART				LPUART1
 #else // DEV BOARD
-#define COM_RTOS_UART_HANDLE LPUART3_rtos_handle
+#define COM_RTOS_UART_HANDLE 	LPUART3_rtos_handle
+#define COM_UART				LPUART3
 #endif
 
 

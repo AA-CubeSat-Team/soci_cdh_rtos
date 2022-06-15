@@ -10,7 +10,7 @@ bool beacon_check = false;
 
 /* Global Variables */
 uint8_t uplink_recv_buffer[UPLINK_SIZE];
-uint8_t queue_flag[4];
+uint8_t queue_flag[3];
 
 struct u_primary_tel u_primary_tel1;
 struct u_ack_tel u_ack_tel1;
@@ -41,9 +41,8 @@ void com_task(void *pvParameters)
     bool gnc_ready = false;
     bool eps_ready = false;
     queue_flag[0] = 0;
-    queue_flag[0] = 1;
-    queue_flag[0] = 2;
-    queue_flag[0] = 3;
+    queue_flag[1] = 1;
+    queue_flag[2] = 2;
 
     /* UPLINKING */
     size_t n = 0;

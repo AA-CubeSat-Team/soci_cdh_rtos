@@ -880,7 +880,7 @@ void uplink_handshake() {
 	bool buffer_overflow = false;
 #if COM_ENABLE
 	size_t n = 0;
-	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
+	if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(COM_UART)) { //recv_buffer not empty
 		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
 		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &u_primary_tel1, (uint32_t)(sizeof(u_primary_tel)), &n);
 		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &u_ack_tel1, (uint32_t)(sizeof(u_ack_tel)), &n);
