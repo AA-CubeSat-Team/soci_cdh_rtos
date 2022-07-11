@@ -97,15 +97,10 @@ bool eps_healthcheck() {
  */
 
 static void i2c_read_write_helper(uint8_t* i2c_send_buffer, size_t tx_size, uint8_t * i2c_recv_buffer, size_t rx_size, time_t d) {
-
-	size_t n;
-
 	I2C_send(&LPI2C1_masterHandle, EPS_SLAVE_ADDR, 0, i2c_send_buffer, tx_size);
-
 	if (d != NO_RETURN) {
 		I2C_request(&LPI2C1_masterHandle, EPS_SLAVE_ADDR, 0, i2c_recv_buffer, rx_size);
 	}
-
 	adc_count = 0;
 
 }

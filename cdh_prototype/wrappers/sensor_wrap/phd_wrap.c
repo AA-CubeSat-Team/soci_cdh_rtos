@@ -5,6 +5,7 @@
 */
 
 #include "phd_wrap.h"
+#include "com_protocol_helper.h"
 
 #define PHD_ADC_SER_ADDRESS (uint8_t)0x1D // ADC address
 
@@ -59,7 +60,7 @@ void writeRegPhd(uint8_t reg, uint8_t value, phd_t * Phd)
   Wire.write(value);
   Wire.endTransmission();
   #else
-  I2C_send(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, reg, value, 1);
+  I2C_send(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, reg, value, 1); //TODO: fix warning
   #endif
 }
 

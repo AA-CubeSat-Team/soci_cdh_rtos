@@ -44,8 +44,6 @@ void setFeedback(float mtqFeed[3], float rwaFeed[4], float mode, feed_t * Feed) 
 }
 
 void writeFeedback(feed_t * Feed) {
-	I2C_send(Feed->feedHandle, FEED_ADDR, 0xF7, Feed->sendBytes, 28);
-
 	uint8_t s2[4];
 	for (uint8_t i = 0; i < 4; i++) {
 		s2[i] = Feed->sendBytes[i+28];
