@@ -27,18 +27,12 @@
 
 /* Command Name List */
 
-// IMG Command ID
-#define imgReady        10
+// General Command ID
+extern uint8_t REQUEST_PAYLOAD;
 
 //IMG data
 #define NUM_IMG 5
 #define IMG_SIZE     600000
-
-// EPS Command ID
-#define CMD_PAYLOAD_EPS 1
-
-// GNC Command ID
-#define CMD_PAYLOAD_GNC 1
 
 // COM Command ID
 #define EPS_READY 1

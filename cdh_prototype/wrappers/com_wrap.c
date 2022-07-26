@@ -6,6 +6,7 @@
 #include "fsl_lpi2c.h"
 #include "peripherals.h"
 #include "com_protocol_helper.h"
+#include "telemetry.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -80,6 +81,9 @@ static char tx_buffer[7] = {};
 static char rx_buffer[5] = {};
 static char downlink_buffer[] = {};
 static int rx_size = 0;
+
+// GENERAL COMMAND LIST
+uint8_t REQUEST_PAYLOAD = 1;
 // maybe try uint8_t for buffers
 
 void com_deployAntenna_algorithmTwo();
@@ -816,9 +820,9 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 
 #else
 	if(!gnc_ready) { //get GNC payload
-		xQueueSend(queue_GNC, &CMD_PAYLOAD_GNC, ( TickType_t ) 0 );
+		xQueueSend(cmd_queue_GNC, &(REQUEST_PAYLOAD), ( TickType_t ) 0 );
 	} else if (!eps_ready) { // get EPS payload
-		xQueueSend(queue_GNC, &PAYLOAD_EPS, ( TickType_t ) 0 );
+		xQueueSend(cmd_queue_GNC, &(REQUEST_PAYLOAD), ( TickType_t ) 0 );
 	} else if(!com_ready) { // get COM payload
 		//TODO: COM Payload
 		// MCC Comand config radio -> config radio
@@ -826,18 +830,19 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 		// COM Healthcheck:
 		// Downlink: COM is operating properly
 		// MCC command: Option to shut down transmission.
-	} else if(!pictureReady) { // get IMG payload
-		xQueueSend( queue_IMG, &PAYLOAD_IMG, ( TickType_t ) 0 ); // get Picture
+	} else if(!img_ready) { // get IMG payload
+		xQueueSend( cmd_queue_IMG, &(REQUEST_PAYLOAD), ( TickType_t ) 0 ); // get Picture
 	}
 
 	vTaskDelay(xDelayms);
 
 	uint8_t packetLength = 0;
+	uint8_t cmdID = 0;
 	/* EXAMPLE OF HOW IT MIGHT SEND DOWN DATA */
-	if ( xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS ) {
-		xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
+	if ( xQueueReceive( tlm_queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS ) {
+		xQueueReceive( tlm_queue_COM, &(cmdID), ( TickType_t ) 10 );
 		// execute IMG cmd
-		switch (tel_COM.cmdID) {
+		switch (cmdID) {
 			case(EPS_READY):
 				eps_ready = true;
 				break;
@@ -845,7 +850,7 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 				gnc_ready = true;
 				break;
 			case(IMG_READY):
-				pictureReady = true;
+				img_ready = true;
 				break;
 			/* add more packetID */
 			default:
@@ -858,7 +863,7 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 void* get_payload(uint8_t* payload_buffer, uint8_t messageLength) {
 	uint8_t payload = 0;
 	for(int i = 0; i < messageLength - PACKET_HEADER_SIZE; i++) {
-		//xQueueReceive( queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
+		//xQueueReceive( tlm_queue_COM, &(packetLength), ( TickType_t ) 10 ) == pdPASS
 		//payloadBuffer[i] =
 	}
 }
