@@ -67,7 +67,8 @@ void readRegs(uint8_t reg, uint8_t *value, uint8_t valueSize, gyro_t * Gyro)
 //  Gyro->gyroTransfer->dataSize = valueSize;
 //  LPI2C_RTOS_Transfer(Gyro->gyroHandle, Gyro->gyroTransfer);
 //    I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, &reg, 1);
-    I2C_request(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, reg, value, valueSize);
+    I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, &reg, 1);
+    I2C_request(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, value, valueSize);
 #endif
 }
 
@@ -96,7 +97,10 @@ void writeReg(uint8_t reg, uint8_t value, gyro_t * Gyro)
 //  *(uint8_t*)(Gyro->gyroTransfer->data) = value; // did not pass in value
 //  Gyro->gyroTransfer->dataSize = 1;
 //  LPI2C_RTOS_Transfer(Gyro->gyroHandle, Gyro->gyroTransfer);
-  I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, reg, &value, 1);
+  uint8_t send_buf[2];
+  send_buf[0] = reg;
+  send_buf[1] = value;
+  I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, send_buf, 2);
 //  I2C_send(Gyro->gyroHandle, &LPI2C1_masterTransfer, GYRO_ADDRESS, 0, &reg, 1);
 #endif
 }
@@ -115,60 +119,34 @@ void writeReg(uint8_t reg, uint8_t value, gyro_t * Gyro)
  *
  */
 #if ARDUINO_CODE
-void startGyro(gyro_t * Gyro)
+void startGyro(gyro_t * Gyro, uint8_t nGyro)
 {
 #else
-void startGyro(gyro_t *Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_transfer_t *gyroTransfer)
+void startGyro(gyro_t *Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_transfer_t *gyroTransfer, uint8_t nGyro)
 {
 #endif
 #if !ARDUINO_CODE
   Gyro->gyroHandle = gyroHandle;
-
-//  gyroTransfer->slaveAddress = GYRO_ADDRESS;
-//  gyroTransfer->subaddressSize = 1;
-//  Gyro->gyroTransfer = gyroTransfer;
 #endif
-
-#if DIFF_TEMP_BIAS_COE
-  switch (base_Gyro){
-    case LPI2C1:
-      static const gyroBiasValue = {-0.565375, 0.6173333, -0.0121667};
-      static const gyroTempBiasCoeValue = {0.02, 0.02, 0.01};
-      static const gyroTempSensCoeValue = {0.0008, 0.0008, 0.0001};
-      Gyro->gyroBias = gyroBiasValue;
-      Gyro->gyroTempBiasCoe = gyroTempBiasCoeValue;
-      Gyro->gyroTempSensCoe = gyroTempSensCoeValue;
-      break;
-    case LPI2C2:
-      static const gyroBiasValue = {0, 0, 0};
-      static const gyroTempBiasCoeValue = {0, 0, 0};
-      static const gyroTempSensCoeValue = {0, 0, 0};
-      Gyro->gyroBias = gyroBiasValue;
-      Gyro->gyroTempBiasCoe = gyroTempBiasCoeValue;
-      Gyro->gyroTempSensCoe = gyroTempSensCoeValue;
-      break;
-    case LPI2C3:
-      static const gyroBiasValue = {0, 0, 0};
-      static const gyroTempBiasCoeValue = {0, 0, 0};
-      static const gyroTempSensCoeValue = {0, 0, 0};
-      Gyro->gyroBias = gyroBiasValue;
-      Gyro->gyroTempBiasCoe = gyroTempBiasCoeValue;
-      Gyro->gyroTempSensCoe = gyroTempSensCoeValue;
-      break;
-  }
+    Gyro->gyroBias[0] = 0; Gyro->gyroBias[1] = 0; Gyro->gyroBias[2] = 0;
+#if !FLATSAT
+    if (nGyro == 1) {
+    	Gyro->gyroBias[0] = -0.565375; Gyro->gyroBias[1] = 0.61733, Gyro->gyroBias[2] = -0.0121667;
+    }
+    else if (nGyro == 2) {
+    	Gyro->gyroBias[0] = -0.565375; Gyro->gyroBias[1] = 0.61733, Gyro->gyroBias[2] = -0.0121667;
+    }
+    else if (nGyro == 3) {
+    	Gyro->gyroBias[0] = -0.565375; Gyro->gyroBias[1] = 0.61733, Gyro->gyroBias[2] = -0.0121667;
+    }
 #else
-  static const float gyroBiasValue[3] = {-0.565375, 0.6173333, -0.0121667};
-  static const float gyroTempBiasCoeValue[3] = {0.02, 0.02, 0.01};
-  static const float gyroTempSensCoeValue[3] = {0.0008, 0.0008, 0.0001};
-  memcpy(Gyro->gyroBias,gyroBiasValue, 12);
-  memcpy(Gyro->gyroTempBiasCoe,gyroTempBiasCoeValue, 12);
-  memcpy(Gyro->gyroTempSensCoe,gyroTempSensCoeValue, 12);
+    Gyro->gyroBias[0] = 0; Gyro->gyroBias[1] = 0, Gyro->gyroBias[2] = 0;
 #endif
 
 #if ARDUINO_CODE
     (Gyro->gyroWire).begin();
 #endif
-
+  Gyro->errorFlag = 0;
   writeReg(GYRO_CTRL_REG0, GYRO_FSR_NUM, Gyro);
   writeReg(GYRO_CTRL_REG1, (GYRO_ODR_NUM<<2 | 0x02), Gyro);
 }
@@ -214,8 +192,9 @@ void readGyroData(gyro_t * Gyro)
     Gyro->gyroXYZ[i] = (Gyro->gyroXYZ[i])*GYRO_SENSITIVITY - (Gyro->gyroBias[i]);
 #endif
   }
-
-
+  if (Gyro->gyroXYZ[0] + Gyro->gyroXYZ[1] + Gyro->gyroXYZ[2] > 300) {
+	Gyro->errorFlag = 1;
+  }
 }
 
 /*!

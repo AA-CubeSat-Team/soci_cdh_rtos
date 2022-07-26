@@ -53,9 +53,9 @@ void readMagTemp(mag_t * Mag)
 }
 
 #if ARDUINO_CODE
-void initMag(mag_t * Mag)
+void initMag(mag_t * Mag, uint8_t nMag)
 #else
-void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle)
+void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle, uint8_t nMag)
 #endif
 {
   if (!Mag->magInitialized)
@@ -63,10 +63,22 @@ void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle)
 #if !ARDUINO_CODE
     Mag->magHandle = magHandle;
 #endif
-    static const float magCalVecValue[3] = {0, 0, 0};
-    static const float magCalCoeValue[3] = {1, 1, 1};
-    memcpy(Mag->magCalVec,magCalVecValue, 12);
-    memcpy(Mag->magCalCoe,magCalCoeValue, 12);
+    Mag->magCalVec[0] = 0; Mag->magCalVec[1] = 0; Mag->magCalVec[2] = 0;
+    Mag->magCalCoe[0] = 1; Mag->magCalCoe[1] = 1; Mag->magCalCoe[2] = 1;
+#if !FLATSAT
+    if (nMag == 1) {
+    	Mag->magCalVec[0] = 22.7787; Mag->magCalVec[1] = -63.1638, Mag->magCalVec[2] = 29.3146;
+    	Mag->magCalCoe[0] = 1.2192; Mag->magCalCoe[1] = 1.2693, Mag->magCalCoe[2] = 1.0121;
+    }
+    else if (nMag == 2) {
+    	Mag->magCalVec[0] = -19.2956, Mag->magCalVec[1] = 9.0566, Mag->magCalVec[2] = 0.2989;
+    	Mag->magCalCoe[0] = 1.2157, Mag->magCalCoe[1] = 1.15, Mag->magCalCoe[2] = 1.0039;
+    }
+    else if (nMag == 3) {
+    	Mag->magCalVec[0] = -42.4006, Mag->magCalVec[1] = -35.6511, Mag->magCalVec[2] = 0.5457;
+    	Mag->magCalCoe[0] = 1.2577, Mag->magCalCoe[1] = 1.1608, Mag->magCalCoe[2] = 1.0236;
+    }
+#endif
 #if ARDUINO_CODE
     Wire.begin();
 #endif
@@ -78,7 +90,7 @@ void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle)
 void startMag(mag_t * Mag)
 {
   if (Mag->magInitialized){
-    writeRegMag(LSM303_REGISTER_MAG_MR_REG_M, 0x00, Mag); // LSM303_REGISTER_MAG_MR_REG_M subadress might be the problem
+    writeRegMag(LSM303_REGISTER_MAG_MR_REG_M, 0x00, Mag);
     
     // LSM303DLHC has no WHOAMI register so read CRA_REG_M to check
     // the default value (0b00010000/0x10)
@@ -90,15 +102,15 @@ void startMag(mag_t * Mag)
 }
 
 #if ARDUINO_CODE
-void quickStartMag(mag_t * Mag)
+void quickStartMag(mag_t * Mag, uint8_t nMag)
 #else
-void quickStartMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle)
+void quickStartMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle, uint8_t nMag)
 #endif
 {
 #if ARDUINO_CODE
-  initMag(Mag);
+  initMag(Mag, nMag);
 #else
-  initMag(Mag, magHandle);
+  initMag(Mag, magHandle, nMag);
 #endif
   startMag(Mag);
 }

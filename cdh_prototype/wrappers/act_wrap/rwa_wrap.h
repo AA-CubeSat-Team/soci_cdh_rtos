@@ -21,6 +21,7 @@
 SPISettings spiSet(125000, MSBFIRST, SPI_MODE0); // SPI driver is initialized
 // set timeout between request and reply (milliseconds)
 #define SPI_TIMEOUT 20
+
 // assigns GPIO pins to be SS pins (Arduino only)
 #define SS1 3
 #define SS2 4
@@ -37,6 +38,10 @@ SPISettings spiSet(125000, MSBFIRST, SPI_MODE0); // SPI driver is initialized
 #define SS3 RWA2
 #define SS4 RWA3
 #endif
+
+#define RW_CMD_STARTUP 7
+#define RW_CMD_SET_SPEED 6
+#define RW_CMD_READ_SPEED 4
 
 #define MAX_REQ_PAYLOAD 6 + 1     // N_max = 6 plus comID
 #define MAX_REQ_PACKET 2*(MAX_REQ_PAYLOAD + 2) + 2   // adds CRC, doubles for max XOR, adds flags

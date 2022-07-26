@@ -17,7 +17,7 @@ uint8_t readRegMtq(uint8_t reg, mtq_t * mtq) {
     return Wire.read();
   #else
 	uint8_t value;
-    I2C_request(mtq->mtqHandle, &LPI2C1_masterTransfer, PWM_ADDR, reg, &value, 1);
+    I2C_request(mtq->mtqHandle, &LPI2C3_masterTransfer, PWM_ADDR, reg, &value, 1);
     return value;
   #endif
 }
@@ -32,7 +32,7 @@ void writeRegMtq(uint8_t reg, uint8_t value, mtq_t * mtq) {
   uint8_t send [2];
   send[0] = reg;
   send[1] = value;
-  I2C_send(mtq->mtqHandle, &LPI2C1_masterTransfer, PWM_ADDR, 0, send, 2);
+  I2C_send(mtq->mtqHandle, &LPI2C3_masterTransfer, PWM_ADDR, 0, send, 2);
 #endif
 }
 
@@ -46,7 +46,7 @@ void writeRegsMtq(uint8_t reg, uint8_t values[4], mtq_t * mtq) {
     }
     Wire.endTransmission();
   #else
-    I2C_send(mtq->mtqHandle, &LPI2C1_masterTransfer, PWM_ADDR, reg, values, 4);
+    I2C_send(mtq->mtqHandle, &LPI2C3_masterTransfer, PWM_ADDR, reg, values, 4);
   #endif
 }
 

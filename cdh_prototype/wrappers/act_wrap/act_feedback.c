@@ -8,7 +8,7 @@
 // to-do list: update the i2c function with the function from comm_helper inside the source folder
 
 #include "act_feedback.h"
-
+#include "com_protocol_helper.h"
 
 feed_t Feed;
 
@@ -44,13 +44,13 @@ void setFeedback(float mtqFeed[3], float rwaFeed[4], float mode, feed_t * Feed) 
 }
 
 void writeFeedback(feed_t * Feed) {
-	I2C_send(Feed->feedHandle, FEED_ADDR, 0xF7, Feed->sendBytes, 28);
+	I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, FEED_ADDR, 0, Feed->sendBytes, 28);
 
 	uint8_t s2[4];
 	for (uint8_t i = 0; i < 4; i++) {
 		s2[i] = Feed->sendBytes[i+28];
 	}
-	I2C_send(Feed->feedHandle, FEED_ADDR, 0xF7, s2, 4);
+	I2C_send(&LPI2C1_masterHandle, &LPI2C1_masterTransfer, FEED_ADDR, 0, s2, 4);
 }
 
 

@@ -90,13 +90,13 @@ extern "C" {
 /* Definition of peripheral ID */
 #define LPSPI1_PERIPHERAL LPSPI1
 /* Definition of clock source */
-#define LPSPI1_CLOCK_FREQ 105600000UL
+#define LPSPI1_CLOCK_FREQ 78545454UL
 /* LPSPI1 interrupt vector ID (number). */
 #define LPSPI1_IRQN LPSPI1_IRQn
 /* LPSPI1 interrupt vector priority. */
 #define LPSPI1_IRQ_PRIORITY 5
 /* Transfer buffer size */
-#define LPSPI1_BUFFER_SIZE 32
+#define LPSPI1_BUFFER_SIZE 96
 /* Definition of peripheral ID */
 #define LPUART1_PERIPHERAL LPUART1
 /* Definition of the backround buffer size */

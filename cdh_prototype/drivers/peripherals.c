@@ -6,11 +6,11 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Peripherals v11.0
+product: Peripherals v10.0
 processor: MIMXRT1021xxxxx
 package_id: MIMXRT1021DAG5A
 mcu_data: ksdk2_0
-processor_version: 11.0.1
+processor_version: 10.0.0
 board: MIMXRT1020-EVK
 functionalGroups:
 - name: BOARD_InitPeripherals
@@ -33,14 +33,6 @@ component:
 - type: 'uart_cmsis_common'
 - type_id: 'uart_cmsis_common_9cb8e302497aa696fdbb5a4fd622c2a8'
 - global_USART_CMSIS_common:
-  - quick_selection: 'default'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-component:
-- type: 'gpio_adapter_common'
-- type_id: 'gpio_adapter_common_57579b9ac814fe26bf95df0a384c36b6'
-- global_gpio_adapter_common:
   - quick_selection: 'default'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -532,7 +524,7 @@ instance:
         - init: 'true'
       - receiveBuffer:
         - init: 'true'
-      - dataSize: '32'
+      - dataSize: '96'
       - enableTransferStruct: 'defined'
       - flags: ''
   - main:
@@ -540,7 +532,7 @@ instance:
     - clockSource: 'LpspiClock'
     - clockSourceFreq: 'BOARD_BootClockRUN'
     - master:
-      - baudRate: '500000'
+      - baudRate: '200000'
       - bitsPerFrame: '8'
       - cpol: 'kLPSPI_ClockPolarityActiveHigh'
       - cpha: 'kLPSPI_ClockPhaseFirstEdge'
@@ -564,7 +556,7 @@ instance:
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 const lpspi_master_config_t LPSPI1_config = {
-  .baudRate = 500000UL,
+  .baudRate = 200000UL,
   .bitsPerFrame = 8UL,
   .cpol = kLPSPI_ClockPolarityActiveHigh,
   .cpha = kLPSPI_ClockPhaseFirstEdge,
@@ -580,7 +572,7 @@ const lpspi_master_config_t LPSPI1_config = {
 lpspi_transfer_t LPSPI1_transfer = {
   .txData = LPSPI1_txBuffer,
   .rxData = LPSPI1_rxBuffer,
-  .dataSize = 32,
+  .dataSize = 96,
   .configFlags = 0
 };
 lpspi_rtos_handle_t LPSPI1_handle;

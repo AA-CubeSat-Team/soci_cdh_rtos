@@ -5,6 +5,7 @@
 */
 
 #include "phd_wrap.h"
+#include "com_protocol_helper.h"
 
 #define PHD_ADC_SER_ADDRESS (uint8_t)0x1D // ADC address
 
@@ -49,7 +50,6 @@ void readRegsPhd(uint8_t reg, uint8_t *value, uint8_t valueSize, phd_t * Phd)
 #endif
 }
 
-
 // writes registration 'reg' with value 'value'
 void writeRegPhd(uint8_t reg, uint8_t value, phd_t * Phd)
 {
@@ -59,7 +59,10 @@ void writeRegPhd(uint8_t reg, uint8_t value, phd_t * Phd)
   Wire.write(value);
   Wire.endTransmission();
   #else
-  I2C_send(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, reg, value, 1);
+  uint8_t send_buff[2];
+  send_buff[0] = reg;
+  send_buff[1] = value;
+  I2C_send(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, 0, send_buff, 2);
   #endif
 }
 
@@ -77,8 +80,15 @@ void quickStartPhd(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle){
 #endif
   // STEP 1&2: wait until busy status register is read not busy
   uint8_t busyFlag = 2;
+  uint8_t iteration = 0;
   while (busyFlag>>1) {
     readRegsPhd(BUSY_STATUS_REG, &busyFlag, 1, Phd);
+    iteration = iteration+1;
+    printf("%d, \n", iteration);
+    if (iteration > 100) {
+    	Phd->errorFlag = 1;
+    	break;
+    }
   }
   writeRegPhd(CONFIG_REG,CONFIG_DEFAULT_VALUE,Phd); // Disabling pins in shutdown mode
   // STEP 3: choosing internal VREF and mode of operation
@@ -92,8 +102,8 @@ void quickStartPhd(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle){
   //STEP 8: setting Start bit to 1
   writeRegPhd(CONFIG_REG,START_VALUE,Phd);
   //STEP 9: setting interrupt to zero (won't go to INT pin, skip)
+  Phd->errorFlag = 0;
 }
-
 
 // health check: if any channel exceeds the maxV or all 5 channels exceed 3*maxV (only three side of satellite can face sun) when summed: 
 // 1) resets registers to default values and puts ADC into shutdown mode. 
@@ -108,19 +118,23 @@ if((Phd->current[0] > MAX_CURRENT || Phd->current[1] > MAX_CURRENT ||
   Phd->current[4] > MAX_CURRENT) || Phd->current[0] + Phd->current[1] +
   Phd->current[2] + Phd->current[3] + Phd->current[4] > 3*MAX_CURRENT){
   writeRegPhd(CONFIG_REG, 0b01001000,Phd);
+  Phd->errorFlag = 2;
 #if ARDUINO_CODE
   quickStartPhd(Phd);
 #else
   quickStartPhd(Phd, diodesHandle);
 #endif
 }
+else {
+  Phd->errorFlag = 0;
+}
 }
 
-
 // reads voltages from ADC
-void readPhdData(phd_t * Phd){
+void readPhdData(phd_t * Phd, lpi2c_rtos_handle_t * Handle){
   uint8_t rawData8[2];
   uint16_t rawData16;
+  health(Phd, Handle);
   
   for (int i = 0; i < 5; i++) {
     readRegsPhd(PHD1_REG + i, rawData8, 2, Phd);

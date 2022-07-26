@@ -2,7 +2,6 @@
 #include "fsl_debug_console.h"
 #include "idle_task.h"
 #include "eps_wrap.h"
-#include "sen_wrap.h"
 #include <stdint.h>
 #include "peripherals.h"
 #include "semc_sdram.h"

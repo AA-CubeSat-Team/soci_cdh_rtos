@@ -494,11 +494,9 @@ void ErrorCheck (struct rw_data *rwX_pt, uint8_t SS_id) {
 		// error present
 		// reset wheel
 		printf ("Error present, resetting wheels\r\n");
-		// ToDo: make command 5 to reset wheels
 		commandRW(5, rwX_pt, SS_id);
 		printf ("Result of wheel reset: %u\r\n", rwX_pt->result);
 	}
-
 
 	if (rwX_pt->lastResetStatus != 6 && rwX_pt->lastResetStatus != 7) {
 		commandRW(3, rwX_pt, SS_id);

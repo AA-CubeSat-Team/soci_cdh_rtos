@@ -22,7 +22,7 @@
 typedef struct _Phd
 {
   double current[5];   ////// Current reported to flight software in uA (micro Amps) ///////
-    
+  int errorFlag;
   #if !ARDUINO_CODE
   	lpi2c_rtos_handle_t * PhdHandle;
   #endif
@@ -46,5 +46,5 @@ void health(phd_t * Phd);
 void health(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle);
 #endif
 
-void readPhdData(phd_t * Phd);
+void readPhdData(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle);
 #endif

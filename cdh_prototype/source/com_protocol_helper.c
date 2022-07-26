@@ -5,6 +5,7 @@
  *      Author: Issac(Junqi) & Jay
  */
 #include "com_protocol_helper.h"
+#include "peripherals.h"
 
 /*!
  * brief Perform UART send
@@ -20,6 +21,15 @@
  * return false if send was not successful.
  */
 bool UART_send(lpuart_rtos_handle_t *handle, uint8_t *buffer, uint32_t length) {
+
+#if SHOW_DATA
+	printf ("Sending data: ");
+	for (int i = 0; i < length; i++) {
+		printf ("%2x ", buffer[i]);
+	}
+	printf ("\r\n");
+#endif
+
 	return  (kStatus_Success == LPUART_RTOS_Send(handle, buffer, length));
 }
 
@@ -96,7 +106,7 @@ bool I2C_send(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer, u
 	transfer->data = masterSendBuffer;
 	if (subAddress != 0) {
 		transfer->subaddress = subAddress;
-		transfer->subaddressSize = 8;
+		transfer->subaddressSize = sizeof(subAddress);
 	} else {
 		transfer->subaddress = 0;
 		transfer->subaddressSize = 0;
@@ -139,14 +149,14 @@ bool I2C_request(lpi2c_rtos_handle_t * handle, lpi2c_master_transfer_t* transfer
 
 	status_t status;
 #if SHOW_DATA
-	PRINTF("Master will request data.\r\n");
+	PRINTF("Master will request data from address 0x%2x.\r\n", slaveAddress);
 #endif
 
 	/* Make modifications on lpi2c_master_transfer_t */
 	transfer->slaveAddress = slaveAddress;
 	if (subAddress != 0) {
 		transfer->subaddress = subAddress;
-		transfer->subaddressSize = 8;
+		transfer->subaddressSize = sizeof(subAddress);
 	} else {
 		transfer->subaddress = 0;
 		transfer->subaddressSize = 0;
@@ -212,16 +222,15 @@ void SPI_GPIO_init() {
  */
 bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, uint32_t pcsPin)
 {
-	lpspi_transfer_t LPSPI1_config;
 	status_t status;
 
 	//Start master transfer
-	LPSPI1_config.txData      = txBuffer;
-	LPSPI1_config.rxData      = rxBuffer;
-	LPSPI1_config.dataSize    = transferSize;
+	LPSPI1_transfer.txData      = txBuffer;
+	LPSPI1_transfer.rxData      = rxBuffer;
+	LPSPI1_transfer.dataSize    = transferSize;
 
 	GPIO_PortToggle(GPIO1, 1U << pcsPin);
-	status = LPSPI_RTOS_Transfer(&LPSPI1_handle, &LPSPI1_config);
+	status = LPSPI_RTOS_Transfer(&LPSPI1_handle, &LPSPI1_transfer);
 	GPIO_PortToggle(GPIO1, 1U << pcsPin);
 
 	if (status != kStatus_Success)
@@ -243,32 +252,26 @@ bool SPI_transfer(uint8_t * txBuffer, uint8_t * rxBuffer, size_t transferSize, u
  */
 bool UART_test(lpuart_rtos_handle_t *LPUART_rtos_handle)
 {
-	uint8_t recv_buffer[18];
-	int error;
-	int try;
-	try = 0;
+	uint8_t recv_buffer[1];
+	int error = 0;
+	int try = 0;
 	size_t n = 0;
-	char *send_message     = "123456789123456789";
-	PRINTF("receive buffer size: %d\n", sizeof(recv_buffer));
+	char send_message[6]    = {'a', 'b', 'c', 'd', 'e', 'f'};
 
 	while(try < 3) {
 		error = 0;
-		PRINTF("Send Message: [%c", send_message[0]);
-		for(int i = 1; i < 18; i++) {
-			PRINTF(", %c", send_message[i]);
-		}
-		PRINTF("]\n");
+
 		/* Send introduction message. */
-		LPUART_RTOS_Send(&(*LPUART_rtos_handle), (uint8_t *)send_message, strlen(send_message));
-		LPUART_RTOS_Receive(&(*LPUART_rtos_handle), recv_buffer, sizeof(recv_buffer), &n);
-		PRINTF("Receive Buffer: [%c", recv_buffer[0]);
-		for(int i = 1; i < 18; i++) {
-			PRINTF(", %c", recv_buffer[i]);
+		UART_send(LPUART_rtos_handle, (uint8_t *)send_message, sizeof(send_message));
+//		LPUART_RTOS_Send(LPUART_rtos_handle, (uint8_t *)send_message, strlen(send_message));
+		UART_receive(LPUART_rtos_handle, recv_buffer, sizeof(recv_buffer), &n);
+//		LPUART_RTOS_Receive(LPUART_rtos_handle, recv_buffer, sizeof(recv_buffer), &n);
+
+		for(int i = 0; i < sizeof(send_message); i++) {
 			if(send_message[i] != recv_buffer[i]) {
 				error++;
 			}
 		}
-		PRINTF("]\n");
 		if(error == 0) {
 			try = 3;
 		} else {

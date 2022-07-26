@@ -28,15 +28,7 @@
 /* Command Name List */
 
 // IMG Command ID
-#define checkStatus		0x00
-#define takePicture		0x01
-#define getPictureSize	0x03
-#define getPicture		0x05
-#define setContrast		0x06
-#define setBrightness	0x07
-#define setExposure		0x08
-#define setSleepTime	0x09
-#define imgReady        0x10
+#define imgReady        10
 
 //IMG data
 #define NUM_IMG 5

@@ -40,6 +40,7 @@ typedef struct _Gyro
   float gyroBias[3];            /* gyroscope zero-off set(bias)*/
   float gyroTempBiasCoe[3];       /* gyroscope temperature bias coefficients*/
   float gyroTempSensCoe[3];       /* gyroscope temperature sensitivity coefficients*/
+  int errorFlag;
 } gyro_t;
 
 extern gyro_t Gyro1;                /* gyroscope 1*/
@@ -93,9 +94,9 @@ void writeReg(uint8_t reg, uint8_t value, gyro_t * Gyro);
  *
  */
 #if ARDUINO_CODE
-void startGyro(gyro_t * Gyro);
+void startGyro(gyro_t * Gyro, uint8_t nGyro);
 #else
-void startGyro(gyro_t *Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_transfer_t *gyroTransfer);
+void startGyro(gyro_t *Gyro, lpi2c_rtos_handle_t *gyroHandle, lpi2c_master_transfer_t *gyroTransfer, uint8_t nGyro);
 #endif
 
 /*!

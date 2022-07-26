@@ -60,17 +60,17 @@ void readRegsMag(uint8_t reg, uint8_t * value, uint8_t valueSize, mag_t * Mag);
 void writeRegMag(uint8_t reg, uint8_t value, mag_t * Mag);
 
 #if ARDUINO_CODE
-void initMag(mag_t * Mag);
+void initMag(mag_t * Mag, nMag);
 #else
-void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle);
+void initMag(mag_t * Mag, lpi2c_rtos_handle_t *magHandle, uint8_t nMag);
 #endif
 
 void startMag(mag_t * Mag);
 
 #if ARDUINO_CODE
-void quickStartMag(mag_t * Mag);
+void quickStartMag(mag_t * Mag, nMag);
 #else
-void quickStartMag(mag_t * Mag, lpi2c_rtos_handle_t * magHandle);
+void quickStartMag(mag_t * Mag, lpi2c_rtos_handle_t * magHandle, uint8_t nMag);
 #endif
 
 void readMagData(mag_t * Mag);
