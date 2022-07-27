@@ -29,8 +29,6 @@ void readFloats(double* data, uint8_t* error, uint8_t* isValid){
 //      }
 //      printf ("\r\n");
 
-
-
 //      memcpy((data + x), &bytes, sizeof(float));
 //      printf ("0x%8x\r\n", ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | (bytes[3])));
       uint32_t num = ((bytes[3] << 24) | (bytes[2] << 16) | (bytes[1] << 8) | (bytes[0]));

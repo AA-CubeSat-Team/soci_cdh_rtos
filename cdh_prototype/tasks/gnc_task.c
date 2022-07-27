@@ -141,7 +141,7 @@ void gnc_task(void *pvParameters)
 			// do we discard the third reading?
 			// Answer: The third value is a valid flag
 
-			getSunAngles(&Sun1);
+//			getSunAngles(&Sun1);
 			rtU.sun_meas_ss_deg[0] = Sun1.angles[0];
 			rtU.sun_meas_ss_deg[1] = Sun1.angles[1];
 			rtU.sun_meas_valid = Sun1.isValid;
@@ -233,8 +233,8 @@ void gnc_task(void *pvParameters)
 			rtU.rwa_valid[2] = 1;
 			rtU.rwa_valid[3] = 1;
 
-			printf ("RWA Speeds: %f, %f, %f, %f\r\n", rw0.currSpeed_double, rw1.currSpeed, rw2.currSpeed, rw3.currSpeed);
-			printf ("RTU inputs: %f, %f, %f, %f\r\n", rtU.rwa_rpm[0], rtU.rwa_rpm[1], rtU.rwa_rpm[2], rtU.rwa_rpm[3]);
+//			printf ("RWA Speeds: %f, %f, %f, %f\r\n", rw0.currSpeed_double, rw1.currSpeed, rw2.currSpeed, rw3.currSpeed);
+//			printf ("RTU inputs: %f, %f, %f, %f\r\n", rtU.rwa_rpm[0], rtU.rwa_rpm[1], rtU.rwa_rpm[2], rtU.rwa_rpm[3]);
 #else
 			commandRW (RW_CMD_READ_SPEED, &rw0, RWA0);
 			commandRW (RW_CMD_READ_SPEED, &rw1, RWA1);
@@ -264,7 +264,7 @@ void gnc_task(void *pvParameters)
 		}
 
 		/* call GNC rt_OneStep() */
-//		 rt_OneStep();
+		 rt_OneStep();
 
 		/* write to actuators */
 		if (g_rwaActive) {
@@ -311,7 +311,7 @@ void gnc_task(void *pvParameters)
 //		printf ("cmd_quat: %f, %f, %f, %f\r\n", rtY.cmd_quat[0], rtY.cmd_quat[1], rtY.cmd_quat[2], rtY.cmd_quat[3]);
 //		printf ("sc_quat: %f, %f, %f, %f\r\n", rtY.sc_quat[0], rtY.sc_quat[1], rtY.sc_quat[2], rtY.sc_quat[3]);
 //
-//		printf ("Gyro values: %f, %f, %f\r\n", Gyro1.gyroXYZ[0], Gyro1.gyroXYZ[1], Gyro1.gyroXYZ[2]);
+		printf ("Gyro values: %f, %f, %f\r\n", Gyro1.gyroXYZ[0], Gyro1.gyroXYZ[1], Gyro1.gyroXYZ[2]);
 //		printf ("RWA Commands: %f, %f, %f, %f\r\n", rtY.rwa_cmd_rpm[0], rtY.rwa_cmd_rpm[1], rtY.rwa_cmd_rpm[2], rtY.rwa_cmd_rpm[3]);
 //		printf ("Rotation rate %f, %f, %f\r\n", rtY.sc_body_rates_radps[0], rtY.sc_body_rates_radps[1], rtY.sc_body_rates_radps[2]);
 //		printf ("GNC mode %d\r\n", rtY.gnc_mode);

@@ -120,7 +120,7 @@ void readMagData(mag_t * Mag)
     uint8_t reg_mg;
     readRegsMag(LSM303_REGISTER_MAG_SR_REG_Mg, &reg_mg, 1, Mag);
     if (!(reg_mg & 0x1)) {
-    	printf("ERROR");
+//    	printf("ERROR");
       Mag->errorFlag = 2;
     }
 
