@@ -50,6 +50,7 @@ void readRegsPhd(uint8_t reg, uint8_t *value, uint8_t valueSize, phd_t * Phd)
 #endif
 }
 
+
 // writes registration 'reg' with value 'value'
 void writeRegPhd(uint8_t reg, uint8_t value, phd_t * Phd)
 {
@@ -63,6 +64,7 @@ void writeRegPhd(uint8_t reg, uint8_t value, phd_t * Phd)
   send_buff[0] = reg;
   send_buff[1] = value;
   I2C_send(Phd->PhdHandle, &LPI2C1_masterTransfer, PHD_ADC_SER_ADDRESS, 0, send_buff, 2);
+//  I2C_send(Phd->PhdHandle, &LPI2C2_masterTransfer, PHD_ADC_SER_ADDRESS, reg, value, 1);
   #endif
 }
 
@@ -79,6 +81,12 @@ void quickStartPhd(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle){
   Phd->PhdHandle = PhdHandle;
 #endif
   // STEP 1&2: wait until busy status register is read not busy
+
+//  uint8_t busyFlag = 2;
+//  while (busyFlag>>1) {
+//    readRegsPhd(BUSY_STATUS_REG, &busyFlag, 1, Phd);
+//  }
+
   uint8_t busyFlag = 2;
   uint8_t iteration = 0;
   while (busyFlag>>1) {
@@ -90,6 +98,7 @@ void quickStartPhd(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle){
     	break;
     }
   }
+
   writeRegPhd(CONFIG_REG,CONFIG_DEFAULT_VALUE,Phd); // Disabling pins in shutdown mode
   // STEP 3: choosing internal VREF and mode of operation
   writeRegPhd(ADVANCE_CONFIG_REG, ADVANCE_CONFIG_VALUE,Phd);
@@ -105,13 +114,14 @@ void quickStartPhd(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle){
   Phd->errorFlag = 0;
 }
 
+
 // health check: if any channel exceeds the maxV or all 5 channels exceed 3*maxV (only three side of satellite can face sun) when summed: 
 // 1) resets registers to default values and puts ADC into shutdown mode. 
 // 2) reinitializes ADC to proper configuration (same as quickstart procedure).
 #if ARDUINO_CODE
-void health(phd_t * Phd){
+void PhdHealth(phd_t * Phd){
 #else
-void health(phd_t * Phd, lpi2c_rtos_handle_t * diodesHandle){
+void PhdHealth(phd_t * Phd){
 #endif
 if((Phd->current[0] > MAX_CURRENT || Phd->current[1] > MAX_CURRENT ||
   Phd->current[2] > MAX_CURRENT || Phd->current[3] > MAX_CURRENT || 
@@ -122,7 +132,7 @@ if((Phd->current[0] > MAX_CURRENT || Phd->current[1] > MAX_CURRENT ||
 #if ARDUINO_CODE
   quickStartPhd(Phd);
 #else
-  quickStartPhd(Phd, diodesHandle);
+  quickStartPhd(Phd, &LPI2C2_masterHandle);
 #endif
 }
 else {
@@ -131,10 +141,9 @@ else {
 }
 
 // reads voltages from ADC
-void readPhdData(phd_t * Phd, lpi2c_rtos_handle_t * Handle){
+void readPhdData(phd_t * Phd){
   uint8_t rawData8[2];
   uint16_t rawData16;
-  health(Phd, Handle);
   
   for (int i = 0; i < 5; i++) {
     readRegsPhd(PHD1_REG + i, rawData8, 2, Phd);
