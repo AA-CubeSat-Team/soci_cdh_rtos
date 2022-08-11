@@ -177,7 +177,10 @@ void gnc_task(void *pvParameters)
 			rtU.mag_meas_valid[2] = (Mag3.errorFlag == 0);
 #endif
 
-//			readPhdData (&Phd1,  &LPI2C2_masterHandle);
+			readPhdData (&Phd1,  &LPI2C2_masterHandle);
+#if !FLATSAT
+			PhdHealth (&Phd1);
+#endif
 			rtU.photodiodes_uA[0] = Phd1.current[0];
 			rtU.photodiodes_uA[1] = Phd1.current[1];
 			rtU.photodiodes_uA[2] = Phd1.current[2];
