@@ -15,10 +15,6 @@
 
 
 
-  /*!
- * @brief Structure contains information about one gyroscope
- *
- */
 typedef struct _Phd
 {
   double current[5];   ////// Current reported to flight software in uA (micro Amps) ///////
@@ -41,10 +37,10 @@ void quickStartPhd(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle);
 #endif
 
 #if ARDUINO_CODE
-void health(phd_t * Phd);
+void PhdHealth(phd_t * Phd);
 #else
-void health(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle);
+void PhdHealth(phd_t * Phd);
 #endif
 
-void readPhdData(phd_t * Phd, lpi2c_rtos_handle_t * PhdHandle);
+void readPhdData(phd_t * Phd);
 #endif
