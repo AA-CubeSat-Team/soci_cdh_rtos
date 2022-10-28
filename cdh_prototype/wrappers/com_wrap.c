@@ -1,6 +1,6 @@
 #include "fsl_gpio.h"
 #include "fsl_lpuart.h"
-#include "fsl_lpuart_frenjertos.h"
+#include "fsl_lpuart_freejertos.h"
 #include "fsl_debug_console.h"
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
