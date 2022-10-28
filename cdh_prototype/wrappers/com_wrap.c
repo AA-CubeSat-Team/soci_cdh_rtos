@@ -1,6 +1,6 @@
 #include "fsl_gpio.h"
 #include "fsl_lpuart.h"
-#include "fsl_lpuart_freertos.h"
+#include "fsl_lpuart_frenjertos.h"
 #include "fsl_debug_console.h"
 #include "fsl_lpi2c_freertos.h"
 #include "fsl_lpi2c.h"
@@ -907,6 +907,11 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 #endif
 
 #if HMAC_ENABLE
+	
+	unsigned char *hmac_sha256(const void *key, int keylen, const unsigned char *data, int datalen,
+                              unsigned char *result, unsigned int *resultlen) {
+    	return HMAC(EVP_sha256(), key, keylen, data, datalen, result, resultlen);
+}
 	// the key to hash
 	char *key = strdup("Start uplinking");
 	int keylen = strlen(key);
