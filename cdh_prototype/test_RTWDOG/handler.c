@@ -26,6 +26,7 @@ extern uint8_t idle_flag;
 extern uint8_t img_flag;
 
 void handler_task(void *pvParameters) {
+	const TickType_t xDelayms = pdMS_TO_TICKS( 500 )
 	if (gnc_flag | idle_flag | img_flag){
 		uint16_t counterValueRTWDOGPre = RTWDOG_GetCounterValue(RTWDOG);
 		PRINTF("Current RTWDOG counter value before refresh: %u\r\n", counterValueRTWDOGPre); // value before refresh
@@ -40,6 +41,7 @@ void handler_task(void *pvParameters) {
 		idle_flag = 0;
 		img_flag = 0;
 	}
-
+	
+	vTaskSuspend(NULL);
 
 }
