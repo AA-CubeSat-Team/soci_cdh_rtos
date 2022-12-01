@@ -1,3 +1,6 @@
+#ifndef IDLE_TASK_HEADER
+#define IDLE_TASK_HEADER
+
 #define IDLE_ENABLE	0
 
 /*******************************************************************************
@@ -19,8 +22,7 @@ extern bool rwaHealthy;
 extern bool imgHealthy;
 
 extern int operatingMode;
-
-
+extern uint8_t idle_flag;
 
 enum PowerMode {
 	CRIT_LOW_POWER = 0,
@@ -42,3 +44,4 @@ enum PLLCommand {
 
 
 void idle_task(void *pvParameters);
+#endif

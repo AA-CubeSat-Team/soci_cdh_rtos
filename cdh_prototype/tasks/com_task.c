@@ -1,5 +1,10 @@
+#include <stdbool.h>
+#include "peripherals.h"
+#include "com_wrap.h"
 #include "com_task.h"
 #include "com_protocol_helper.h"
+
+#define CLOCKS_PER_SECOND 1000000
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
@@ -7,135 +12,113 @@ bool command_request = false;
 bool payload_check = false;
 bool image_check = false;
 bool beacon_check = false;
-
-/* Global Variables */
-uint8_t uplink_recv_buffer[UPLINK_SIZE];
-
-struct u_primary_tel u_primary_tel1;
-struct u_ack_tel u_ack_tel1;
-struct u_tel u_tel1[MAX_TEL_SIZE];
-
-struct d_primary_tel d_primary_tel1;
-struct d_ack_tel d_ack_tel1;
-struct u_tel d_cmd_tel1[MAX_CMD_SIZE];
+//bool com_wrap_debug = true; // Turn this true if you want to test individual functions
 
 TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
 extern bool i2c_com_antennaDeployed;
 
-enum COM_States COM_State;
-
 void com_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	PRINTF("COM task initialization");
+#if COM_WRAP_DEBUG
+	// Delay to test "soft-break" into command mode via com_init function
+	// delay(1);
 
-	/* COM Setup */
-	COM_State = INIT;
-    bool img_ready = false;
-    bool com_ready = false;
-    bool gnc_ready = false;
-    bool eps_ready = false;
+//	PRINTF("TESTING CONTINOUS SENDING\n");
+//	testSending();
 
-    /* UPLINKING */
-    size_t n = 0;
-    uint32_t cmd_packet_size = 0;
+	PRINTF("Testing enterCommandMode function:\n");
+	com_enterCommandMode();
+	PRINTF("\n");
 
-#if  QUEUE_DEMO_ENABLE
-	bool downlink_ready = true;
-    bool commandReceived = true;
+	//Testing if sending a command to the radio (non delay dependent) works
+	PRINTF("Testing exitCommandMode function:\n");;
+	com_exitCommandMode();
+	PRINTF("\n");
+
+	//Test sending data to radio in data mode
+//	PRINTF("Testing data mode: \n");
+//	testSending();
+//	PRINTF("\n");
+
+//	PRINTF("CONFIGURING THE RADIO\n");
+//	com_radio_init();
+
+	//PRINTF("Testing com_init() function:\n");
+	//com_init();
+	//PRINTF("\n");
+
+	//PRINTF("Testing com_healthcheck() function:\n");
+	//com_healthcheck(); // exits command mode afterwards
+	//PRINTF("\n");
+
+	//PRINTF("Testing com_set_burn_wire1()\n");
+	//com_set_burn_wire1();
+	//PRINTF("\n");
+
+	//PRINTF("Testing com_set_burn_wire2()\n");
+	//com_set_burn_wire2();
+	//PRINTF("\n");
+
+	//PRINTF("Testing checkDeploy()\n");
+	//com_i2c_checkDeploy();
+	//PRINTF("\n");
+
+#else
+    // Moved uart initialization up so both if/else statements can use
 #endif
 
-	for (;;) {
-
-		switch (COM_State) { // Transitions
-			case INIT:
 #if COM_ENABLE
-				com_init();
+		com_init();
 
-				/* deploy antenna */
-				// TODO: do we need wait for deployment for antenna
-				// TODO: whwere do we slot the 15 min wait
-				tel_IMG_cmdID = 0; // used temporarily as a count local variable
-				com_deployAntenna_alorithmOne();
-				while (!i2c_com_antennaDeployed) { // did antenna deployed
-					switch(tel_IMG_cmdID) {
-						case 0:
-							com_deployAntenna_algorithmTwo();
-							break;
-						case 1:
-							com_set_burn_wire1();
-							break;
-						case 2:
-							com_set_burn_wire2();
-							break;
-					}
-					tel_IMG_cmdID++;
-				}
-				// Waiting to detumble
-
-				vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
-#endif
-
-				// Detumble time limit hit
-
-				/* Initialize PIT Timer */
-				// PIT_TIMER_INTIALIZE
-
-				/* Initialize HMAC Algorithm */
-				// HMAC Algorithm Initialize
-
-				COM_State = NORMAL;
-				vTaskDelay(xDelayms);
-				break;
-
-			case NORMAL:
-				/* receive all uplink data */
-				uplink_handshake(&cmd_packet_size); //TODO: add HMAC algorithm
-				if(COM_State == UPLINKING) {
-					break;
-				} else { // prepare data for passing
-					/* send health beacon */
-					// health beacon message
-
-					/* algorithm to get all the data */
-					if(!(img_ready & gnc_ready &eps_ready & com_ready)) { // downlink ready?
-						prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
-					}
-					vTaskDelay(xDelayms);
-				}
-				break;
-			case UPLINKING:
-				/* Implement HMAC */
-				/*
-				//check CRC bytes
-				if(error) {
-					// downlink/send NACK
-					COM_State = Normal;
-					break;
-			    else {
-			    	// send CMDs to different tasks
-			    }
-				 */
-
-				/* execute any uplink command */
-				COM_State = DOWNLINKING;
-				break;
-
-			case DOWNLINKING:
-				break;
-				//TODO: Send Beacon
-				//TODO: Listen for response | how to respond to commands from MCC
-				if(!(img_ready & gnc_ready & eps_ready & com_ready)) { // downlink ready?
-					prep_payload(&img_ready, &com_ready, &gnc_ready, &eps_ready); // preps payload
-				} else {
-					send_payload();
-					COM_State = NORMAL;
-					vTaskDelay(xDelayms);
-				}
-				//TODO: add tick measure to make sure PASSING is over
-			default:
-				COM_State = INIT;
-				break;
+		/***deploy antenna****/
+		//TODO: should we make this whole sequence of deployment into a function?
+		com_deployAntenna_algorithmOne(); //TODO: uncomment this line when incorporating the newer com wrapper
+		//TODO: should we wait for 15 min and check if we need to try, if we do vTaskDelay, then we were able to switch to other tasks in the meantime
+	//	i2c_com_antennaDeployed = com_i2c_checkDeploy(); //it might be easier to just update the global flag in the checkDeploy //TODO: uncomment this line when incorporating the newer com wrapper
+		if (!i2c_com_antennaDeployed) {
+			com_deployAntenna_algorithmTwo(); //TODO: uncomment this line when incorporating the newer com wrapper
 		}
+		//TODO: should we wait for 15 min and check if we need to try
+		i2c_com_antennaDeployed = com_i2c_checkDeploy(); //TODO: uncomment this line when incorporating the newer com wrapper
+		if (!i2c_com_antennaDeployed) {
+			com_set_burn_wire1();
+		}
+		//TODO: should we wait for 15 min and check if we need to try, by vTaskDelay? or by delay() in com wrapper
+	//	i2c_com_antennaDeployed = com_i2c_checkDeploy(); //TODO: uncomment this line when incorporating the newer com wrapper
+		if (!i2c_com_antennaDeployed) {
+			com_set_burn_wire2();
+		}
+		/****end of deployment of antenna****/
+#endif
+	vTaskDelay(xDelayms);
+	for (;;) {
+		PRINTF("COM TASK loop\r\n");
+#if COM_ENABLE
+			com_getCommands(); //TODO: getCommands should raise the flag command_request if n>0 and decode what commands we have (raise those check flags for each type of data).
+			if (command_request){
+				//sending data based on priority
+				if (payload_check) {
+					com_sendPayloads();
+				} else if (image_check) {
+					PRINTF("resuming img task\r\n");
+					vTaskResume(TaskHandler_img);
+					com_sendImages();
+				}
+			}
+			TickType_t xLastWakeTime;
+			xLastWakeTime = xTaskGetTickCount();
+			//always send beacons when COM is active
+			//TODO: but it looks like xLastWakeTime is updated every for loop. That means the above process should take longer than 60 sec, if not, then we will never send beacons.
+			if(xTaskGetTickCount() - xLastWakeTime >= 60*1000){ //check if 60 secs have passed
+				com_sendBeacons();
+			}
+			vTaskDelay(xDelayms);
 	}
+#else
+		vTaskDelay(xDelayms);
+	}
+#endif
 }

@@ -23,6 +23,7 @@ extern bool g_senActive, g_rwaActive, g_mtqActive;
 
 // counter for telemetry struct filling
 int data_iter;
+uint8_t gnc_flag;
 
 // TO DO: Double check if we need to disable interrupts and save FPU context
 // Question: rt_OneStep looks unfinished, are the comments correct to what we need to do?
@@ -113,6 +114,7 @@ void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 250 ); //delay 250 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+	gnc_flag = 0;
 	PRINTF("initialize gnc.\r\n");
 //	SPI_GPIO_init();
 #if GNC_ENABLE
@@ -298,9 +300,11 @@ void gnc_task(void *pvParameters)
 //		(data_iter == max_telemDownlink - 1)? data_iter = 0: data_iter += 1;
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		gnc_flag = 1;
 	}
 #else
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+		gnc_flag = 1;
 	}
 #endif
 }

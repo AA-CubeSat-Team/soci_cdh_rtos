@@ -12,6 +12,8 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "RTWDOG_PROTO.h"
+#include "fsl_rtwdog.h"
 
 /*******************************************************************************
  * Flags
@@ -31,6 +33,9 @@ bool g_mtqHealthy;
 bool g_rwaHealthy;
 bool g_imgHealthy;
 //uint8_t healthFlags; //bit flags: [img|rwa|mtq|gnc|sen|com|eps|obc]
+
+// flag that gets passed down to RTWDOG to check that idle task ran successfully
+uint8_t idle_flag;
 
 /*******************************************************************************
  * Function declarations
@@ -266,7 +271,15 @@ static void idle_phase3() {
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
-	PRINTF("idle task initialization\r\n");
+	TickType_t xLastWakeTime;
+	idle_flag = 0;
+	PRINTF("idle task initialization");
+#if RTWDOG_ENABLE
+	//initializeRTWDOG();
+
+	//PRINTF("INIT RTWDOG\r\n");
+
+#endif
 #if IDLE_ENABLE
 	//TODO: (1) when booting up, only turn on PDM of GNC (i.e. CLPM mode, no subsystem should be init already).
 	//			(1-1) do health checks in CLPM mode, init GNC and run GNC once.
@@ -292,21 +305,38 @@ void idle_task(void *pvParameters) {
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem
 
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
-	}
+		idle_flag = 1; // raise the idle_flag saying that the idle task ran successfully
 #else
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelay(xDelayms);
 	operatingMode = CRIT_LOW_POWER;
 	LPM_Init(s_curRunMode);
+	idle_flag = 1;
 	for(;;){
+		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 		PRINTF("idle task loop\r\n");
+
 //		SEMC_SDRAMCR3_REN(1);
 //		SEMC_IPCMD_CMD(0xA55A000D);
 //		setMCUPowerMode();
 //		APP_PrintRunFrequency(0);
 //		SEMC_IPCMD_CMD(0xA55A000A);
-		vTaskDelay(xDelayms);
-	}
+//		vTaskDelay(xDelayms);
 #endif
+#if RTWDOG_ENABLE
+		/*
+		uint16_t counterValueRTWDOGPre = RTWDOG_GetCounterValue(RTWDOG);
+		PRINTF("Current RTWDOG counter value before refresh: %u\r\n", counterValueRTWDOGPre); // value before refresh
+		//RTWDOG_Refresh(RTWDOG); // should refresh the rtwdog and let the task continue running as expected
+		if(counterValueRTWDOGPre >= 300){
+			PRINTF("RESET IMMINENT");
+		}
+		PRINTF("refresh\r\n");
+		uint16_t counterValueRTWDOGPost = RTWDOG_GetCounterValue(RTWDOG);
+		PRINTF("Current RTWDOG counter value after refresh: %u\r\n", counterValueRTWDOGPost);
+		 */
+
+#endif
+		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	}
 }
