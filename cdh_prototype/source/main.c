@@ -117,4 +117,14 @@ int main(void)
     vTaskStartScheduler();
     for (;;)
         ;
+   if (xTaskCreate(handler_task, "handler", configMINIMAL_STACK_SIZE + 100, NULL, handler_PRIORITY, &handler) !=
+	    pdPASS)
+ 	{
+       PRINTF("Task creation failed!.\r\n");
+       while (1)
+     	 ;
+ 	}
+    vTaskStartScheduler();
+    for (;;)
+        ;
 }
