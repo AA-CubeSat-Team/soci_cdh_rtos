@@ -12,6 +12,7 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "RTWDOG_PROTO.h"
 
 /*******************************************************************************
  * Flags
@@ -55,6 +56,8 @@ uint8_t i2c1_rx_buff[32];
 //
 double voltage;
 //
+
+uint8_t idle_flag; // Flag for the RTWDOG handler task
 
 int operatingMode;
 
@@ -294,6 +297,7 @@ void idle_task(void *pvParameters) {
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
+	idle_flag = 1; // Raise idle flag -> task ran successfully
 #else
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelay(xDelayms);

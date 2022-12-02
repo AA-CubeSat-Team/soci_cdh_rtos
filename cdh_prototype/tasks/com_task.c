@@ -1,5 +1,6 @@
 #include "com_task.h"
 #include "com_protocol_helper.h"
+#include "RTWDOG_PROTO.h"
 
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
