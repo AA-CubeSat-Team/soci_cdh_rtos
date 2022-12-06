@@ -64,6 +64,7 @@ QueueHandle_t cmd_queue_GNC;
 QueueHandle_t cmd_queue_EPS;
 QueueHandle_t tlm_queue_COM; // IMG/GNC/IDLE task to send tlm to COM task
 
+bool taskCreated = false;
 
 /*!
  * @brief main demo function.
@@ -84,6 +85,16 @@ int main(void)
     cmd_queue_EPS = xQueueCreate( xQueue_len, sizeof(uint8_t));
     tlm_queue_COM = xQueueCreate( xQueue_len, sizeof(uint8_t));
 
+    long long int timer;
+    for (timer = 0; timer < ; timer++) {
+    	if (taskCreated) {
+    		PRINTF("Task created during timer test. This is problem");
+    		return;
+    	}
+    }
+
+
+
 #if !COSMOS_TEST
     if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
@@ -91,6 +102,8 @@ int main(void)
         PRINTF("Task creation failed!.\r\n");
         while (1)
             ;
+    } else {
+    	taskCreated = true;
     }
    if (xTaskCreate(imag_task, "imag_task", configMINIMAL_STACK_SIZE + 100, NULL, imag_task_PRIORITY, &TaskHandler_img) !=
 		   pdPASS)
@@ -98,6 +111,8 @@ int main(void)
         PRINTF("Task creation failed!.\r\n");
         while (1)
           ;
+	 } else {
+		 taskCreated = true;
 	 }
    if (xTaskCreate(gnc_task, "gnc_task", configMINIMAL_STACK_SIZE + 100, NULL, gnc_task_PRIORITY, NULL) !=
 		    pdPASS)
@@ -105,6 +120,8 @@ int main(void)
         PRINTF("Task creation failed!.\r\n");
         while (1)
           ;
+	 } else {
+		 taskCreated = true;
 	 }
 #endif
    if (xTaskCreate(com_task, "com_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandler_com) !=
@@ -113,6 +130,8 @@ int main(void)
         PRINTF("Task creation failed!.\r\n");
         while (1)
           ;
+	 } else {
+		 taskCreated = true;
 	 }
     vTaskStartScheduler();
     for (;;)
