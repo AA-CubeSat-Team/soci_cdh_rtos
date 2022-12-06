@@ -262,11 +262,15 @@ static void idle_phase3() {
 		g_comHealthy = com_healthcheck();
 	}*/
 }
-
+int timerTestFlag = 0;
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("idle task initialization\r\n");
+    if (timerTestFlag == 0) {
+    	vTaskDelay(10000); // timer test
+    	timerTestFlag = 1;
+    }
 #if IDLE_ENABLE
 	//TODO: (1) when booting up, only turn on PDM of GNC (i.e. CLPM mode, no subsystem should be init already).
 	//			(1-1) do health checks in CLPM mode, init GNC and run GNC once.

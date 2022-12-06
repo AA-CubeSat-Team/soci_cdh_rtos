@@ -108,12 +108,17 @@ void rt_OneStep(void)
   /* Enable interrupts here */
 }
 
+extern int timerTestFlag;
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 250 ); //delay 250 ms
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	PRINTF("initialize gnc.\r\n");
+
+    if (timerTestFlag == 0) {
+    	vTaskDelay(10000); // timer test
+    }
 //	SPI_GPIO_init();
 #if GNC_ENABLE
 

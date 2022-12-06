@@ -11,6 +11,8 @@ extern uint8_t IMG_command; //TODO: what does img command look like?
 extern uint8_t IMG_param; //TODO: what does img command look like?
 uint8_t image_CIA[IMG_SIZE];
 
+extern int timerTestFlag;
+
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
 {
@@ -18,6 +20,9 @@ void imag_task(void *pvParameters)
 	//TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 	PRINTF("\ninitialize imag.\r\n");
 
+    if (timerTestFlag == 0) {
+    	vTaskDelay(10000); // timer test
+    }
 
 #if QUEUE_DEMO_ENABLE
 	struct tel tel_COM;

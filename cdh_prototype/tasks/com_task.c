@@ -25,6 +25,8 @@ extern bool i2c_com_antennaDeployed;
 
 enum COM_States COM_State;
 
+extern int timerTestFlag;
+
 void com_task(void *pvParameters)
 {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
@@ -39,6 +41,10 @@ void com_task(void *pvParameters)
     /* UPLINKING */
     size_t n = 0;
     uint32_t cmd_packet_size = 0;
+
+    if (timerTestFlag == 0) {
+    	vTaskDelay(10000); // timer test
+    }
 
 #if  QUEUE_DEMO_ENABLE
 	bool downlink_ready = true;
