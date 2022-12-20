@@ -1,6 +1,9 @@
 #include "com_task.h"
 #include "com_protocol_helper.h"
 
+// timer test
+#include "timer_test.h"
+
 //flags to check if there's data to send
 //cdh receives these data and sends the data to radio which to
 bool command_request = false;
@@ -25,7 +28,6 @@ extern bool i2c_com_antennaDeployed;
 
 enum COM_States COM_State;
 
-extern int timerTestFlag;
 
 void com_task(void *pvParameters)
 {
@@ -42,8 +44,14 @@ void com_task(void *pvParameters)
     size_t n = 0;
     uint32_t cmd_packet_size = 0;
 
-    if (timerTestFlag == 0) {
-    	vTaskDelay(10000); // timer test
+    TickType_t timerDelay = WAIT_TIME_MINUTES * ONE_MINUTE;
+
+    while (timerDelay > 0) {
+    	// Delay for the maximum number of ticks
+    	vTaskDelay(ONE_MINUTE); // 65535
+
+    	// Subtract the number of ticks delayed from the total delay time
+    	timerDelay -= ONE_MINUTE;
     }
 
 #if  QUEUE_DEMO_ENABLE

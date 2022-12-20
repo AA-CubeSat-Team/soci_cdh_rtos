@@ -64,19 +64,6 @@ QueueHandle_t cmd_queue_GNC;
 QueueHandle_t cmd_queue_EPS;
 QueueHandle_t tlm_queue_COM; // IMG/GNC/IDLE task to send tlm to COM task
 
-bool taskCreated = false;
-
-TaskHandle_t TaskHandler_timer;
-
-void timer_task(void* pvParameters) {
-	PRINTF("Initialize timer test\n");
-	/* Block for 500ms. */
-	 const TickType_t xDelay = pdMS_TO_TICKS(20000);
-
-	 vTaskDelay(xDelay);
-
-	 //vTaskSuspend(TaskHandler_timer);
-}
 
 /*!
  * @brief main demo function.
@@ -102,14 +89,7 @@ int main(void)
 
 
 #if !COSMOS_TEST
-    if (xTaskCreate(timer_task, "timer_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY, &TaskHandler_timer) !=
- 		   pdPASS)
- 	 {
-         PRINTF("Task creation failed!.\r\n");
-         while (1)
-           ;
- 	 }
-    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, 3 , &TaskHandler_idle) != //initialize priority to the highest +1
+    if (xTaskCreate(idle_task, "idle_task", configMINIMAL_STACK_SIZE + 100, NULL, max_PRIORITY , &TaskHandler_idle) != //initialize priority to the highest +1
         pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");

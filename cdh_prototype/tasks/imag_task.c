@@ -3,6 +3,7 @@
 #include "img_wrap.h"
 #include "imag_task.h"
 #include "com_protocol_helper.h"
+#include "timer_test.h"
 
 //static uint8_t recv_buffer[5]; // Receive 5 bytes
 
@@ -11,7 +12,6 @@ extern uint8_t IMG_command; //TODO: what does img command look like?
 extern uint8_t IMG_param; //TODO: what does img command look like?
 uint8_t image_CIA[IMG_SIZE];
 
-extern int timerTestFlag;
 
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
@@ -20,8 +20,13 @@ void imag_task(void *pvParameters)
 	//TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 	PRINTF("\ninitialize imag.\r\n");
 
-    if (timerTestFlag == 0) {
-    	vTaskDelay(10000); // timer test
+	TickType_t timerDelay = WAIT_TIME_MINUTES * ONE_MINUTE;
+    while (timerDelay > 0) {
+    	// Delay for the maximum number of ticks
+    	vTaskDelay(ONE_MINUTE); // 60000
+
+    	// Subtract the number of ticks delayed from the total delay time
+    	timerDelay -= ONE_MINUTE;
     }
 
 #if QUEUE_DEMO_ENABLE

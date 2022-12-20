@@ -19,6 +19,10 @@
 #include "rtwtypes.h"
 #include "zero_crossing_types.h"
 
+// timer test
+#include "timer_test.h"
+
+
 extern bool g_senActive, g_rwaActive, g_mtqActive;
 
 // counter for telemetry struct filling
@@ -108,7 +112,6 @@ void rt_OneStep(void)
   /* Enable interrupts here */
 }
 
-extern int timerTestFlag;
 //TODO: need to go over the operation of GNC and the wrappers to lay out the functions in this task
 void gnc_task(void *pvParameters)
 {
@@ -116,8 +119,13 @@ void gnc_task(void *pvParameters)
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	PRINTF("initialize gnc.\r\n");
 
-    if (timerTestFlag == 0) {
-    	vTaskDelay(10000); // timer test
+	TickType_t timerDelay = WAIT_TIME_MINUTES * ONE_MINUTE;
+    while (timerDelay > 0) {
+    	// Delay for the maximum number of ticks
+    	vTaskDelay(ONE_MINUTE); // 65535
+
+    	// Subtract the number of ticks delayed from the total delay time
+    	timerDelay -= ONE_MINUTE;
     }
 //	SPI_GPIO_init();
 #if GNC_ENABLE

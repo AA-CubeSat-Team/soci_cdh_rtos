@@ -13,6 +13,9 @@
 #include "power_mode_switch.h"
 #include "specific.h"
 
+// timer test
+#include "timer_test.h"
+
 /*******************************************************************************
  * Flags
  ******************************************************************************/
@@ -262,15 +265,21 @@ static void idle_phase3() {
 		g_comHealthy = com_healthcheck();
 	}*/
 }
-int timerTestFlag = 0;
+
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
 	PRINTF("idle task initialization\r\n");
-    if (timerTestFlag == 0) {
-    	vTaskDelay(10000); // timer test
-    	timerTestFlag = 1;
+
+	TickType_t timerDelay = WAIT_TIME_MINUTES * ONE_MINUTE;
+    while (timerDelay > 0) {
+    	// Delay for the maximum number of ticks
+    	vTaskDelay(ONE_MINUTE); // 65535
+
+    	// Subtract the number of ticks delayed from the total delay time
+    	timerDelay -= ONE_MINUTE;
     }
+	//PRINTF("idle task loop. IDLE_ENABLE disabled\n");
 #if IDLE_ENABLE
 	//TODO: (1) when booting up, only turn on PDM of GNC (i.e. CLPM mode, no subsystem should be init already).
 	//			(1-1) do health checks in CLPM mode, init GNC and run GNC once.
