@@ -37,7 +37,7 @@ void refreshRingBuffer(Buffer *buffer) {
 
 // inserts the given data in the first avaliable bucket
 // or in the bucket that was last written to
-void insert(Buffer *buffer, stored_data given_data) {
+void insertRingBuffer(Buffer *buffer, stored_data given_data) {
 
     buffer->data[buffer->write_index] = given_data;
 
