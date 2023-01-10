@@ -19,13 +19,13 @@ typedef struct Buffer {
     short full_flag;
 } Buffer;
 
-Buffer *initBuffer();
+Buffer *initRIngBuffer();
 
-void insert(Buffer *buffer, stored_data given_data);
+void insertRingBuffer(Buffer *buffer, stored_data given_data);
 
-stored_data read(Buffer *buffer);
+stored_data readRingBuffer(Buffer *buffer);
 
-void refreshBuffer(Buffer *buffer);
+void refreshRingBuffer(Buffer *buffer);
 
 //#include "ringbuff.c"
 #endif //UNTITLED2_RING_BUFF_WRAP_H
