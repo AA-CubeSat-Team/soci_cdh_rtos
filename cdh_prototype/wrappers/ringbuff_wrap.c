@@ -1,39 +1,71 @@
-typedef struct circular_buf_t circular_buf_t;
 
-typedef circular_buf_t* cbuf_handle_t;
+#include "ring_buff_wrap.h"
+#include <stdlib.h>
+#include "FreeRTOS.h" 
 
-typedef stored_data stored_data;
+//inititatiiats the buffer with the type and size specified in the header file
+//returns a points for type Buffer* to the created buffer
+//uses dynamic allocation
+Buffer *initBuffer() {
 
-#define amount size;
+    Buffer *buffer = malloc(sizeof(Buffer));
 
-// The hidden definition of our circular buffer structure
-struct circular_buf_t {
-	stored_data buffer[size];
-	uint head = 0;
-	uint tail = 0;
-	uint max = size;
-};
+    *buffer = (Buffer) {
+            .upper_bound = Size,
+            .read_index = 0,
+            .full_flag = 0};
 
-
-void
-buf_put(circular_buf_t buffer_in,stored_data input){
-
-	assert(sizeof(input) == sizeof(stored_data));
-
-	if(buffer->head == buffer->size){
-		buffer->head = 0;
-	}
-
-	buffer_in->buffer[buffer->head] = input;
+    return buffer;
+    // assert(buffer->lower_bound == 0);
+    // sanity check to be implemeted ... later
 }
 
-stored_data
-buf_return(circular_buf_t buffer_in){
 
-	if(buffer->tail == buffer->size){
-		buffer->tail = 0;
-	}
+// resets the buffer, non-destructively and sets the
+//
+void refreshBuffer(Buffer *buffer) {
 
-	return(buffer_in->buffer[buffer->tail])
+    *buffer = (Buffer) {
+            .upper_bound = Size,
+            .read_index = 0,
+            .full_flag = 0};
 
+    // assert(buffer->lower_bound == 0);
+    // sanity check to be implemeted ... later
+}
+
+
+// inserts the given data in the first avaliable bucket
+// or in the bucket that was last written to
+void insert(Buffer *buffer, stored_data given_data) {
+
+    buffer->data[buffer->write_index] = given_data;
+
+    if (buffer->write_index < buffer->upper_bound) {
+
+        buffer->write_index += 1;
+
+    } else {
+
+        buffer->full_flag = 1;
+        buffer->write_index = 0;
+    }
+
+}
+
+//reads the first avaliable buffer bucket from the ring buffer given
+//copies that data and returns the value of that data
+stored_data read(Buffer *buffer) {
+
+    stored_data output = (buffer->data)[buffer->read_index];
+
+    if ((buffer->read_index < (buffer->upper_bound)) && (buffer->read_index < (buffer->write_index))) {
+        buffer->read_index += 1;
+    } else if (buffer->full_flag == 1) {
+        buffer->read_index = 0;
+    } else {
+        buffer->read_index += 1;
+    }
+
+    return (output);
 }
