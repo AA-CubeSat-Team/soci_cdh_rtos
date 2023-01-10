@@ -6,7 +6,7 @@
 //inititatiiats the buffer with the type and size specified in the header file
 //returns a points for type Buffer* to the created buffer
 //uses dynamic allocation
-Buffer *initBuffer() {
+Buffer *initRingBuffer() {
 
     Buffer *buffer = malloc(sizeof(Buffer));
 
@@ -23,7 +23,7 @@ Buffer *initBuffer() {
 
 // resets the buffer, non-destructively and sets the
 //
-void refreshBuffer(Buffer *buffer) {
+void refreshRingBuffer(Buffer *buffer) {
 
     *buffer = (Buffer) {
             .upper_bound = Size,
@@ -55,7 +55,7 @@ void insert(Buffer *buffer, stored_data given_data) {
 
 //reads the first avaliable buffer bucket from the ring buffer given
 //copies that data and returns the value of that data
-stored_data read(Buffer *buffer) {
+stored_data readRingBuffer(Buffer *buffer) {
 
     stored_data output = (buffer->data)[buffer->read_index];
 
