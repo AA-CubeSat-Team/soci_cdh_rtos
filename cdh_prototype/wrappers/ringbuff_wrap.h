@@ -1,15 +1,17 @@
 //
 // Created by mikhail Mazukabzov on 1/9/23.
-//
+// Header for the ring buffer
 
 #ifndef UNTITLED2_RING_BUFF_WRAP_H
 #define UNTITLED2_RING_BUFF_WRAP_H
 #pragma once
 
 #include <stdint.h>
+//change this
+#define stored_data int // defines the datatype
+#define Size 100 // defines the number of buckets for the data
+//change this
 
-#define stored_data int
-#define Size 100
 
 typedef struct Buffer {
     stored_data data[Size];
