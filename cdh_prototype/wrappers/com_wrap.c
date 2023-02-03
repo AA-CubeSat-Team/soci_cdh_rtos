@@ -347,7 +347,10 @@ void com_getCommands() //highest priority
 	PRINTF("getting commands from the ground station\r\n");
 }
 
+
+
 #if HMAC_ENABLE
+
 /* unsigned char *hmac_sha256(const void *key, 			//pointer to authentication key
 						   int keylen,					//length of authentication key
                            const unsigned char *data, 	//pointer to data stream
@@ -361,9 +364,9 @@ void com_getCommands() //highest priority
 
 void createHMAC()
 {
-	char *key = strdup("Start uplinking");
+	char *key = strcpy("Start uplinking");
 	int keylen = strlen(key);
-	const unsigned char *data = (const unsigned char *)strdup("Security verify");
+	const unsigned char *data = (const unsigned char *)strcpy("Security verify");
 	int datalen = strlen((char *)data);
 	unsigned char *result = NULL;
 	unsigned int resultlen = -1;
@@ -908,11 +911,11 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 #if HMAC_ENABLE
 	// the key to hash
-	char *key = strdup("Start uplinking");
+	char *key = strcpy("Start uplinking");
 	int keylen = strlen(key);
 
 	// the data that we're going to hash using HMAC
-	const unsigned char *data = (const unsigned char *)strdup("Security verify");
+	const unsigned char *data = (const unsigned char *)strcpy("Security verify");
 	int datalen = strlen((char *)data);
 
 	unsigned char *result = NULL;
@@ -936,16 +939,17 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
 	}
 
+	bool noError = false;
+
 	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
-	if (strcmp((char *) res_hexstring, (char *) hashkey) == 0) {
+	if (strcmp((char *) res_hexstring, (char *) key) == 0) {
 		PRINTF("Passed security verify, start uplinking.\n");
 		noError = true; // receive all function successfully
+	} else {
+		// if strings not matched or if there's no HMAC from ground station
+		PRINTF("Not from AACT ground station, waiting for the next response.\n");
+		noError = false; // security verification fails
 	}
-
-	// if strings not matched or if there's no HMAC from ground station
-	PRINTF("Not from AACT ground station, waiting for the next response.\n");
-	noError = false; // security verification fails
-
 #else
 	bool noError = true;
 #endif
