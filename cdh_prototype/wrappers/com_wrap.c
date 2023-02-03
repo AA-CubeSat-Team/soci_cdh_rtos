@@ -14,8 +14,7 @@
 #include <time.h>
 
 #if HMAC_ENABLE
-#include <openssl/evp.h>
-#include <openssl/hmac.h>
+#include "hmac_sha256/hmac_sha256.h" // See https://github.com/h5p9sl/hmac_sha256/blob/master/examples/hmac_c_example.c
 #endif
 #include <string.h>
 
@@ -349,15 +348,16 @@ void com_getCommands() //highest priority
 }
 
 #if HMAC_ENABLE
-unsigned char *hmac_sha256(const void *key, 			/* pointer to authentication key */
-						   int keylen,					/* length of authentication key  */
-                           const unsigned char *data, 	/* pointer to data stream        */
-						   int datalen,					/* length of data stream         */
-                           unsigned char *result, 		/* caller digest to be filled in */
-						   unsigned int *resultlen) 	/* length of result digest       */
+/* unsigned char *hmac_sha256(const void *key, 			//pointer to authentication key
+						   int keylen,					//length of authentication key
+                           const unsigned char *data, 	//pointer to data stream
+						   int datalen,					//length of data stream
+                           unsigned char *result, 		//caller digest to be filled in
+						   unsigned int *resultlen) 	//length of result digest
 {
     return HMAC(EVP_sha256(), key, keylen, data, datalen, result, resultlen);
-}
+} 
+*/
 
 void createHMAC()
 {
@@ -368,7 +368,7 @@ void createHMAC()
 	unsigned char *result = NULL;
 	unsigned int resultlen = -1;
 
-	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
+	result = hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
 }
 #endif
 
