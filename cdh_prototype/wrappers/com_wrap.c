@@ -14,7 +14,7 @@
 #include <time.h>
 
 #if HMAC_ENABLE
-#include "hmac_sha256/hmac_sha256.h" // See https://github.com/h5p9sl/hmac_sha256/blob/master/examples/hmac_c_example.c
+#include <hmac_sha256/hmac_sha256.h> // See https://github.com/h5p9sl/hmac_sha256/blob/master/examples/hmac_c_example.c
 #endif
 #include <string.h>
 
@@ -364,9 +364,9 @@ void com_getCommands() //highest priority
 
 void createHMAC()
 {
-	char *key = strcpy("Start uplinking");
+	char *key = "Start uplinking";
 	int keylen = strlen(key);
-	const unsigned char *data = (const unsigned char *)strcpy("Security verify");
+	const unsigned char *data = (const unsigned char *)"Security verify";
 	int datalen = strlen((char *)data);
 	unsigned char *result = NULL;
 	unsigned int resultlen = -1;
@@ -911,11 +911,11 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 #if HMAC_ENABLE
 	// the key to hash
-	char *key = strcpy("Start uplinking");
+	char *key = "Start uplinking";
 	int keylen = strlen(key);
 
 	// the data that we're going to hash using HMAC
-	const unsigned char *data = (const unsigned char *)strcpy("Security verify");
+	const unsigned char *data = (const unsigned char *)"Security verify";
 	int datalen = strlen((char *)data);
 
 	unsigned char *result = NULL;
