@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "hmac_sha256.h": "c"
+        "hmac_sha256.h": "c",
+        "system_error": "c",
+        "xlocmon": "c",
+        "xtr1common": "c"
     }
 }
