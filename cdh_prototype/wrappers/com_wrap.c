@@ -14,7 +14,8 @@
 #include <time.h>
 
 #if HMAC_ENABLE
-#include <hmac_sha256/hmac_sha256.h> // See https://github.com/h5p9sl/hmac_sha256/blob/master/examples/hmac_c_example.c
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
 #endif
 #include <string.h>
 
@@ -347,31 +348,27 @@ void com_getCommands() //highest priority
 	PRINTF("getting commands from the ground station\r\n");
 }
 
-
-
 #if HMAC_ENABLE
-
-/* unsigned char *hmac_sha256(const void *key, 			//pointer to authentication key
-						   int keylen,					//length of authentication key
-                           const unsigned char *data, 	//pointer to data stream
-						   int datalen,					//length of data stream
-                           unsigned char *result, 		//caller digest to be filled in
-						   unsigned int *resultlen) 	//length of result digest
+unsigned char *hmac_sha256(const void *key, 			/* pointer to authentication key */
+						   int keylen,					/* length of authentication key  */
+                           const unsigned char *data, 	/* pointer to data stream        */
+						   int datalen,					/* length of data stream         */
+                           unsigned char *result, 		/* caller digest to be filled in */
+						   unsigned int *resultlen) 	/* length of result digest       */
 {
     return HMAC(EVP_sha256(), key, keylen, data, datalen, result, resultlen);
-} 
-*/
+}
 
 void createHMAC()
 {
-	char *key = "Start uplinking";
+	char *key = strdup("Start uplinking");
 	int keylen = strlen(key);
-	const unsigned char *data = (const unsigned char *)"Security verify";
+	const unsigned char *data = (const unsigned char *)strdup("Security verify");
 	int datalen = strlen((char *)data);
 	unsigned char *result = NULL;
 	unsigned int resultlen = -1;
 
-	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
+	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
 }
 #endif
 
@@ -878,12 +875,11 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	*/
 
 #if COM_ENABLE
-	//TODO: Debug this
-//	size_t n = 0;
-//	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
-//		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
-//		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
-//	}
+	size_t n = 0;
+	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
+		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
+		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
+	}
 #elif COSMOS_TEST
 	// receive char
 	u_primary_tel1.crc = 0;
@@ -912,11 +908,11 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 #if HMAC_ENABLE
 	// the key to hash
-	char *key = "Start uplinking";
+	char *key = strdup("Start uplinking");
 	int keylen = strlen(key);
 
 	// the data that we're going to hash using HMAC
-	const unsigned char *data = (const unsigned char *)"Security verify";
+	const unsigned char *data = (const unsigned char *)strdup("Security verify");
 	int datalen = strlen((char *)data);
 
 	unsigned char *result = NULL;
@@ -924,7 +920,7 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 	// call sha256 hash engine function
 	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
-	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
+	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
 
 	// get the hash key (256 bits - 64 characters) from the header packet (the last 256 bits of the packet)
 	// unsigned char *hashkey = (unsigned char*)
@@ -940,17 +936,16 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
 	}
 
-	bool noError = false;
-
 	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
-	if (strcmp((char *) res_hexstring, (char *) key) == 0) {
+	if (strcmp((char *) res_hexstring, (char *) hashkey) == 0) {
 		PRINTF("Passed security verify, start uplinking.\n");
 		noError = true; // receive all function successfully
-	} else {
-		// if strings not matched or if there's no HMAC from ground station
-		PRINTF("Not from AACT ground station, waiting for the next response.\n");
-		noError = false; // security verification fails
 	}
+
+	// if strings not matched or if there's no HMAC from ground station
+	PRINTF("Not from AACT ground station, waiting for the next response.\n");
+	noError = false; // security verification fails
+
 #else
 	bool noError = true;
 #endif
