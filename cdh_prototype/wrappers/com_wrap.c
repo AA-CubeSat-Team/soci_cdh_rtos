@@ -371,7 +371,7 @@ void createHMAC()
 	unsigned char *result = NULL;
 	unsigned int resultlen = -1;
 
-	result = hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
+	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
 }
 #endif
 
@@ -878,11 +878,12 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	*/
 
 #if COM_ENABLE
-	size_t n = 0;
-	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
-		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
-		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
-	}
+	//TODO: Debug this
+//	size_t n = 0;
+//	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
+//		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
+//		LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, &uplink_recv_buffer, (uint32_t)(PRIMARY_HEADER_SIZE + ACK_SIZE), &n);
+//	}
 #elif COSMOS_TEST
 	// receive char
 	u_primary_tel1.crc = 0;
@@ -923,7 +924,7 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 	// call sha256 hash engine function
 	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
-	result = hmac_sha256((const void *)key, keylen, data, datalen, result, &resultlen);
+	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
 
 	// get the hash key (256 bits - 64 characters) from the header packet (the last 256 bits of the packet)
 	// unsigned char *hashkey = (unsigned char*)
