@@ -6,6 +6,14 @@
 
 // TODO: (NOT SURE) Figure out if way to test uplinking/downlinking functions (After fixing) w/o radios
 
+#if HMAC_ENABLE
+#include <hmac_sha256/hmac_sha256.h> // See https://github.com/h5p9sl/hmac_sha256/blob/master/examples/hmac_c_example.c
+#endif
+
+#ifndef SHA256_HASH_SIZE
+#define SHA256_HASH_SIZE 32
+#endif
+
 void com_radio_init(); // TODO: Ensure correct response is received from radio, lower priority
 void com_init(); //
 void com_set_burn_wire1(); // TODO: (NOT SURE) What pins do the GPIO commands correspond to that we can check?
