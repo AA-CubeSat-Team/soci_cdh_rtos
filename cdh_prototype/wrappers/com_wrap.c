@@ -351,17 +351,6 @@ void com_getCommands() //highest priority
 
 #if HMAC_ENABLE
 
-/* unsigned char *hmac_sha256(const void *key, 			//pointer to authentication key
-						   int keylen,					//length of authentication key
-                           const unsigned char *data, 	//pointer to data stream
-						   int datalen,					//length of data stream
-                           unsigned char *result, 		//caller digest to be filled in
-						   unsigned int *resultlen) 	//length of result digest
-{
-    return HMAC(EVP_sha256(), key, keylen, data, datalen, result, resultlen);
-} 
-*/
-
 void createHMAC()
 {
 	char *key = "Start uplinking";
@@ -878,7 +867,7 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	*/
 
 #if COM_ENABLE
-	//TODO: Debug this
+//TODO: Debug this
 //	size_t n = 0;
 //	if(!(kLPUART_RxDataRegEmptyFlag & LPUART_GetStatusFlags(COM_RTOS_UART_HANDLE)) ) { //recv_buffer not empty
 //		/* receive Transmission Primary Header & ACKNOWLEDGEMENT */
@@ -912,38 +901,36 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 #if HMAC_ENABLE
 	// the key to hash
-	char *key = "Start uplinking";
+	char *key = "Our secret key :)";
 	int keylen = strlen(key);
 
 	// the data that we're going to hash using HMAC
-	const unsigned char *data = (const unsigned char *)"Security verify";
+	const unsigned char *data = (const unsigned char *)"Expected message";
 	int datalen = strlen((char *)data);
 
-	unsigned char *result = NULL;
-	unsigned int resultlen = -1;
+	// Array to store the resultant hash
+	uint8_t result_hash[SHA256_HASH_SIZE];
 
 	// call sha256 hash engine function
 	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
-	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result, resultlen);
+	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result_hash, sizeof(out));
 
-	// get the hash key (256 bits - 64 characters) from the header packet (the last 256 bits of the packet)
-	// unsigned char *hashkey = (unsigned char*)
 
 	static char res_hexstring[SHA256_HASH_SIZE * 2];
 
-	int result_length = SHA256_HASH_SIZE;
 
 	// convert the result to string with printf
 	// SHA256 is 256 bits long which rendered as 64 characters
 	// (be careful of the length of string with the choosen hash engine)
-	for (int i = 0; i < result_length; i++) {
-	    sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+	for (int i = 0; i < SHA256_HASH_SIZE; i++) {
+	    sprintf(&(res_hexstring[i * 2]), "%02x", result_hash[i]);
 	}
 
 	bool noError = false;
 
 	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
-	if (strcmp((char *) res_hexstring, (char *) key) == 0) {
+	// TODO: Figure out what to put here->>>>>>
+	if (strcmp((char *) res_hexstring, (char *)/*TODO: PUT SOMETHING HERE*/ ) == 0) {
 		PRINTF("Passed security verify, start uplinking.\n");
 		noError = true; // receive all function successfully
 	} else {
