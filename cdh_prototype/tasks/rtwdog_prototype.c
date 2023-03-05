@@ -46,11 +46,12 @@ void initializeRTWDOG(void) {
     config.workMode.enableWait  = false;
     config.workMode.enableDebug = false;
     config.workMode.enableStop = false;
-    config.enableUpdate = true;
-    config.enableInterrupt = true;
+    config.enableUpdate = false;
+    config.enableInterrupt = false;
 
     /* initialize the rtwdog timer.
      *  To be called in main()
      */
     RTWDOG_Init(RTWDOG, &config);
+    RTWDOG_Enable(RTWDOG);
 }
