@@ -20,7 +20,7 @@
 
 /* COM */
 #define COM_ENABLE	0 	// ENABLES COM for testing
-#define COSMOS_TEST 0	// ENABLES COSMOS Test
+#define COSMOS_TEST 1 	// ENABLES COSMOS Test
 #define COM_WRAP_DEBUG 0
 #define HMAC_ENABLE 0 // Enables HMAC
 
