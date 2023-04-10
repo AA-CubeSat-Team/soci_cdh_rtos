@@ -50,6 +50,7 @@ void com_task(void *pvParameters)
 		switch (COM_State) { // Transitions
 			case INIT:
 #if COM_ENABLE
+				/* Initialize communication with the flight radio */
 				com_init();
 
 				/* deploy antenna */
@@ -90,7 +91,7 @@ void com_task(void *pvParameters)
 
 			case NORMAL:
 				/* receive all uplink data */
-				uplink_handshake(&cmd_packet_size); //TODO: add HMAC algorithm
+				uplink_handshake(&cmd_packet_size);
 				if(COM_State == UPLINKING) {
 					break;
 				} else { // prepare data for passing
@@ -117,7 +118,8 @@ void com_task(void *pvParameters)
 			    }
 				 */
 
-				/* execute any uplink command */
+				/* execute uplink commands */
+
 				COM_State = DOWNLINKING;
 				break;
 
