@@ -12,10 +12,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-//#if HMAC_ENABLE
-//#include <hmac_sha256/hmac_sha256.h> // See https://github.com/h5p9sl/hmac_sha256/blob/master/examples/hmac_c_example.c
-//#endif
 #include <string.h>
 
 #include "com_task.h"
