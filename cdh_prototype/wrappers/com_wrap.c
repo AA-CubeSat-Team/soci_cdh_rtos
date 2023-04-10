@@ -905,7 +905,7 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	int keylen = strlen(key);
 
 	// the data that we're going to hash using HMAC
-	const unsigned char *data = (const unsigned char *)"Expected message";
+	const unsigned char *data = (const unsigned char *) "Expected message";
 	int datalen = strlen((char *)data);
 
 	// Array to store the resultant hash
@@ -913,24 +913,24 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 
 	// call sha256 hash engine function
 	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
-	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result_hash, sizeof(out));
+	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result_hash, sizeof(result_hash));
 
 
-	static char res_hexstring[SHA256_HASH_SIZE * 2];
+	
 
 
 	// convert the result to string with printf
 	// SHA256 is 256 bits long which rendered as 64 characters
 	// (be careful of the length of string with the choosen hash engine)
 	for (int i = 0; i < SHA256_HASH_SIZE; i++) {
-	    sprintf(&(res_hexstring[i * 2]), "%02x", result_hash[i]);
+	    sprintf(&(result_hash[i * 2]), "%02x", result_hash[i]);
 	}
 
 	bool noError = false;
 
+	const char *expected_hmac_output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350";
 	// compare the string pointed to by HMAC from ground station to the string pointed to by expected result
-	// TODO: Figure out what to put here->>>>>>
-	if (strcmp((char *) res_hexstring, (char *)/*TODO: PUT SOMETHING HERE*/ ) == 0) {
+	if (strcmp((char *) result_hash, (char *) expected_hmac_output) == 0) {
 		PRINTF("Passed security verify, start uplinking.\n");
 		noError = true; // receive all function successfully
 	} else {
