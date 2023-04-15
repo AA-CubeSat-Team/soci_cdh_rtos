@@ -55,7 +55,7 @@ void com_task(void *pvParameters)
 				/* deploy antenna */
 				// TODO: do we need wait for deployment for antenna
 				// TODO: whwere do we slot the 15 min wait
-				tel_IMG_cmdID = 0; // used temporarily as a count local variable
+				int tel_IMG_cmdID = 0; // used temporarily as a count local variable
 				com_deployAntenna_alorithmOne();
 				while (!i2c_com_antennaDeployed) { // did antenna deployed
 					switch(tel_IMG_cmdID) {
@@ -91,6 +91,7 @@ void com_task(void *pvParameters)
 			case NORMAL:
 				/* receive all uplink data */
 				uplink_handshake(&cmd_packet_size); //TODO: add HMAC algorithm
+
 				if(COM_State == UPLINKING) {
 					break;
 				} else { // prepare data for passing
