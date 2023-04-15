@@ -51,6 +51,7 @@ void com_task(void *pvParameters)
 			case INIT:
 #if COM_ENABLE
 				com_init();
+
 				/* deploy antenna */
 				// TODO: do we need wait for deployment for antenna
 				// TODO: whwere do we slot the 15 min wait
