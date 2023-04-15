@@ -51,29 +51,28 @@ void com_task(void *pvParameters)
 			case INIT:
 #if COM_ENABLE
 				com_init();
-//
-//				/* deploy antenna */
-//				// TODO: do we need wait for deployment for antenna
-//				// TODO: whwere do we slot the 15 min wait
-//				int tel_IMG_cmdID = 0; // used temporarily as a count local variable
-//				com_deployAntenna_alorithmOne();
-//				while (!i2c_com_antennaDeployed) { // did antenna deployed
-//					switch(tel_IMG_cmdID) {
-//						case 0:
-//							com_deployAntenna_algorithmTwo();
-//							break;
-//						case 1:
-//							com_set_burn_wire1();
-//							break;
-//						case 2:
-//							com_set_burn_wire2();
-//							break;
-//					}
-//					tel_IMG_cmdID++;
-//				}
-//				// Waiting to detumble
-//
-//				vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
+				/* deploy antenna */
+				// TODO: do we need wait for deployment for antenna
+				// TODO: whwere do we slot the 15 min wait
+				int tel_IMG_cmdID = 0; // used temporarily as a count local variable
+				com_deployAntenna_alorithmOne();
+				while (!i2c_com_antennaDeployed) { // did antenna deployed
+					switch(tel_IMG_cmdID) {
+						case 0:
+							com_deployAntenna_algorithmTwo();
+							break;
+						case 1:
+							com_set_burn_wire1();
+							break;
+						case 2:
+							com_set_burn_wire2();
+							break;
+					}
+					tel_IMG_cmdID++;
+				}
+				// Waiting to detumble
+
+				vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
 #endif
 
 				// Detumble time limit hit
