@@ -3,6 +3,7 @@
 #include "img_wrap.h"
 #include "imag_task.h"
 #include "com_protocol_helper.h"
+#include "RTWDOG_PROTO.h"
 
 //static uint8_t recv_buffer[5]; // Receive 5 bytes
 
@@ -123,10 +124,14 @@ void imag_task(void *pvParameters)
 				PRINTF("IMG sendCommand UNKNOWN\r\n");
 				break;
 		}
+		RTWDOG_Refresh(RTWDOG);
+		PRINTF("img task refreshed \n");
 		vTaskSuspend( NULL );
 	}
 #else
-		vTaskDelay(xDelayms);
+	RTWDOG_Refresh(RTWDOG);
+	PRINTF("img task refreshed \n");
+	vTaskDelay(xDelayms);
 	}
 #endif
 }
