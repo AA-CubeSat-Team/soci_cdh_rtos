@@ -32,6 +32,7 @@
 
 #include <stdbool.h>
 #include "cdh_prototype.h"
+#include "RTWDOG_PROTO.h"
 
 /*******************************************************************************
  * Definitions
@@ -65,18 +66,19 @@ QueueHandle_t cmd_queue_EPS;
 QueueHandle_t tlm_queue_COM; // IMG/GNC/IDLE task to send tlm to COM task
 
 
-/*!
- * @brief main demo function.
- */
+/*******************************************************************************
+ * Code
+ ******************************************************************************/
+
 int main(void)
 {
-
 	/* Init board hardware. */
     BOARD_ConfigMPU();
     BOARD_InitPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
+    initializeRTWDOG(); // set up the RTWDOG software system
 
     /* Create Queue */
     cmd_queue_IMG = xQueueCreate( xQueue_len, sizeof(uint8_t));
@@ -114,7 +116,9 @@ int main(void)
         while (1)
           ;
 	 }
+
     vTaskStartScheduler();
     for (;;)
         ;
 }
+

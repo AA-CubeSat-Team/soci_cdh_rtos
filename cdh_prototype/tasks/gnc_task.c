@@ -11,6 +11,7 @@
 #include "sun_wrap.h"
 #include "fsl_debug_console.h"
 #include "com_protocol_helper.h"
+#include "RTWDOG_PROTO.h"
 
 //GNC BUILD include
 #include <stddef.h>
@@ -23,7 +24,6 @@ extern bool g_senActive, g_rwaActive, g_mtqActive;
 
 // counter for telemetry struct filling
 int data_iter;
-
 // TO DO: Double check if we need to disable interrupts and save FPU context
 // Question: rt_OneStep looks unfinished, are the comments correct to what we need to do?
 
@@ -296,11 +296,14 @@ void gnc_task(void *pvParameters)
 		// Udate newest telemetry data to proper index in array
 //		GNC_payload[data_iter] = rtY.fsw_telem;
 //		(data_iter == max_telemDownlink - 1)? data_iter = 0: data_iter += 1;
-
+		RTWDOG_Refresh(RTWDOG);
+		PRINTF("GNC task refreshed \n");
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #else
-		vTaskDelayUntil(&xLastWakeTime, xDelayms);
+	RTWDOG_Refresh(RTWDOG);
+	PRINTF("GNC task refreshed \n");
+	vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
 #endif
 }

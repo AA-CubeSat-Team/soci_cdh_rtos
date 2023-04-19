@@ -12,6 +12,7 @@
 #include "lpm.h"
 #include "power_mode_switch.h"
 #include "specific.h"
+#include "RTWDOG_PROTO.h"
 
 /*******************************************************************************
  * Flags
@@ -294,7 +295,12 @@ void idle_task(void *pvParameters) {
 
 		vTaskDelayUntil(&xLastWakeTime, xDelayms);
 	}
+	RTWDOG_Refresh(RTWDOG);
+	PRINTF("idle task refreshed \n");
+
 #else
+	RTWDOG_Refresh(RTWDOG);
+	PRINTF("idle task refreshed \n");
 	resetPriority(TaskHandler_idle); //resetting priority of idle task to 0, now GNC(3), COM(2-suspended), IMG(1-suspended), IDLE(0)
 	vTaskDelay(xDelayms);
 	operatingMode = CRIT_LOW_POWER;
