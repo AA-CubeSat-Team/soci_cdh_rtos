@@ -11,7 +11,6 @@ TaskHandle_t TaskHandler_img;
 extern uint8_t IMG_command; //TODO: what does img command look like?
 extern uint8_t IMG_param; //TODO: what does img command look like?
 uint8_t image_CIA[IMG_SIZE];
-uint8_t img_flag;
 
 //TODO: need to go over the operation of IMG and the wrappers to lay out the functions in this task
 void imag_task(void *pvParameters)
@@ -81,7 +80,6 @@ void imag_task(void *pvParameters)
 					break;
 			}
 		}
-		img_flag = 1;
 		vTaskDelay(xDelayms);
 #endif
 
@@ -126,11 +124,14 @@ void imag_task(void *pvParameters)
 				PRINTF("IMG sendCommand UNKNOWN\r\n");
 				break;
 		}
+		RTWDOG_Refresh(RTWDOG);
+		PRINTF("img task refreshed \n");
 		vTaskSuspend( NULL );
-		img_flag = 1;
 	}
 #else
-		vTaskDelay(xDelayms);
+	RTWDOG_Refresh(RTWDOG);
+	PRINTF("img task refreshed \n");
+	vTaskDelay(xDelayms);
 	}
 #endif
 }

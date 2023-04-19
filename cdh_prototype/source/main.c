@@ -33,7 +33,6 @@
 #include <stdbool.h>
 #include "cdh_prototype.h"
 #include "RTWDOG_PROTO.h"
-#include "rtwdog_handler.h"
 
 /*******************************************************************************
  * Definitions
@@ -60,7 +59,6 @@
 extern TaskHandle_t TaskHandler_idle;
 extern TaskHandle_t TaskHandler_com;
 extern TaskHandle_t TaskHandler_img;
-extern TaskHandle_t TaskHandle_rtwdog_handler; // located in rtwdog_handler.c
 
 QueueHandle_t cmd_queue_IMG; // IMG receiving cmds from COM task
 QueueHandle_t cmd_queue_GNC;
@@ -68,19 +66,18 @@ QueueHandle_t cmd_queue_EPS;
 QueueHandle_t tlm_queue_COM; // IMG/GNC/IDLE task to send tlm to COM task
 
 
-/*!
- * @brief main demo function.
- */
+/*******************************************************************************
+ * Code
+ ******************************************************************************/
+
 int main(void)
 {
-
 	/* Init board hardware. */
     BOARD_ConfigMPU();
     BOARD_InitPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
     BOARD_InitPeripherals();
-
     initializeRTWDOG(); // set up the RTWDOG software system
 
     /* Create Queue */
@@ -119,16 +116,9 @@ int main(void)
         while (1)
           ;
 	 }
-   // for now, rtwdog_handler will be created with a "2" lvl priority. Subject to change
-   if (xTaskCreate(handler_task, "handler_task", configMINIMAL_STACK_SIZE + 100, NULL, com_task_PRIORITY, &TaskHandle_rtwdog_handler) !=
-   	 	    pdPASS)
-   	 {
-           PRINTF("Task creation failed!.\r\n");
-           while (1)
-             ;
-   	 }
 
     vTaskStartScheduler();
     for (;;)
         ;
 }
+
