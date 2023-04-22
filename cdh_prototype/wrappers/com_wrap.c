@@ -172,7 +172,17 @@ void testSending(){
 }
 
 
-//Sends a command to the radia via UART, retries several times if there is a failure.
+/**
+ * Sends a command to the radia via UART, retries several times if there is a failure.
+ *
+ * TODO: Explain each parameter
+ * @param data
+ * @param expectedResponse
+ * @param sizeofTx
+ * @param sizeExpectedResponse
+ *
+ * @return
+ */
 static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int sizeofTx, int sizeExpectedResponse) {
     int try = 0;
 
@@ -181,7 +191,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
 	memset(tx_buffer, 0, sizeof(tx_buffer));
 
     // Sends data to radio via UART, if the response is not correct it retries sending the command
-    int size_t = 0;
+    size_t size_data = 0;
     while (try < DEFAULT_RETRIES) {
     	PRINTF("Trying to send ...\n");
     	PRINTF("Should be sending the following ...\n");
@@ -198,7 +208,7 @@ static bool sendConfigCommand(uint8_t data[], uint8_t expectedResponse[], int si
     	}
 
         PRINTF("Trying to receive ...\n");
-        int recReturnVal = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, rx_buffer, sizeExpectedResponse, size_t); // TODO: Fix Warning
+        int recReturnVal = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, rx_buffer, sizeExpectedResponse, &size_data); // TODO: Fix Warning
     	if (recReturnVal == kStatus_Success){
     		PRINTF("SUCCESS RECEIVING\n");
     	}
@@ -256,6 +266,9 @@ void com_enterCommandMode()
 
 }
 
+/**
+ * Initializes com radio
+ */
 void com_radio_init()
 {
 	configRadio();
@@ -266,6 +279,9 @@ void com_radio_init()
 	PRINTF("initializing COM radio\r\n");
 }
 
+/**
+ * Initialize com by initializing the radio
+ */
 void com_init()
 {
 	com_radio_init();
@@ -305,22 +321,20 @@ bool com_healthcheck() //checks power
 
 void com_getCommands() //highest priority
 {
-	size_t n;
+	size_t number_received;
 
 	char * to_send = "com: give me commands";
 
-	memset(rcv_buffer, 0, sizeof(*rcv_buffer)); //TODO: necessary?
-	// void * memset ( void * ptr, int value, size_t num );
+	memset(rcv_buffer, 0, sizeof(*rcv_buffer)); // Fill rcv_buffer with 0s
 
-	// void * memcpy ( void * destination, const void * source, size_t num );
-
+	// Send request for commands
 	if (kStatus_Success != LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)to_send, strlen(to_send)))//LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)to_send, strlen(to_send)))
 	{
 		PRINTF("could not send!!!\r\n\r\n");
 		return;
 	}
 
-	status_t error = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, rcv_buffer, sizeof(rcv_buffer), &n);
+	status_t error = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, rcv_buffer, sizeof(rcv_buffer), &number_received);
 	if (error == kStatus_LPUART_RxHardwareOverrun)
 	{
 		PRINTF("hardware overrun!!!\r\n\r\n");
@@ -331,10 +345,10 @@ void com_getCommands() //highest priority
 		PRINTF("ring buffer overrun!!!\r\n\r\n");
 		return;
 	}
-	if (n > 0)
+	if (number_received > 0)
 	{
 		/* send back the received data */
-		if (kStatus_Success != LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)rcv_buffer, n))//LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)rcv_buffer, n))
+		if (kStatus_Success != LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)rcv_buffer, number_received))//LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)rcv_buffer, n))
 		{
 			vTaskSuspend(NULL);
 		}
@@ -347,6 +361,7 @@ void com_getCommands() //highest priority
 
 #if HMAC_ENABLE
 
+// TODO: should createHMAC() take in a parameter?
 void createHMAC()
 {
 	char *key = "Start uplinking";
@@ -392,13 +407,13 @@ void com_sendPayloads() //high priority
 	    PRINTF("message sent\n");
 
 	    /* Receive user input and send it back to terminal. */
-	    int n = 0;
-	    status_t error = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, receive_buffer, 8, &n);
+	    size_t number_received = 0;
+	    status_t error = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, receive_buffer, 8, &number_received);
 	    do
 	    {
-	    	error = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, receive_buffer, 8, &n);
+	    	error = LPUART_RTOS_Receive(&COM_RTOS_UART_HANDLE, receive_buffer, 8, &number_received);
 
-	        PRINTF("n = %d\n", n);
+	        PRINTF("n = %d\n", number_received);
 	        if (error == kStatus_LPUART_RxHardwareOverrun)
 	        {
 	            /* Notify about hardware buffer overrun */
@@ -416,7 +431,7 @@ void com_sendPayloads() //high priority
 	                vTaskSuspend(NULL);
 	            }
 	        }
-	        if (n > 0)
+	        if (number_received > 0)
 	        {
 	            /* send back the received data */
 	            if (kStatus_Success != LPUART_RTOS_Send(&COM_RTOS_UART_HANDLE, (uint8_t *)receive_buffer, 8))
@@ -602,10 +617,9 @@ static void exitCommandMode() {
 	bool exitedCommandMode = sendConfigCommand(warm_reset, reset_response, sizeOfTx, sizeExpectedResponse);
 	if (exitedCommandMode) {
 		PRINTF("Radio reset to data mode.\n");
-		return true;
+		return;
 	}
 	PRINTF("Unable to reset radio to data mode.\n");
-	return false;
 }
 
 
@@ -743,8 +757,21 @@ static bool getPower() {
 	return false;
 }
 
-
-static void configRadio(){
+/**
+ * Configures the radio by:
+ * 1. Entering command mode
+ * 2. Setting dealer mode
+ * 3. Setting channel
+ * 4. Setting Rx Frequency
+ * 5. Setting Tx frequency
+ * 6. Setting bandwidth
+ * 7. Setting power
+ * 8. Setting modulation
+ * 9. Setting programming.
+ *
+ * If everything checks out, radio is confirmed to be configured properly
+ */
+static void configRadio() {
     bool checkMode = enterCommandMode();
     PRINTF("Entering command mode\n");
     bool checkDealerMode = setDealerMode();
@@ -848,6 +875,9 @@ void prep_payload(bool* img_ready, bool* com_ready, bool* gnc_ready, bool* eps_r
 #endif
 }
 
+/**
+ * TODO: Incomplete function
+ */
 void* get_payload(uint8_t* payload_buffer, uint8_t messageLength) {
 	uint8_t payload = 0;
 	for(int i = 0; i < messageLength - PACKET_HEADER_SIZE; i++) {
@@ -910,10 +940,6 @@ void uplink_handshake(uint32_t* cmd_packet_size) {
 	// call sha256 hash engine function
 	// hashed output = "538b4306b1b28db75d84797c620c2a3c81a1dfa8e626283fcc66b554bd38f350"
 	hmac_sha256((const void *)key, keylen, (const void *)data, datalen, (void*)result_hash, sizeof(result_hash));
-
-
-	
-
 
 	// convert the result to string with printf
 	// SHA256 is 256 bits long which rendered as 64 characters
