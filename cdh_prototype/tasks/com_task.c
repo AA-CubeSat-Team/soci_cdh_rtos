@@ -90,7 +90,7 @@ void com_task(void *pvParameters)
 
 			case NORMAL:
 				/* receive all uplink data */
-				uplink_handshake(&cmd_packet_size); //TODO: add HMAC algorithm
+				uplink_handshake(&cmd_packet_size);
 
 				if(COM_State == UPLINKING) {
 					break;
