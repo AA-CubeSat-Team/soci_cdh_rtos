@@ -54,7 +54,7 @@ void com_task(void *pvParameters)
 				com_init();
 				/* deploy antenna */
 				// TODO: do we need wait for deployment for antenna
-				// TODO: whwere do we slot the 15 min wait
+				// TODO: whwere do we slot the 15 min wait                  <--- timer test
 				int tel_IMG_cmdID = 0; // used temporarily as a count local variable
 				com_deployAntenna_alorithmOne();
 				while (!i2c_com_antennaDeployed) { // did antenna deployed
