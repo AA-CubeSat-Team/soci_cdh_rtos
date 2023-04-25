@@ -56,6 +56,7 @@ void imag_task(void *pvParameters)
 					uint8_t data;
 
 					// sets telemetry
+					// TODO: what is this supposed to do?
 					image_CIA[IMG_SIZE] = set pictures;
 
 					if(success) {
