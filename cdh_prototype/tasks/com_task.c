@@ -73,6 +73,8 @@ void com_task(void *pvParameters)
 				}
 				// Waiting to detumble
 
+				// vTaskDelay maximum input number is 2^16.
+				// Must use a loop here
 				vTaskDelay(pdMS_TO_TICKS( 15*60*1000 )); // TODO wait for detumble, 15min
 #endif
 
