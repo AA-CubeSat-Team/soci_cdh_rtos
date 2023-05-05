@@ -46,7 +46,7 @@ void com_task(void *pvParameters)
     bool commandReceived = true;
 #endif
 
-	for (;;) {
+	for (;;) { //nafi
 
 		switch (COM_State) { // Transitions
 			case INIT:
