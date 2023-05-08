@@ -994,13 +994,58 @@ void send_payload() {
 }
 
 /**
- * Function computes and checks the CRC attached to incoming packets
+ * Computes and checks the CRC attached to incoming packets
  *
  * @param commandPacket
  *
  * @return Boolean corresponding to result of CRC comparison. 1 if OK, 0 if error
  */
 int crcResult(char* commandPacket) {
+	int computedCrcResult; // Computed CRC after packet arrival
+	int expectedCrcResult; //
+
+	int totalReceivedCommands;
+
+	//
+	// Receive commands,
+	// storing the incoming commands in uint8_t array rcv_buffer
+	//
+	com_getCommands();
+
+	//
+	// Compute CRC based on received packets
+	//
+	computedCrcResult = computeCRC(rcv_buffer);
+
+	if (computedCrcResult != expectedCrcResult) {
+		handleCrcError();
+	}
 
 }
 
+/**
+ * Computes CRC from specific packet
+ *
+ * @param buffer Packet to compute CRC of
+ *
+ * @return       Computed CRC
+ */
+int computeCRC(uint8_t* buffer) {
+
+	// compute CRC based on incoming packets
+}
+
+/**
+ * Handles behavior in case of CRC mismatch, sends NACK
+ */
+void handleCrcError() {
+	sendNack();
+}
+
+/**
+ * Send NACK after CRC failure. Function assumes there was a CRC mismatch
+ * and to send NACK, requesting retransmission
+ */
+void sendNack() {
+
+}
