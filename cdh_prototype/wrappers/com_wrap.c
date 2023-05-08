@@ -1001,7 +1001,7 @@ void send_payload() {
  * @return Boolean corresponding to result of CRC comparison. 1 if OK, 0 if error
  */
 int crcResult(char* commandPacket) {
-	int computedCrcResult; // Computed CRC after packet arrival
+	uint32_t computedCrcResult; // Computed CRC after packet arrival
 	int expectedCrcResult; //
 
 	int totalReceivedCommands;
