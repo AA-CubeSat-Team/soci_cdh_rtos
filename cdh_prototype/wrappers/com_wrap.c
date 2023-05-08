@@ -992,3 +992,15 @@ void send_payload() {
 		}
 	}
 }
+
+/**
+ * Function computes and checks the CRC attached to incoming packets
+ *
+ * @param commandPacket
+ *
+ * @return Boolean corresponding to result of CRC comparison. 1 if OK, 0 if error
+ */
+int crcResult(char* commandPacket) {
+
+}
+
