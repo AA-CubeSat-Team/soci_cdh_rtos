@@ -12,6 +12,12 @@
 #include "fsl_debug_console.h"
 #include "com_protocol_helper.h"
 #include "RTWDOG_PROTO.h"
+#include "mtq_wrap.h" //undeclared variable error
+#include "mag_wrap.h" //undeclared variable error
+#include "phd_wrap.h" //undeclared variable error
+#include "act_feedback.h" //undeclared variable error
+#include "rwa_wrap.h" //undeclared variable error
+
 
 //GNC BUILD include
 #include <stddef.h>
@@ -21,7 +27,8 @@
 #include "zero_crossing_types.h"
 
 extern bool g_senActive, g_rwaActive, g_mtqActive;
-
+//extern ExtU rtU;
+//extern ExtY rtY;
 // counter for telemetry struct filling
 int data_iter;
 // TO DO: Double check if we need to disable interrupts and save FPU context
@@ -144,10 +151,10 @@ void gnc_task(void *pvParameters)
 	rw1.reqClcMode = 0;
 	rw2.reqClcMode = 0;
 	rw3.reqClcMode = 0;
-	commandRw (7, &rw0, RWA0);
-	commandRw (7, &rw1, RWA1);
-	commandRw (7, &rw2, RWA2);
-	commandRw (7, &rw3, RWA3);
+	commandRW (7, &rw0, RWA0);
+	commandRW (7, &rw1, RWA1);
+	commandRW (7, &rw2, RWA2);
+	commandRW (7, &rw3, RWA3);
 
 	/* Initialize model */
 	// Question: Is this the only initialization needed?
@@ -230,10 +237,10 @@ void gnc_task(void *pvParameters)
 
 		if (g_rwaActive) {
 
-			commandRw (4, &rw0, RWA0);
-			commandRw (4, &rw1, RWA1);
-			commandRw (4, &rw2, RWA2);
-			commandRw (4, &rw3, RWA3);
+			commandRW (4, &rw0, RWA0);
+			commandRW (4, &rw1, RWA1);
+			commandRW (4, &rw2, RWA2);
+			commandRW (4, &rw3, RWA3);
 			rtU.actuator_meas_p.rwa_rpm[0] = rw0.currSpeed;
 			rtU.actuator_meas_p.rwa_rpm[1] = rw1.currSpeed;
 			rtU.actuator_meas_p.rwa_rpm[2] = rw2.currSpeed;
@@ -261,7 +268,7 @@ void gnc_task(void *pvParameters)
 		}
 
 		/* call GNC rt_OneStep() */
-		 rt_OneStep();
+		// rt_OneStep(); //this function looks to be unfinished
 
 		/* write to actuators */
 		if (g_rwaActive) {
@@ -269,19 +276,19 @@ void gnc_task(void *pvParameters)
 			rw1.reqSpeed = rtY.fsw_out_l.rwa_cmd_rpm[1];
 			rw2.reqSpeed = rtY.fsw_out_l.rwa_cmd_rpm[2];
 			rw3.reqSpeed = rtY.fsw_out_l.rwa_cmd_rpm[3];
-			commandRw (6, &rw0, RWA0);
-			commandRw (6, &rw1, RWA1);
-			commandRw (6, &rw2, RWA2);
-			commandRw (6, &rw3, RWA3);
+			commandRW (6, &rw0, RWA0);
+			commandRW (6, &rw1, RWA1);
+			commandRW (6, &rw2, RWA2);
+			commandRW (6, &rw3, RWA3);
 		}
 		if (g_mtqActive) {
 
 			// Question: Only 3 mtq's, but 5 indices in the struct. Need 3 moments to command a single mtq
 			// are all 3 moments stored in 1 index, or ?
-
-			if () {
-
-			}
+//
+//			if () {
+//
+//			}
 
 			float x = rtY.fsw_out_l.mtq_cmd_Am2[0] - rtY.fsw_out_l.mtq_cmd_Am2[1];
 			float y = rtY.fsw_out_l.mtq_cmd_Am2[2] - rtY.fsw_out_l.mtq_cmd_Am2[3];

@@ -267,6 +267,7 @@ static void idle_phase3() {
 /* The main operation of the idle task: */
 void idle_task(void *pvParameters) {
 	const TickType_t xDelayms = pdMS_TO_TICKS( 500 ); //delay 500 ms
+	TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
 	PRINTF("idle task initialization\r\n");
 #if IDLE_ENABLE
 	//TODO: (1) when booting up, only turn on PDM of GNC (i.e. CLPM mode, no subsystem should be init already).
@@ -288,7 +289,7 @@ void idle_task(void *pvParameters) {
 
 	//at this point, GNC will take over and run init and do main task for once, come back to IDLE to run its main task (check voltages)
 	for (;;) {
-		xLastWakeTime = xTaskGetTickCount(); // gets the last wake time
+		TickType_t xLastWakeTime = xTaskGetTickCount(); // gets the last wake time // initially didn't specify tick type
 		idle_phase1(); //Commission Phase I Checks
 		idle_phase2(); //pdm decider
 		idle_phase3(); //health checks subsystem

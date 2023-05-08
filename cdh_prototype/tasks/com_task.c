@@ -46,7 +46,7 @@ void com_task(void *pvParameters)
     bool commandReceived = true;
 #endif
 
-	for (;;) { //nafi
+	for (;;) {
 
 		switch (COM_State) { // Transitions
 			case INIT:
@@ -56,7 +56,7 @@ void com_task(void *pvParameters)
 				// TODO: do we need wait for deployment for antenna
 				// TODO: whwere do we slot the 15 min wait                  <--- timer test
 				int tel_IMG_cmdID = 0; // used temporarily as a count local variable
-				com_deployAntenna_alorithmOne();
+				com_deployAntenna_alorithmOne(); //algorithm one
 				while (!i2c_com_antennaDeployed) { // did antenna deployed
 					switch(tel_IMG_cmdID) {
 						case 0:

@@ -218,10 +218,10 @@ struct tag_RTM {
 extern DW rtDW;
 
 /* External inputs (root inport signals with default storage) */
-extern ExtU rtU;
+ ExtU rtU;
 
 /* External outputs (root outports fed by signals with default storage) */
-extern ExtY rtY;
+ ExtY rtY;
 
 /* External data declarations for dependent source files */
 extern const soar_telemetry FSW_Lib0_rtZsoar_telemetry;/* soar_telemetry ground */
@@ -234,7 +234,7 @@ extern const ConstB rtConstB;          /* constant block i/o */
 extern const ConstP rtConstP;
 
 /* Model entry point functions */
-extern void FSW_Lib0_initialize(void);
+void FSW_Lib0_initialize(void);
 extern void FSW_Lib0_step0(void);
 extern void FSW_Lib0_step1(void);
 

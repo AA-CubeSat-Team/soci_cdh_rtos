@@ -55,10 +55,10 @@ DW rtDW;
 PrevZCX rtPrevZCX;
 
 /* External inputs (root inport signals with default storage) */
-ExtU rtU;
+//ExtU rtU;
 
 /* External outputs (root outports fed by signals with default storage) */
-ExtY rtY;
+//ExtY rtY;
 
 /* Real-time model */
 RT_MODEL rtM_;
